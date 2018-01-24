@@ -12,17 +12,45 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using LL.DOS2.SourceControl.Core;
 
 namespace LL.DOS2.SourceControl
 {
-    /// <summary>
-    /// Interaction logic for MainWindow.xaml
-    /// </summary>
-    public partial class MainWindow : Window
-    {
-        public MainWindow()
-        {
-            InitializeComponent();
-        }
-    }
+	/// <summary>
+	/// Interaction logic for MainWindow.xaml
+	/// </summary>
+	public partial class MainWindow : Window
+	{
+		private SettingsController _settings;
+
+		public SettingsController Settings
+		{
+			get
+			{
+				return _settings;
+			}
+			set
+			{
+				_settings = value;
+			}
+		}
+
+		public MainWindow()
+		{
+			InitializeComponent();
+
+			_settings = new SettingsController();
+
+			this.DataContext = Settings;
+		}
+
+		private void HandleColumnHeaderSizeChanged(object sender, SizeChangedEventArgs sizeChangedEventArgs)
+		{
+			if (sizeChangedEventArgs.NewSize.Width <= 60)
+			{
+				sizeChangedEventArgs.Handled = true;
+				//((GridViewColumnHeader)sender).Column.Width = 60;
+			}
+		}
+	}
 }

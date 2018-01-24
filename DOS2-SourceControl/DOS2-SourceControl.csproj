@@ -57,6 +57,9 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Controls\EmptyListVisibilityConverter.cs" />
+    <Compile Include="Controls\PaddedGridViewColumnHeader.cs" />
+    <Compile Include="Controls\TooltipText.cs" />
     <Compile Include="Core\CoreHelper.cs" />
     <Compile Include="Data\AddedProjectData.cs" />
     <Compile Include="Data\AppData.cs" />
@@ -102,6 +105,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Resources\Icons\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

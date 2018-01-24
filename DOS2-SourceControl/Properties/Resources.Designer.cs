@@ -61,6 +61,49 @@ namespace LL.DOS2.SourceControl.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to #Levels
+        ///######################
+        ///Mods/ModName_GUID/Levels/*
+        ///Mods/ModName_GUID/Globals/*
+        ///Editor/Mods/ModName_GUID/Levels/*
+        ///
+        ///#Compiled Story files
+        ///######################
+        ///*.div
+        ///*.raw
+        ///
+        ///#Assets
+        ///######################*
+        ///Public/ModName_GUID/Assets/*
+        ///#Public/ModName_GUID/GUI/*
+        ///
+        ///#Editor files
+        ///######################
+        ///StatsEditorConfig.xml
+        ///DockPanel.config
+        ///EditorBrowserMetadata.*
+        ///EffectEditorConfig.xml
+        ///
+        ///#Assets
+        ///######################
+        ///*.gr2
+        ///*.dae
+        ///*.swf
+        ///*.bullet
+        ///*.dds
+        ///*.tga
+        ///*.png
+        ///*.ttf
+        ///
+        ///# L [rest of string was truncated]&quot;;.
+        /// </summary>
+        public static string DefaultGitIgnore {
+            get {
+                return ResourceManager.GetString("DefaultGitIgnore", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to #Keywords
         ///#ProjectName = The name of the project, without the GUID.
         ///#ProjectGUID = Just the GUID of the project.

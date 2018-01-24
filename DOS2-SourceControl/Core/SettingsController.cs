@@ -9,6 +9,7 @@ using Newtonsoft.Json;
 using System.Xml.Linq;
 using System.Xml.XPath;
 using System.Xml;
+using System.ComponentModel;
 
 namespace LL.DOS2.SourceControl.Core
 {
@@ -19,11 +20,30 @@ namespace LL.DOS2.SourceControl.Core
 		private string DirectoryLayoutDefaultFile = @"Settings/DirectoryLayout.default.txt";
 		private string DOS2_SteamAppID = "435150";
 
-		private List<string> ProjectDirectoryLayouts;
-		private List<ModProjectData> AvailableProjects;
-		private List<AddedProjectData> AddedProjects;
+		private AppData appSettings;
+		private List<string> projectDirectoryLayouts;
+		private List<ModProjectData> availableProjects;
+		private List<AddedProjectData> managedProjects;
 
-		public AppData AppSettings;
+		private string defaultGitIgnoreText;
+
+		public List<string> ProjectDirectoryLayouts { get => projectDirectoryLayouts; set => projectDirectoryLayouts = value; }
+		public List<ModProjectData> AvailableProjects { get => availableProjects; set => availableProjects = value; }
+		public List<AddedProjectData> ManagedProjects { get => managedProjects; set => managedProjects = value; }
+
+		public AppData AppSettings { get => appSettings; set => appSettings = value; }
+
+		public string DefaultGitIgnoreText { get => defaultGitIgnoreText; set => defaultGitIgnoreText = value; }
+
+		public event PropertyChangedEventHandler PropertyChanged;
+
+		private void OnPropertyChanged(String property)
+		{
+			if (PropertyChanged != null)
+			{
+				PropertyChanged(this, new PropertyChangedEventArgs(property));
+			}
+		}
 
 		public bool WriteToFile(string FPath, string Contents)
 		{
@@ -60,6 +80,13 @@ namespace LL.DOS2.SourceControl.Core
 			}
 		}
 
+		public bool IsPathValid(String pathString)
+		{
+			Uri pathUri;
+			Boolean isValidUri = Uri.TryCreate(pathString, UriKind.Absolute, out pathUri);
+			return isValidUri && pathUri != null && pathUri.IsLoopback;
+		}
+
 		public void LoadAppSettings()
 		{
 			if(File.Exists(AppSettingsFile))
@@ -90,6 +117,23 @@ namespace LL.DOS2.SourceControl.Core
 			{
 				Log.Here().Activity("DOS2 data directory found at {0}", AppSettings.DOS2DataDirectory);
 			}
+
+			if(File.Exists(AppSettings.GitIgnoreFile))
+			{
+				DefaultGitIgnoreText = File.ReadAllText(AppSettings.GitIgnoreFile);
+			}
+			else
+			{
+				if(File.Exists(AppData.DefaultGitIgnorePath()))
+				{
+					DefaultGitIgnoreText = File.ReadAllText(AppData.DefaultGitIgnorePath());
+				}
+				else
+				{
+					DefaultGitIgnoreText = Properties.Resources.DefaultGitIgnore;
+					File.WriteAllText(AppData.DefaultGitIgnorePath(), DefaultGitIgnoreText);
+				}
+			}
 		}
 
 		public void SaveAppSettings()
@@ -100,6 +144,24 @@ namespace LL.DOS2.SourceControl.Core
 			{
 				string json = JsonConvert.SerializeObject(AppSettings, Newtonsoft.Json.Formatting.Indented);
 				WriteToFile(AppSettingsFile, json);
+			}
+		}
+
+		public void SaveGitIgnore()
+		{
+			if (AppSettings != null)
+			{
+				Log.Here().Activity("Saving .gitignore.default to {0}", AppSettings.GitIgnoreFile);
+
+				if (IsPathValid(AppSettings.GitIgnoreFile))
+				{
+					WriteToFile(AppSettings.GitIgnoreFile, DefaultGitIgnoreText);
+				}
+				else
+				{
+					Log.Here().Error("Invalid path for default .gitignore file: {0}. Using default path: {1}", AppSettings.GitIgnoreFile, AppData.DefaultGitIgnorePath());
+					WriteToFile(AppData.DefaultGitIgnorePath(), DefaultGitIgnoreText);
+				}
 			}
 		}
 
@@ -173,13 +235,13 @@ namespace LL.DOS2.SourceControl.Core
 
 		public void LoadAddedProjects()
 		{
-			if (AddedProjects == null)
+			if (ManagedProjects == null)
 			{
-				AddedProjects = new List<AddedProjectData>();
+				ManagedProjects = new List<AddedProjectData>();
 			}
 			else
 			{
-				AddedProjects.Clear();
+				ManagedProjects.Clear();
 			}
 
 			if (AppSettings != null && !String.IsNullOrEmpty(AppSettings.GitRootDirectory) && Directory.Exists(AppSettings.GitRootDirectory))
@@ -194,7 +256,7 @@ namespace LL.DOS2.SourceControl.Core
 						if (File.Exists(projectFilePath))
 						{
 							AddedProjectData projectData = JsonConvert.DeserializeObject<AddedProjectData>(File.ReadAllText(projectFilePath));
-							AddedProjects.Add(projectData);
+							ManagedProjects.Add(projectData);
 							Log.Here().Activity("Source control project file found for project {0}. Adding to active projects.", projectData.ProjectName);
 						}
 					}
@@ -275,7 +337,7 @@ namespace LL.DOS2.SourceControl.Core
 										Log.Here().Activity("Added mod project to available projects: {0}[{1}] | Modes: {2}", projectName, modUUID, projectData.TargetModes.ToString());
 										AvailableProjects.Add(projectData);
 
-										var existingProject = AddedProjects.Where(project => project.ProjectGUID == modUUID).FirstOrDefault();
+										var existingProject = ManagedProjects.Where(project => project.ProjectGUID == modUUID).FirstOrDefault();
 										if(existingProject != null)
 										{
 											Log.Here().Activity("Mod project already added. Hiding from available mod projects.");
@@ -306,6 +368,11 @@ namespace LL.DOS2.SourceControl.Core
 			LoadSettings();
 			LoadAddedProjects();
 			LoadAvailableProjects();
+		}
+
+		public SettingsController()
+		{
+			Start();
 		}
 	}
 }
