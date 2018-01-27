@@ -21,17 +21,17 @@ namespace LL.DOS2.SourceControl
 	/// </summary>
 	public partial class MainWindow : Window
 	{
-		private SettingsController _settings;
+		private SettingsController _settingsController;
 
-		public SettingsController Settings
+		public SettingsController SettingsController
 		{
 			get
 			{
-				return _settings;
+				return _settingsController;
 			}
 			set
 			{
-				_settings = value;
+				_settingsController = value;
 			}
 		}
 
@@ -39,9 +39,13 @@ namespace LL.DOS2.SourceControl
 		{
 			InitializeComponent();
 
-			_settings = new SettingsController();
+			_settingsController = new SettingsController();
 
-			this.DataContext = Settings;
+			this.DataContext = SettingsController;
+
+			CollectionViewSource managedProjectsViewSource;
+			managedProjectsViewSource = (CollectionViewSource)(FindResource("ManagedProjectsViewSource"));
+			managedProjectsViewSource.Source = SettingsController.ManagedProjects;
 		}
 
 		private void HandleColumnHeaderSizeChanged(object sender, SizeChangedEventArgs sizeChangedEventArgs)

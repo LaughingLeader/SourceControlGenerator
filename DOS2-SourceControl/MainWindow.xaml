@@ -7,44 +7,66 @@
 		xmlns:c="clr-namespace:LL.DOS2.SourceControl.Controls"
 		xmlns:core="clr-namespace:LL.DOS2.SourceControl.Core"
 		mc:Ignorable="d"
-		Title="MainWindow" Height="600" Width="800">
+		Title="DOS2 Source Control Helper" Height="600" Width="800">
 	<Window.Resources>
 		<c:EmptyListVisibilityConverter x:Key="EmptyListVisibilityConverter"/>
+		<CollectionViewSource x:Key="ActiveProjectsViewSource" CollectionViewType="ListCollectionView"/>
+		<CollectionViewSource x:Key="ManagedProjectsViewSource" CollectionViewType="ListCollectionView"/>
 	</Window.Resources>
 	<Grid Width="Auto" Height="Auto">
 		<TabControl>
-			<TabItem Header="Project Selection">
-				<Grid x:Name="ParentGrid" Width="Auto" Height="Auto">
+			<TabItem Header="Projects">
+				<Grid x:Name="Projects_ParentGrid" Width="Auto" Height="Auto">
+					<Grid.ColumnDefinitions>
+						<ColumnDefinition Width="Auto" MinWidth="214"/>
+						<ColumnDefinition />
+					</Grid.ColumnDefinitions>
+					<Grid x:Name="ProjectsView" Grid.Column="0" Margin="0,0,2,0">
+						<Grid.RowDefinitions>
+							<RowDefinition Height="Auto"/>
+							<RowDefinition Height="Auto"/>
+							<RowDefinition Height="Auto"/>
+							<RowDefinition Height="Auto"/>
+						</Grid.RowDefinitions>
+						<Label Content="Available Projects" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Row="0" Margin="0" />
+						<ListBox x:Name="AvailableProjectsList" Grid.Row="1" ItemsSource="{Binding AvailableProjects}" Width="Auto" MaxHeight="250" HorizontalContentAlignment="Center">
+							<ListBox.ItemContainerStyle>
+								<Style TargetType="ListBoxItem">
+									<Setter Property="Padding" Value="5" />
+									<Setter Property="HorizontalAlignment" Value="Stretch"/>
+								</Style>
+							</ListBox.ItemContainerStyle>
+							<ListBox.ItemTemplate>
+								<DataTemplate>
+									<TextBlock HorizontalAlignment="Center" TextAlignment="Center" Text="{Binding Name}" ToolTip="{Binding Tooltip}"/>
+								</DataTemplate>
+							</ListBox.ItemTemplate>
+						</ListBox>
+						<TextBlock Text="No New Mod Projects Found" Grid.Row="1" Visibility="{Binding AvailableProjects, Converter={StaticResource EmptyListVisibilityConverter}}" FontStyle="Italic" Foreground="#FF4D4D4D" Margin="5,5,0,5" Padding="0,0,10,0" HorizontalAlignment="Center" />
+					</Grid>
+					<Border BorderThickness="0" Grid.Column="1" BorderBrush="{DynamicResource {x:Static SystemColors.ActiveBorderBrushKey}}" Background="{DynamicResource {x:Static SystemColors.ControlBrushKey}}">
+						<Grid x:Name="ManagedProjects" Margin="2,0,0,0">
+							<Grid.RowDefinitions>
+								<RowDefinition Height="Auto"/>
+								<RowDefinition Height="Auto"/>
+								<RowDefinition Height="Auto"/>
+								<RowDefinition Height="Auto"/>
+							</Grid.RowDefinitions>
+							<Label Content="Managed Projects" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Row="0" />
+							<DataGrid Grid.Row="1" DataContext="{StaticResource ManagedProjectsViewSource}" ItemsSource="{Binding}" AutoGenerateColumns="False">
+							</DataGrid>
+						</Grid>
+					</Border>
+
+				</Grid>
+			</TabItem>
+			<TabItem Header="Options">
+				<Grid x:Name="Options_ParentGrid" Width="Auto" Height="Auto">
 					<Grid.ColumnDefinitions>
 						<ColumnDefinition Width="1*" />
 						<ColumnDefinition Width="1*" />
 					</Grid.ColumnDefinitions>
-					<Grid x:Name="ProjectsView" Grid.Column="0">
-						<Grid.RowDefinitions>
-							<RowDefinition x:Name="SelectedLabel" Height="Auto"/>
-							<RowDefinition x:Name="SelectedList" Height="Auto"/>
-							<RowDefinition x:Name="AvailableLabel" Height="Auto"/>
-							<RowDefinition x:Name="AvailableList" Height="Auto"/>
-						</Grid.RowDefinitions>
-						<Label Content="Managed Projects" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Row="0" />
-						<ListBox x:Name="ManagedProjectsList" Grid.Row="1" ItemsSource="{Binding ManagedProjects}" Margin="0" MaxHeight="250">
-							<ListBox.ItemContainerStyle>
-								<Style TargetType="ListBoxItem">
-									<Setter Property="Padding" Value="5" />
-								</Style>
-							</ListBox.ItemContainerStyle>
-						</ListBox>
-						<TextBlock Text="No Mod Projects Managed" Grid.Row="1" Visibility="{Binding ManagedProjects, Converter={StaticResource EmptyListVisibilityConverter}}" FontStyle="Italic" Foreground="#FF4D4D4D" Margin="5,5,0,5" />
-
-						<Label Content="Available Projects" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Row="2" />
-						<ListBox x:Name="AvailableProjectsList" Grid.Row="3" ItemsSource="{Binding AvailableProjects}" Margin="0" MaxHeight="250">
-							<ListBox.ItemContainerStyle>
-								<Style TargetType="ListBoxItem">
-									<Setter Property="Padding" Value="5" />
-								</Style>
-							</ListBox.ItemContainerStyle>
-						</ListBox>
-						<TextBlock Text="No Mod Projects Found" Grid.Row="3" Visibility="{Binding AvailableProjects, Converter={StaticResource EmptyListVisibilityConverter}}" FontStyle="Italic" Foreground="#FF4D4D4D" Margin="5,5,0,5" />
+					<Grid x:Name="Settings" Grid.Column="0">
 					</Grid>
 					<Grid x:Name="GitIgnoreEditor" Grid.Column="1">
 						<Grid.RowDefinitions>
@@ -82,8 +104,6 @@
 					</Grid>
 				</Grid>
 			</TabItem>
-			<TabItem Header="Active" />
-			<TabItem Header="Options" />
 		</TabControl>
 	</Grid>
 </Window>

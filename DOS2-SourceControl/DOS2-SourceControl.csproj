@@ -61,7 +61,6 @@
     <Compile Include="Controls\PaddedGridViewColumnHeader.cs" />
     <Compile Include="Controls\TooltipText.cs" />
     <Compile Include="Core\CoreHelper.cs" />
-    <Compile Include="Data\AddedProjectData.cs" />
     <Compile Include="Data\AppData.cs" />
     <Compile Include="Core\Log.cs" />
     <Compile Include="Core\SettingsController.cs" />
@@ -74,6 +73,12 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Data\ModProjectData.cs" />
+    <Compile Include="Data\SourceControlData.cs" />
+    <Compile Include="Data\View\AvailableProjectViewData.cs" />
+    <Compile Include="Data\Xml\DependencyInfo.cs" />
+    <Compile Include="Data\Xml\ModuleInfo.cs" />
+    <Compile Include="Data\Xml\ProjectInfo.cs" />
+    <Compile Include="Data\Xml\XmlDataHelper.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>

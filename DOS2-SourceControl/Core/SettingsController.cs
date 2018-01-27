@@ -10,6 +10,8 @@ using System.Xml.Linq;
 using System.Xml.XPath;
 using System.Xml;
 using System.ComponentModel;
+using System.Collections.ObjectModel;
+using LL.DOS2.SourceControl.Data.View;
 
 namespace LL.DOS2.SourceControl.Core
 {
@@ -22,14 +24,19 @@ namespace LL.DOS2.SourceControl.Core
 
 		private AppData appSettings;
 		private List<string> projectDirectoryLayouts;
-		private List<ModProjectData> availableProjects;
-		private List<AddedProjectData> managedProjects;
+
+		private List<ModProjectData> modProjects;
+		private ObservableCollection<AvailableProjectViewData> availableProjects;
+		private ObservableCollection<SourceControlData> managedProjects;
 
 		private string defaultGitIgnoreText;
 
 		public List<string> ProjectDirectoryLayouts { get => projectDirectoryLayouts; set => projectDirectoryLayouts = value; }
-		public List<ModProjectData> AvailableProjects { get => availableProjects; set => availableProjects = value; }
-		public List<AddedProjectData> ManagedProjects { get => managedProjects; set => managedProjects = value; }
+
+		public List<ModProjectData> ModProjects => modProjects;
+		public ObservableCollection<AvailableProjectViewData> AvailableProjects { get => availableProjects; set => availableProjects = value; }
+		public ObservableCollection<SourceControlData> ManagedProjects { get => managedProjects; set => managedProjects = value; }
+
 
 		public AppData AppSettings { get => appSettings; set => appSettings = value; }
 
@@ -233,11 +240,11 @@ namespace LL.DOS2.SourceControl.Core
 			}
 		}
 
-		public void LoadAddedProjects()
+		public void LoadManagedProjects()
 		{
 			if (ManagedProjects == null)
 			{
-				ManagedProjects = new List<AddedProjectData>();
+				ManagedProjects = new ObservableCollection<SourceControlData>();
 			}
 			else
 			{
@@ -255,7 +262,7 @@ namespace LL.DOS2.SourceControl.Core
 					{
 						if (File.Exists(projectFilePath))
 						{
-							AddedProjectData projectData = JsonConvert.DeserializeObject<AddedProjectData>(File.ReadAllText(projectFilePath));
+							SourceControlData projectData = JsonConvert.DeserializeObject<SourceControlData>(File.ReadAllText(projectFilePath));
 							ManagedProjects.Add(projectData);
 							Log.Here().Activity("Source control project file found for project {0}. Adding to active projects.", projectData.ProjectName);
 						}
@@ -272,79 +279,82 @@ namespace LL.DOS2.SourceControl.Core
 		{
 			if (AvailableProjects == null)
 			{
-				AvailableProjects = new List<ModProjectData>();
+				AvailableProjects = new ObservableCollection<AvailableProjectViewData>();
 			}
 			else
 			{
 				AvailableProjects.Clear();
 			}
 
+			if(modProjects != null && modProjects.Count > 0)
+			{
+				foreach(var project in modProjects)
+				{
+					if(!string.IsNullOrEmpty(project.Name))
+					{
+						bool projectIsUnmanaged = (managedProjects == null || managedProjects != null && managedProjects.Count <= 0);
+
+						if(projectIsUnmanaged && managedProjects != null)
+						{
+							if(managedProjects.Any(p => p.ProjectName == project.Name))
+							{
+								projectIsUnmanaged = false;
+							}
+						}
+
+						if (projectIsUnmanaged)
+						{
+							AvailableProjectViewData availableProject = new AvailableProjectViewData()
+							{
+								Name = project.Name,
+								Tooltip = project.Tooltip
+							};
+							availableProjects.Add(availableProject);
+						}
+					}
+				}
+			}
+		}
+
+		public void LoadModProjects()
+		{
+			if(modProjects == null)
+			{
+				modProjects = new List<ModProjectData>();
+			}
+			else
+			{
+				modProjects.Clear();
+			}
+
 			if (AppSettings != null && !String.IsNullOrEmpty(AppSettings.DOS2DataDirectory))
 			{
-				if(Directory.Exists(AppSettings.DOS2DataDirectory))
+				if (Directory.Exists(AppSettings.DOS2DataDirectory))
 				{
-					string projectsPath = Path.Combine(AppSettings.DOS2DataDirectory, "Mods");
+					string projectsPath = Path.Combine(AppSettings.DOS2DataDirectory, "Projects");
+					string modsPath = Path.Combine(AppSettings.DOS2DataDirectory, "Mods");
 
-					if (Directory.Exists(projectsPath))
+					if (Directory.Exists(modsPath))
 					{
-						Log.Here().Activity("Loading DOS2 projects from projects directory at: {0}", projectsPath);
+						Log.Here().Activity("Loading DOS2 projects from mods directory at: {0}", modsPath);
 
-						DirectoryInfo projectsRoot = new DirectoryInfo(projectsPath);
-						var projectFolders = projectsRoot.GetDirectories();
+						DirectoryInfo modsRoot = new DirectoryInfo(modsPath);
+						var modFolders = modsRoot.GetDirectories();
 
-						if(projectFolders != null)
+						if (modFolders != null)
 						{
-							foreach (DirectoryInfo projectInfo in projectFolders)
+							foreach (DirectoryInfo modFolderInfo in modFolders)
 							{
-								var projectFolderName = projectInfo.Name;
-								Log.Here().Activity("Checking project folder: {0}", projectFolderName);
+								var modFolderName = modFolderInfo.Name;
+								Log.Here().Activity("Checking project mod folder: {0}", modFolderName);
 
-								var metaFile = projectInfo.GetFiles("meta.lsx").FirstOrDefault();
+								var metaFile = modFolderInfo.GetFiles("meta.lsx").FirstOrDefault();
 								if (metaFile != null)
 								{
-									Log.Here().Activity("Meta file found for project {0}. Reading file.", projectFolderName);
-
-									var metaContents = XDocument.Load(metaFile.OpenRead());
-									var moduleInfo = metaContents.XPathSelectElement("save/region/node/children/node[@id='ModuleInfo']");
-
-									if (moduleInfo != null)
-									{
-										Log.Here().Activity("Module info selected.");
-
-										string projectName = moduleInfo.Descendants("attribute").FirstOrDefault(x => (string)x.Attribute("id") == "Name").Attribute("value").Value;
-										string modUUID = moduleInfo.Descendants("attribute").FirstOrDefault(x => (string)x.Attribute("id") == "UUID").Attribute("value").Value;
-										string modAuthor = moduleInfo.Descendants("attribute").FirstOrDefault(x => (string)x.Attribute("id") == "Author").Attribute("value").Value;
-
-										ModProjectData projectData = new ModProjectData()
-										{
-											ProjectName = projectName,
-											ProjectGUID = modUUID,
-											Author = modAuthor,
-											TargetModes = new List<string>()
-										};
-
-										var modTargets = moduleInfo.Descendants("node").FirstOrDefault(x => (string)x.Attribute("id") == "TargetModes").Descendants("node").Descendants("attribute");
-
-										if (modTargets != null && modTargets.Count() > 0)
-										{
-											foreach (var target in modTargets)
-											{
-												var targetVal = target.Attribute("value");
-												if (targetVal != null && !String.IsNullOrEmpty(targetVal.Value)) projectData.TargetModes.Add(targetVal.Value);
-											}
-										}
-
-										Log.Here().Activity("Added mod project to available projects: {0}[{1}] | Modes: {2}", projectName, modUUID, projectData.TargetModes.ToString());
-										AvailableProjects.Add(projectData);
-
-										var existingProject = ManagedProjects.Where(project => project.ProjectGUID == modUUID).FirstOrDefault();
-										if(existingProject != null)
-										{
-											Log.Here().Activity("Mod project already added. Hiding from available mod projects.");
-											projectData.Hide = true;
-										}
-
-									}
+									Log.Here().Activity("Meta file found for project {0}. Reading file.", modFolderName);
+									ModProjectData modProjectData = new ModProjectData(metaFile, projectsPath);
+									Log.Here().Activity("Finished reading meta files for mod: {0}", modProjectData.ModInfo.Name);
+									modProjects.Add(modProjectData);
 								}
 							}
 						}
@@ -366,7 +376,8 @@ namespace LL.DOS2.SourceControl.Core
 		public void Start()
 		{
 			LoadSettings();
-			LoadAddedProjects();
+			LoadModProjects();
+			LoadManagedProjects();
 			LoadAvailableProjects();
 		}
 
