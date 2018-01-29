@@ -76,10 +76,12 @@ namespace LL.DOS2.SourceControl.Data
 					{
 						Log.Here().Error("Error parsing mod dependencies: {0}", ex.ToString());
 					}
+
+					Log.Here().Important("[{0}] All mod data loaded.", this.ModInfo.Name);
 				}
 				else
 				{
-					
+					Log.Here().Error("Error loading mod meta.lsx: modMetaXml is null. Is this an xml file?");
 				}
 			}
 

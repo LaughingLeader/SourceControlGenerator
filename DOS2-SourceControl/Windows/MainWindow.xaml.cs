@@ -16,7 +16,7 @@ using LL.DOS2.SourceControl.Core;
 using LL.DOS2.SourceControl.Data.View;
 using LL.DOS2.SourceControl.Windows;
 
-namespace LL.DOS2.SourceControl
+namespace LL.DOS2.SourceControl.Windows
 {
 	/// <summary>
 	/// Interaction logic for MainWindow.xaml
@@ -29,7 +29,14 @@ namespace LL.DOS2.SourceControl
 
 		private LogWindow logWindow;
 
-		public bool LogWindowShown { get; set; }
+		public bool LogWindowShown
+		{
+			get
+			{
+				if(logWindow != null) return logWindow.IsVisible;
+				return false;
+			}
+		}
 
 		public MainWindow()
 		{
@@ -44,7 +51,6 @@ namespace LL.DOS2.SourceControl
 			managedProjectsViewSource.Source = SettingsController.Data.ManagedProjects;
 
 			logWindow = new LogWindow();
-			logWindow.Show();
 		}
 
 		private void HandleColumnHeaderSizeChanged(object sender, SizeChangedEventArgs sizeChangedEventArgs)
@@ -94,6 +100,35 @@ namespace LL.DOS2.SourceControl
 				{
 					SettingsController.AddProjectsToManaged(selectedItems);
 				}
+			}
+		}
+
+		private void LogToggleButton_Click(object sender, RoutedEventArgs e)
+		{
+			if(LogWindowShown)
+			{
+				logWindow.Hide();
+			}
+			else
+			{
+				logWindow.Show();
+			}
+		}
+
+		private void MainAppWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+		{
+			if (LogWindowShown)
+			{
+				logWindow.Close();
+			}
+		}
+
+		private void PreventInitialTextboxFocus(object sender, SelectionChangedEventArgs e)
+		{
+			TabItem tab = (TabItem)this.FindName("Tab_Settings");
+			if (tab.IsSelected)
+			{
+				tab.Focus();
 			}
 		}
 	}

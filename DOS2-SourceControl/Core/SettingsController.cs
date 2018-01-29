@@ -13,6 +13,7 @@ using System.ComponentModel;
 using System.Collections.ObjectModel;
 using LL.DOS2.SourceControl.Data.View;
 using LL.DOS2.SourceControl.FileGen;
+using LL.DOS2.SourceControl.Windows;
 
 namespace LL.DOS2.SourceControl.Core
 {
