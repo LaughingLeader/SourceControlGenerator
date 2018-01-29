@@ -61,6 +61,18 @@ namespace LL.DOS2.SourceControl.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to $ProjectName Changelog
+        ///=======
+        ///# 1.0.0.0
+        ///* Initial Release.
+        /// </summary>
+        public static string DefaultChangelog {
+            get {
+                return ResourceManager.GetString("DefaultChangelog", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to #Levels
         ///######################
         ///Mods/ModName_GUID/Levels/*
@@ -104,6 +116,26 @@ namespace LL.DOS2.SourceControl.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to $ProjectName for Divinity: Original Sin 2
+        ///=======
+        ///
+        ///### Features:
+        ///
+        ///
+        ///### Releases
+        ///* [Steam Workshop]() 
+        ///* [Nexus]()
+        ///
+        ///### Attribution
+        ///- [Divinity: Original Sin 2](http://store.steampowered.com/app/435150/Divinity_Original_Sin_2/), a game by [Larian Studios](http://larian.com/).
+        /// </summary>
+        public static string DefaultReadme {
+            get {
+                return ResourceManager.GetString("DefaultReadme", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to #Keywords
         ///#ProjectName = The name of the project, without the GUID.
         ///#ProjectGUID = Just the GUID of the project.
@@ -119,6 +151,71 @@ namespace LL.DOS2.SourceControl.Properties {
         public static string DirectoryLayout {
             get {
                 return ResourceManager.GetString("DirectoryLayout", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Apache License
+        ///                           Version 2.0, January 2004
+        ///                        http://www.apache.org/licenses/
+        ///
+        ///   TERMS AND CONDITIONS FOR USE, REPRODUCTION, AND DISTRIBUTION
+        ///
+        ///   1. Definitions.
+        ///
+        ///      &quot;License&quot; shall mean the terms and conditions for use, reproduction,
+        ///      and distribution as defined by Sections 1 through 9 of this document.
+        ///
+        ///      &quot;Licensor&quot; shall mean the copyright owner or entity authorized by
+        ///      the copyright owner that is granting the License.
+        ///
+        ///      &quot; [rest of string was truncated]&quot;;.
+        /// </summary>
+        public static string License_Apache {
+            get {
+                return ResourceManager.GetString("License_Apache", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to GNU GENERAL PUBLIC LICENSE
+        ///                       Version 3, 29 June 2007
+        ///
+        /// Copyright (C) 2007 Free Software Foundation, Inc. &lt;http://fsf.org/&gt;
+        /// Everyone is permitted to copy and distribute verbatim copies
+        /// of this license document, but changing it is not allowed.
+        ///
+        ///                            Preamble
+        ///
+        ///  The GNU General Public License is a free, copyleft license for
+        ///software and other kinds of works.
+        ///
+        ///  The licenses for most software and other practical works are designed
+        ///to take away your free [rest of string was truncated]&quot;;.
+        /// </summary>
+        public static string License_GNU {
+            get {
+                return ResourceManager.GetString("License_GNU", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to MIT License
+        ///
+        ///Copyright (c) $Year $Author
+        ///
+        ///Permission is hereby granted, free of charge, to any person obtaining a copy
+        ///of this software and associated documentation files (the &quot;Software&quot;), to deal
+        ///in the Software without restriction, including without limitation the rights
+        ///to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+        ///copies of the Software, and to permit persons to whom the Software is
+        ///furnished to do so, subject to the following conditions:
+        ///
+        ///The above copyright notic [rest of string was truncated]&quot;;.
+        /// </summary>
+        public static string License_MIT {
+            get {
+                return ResourceManager.GetString("License_MIT", resourceCulture);
             }
         }
     }

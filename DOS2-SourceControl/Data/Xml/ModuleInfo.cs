@@ -41,7 +41,7 @@ namespace LL.DOS2.SourceControl.Data.Xml
 
 				if (moduleInfoXml != null)
 				{
-					Log.Here().Activity("Module info selected.");
+					Log.Here().Activity("Parsing module info xml data.");
 
 					PropertyInfo[] propInfo = typeof(ModuleInfo).GetProperties();
 					foreach (PropertyInfo property in propInfo)
@@ -49,7 +49,7 @@ namespace LL.DOS2.SourceControl.Data.Xml
 						if (property.Name == "TargetModes") continue;
 						var value = XmlDataHelper.GetAttributeValue(moduleInfoXml, property.Name);
 						property.SetValue(this, value);
-						Log.Here().Activity("Set {0} to {1}", property.Name, value);
+						//Log.Here().Activity("Set {0} to {1}", property.Name, value);
 					}
 
 					Log.Here().Activity("[{0}] Module info parsing complete. Checking target modes.", this.Name);

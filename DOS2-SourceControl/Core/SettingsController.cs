@@ -12,6 +12,7 @@ using System.Xml;
 using System.ComponentModel;
 using System.Collections.ObjectModel;
 using LL.DOS2.SourceControl.Data.View;
+using LL.DOS2.SourceControl.FileGen;
 
 namespace LL.DOS2.SourceControl.Core
 {
@@ -20,44 +21,20 @@ namespace LL.DOS2.SourceControl.Core
 		private string AppSettingsFile = @"Settings/AppSettings.json";
 		private string DirectoryLayoutFile = @"Settings/DirectoryLayout.txt";
 		private string DirectoryLayoutDefaultFile = @"Settings/DirectoryLayout.default.txt";
+		private string ManagedFileName = @"DOS2SourceControl.json";
 		private string DOS2_SteamAppID = "435150";
 
-		private AppData appSettings;
-		private List<string> projectDirectoryLayouts;
+		public MainAppData Data { get; set; }
 
-		private List<ModProjectData> modProjects;
-		private ObservableCollection<AvailableProjectViewData> availableProjects;
-		private ObservableCollection<SourceControlData> managedProjects;
-
-		private string defaultGitIgnoreText;
-
-		public List<string> ProjectDirectoryLayouts { get => projectDirectoryLayouts; set => projectDirectoryLayouts = value; }
-
-		public List<ModProjectData> ModProjects => modProjects;
-		public ObservableCollection<AvailableProjectViewData> AvailableProjects { get => availableProjects; set => availableProjects = value; }
-		public ObservableCollection<SourceControlData> ManagedProjects { get => managedProjects; set => managedProjects = value; }
-
-
-		public AppData AppSettings { get => appSettings; set => appSettings = value; }
-
-		public string DefaultGitIgnoreText { get => defaultGitIgnoreText; set => defaultGitIgnoreText = value; }
-
-		public event PropertyChangedEventHandler PropertyChanged;
-
-		private void OnPropertyChanged(String property)
-		{
-			if (PropertyChanged != null)
-			{
-				PropertyChanged(this, new PropertyChangedEventArgs(property));
-			}
-		}
+		private MainWindow mainWindow;
 
 		public bool WriteToFile(string FPath, string Contents)
 		{
 			try
 			{
+				if(!Directory.Exists(FPath)) Directory.CreateDirectory(FPath);
+
 				FileInfo file = new FileInfo(FPath);
-				file.Directory.Create();
 				File.WriteAllText(FPath, Contents);
 
 				Log.Here().Activity("Created file: {0}", FPath);
@@ -74,8 +51,9 @@ namespace LL.DOS2.SourceControl.Core
 		{
 			try
 			{
+				if (!Directory.Exists(FPath)) Directory.CreateDirectory(FPath);
+
 				FileInfo file = new FileInfo(FPath);
-				file.Directory.Create();
 				file.Create();
 				Log.Here().Activity("Created file: {0}", FPath);
 				return true;
@@ -94,93 +72,66 @@ namespace LL.DOS2.SourceControl.Core
 			return isValidUri && pathUri != null && pathUri.IsLoopback;
 		}
 
+		#region Loading
+
 		public void LoadAppSettings()
 		{
 			if(File.Exists(AppSettingsFile))
 			{
 				Log.Here().Activity("Loading AppSettings from {0}", AppSettingsFile);
 
-				AppSettings = JsonConvert.DeserializeObject<AppData>(File.ReadAllText(AppSettingsFile));
+				Data.AppSettings = JsonConvert.DeserializeObject<AppSettingsData>(File.ReadAllText(AppSettingsFile));
 			}
 			else
 			{
 				Log.Here().Activity("AppSettings file at {0} not found. Creating new file.", AppSettingsFile);
-				AppSettings = new AppData();
-				string dataDirectory = Core.CoreHelper.GetDOS2Directory();
+				Data.AppSettings = new AppSettingsData();
+				string dataDirectory = Helpers.DOS2.GetInstallPath();
 				if (!String.IsNullOrEmpty(dataDirectory))
 				{
 					dataDirectory = dataDirectory + @"\Data";
-					AppSettings.DOS2DataDirectory = dataDirectory;
+					Data.AppSettings.DOS2DataDirectory = dataDirectory;
 				}
 				SaveAppSettings();
 			}
 
 			
-			if (String.IsNullOrEmpty(AppSettings.DOS2DataDirectory))
+			if (String.IsNullOrEmpty(Data.AppSettings.DOS2DataDirectory))
 			{
 				Log.Here().Important("DOS2 data directory not found.");
 			}
 			else
 			{
-				Log.Here().Activity("DOS2 data directory found at {0}", AppSettings.DOS2DataDirectory);
+				Log.Here().Activity("DOS2 data directory found at {0}", Data.AppSettings.DOS2DataDirectory);
 			}
 
-			if(File.Exists(AppSettings.GitIgnoreFile))
+			if(File.Exists(Data.AppSettings.GitIgnoreFile))
 			{
-				DefaultGitIgnoreText = File.ReadAllText(AppSettings.GitIgnoreFile);
+				Data.DefaultGitIgnoreText = File.ReadAllText(Data.AppSettings.GitIgnoreFile);
 			}
 			else
 			{
-				if(File.Exists(AppData.DefaultGitIgnorePath()))
+				if(File.Exists(DefaultPaths.GitIgnore))
 				{
-					DefaultGitIgnoreText = File.ReadAllText(AppData.DefaultGitIgnorePath());
+					Data.DefaultGitIgnoreText = File.ReadAllText(DefaultPaths.GitIgnore);
 				}
 				else
 				{
-					DefaultGitIgnoreText = Properties.Resources.DefaultGitIgnore;
-					File.WriteAllText(AppData.DefaultGitIgnorePath(), DefaultGitIgnoreText);
-				}
-			}
-		}
-
-		public void SaveAppSettings()
-		{
-			Log.Here().Activity("Saving AppSettings to {0}", AppSettingsFile);
-
-			if(AppSettings != null)
-			{
-				string json = JsonConvert.SerializeObject(AppSettings, Newtonsoft.Json.Formatting.Indented);
-				WriteToFile(AppSettingsFile, json);
-			}
-		}
-
-		public void SaveGitIgnore()
-		{
-			if (AppSettings != null)
-			{
-				Log.Here().Activity("Saving .gitignore.default to {0}", AppSettings.GitIgnoreFile);
-
-				if (IsPathValid(AppSettings.GitIgnoreFile))
-				{
-					WriteToFile(AppSettings.GitIgnoreFile, DefaultGitIgnoreText);
-				}
-				else
-				{
-					Log.Here().Error("Invalid path for default .gitignore file: {0}. Using default path: {1}", AppSettings.GitIgnoreFile, AppData.DefaultGitIgnorePath());
-					WriteToFile(AppData.DefaultGitIgnorePath(), DefaultGitIgnoreText);
+					Data.DefaultGitIgnoreText = Properties.Resources.DefaultGitIgnore;
+					File.WriteAllText(DefaultPaths.GitIgnore, Data.DefaultGitIgnoreText);
 				}
 			}
 		}
 
 		public void LoadDirectoryLayout()
 		{
-			if (ProjectDirectoryLayouts == null)
+			if (Data.ProjectDirectoryLayouts == null)
 			{
-				ProjectDirectoryLayouts = new List<string>();
+				Data.ProjectDirectoryLayouts = new List<string>();
 			}
 			else
 			{
-				ProjectDirectoryLayouts.Clear();
+				Data.ProjectDirectoryLayouts.Clear();
 			}
 
 			string layoutFile = "";
@@ -231,7 +182,7 @@ namespace LL.DOS2.SourceControl.Core
 
 							if (!isComment)
 							{
-								ProjectDirectoryLayouts.Add(line);
+								Data.ProjectDirectoryLayouts.Add(line);
 								Log.Here().Activity("Added {0} to project directory path patterns.", line);
 							}
 						}
@@ -242,20 +193,20 @@ namespace LL.DOS2.SourceControl.Core
 
 		public void LoadManagedProjects()
 		{
-			if (ManagedProjects == null)
+			if (Data.ManagedProjects == null)
 			{
-				ManagedProjects = new ObservableCollection<SourceControlData>();
+				Data.ManagedProjects = new ObservableCollection<SourceControlData>();
 			}
 			else
 			{
-				ManagedProjects.Clear();
+				Data.ManagedProjects.Clear();
 			}
 
-			if (AppSettings != null && !String.IsNullOrEmpty(AppSettings.GitRootDirectory) && Directory.Exists(AppSettings.GitRootDirectory))
+			if (Data.AppSettings != null && !String.IsNullOrEmpty(Data.AppSettings.GitRootDirectory) && Directory.Exists(Data.AppSettings.GitRootDirectory))
 			{
 				Log.Here().Activity("Scanning git root directory for added projects.");
 
-				var projects = Directory.GetFiles(AppSettings.GitRootDirectory, "project-sourcecontrol.json");
+				var projects = Directory.GetFiles(Data.AppSettings.GitRootDirectory, ManagedFileName);
 				if(projects != null && projects.Length > 0)
 				{
 					foreach(var projectFilePath in projects)
@@ -263,7 +214,7 @@ namespace LL.DOS2.SourceControl.Core
 						if (File.Exists(projectFilePath))
 						{
 							SourceControlData projectData = JsonConvert.DeserializeObject<SourceControlData>(File.ReadAllText(projectFilePath));
-							ManagedProjects.Add(projectData);
+							Data.ManagedProjects.Add(projectData);
 							Log.Here().Activity("Source control project file found for project {0}. Adding to active projects.", projectData.ProjectName);
 						}
 					}
@@ -277,26 +228,26 @@ namespace LL.DOS2.SourceControl.Core
 
 		public void LoadAvailableProjects()
 		{
-			if (AvailableProjects == null)
+			if (Data.AvailableProjects == null)
 			{
-				AvailableProjects = new ObservableCollection<AvailableProjectViewData>();
+				Data.AvailableProjects = new ObservableCollection<AvailableProjectViewData>();
 			}
 			else
 			{
-				AvailableProjects.Clear();
+				Data.AvailableProjects.Clear();
 			}
 
-			if(modProjects != null && modProjects.Count > 0)
+			if(Data.ModProjects != null && Data.ModProjects.Count > 0)
 			{
-				foreach(var project in modProjects)
+				foreach(var project in Data.ModProjects)
 				{
 					if(!string.IsNullOrEmpty(project.Name))
 					{
-						bool projectIsUnmanaged = (managedProjects == null || managedProjects != null && managedProjects.Count <= 0);
+						bool projectIsUnmanaged = (Data.ManagedProjects == null || Data.ManagedProjects != null && Data.ManagedProjects.Count <= 0);
 
-						if(projectIsUnmanaged && managedProjects != null)
+						if(projectIsUnmanaged && Data.ManagedProjects != null)
 						{
-							if(managedProjects.Any(p => p.ProjectName == project.Name))
+							if(Data.ManagedProjects.Any(p => p.ProjectName == project.Name))
 							{
 								projectIsUnmanaged = false;
 							}
@@ -309,7 +260,7 @@ namespace LL.DOS2.SourceControl.Core
 								Name = project.Name,
 								Tooltip = project.Tooltip
 							};
-							availableProjects.Add(availableProject);
+							Data.AvailableProjects.Add(availableProject);
 						}
 					}
 				}
@@ -318,21 +269,21 @@ namespace LL.DOS2.SourceControl.Core
 
 		public void LoadModProjects()
 		{
-			if(modProjects == null)
+			if(Data.ModProjects == null)
 			{
-				modProjects = new List<ModProjectData>();
+				Data.ModProjects = new List<ModProjectData>();
 			}
 			else
 			{
-				modProjects.Clear();
+				Data.ModProjects.Clear();
 			}
 
-			if (AppSettings != null && !String.IsNullOrEmpty(AppSettings.DOS2DataDirectory))
+			if (Data.AppSettings != null && !String.IsNullOrEmpty(Data.AppSettings.DOS2DataDirectory))
 			{
-				if (Directory.Exists(AppSettings.DOS2DataDirectory))
+				if (Directory.Exists(Data.AppSettings.DOS2DataDirectory))
 				{
-					string projectsPath = Path.Combine(AppSettings.DOS2DataDirectory, "Projects");
-					string modsPath = Path.Combine(AppSettings.DOS2DataDirectory, "Mods");
+					string projectsPath = Path.Combine(Data.AppSettings.DOS2DataDirectory, "Projects");
+					string modsPath = Path.Combine(Data.AppSettings.DOS2DataDirectory, "Mods");
 
 					if (Directory.Exists(modsPath))
 					{
@@ -354,7 +305,7 @@ namespace LL.DOS2.SourceControl.Core
 									Log.Here().Activity("Meta file found for project {0}. Reading file.", modFolderName);
 									ModProjectData modProjectData = new ModProjectData(metaFile, projectsPath);
 									Log.Here().Activity("Finished reading meta files for mod: {0}", modProjectData.ModInfo.Name);
-									modProjects.Add(modProjectData);
+									Data.ModProjects.Add(modProjectData);
 								}
 							}
 						}
@@ -367,22 +318,139 @@ namespace LL.DOS2.SourceControl.Core
 			}
 		}
 
-		public void LoadSettings()
+		#endregion
+
+		#region Saving
+
+		public void SaveAppSettings()
 		{
-			LoadAppSettings();
-			LoadDirectoryLayout();
+			Log.Here().Activity("Saving AppSettings to {0}", AppSettingsFile);
+
+			if (Data.AppSettings != null)
+			{
+				string json = JsonConvert.SerializeObject(Data.AppSettings, Newtonsoft.Json.Formatting.Indented);
+				WriteToFile(AppSettingsFile, json);
+			}
+		}
+
+		public void SaveGitIgnore()
+		{
+			if (Data.AppSettings != null)
+			{
+				Log.Here().Activity("Saving .gitignore.default to {0}", Data.AppSettings.GitIgnoreFile);
+
+				if (IsPathValid(Data.AppSettings.GitIgnoreFile))
+				{
+					WriteToFile(Data.AppSettings.GitIgnoreFile, Data.DefaultGitIgnoreText);
+				}
+				else
+				{
+					Log.Here().Error("Invalid path for default .gitignore file: {0}. Using default path: {1}", Data.AppSettings.GitIgnoreFile, DefaultPaths.GitIgnore);
+					WriteToFile(DefaultPaths.GitIgnore, Data.DefaultGitIgnoreText);
+				}
+			}
+		}
+
+		#endregion
+
+		public bool GenerateGitFiles(AvailableProjectViewData project, GitGenerationSettings generationSettings)
+		{
+			if(!string.IsNullOrEmpty(Data.AppSettings.GitRootDirectory))
+			{
+				string gitProjectRootDirectory = Path.Combine(Data.AppSettings.GitRootDirectory, project.Name);
+				string sourceControlFile = Path.Combine(gitProjectRootDirectory, ManagedFileName);
+				string readmeFile = Path.Combine(gitProjectRootDirectory, "README.md");
+				string changelogFile = Path.Combine(gitProjectRootDirectory, "CHANGELOG.md");
+				string licenseFile = Path.Combine(gitProjectRootDirectory, "LICENSE");
+
+				Directory.CreateDirectory(gitProjectRootDirectory);
+
+				SourceControlData sourceControlData = new SourceControlData();
+				sourceControlData.ProjectName = project.Name;
+
+				string json = JsonConvert.SerializeObject(sourceControlData, Newtonsoft.Json.Formatting.Indented);
+				if(!WriteToFile(sourceControlFile, json))
+				{
+					Log.Here().Error("[{0}] Failed to write {1}", project.Name, sourceControlFile);
+				}
+
+				if(generationSettings.GenerateReadme)
+				{
+					string readmeText = GitGenerator.GenerateReadmeText(Data.AppSettings, project.Name);
+					if (!WriteToFile(readmeFile, readmeText))
+					{
+						Log.Here().Error("[{0}] Failed to write {1}", project.Name, readmeFile);
+					}
+				}
+				else
+				{
+					Log.Here().Activity("[{0}] Skipping README.md.", project.Name);
+				}
+				
+				if(generationSettings.GenerateChangelog)
+				{
+					string changelogText = GitGenerator.GenerateChangelogText(Data.AppSettings, project.Name);
+					if (!WriteToFile(changelogFile, changelogText))
+					{
+						Log.Here().Error("[{0}] Failed to write {1}", project.Name, changelogFile);
+					}
+				}
+				else
+				{
+					Log.Here().Activity("[{0}] Skipping CHANGELOG.md.", project.Name);
+				}
+
+				if(generationSettings.GenerateLicense)
+				{
+					string licenseText = GitGenerator.GenerateLicense(Data.AppSettings, project.Name, generationSettings);
+					if (!WriteToFile(licenseFile, licenseText))
+					{
+						Log.Here().Error("[{0}] Failed to write {1}", project.Name, licenseFile);
+					}
+				}
+
+				if(GitGenerator.CreateRepository(gitProjectRootDirectory))
+				{
+					Log.Here().Activity("Created git repository for project ({0}) at {1}", project.Name, gitProjectRootDirectory);
+				}
+				else
+				{
+					Log.Here().Error("Error creating git repository for project {0}.", project.Name);
+				}
+				
+				
+
+				return true;
+			}
+			return false;
+		}
+
+		public void AddProjectsToManaged(List<AvailableProjectViewData> selectedItems)
+		{
+			foreach(var project in selectedItems)
+			{
+				var modData = Data.ModProjects.Where(p => p.Name == project.Name).FirstOrDefault();
+				if(modData != null)
+				{
+
+				}
+			}
 		}
 
 		public void Start()
 		{
-			LoadSettings();
+			Log.Here().Important("Starting application.");
+			LoadAppSettings();
+			LoadDirectoryLayout();
 			LoadModProjects();
 			LoadManagedProjects();
 			LoadAvailableProjects();
 		}
 
-		public SettingsController()
+		public SettingsController(MainWindow MainAppWindow)
 		{
+			mainWindow = MainAppWindow;
+			Data = new MainAppData();
 			Start();
 		}
 	}

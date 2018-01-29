@@ -58,12 +58,22 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Controls\EmptyListVisibilityConverter.cs" />
+    <Compile Include="Controls\LogTypeColorConverter.cs" />
     <Compile Include="Controls\PaddedGridViewColumnHeader.cs" />
     <Compile Include="Controls\TooltipText.cs" />
-    <Compile Include="Core\CoreHelper.cs" />
-    <Compile Include="Data\AppData.cs" />
-    <Compile Include="Core\Log.cs" />
+    <Compile Include="Data\View\LogData.cs" />
+    <Compile Include="Data\PropertyChangedBase.cs" />
+    <Compile Include="FileGen\GitGenerator.cs" />
+    <Compile Include="Data\DefaultValues.cs" />
+    <Compile Include="Data\MainAppData.cs" />
+    <Compile Include="Data\AppSettingsData.cs" />
+    <Compile Include="Util\Log.cs" />
     <Compile Include="Core\SettingsController.cs" />
+    <Compile Include="Util\HelperUtil\DOS2Helper.cs" />
+    <Compile Include="Util\HelperUtil\RegisteryHelper.cs" />
+    <Compile Include="Windows\LogWindow.xaml.cs">
+      <DependentUpon>LogWindow.xaml</DependentUpon>
+    </Compile>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -75,14 +85,20 @@
     <Compile Include="Data\ModProjectData.cs" />
     <Compile Include="Data\SourceControlData.cs" />
     <Compile Include="Data\View\AvailableProjectViewData.cs" />
+    <Compile Include="Data\View\GitGenerationSettings.cs" />
     <Compile Include="Data\Xml\DependencyInfo.cs" />
     <Compile Include="Data\Xml\ModuleInfo.cs" />
     <Compile Include="Data\Xml\ProjectInfo.cs" />
     <Compile Include="Data\Xml\XmlDataHelper.cs" />
+    <Compile Include="Util\Helpers.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Page Include="Windows\LogWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs">
@@ -112,6 +128,7 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Core\Model\" />
     <Folder Include="Resources\Icons\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -1,11 +1,24 @@
 ﻿using System.Runtime.CompilerServices;
 using System.IO;
 using System.Diagnostics;
+using LL.DOS2.SourceControl.Util;
+using System;
 
-namespace System
+namespace LL.DOS2.SourceControl.Util
+{
+	public enum LogType
+	{
+		Activity,
+		Important,
+		Error
+	}
+}
+
+namespace LL.DOS2.SourceControl
 {
 	public delegate void LogDelegate(string Message, params object[] Vars);
 	public delegate void OnLog(string Message);
+	public delegate void OnSpecificLog(string Message, LogType logType);
 
 	public class LogContext
 	{
@@ -41,7 +54,7 @@ namespace System
 			}
 		}
 
-		private void _logHere(string Message, params object[] Vars)
+		private void _logHere(LogType logType, string Message, params object[] Vars)
 		{
 			//Path.GetFileName(_filePath)
 			Message = String.Format(Message, Vars);
@@ -50,16 +63,23 @@ namespace System
 				string FinalMessage = !string.IsNullOrEmpty(messageFormat) ? String.Format("{0}:{1}({2}): {3}", _filename, _memberName, _lineNumber, Message) : Message;
 #if DEBUG
 				//For VS2017 Community
-			   Trace.WriteLine(FinalMessage);
+				//Trace.WriteLine(FinalMessage);
+				Debug.WriteLine(FinalMessage);
 #endif
-				if (Log.logCallback != null) Log.logCallback(FinalMessage);
+				Log.AllCallback?.Invoke(FinalMessage, logType);
+				if (logType == LogType.Activity) Log.ActivityCallback?.Invoke(FinalMessage);
+				if (logType == LogType.Important) Log.ImportantCallback?.Invoke(FinalMessage);
+				if (logType == LogType.Error) Log.ErrorCallback?.Invoke(FinalMessage);
 			}
 			else
 			{
 #if DEBUG
-				Trace.WriteLine(Message);
+				Debug.WriteLine(Message);
 #endif
-				if (Log.logCallback != null) Log.logCallback(Message);
+				Log.AllCallback?.Invoke(Message, logType);
+				if (logType == LogType.Activity) Log.ActivityCallback?.Invoke(Message);
+				if (logType == LogType.Important) Log.ImportantCallback?.Invoke(Message);
+				if (logType == LogType.Error) Log.ErrorCallback?.Invoke(Message);
 			}
 		}
 
@@ -71,7 +91,7 @@ namespace System
 		{
 			if (Log.traceActivity)
 			{
-				_logHere(Message, Vars);
+				_logHere(LogType.Activity, Message, Vars);
 			}
 		}
 
@@ -81,7 +101,7 @@ namespace System
 		/// <param name="Message">The message to log.</param>
 		public void Important(String Message, params object[] Vars)
 		{
-			_logHere(Message, Vars);
+			_logHere(LogType.Important, Message, Vars);
 		}
 
 		/// <summary>
@@ -90,12 +110,16 @@ namespace System
 		/// <param name="Message">The message to log.</param>
 		public void Error(String Message, params object[] Vars)
 		{
-			if (Log.traceActivity || Log.traceErrors) _logHere(Message, Vars);
+			if (Log.traceActivity || Log.traceErrors) _logHere(LogType.Error, Message, Vars);
 		}
 	}
 	public static class Log
 	{
-		public static OnLog logCallback;
+		public static OnSpecificLog AllCallback;
+		public static OnLog ActivityCallback;
+		public static OnLog ImportantCallback;
+		public static OnLog ErrorCallback;
+
 		public static bool debugMode = true;
 		public static bool traceActivity = true;
 		public static bool traceErrors = true;

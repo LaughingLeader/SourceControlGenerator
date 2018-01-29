@@ -50,19 +50,27 @@ namespace LL.DOS2.SourceControl.Data
 
 					try
 					{
-						var dependencyInfoXml = modMetaXml.XPathSelectElement("save/region/node/children/node[@id='Dependencies']/children");
-						foreach (var node in dependencyInfoXml.Elements())
+						var dependencyInfoXml = modMetaXml.XPathSelectElement("save/region/node/children/node[@id='Dependencies']");
+						if(dependencyInfoXml.HasElements)
 						{
-							DependencyInfo dependencyInfo = new DependencyInfo()
+							foreach (var node in dependencyInfoXml.Element("children").Elements())
 							{
-								Folder = XmlDataHelper.GetAttributeValue(node, "Folder"),
-								MD5 = XmlDataHelper.GetAttributeValue(node, "MD5"),
-								Name = XmlDataHelper.GetAttributeValue(node, "Name"),
-								Version = XmlDataHelper.GetAttributeValue(node, "Version")
-							};
-							Dependencies.Add(dependencyInfo);
-							Log.Here().Activity("[{0}] Dependency ({1}) added.", this.ModInfo.Name, dependencyInfo.Name);
+								DependencyInfo dependencyInfo = new DependencyInfo()
+								{
+									Folder = XmlDataHelper.GetAttributeValue(node, "Folder"),
+									MD5 = XmlDataHelper.GetAttributeValue(node, "MD5"),
+									Name = XmlDataHelper.GetAttributeValue(node, "Name"),
+									Version = XmlDataHelper.GetAttributeValue(node, "Version")
+								};
+								Dependencies.Add(dependencyInfo);
+								Log.Here().Activity("[{0}] Dependency ({1}) added.", this.ModInfo.Name, dependencyInfo.Name);
+							}
 						}
+						else
+						{
+							Log.Here().Activity("[{0}] No dependencies found.", this.ModInfo.Name);
+						}
+						
 					}
 					catch (Exception ex)
 					{
