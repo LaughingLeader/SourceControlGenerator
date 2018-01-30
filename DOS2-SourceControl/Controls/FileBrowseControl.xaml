@@ -18,10 +18,9 @@
 		<Grid.Resources>
 			<Style x:Key="OpenBrowseButton" TargetType="{x:Type Button}">
 				<Setter Property="Content" Value="..." />
-				<Setter Property="HorizontalAlignment" Value="Left"/>
-				<Setter Property="Padding" Value="10, 0, 10, 0" />
-				<Setter Property="TextBlock.VerticalAlignment" Value="Center" />
-				<Setter Property="TextBlock.TextAlignment" Value="Center" />
+				<Setter Property="VerticalContentAlignment" Value="Center"/>
+				<Setter Property="HorizontalContentAlignment" Value="Center"/>
+				<Setter Property="Padding" Value="10,-4,10,0" />
 			</Style>
 			<Style TargetType="{x:Type TextBlock}">
 				<Setter Property="Padding" Value="2,0" />
@@ -30,7 +29,7 @@
 				<Setter Property="VerticalAlignment" Value="Center" />
 			</Style>
 		</Grid.Resources>
-		<TextBox Grid.Column="0" Text="{Binding FileLocationText}" Width="270" MinHeight="20" Height="20" BorderThickness="1" />
-		<Button Grid.Column="1" Style="{StaticResource OpenBrowseButton}" Height="20" BorderThickness="0,1,1,1" Margin="-1,0,0,0" ToolTip="Browse..."/>
+		<TextBox x:Name="FolderBrowseDisplay" Grid.Column="0" Text="{Binding Path=FileLocationText, ElementName=FileBrowser}" Width="270" MinHeight="20" Height="20" BorderThickness="1" />
+		<Button x:Name="FileBrowseButton" Grid.Column="1" Style="{StaticResource OpenBrowseButton}" BorderThickness="0,1,1,1" Margin="-1,0,0,0" ToolTip="Browse..." BorderBrush="#FFABADB3" FontSize="16" TextOptions.TextFormattingMode="Display" FontFamily="Bitter" Click="FileBrowseButton_Click"/>
 	</Grid>
 </UserControl>

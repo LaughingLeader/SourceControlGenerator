@@ -19,9 +19,20 @@ namespace LL.DOS2.SourceControl.Data
 	{
 		public List<string> ProjectDirectoryLayouts { get; set; }
 		public List<ModProjectData> ModProjects { get; set; }
-		public AppSettingsData AppSettings { get; set; }
 
 		//Visible Data
+		private AppSettingsData appSettings;
+
+		public AppSettingsData AppSettings
+		{
+			get { return appSettings; }
+			set
+			{
+				appSettings = value;
+				RaisePropertyChanged("AppSettings");
+			}
+		}
+
 
 		private string defaultGitIgnoreText;
 
@@ -32,6 +43,42 @@ namespace LL.DOS2.SourceControl.Data
 			{
 				defaultGitIgnoreText = value;
 				RaisePropertyChanged("DefaultGitIgnoreText");
+			}
+		}
+
+		private string defaultReadmeText;
+
+		public string DefaultReadmeText
+		{
+			get { return defaultReadmeText; }
+			set
+			{
+				defaultReadmeText = value;
+				RaisePropertyChanged("DefaultReadmeText");
+			}
+		}
+
+		private string defaultChangelogText;
+
+		public string DefaultChangelogText
+		{
+			get { return defaultChangelogText; }
+			set
+			{
+				defaultChangelogText = value;
+				RaisePropertyChanged("DefaultChangelogText");
+			}
+		}
+
+		private string customLicenseText;
+
+		public string CustomLicenseText
+		{
+			get { return customLicenseText; }
+			set
+			{
+				customLicenseText = value;
+				RaisePropertyChanged("CustomLicenseText");
 			}
 		}
 
@@ -48,8 +95,6 @@ namespace LL.DOS2.SourceControl.Data
 			}
 		}
 
-
-
 		private ObservableCollection<SourceControlData> managedProjects;
 
 		public ObservableCollection<SourceControlData> ManagedProjects
@@ -62,6 +107,17 @@ namespace LL.DOS2.SourceControl.Data
 			}
 		}
 
+		private ObservableCollection<KeywordData> keywordList;
+
+		public ObservableCollection<KeywordData> KeywordList
+		{
+			get { return keywordList; }
+			set
+			{
+				keywordList = value;
+				RaisePropertyChanged("KeywordList");
+			}
+		}
 
 		private string manageButtonsText;
 
@@ -72,6 +128,19 @@ namespace LL.DOS2.SourceControl.Data
 			{
 				manageButtonsText = value;
 				RaisePropertyChanged("ManageButtonsText");
+			}
+		}
+
+		public string KeywordListText
+		{
+			get
+			{
+				if(KeywordList.Count > 0)
+				{
+					string json = JsonConvert.SerializeObject(KeywordList, Newtonsoft.Json.Formatting.Indented);
+					return json;
+				}
+				return "";
 			}
 		}
 

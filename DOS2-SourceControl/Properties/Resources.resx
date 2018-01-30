@@ -232,9 +232,8 @@ Thumbs.db</value>
   </data>
   <data name="DirectoryLayout" xml:space="preserve">
     <value>#Keywords
-#ProjectName = The name of the project, without the GUID.
-#ProjectGUID = Just the GUID of the project.
-
+#	ProjectName = The name of the project, without the GUID.
+#	ProjectGUID = Just the GUID of the project.
 
 #Directories to scan
 

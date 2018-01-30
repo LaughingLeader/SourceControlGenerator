@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -13,6 +14,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using LL.DOS2.SourceControl.Core;
+using LL.DOS2.SourceControl.Data;
 using LL.DOS2.SourceControl.Data.View;
 using LL.DOS2.SourceControl.Windows;
 
@@ -21,7 +23,7 @@ namespace LL.DOS2.SourceControl.Windows
 	/// <summary>
 	/// Interaction logic for MainWindow.xaml
 	/// </summary>
-	public partial class MainWindow : Window
+	public partial class MainWindow : Window, INotifyPropertyChanged
 	{
 		private SettingsController _settingsController;
 
@@ -35,6 +37,29 @@ namespace LL.DOS2.SourceControl.Windows
 			{
 				if(logWindow != null) return logWindow.IsVisible;
 				return false;
+			}
+		}
+
+		public string LogVisibleText
+		{
+			get => LogWindowShown ? "Close Log Window" : "Open Log Window";
+		}
+
+		public event PropertyChangedEventHandler PropertyChanged;
+
+		public void RaisePropertyChanged(string propertyName)
+		{
+			OnPropertyChanged(propertyName);
+		}
+
+		private void OnPropertyChanged(String property)
+		{
+			PropertyChangedEventHandler handler = this.PropertyChanged;
+
+			if (handler != null)
+			{
+				var e = new PropertyChangedEventArgs(property);
+				handler(this, e);
 			}
 		}
 
@@ -103,18 +128,6 @@ namespace LL.DOS2.SourceControl.Windows
 			}
 		}
 
-		private void LogToggleButton_Click(object sender, RoutedEventArgs e)
-		{
-			if(LogWindowShown)
-			{
-				logWindow.Hide();
-			}
-			else
-			{
-				logWindow.Show();
-			}
-		}
-
 		private void MainAppWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
 		{
 			if (LogWindowShown)
@@ -130,6 +143,52 @@ namespace LL.DOS2.SourceControl.Windows
 			{
 				tab.Focus();
 			}
+		}
+
+		private void LogWindowToggle_Click(object sender, RoutedEventArgs e)
+		{
+			if (LogWindowShown)
+			{
+				logWindow.Hide();
+			}
+			else
+			{
+				logWindow.Show();
+			}
+
+			RaisePropertyChanged("LogVisibleText");
+		}
+
+		private void SaveKeywordsButton_Click(object sender, RoutedEventArgs e)
+		{
+			FileCommands.Save.OpenDialog(this, "Save Keywords", this.SettingsController.Data.AppSettings.KeywordsFile, this.SettingsController.Data.KeywordListText);
+		}
+
+		private void OpenKeywordsButton_Click(object sender, RoutedEventArgs e)
+		{
+			FileCommands.Load.OpenDialog(this, "Open Keywords", this.SettingsController.Data.AppSettings.KeywordsFile, FileCommands.Load.LoadUserKeywords);
+		}
+
+		private void KeywordsList_Add_Click(object sender, RoutedEventArgs e)
+		{
+			SettingsController.Data.KeywordList.Add(new Data.KeywordData());
+		}
+
+		private void KeywordsList_Remove_Click(object sender, RoutedEventArgs e)
+		{
+			SettingsController.Data.KeywordList.Remove(SettingsController.Data.KeywordList.Last());
+		}
+
+		private void KeywordsList_Default_Click(object sender, RoutedEventArgs e)
+		{
+			FileCommands.OpenConfirmationDialog(this, "Reset Keyword List", "Reset Keyword values to default?", "Confirm or Cancel", () =>
+			{
+				SettingsController.Data.KeywordList.Clear();
+				SettingsController.Data.KeywordList.Add(new KeywordData());
+				SettingsController.Data.KeywordList.Add(new KeywordData());
+				SettingsController.Data.KeywordList.Add(new KeywordData());
+				SettingsController.Data.KeywordList.Add(new KeywordData());
+			});
 		}
 	}
 }

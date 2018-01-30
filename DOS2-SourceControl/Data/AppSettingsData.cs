@@ -7,15 +7,103 @@ using Newtonsoft.Json;
 
 namespace LL.DOS2.SourceControl.Data
 {
-	public class AppSettingsData
+	public class AppSettingsData : PropertyChangedBase
 	{
 		public string DOS2DataDirectory { get; set; }
-		public string GitRootDirectory { get; set; }
-		public string BackupRootDirectory { get; set; }
-		public string GitIgnoreFile { get; set; }
-		public string ReadmeTemplateFile { get; set; }
-		public string ChangelogTemplateFile { get; set; }
-		public string CustomLicenseFile { get; set; }
+
+		private string directoryLayoutFile;
+
+		public string DirectoryLayoutFile
+		{
+			get { return directoryLayoutFile; }
+			set
+			{
+				directoryLayoutFile = value;
+				RaisePropertyChanged("DirectoryLayoutFile");
+			}
+		}
+
+
+		private string gitRootDirectory;
+
+		public string GitRootDirectory
+		{
+			get { return gitRootDirectory; }
+			set { gitRootDirectory = value; RaisePropertyChanged("GitRootDirectory"); }
+		}
+
+		private string backupRootDirectory;
+
+		public string BackupRootDirectory
+		{
+			get { return backupRootDirectory; }
+			set
+			{
+				backupRootDirectory = value;
+				RaisePropertyChanged("BackupRootDirectory");
+			}
+		}
+
+		private string gitIgnoreFile;
+
+		public string GitIgnoreFile
+		{
+			get { return gitIgnoreFile; }
+			set
+			{
+				gitIgnoreFile = value;
+				RaisePropertyChanged("GitIgnoreFile");
+			}
+		}
+
+		private string readmeTemplateFile;
+
+		public string ReadmeTemplateFile
+		{
+			get { return readmeTemplateFile; }
+			set
+			{
+				readmeTemplateFile = value;
+				RaisePropertyChanged("ReadmeTemplateFile");
+			}
+		}
+
+		private string changelogTemplateFile;
+
+		public string ChangelogTemplateFile
+		{
+			get { return changelogTemplateFile; }
+			set
+			{
+				changelogTemplateFile = value;
+				RaisePropertyChanged("ChangelogTemplateFile");
+			}
+		}
+
+		private string customLicenseFile;
+
+		public string CustomLicenseFile
+		{
+			get { return customLicenseFile; }
+			set
+			{
+				customLicenseFile = value;
+				RaisePropertyChanged("CustomLicenseFile");
+			}
+		}
+
+		private string keywordsFile;
+
+		public string KeywordsFile
+		{
+			get { return keywordsFile; }
+			set
+			{
+				keywordsFile = value;
+				RaisePropertyChanged("KeywordsFile");
+			}
+		}
+
 
 		public AppSettingsData()
 		{
@@ -26,6 +114,7 @@ namespace LL.DOS2.SourceControl.Data
 			ReadmeTemplateFile = DefaultPaths.ReadmeTemplate;
 			ChangelogTemplateFile = DefaultPaths.ChangelogTemplate;
 			CustomLicenseFile = DefaultPaths.CustomLicense;
+			KeywordsFile = DefaultPaths.Keywords;
 		}
 	}
 

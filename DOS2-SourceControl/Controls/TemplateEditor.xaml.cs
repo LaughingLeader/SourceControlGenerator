@@ -1,0 +1,82 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Data;
+using System.Windows.Documents;
+using System.Windows.Input;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
+using System.Windows.Navigation;
+using System.Windows.Shapes;
+
+namespace LL.DOS2.SourceControl.Controls
+{
+	/// <summary>
+	/// Interaction logic for TemplateEditor.xaml
+	/// </summary>
+	public partial class TemplateEditor : UserControl
+	{
+		public string TooltipText
+		{
+			get { return (string)GetValue(TooltipTextProperty); }
+			set { SetValue(TooltipTextProperty, value); }
+		}
+
+		// Using a DependencyProperty as the backing store for TooltipText.  This enables animation, styling, binding, etc...
+		public static readonly DependencyProperty TooltipTextProperty =
+			DependencyProperty.Register("TooltipText", typeof(string), typeof(TemplateEditor), new PropertyMetadata(""));
+
+		public string LabelText
+		{
+			get { return (string)GetValue(LabelTextProperty); }
+			set { SetValue(LabelTextProperty, value); }
+		}
+
+		// Using a DependencyProperty as the backing store for LabelText.  This enables animation, styling, binding, etc...
+		public static readonly DependencyProperty LabelTextProperty =
+			DependencyProperty.Register("LabelText", typeof(string), typeof(TemplateEditor), new PropertyMetadata(""));
+
+		public string EditorText
+		{
+			get { return (string)GetValue(EditorTextProperty); }
+			set { SetValue(EditorTextProperty, value); }
+		}
+
+		// Using a DependencyProperty as the backing store for EditorText.  This enables animation, styling, binding, etc...
+		public static readonly DependencyProperty EditorTextProperty =
+			DependencyProperty.Register("EditorText", typeof(string), typeof(TemplateEditor), new PropertyMetadata(""));
+
+
+		public string BrowseText
+		{
+			get { return (string)GetValue(BrowseTextProperty); }
+			set { SetValue(BrowseTextProperty, value); }
+		}
+
+		// Using a DependencyProperty as the backing store for BrowseText.  This enables animation, styling, binding, etc...
+		public static readonly DependencyProperty BrowseTextProperty =
+			DependencyProperty.Register("BrowseText", typeof(string), typeof(TemplateEditor), new PropertyMetadata(""));
+
+
+		public string FileLocationText
+		{
+			get { return (string)GetValue(FileLocationTextProperty); }
+			set { SetValue(FileLocationTextProperty, value); }
+		}
+
+		// Using a DependencyProperty as the backing store for BrowseFileLocation.  This enables animation, styling, binding, etc...
+		public static readonly DependencyProperty FileLocationTextProperty =
+			DependencyProperty.Register("FileLocationText", typeof(string), typeof(TemplateEditor), new PropertyMetadata(""));
+
+
+
+		public TemplateEditor()
+		{
+			InitializeComponent();
+		}
+	}
+}

@@ -5,11 +5,13 @@
 		xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 		xmlns:local="clr-namespace:LL.DOS2.SourceControl"
 		xmlns:c="clr-namespace:LL.DOS2.SourceControl.Controls"
+		xmlns:fc="clr-namespace:LL.DOS2.SourceControl.Core.Commands"
 		xmlns:core="clr-namespace:LL.DOS2.SourceControl.Core"
 		mc:Ignorable="d"
 		Title="DOS2 Source Control Helper" Height="600" Width="800" Loaded="Window_Loaded" Closing="MainAppWindow_Closing">
 	<Window.Resources>
 		<c:EmptyListVisibilityConverter x:Key="EmptyListVisibilityConverter"/>
+		<fc:SaveDataConverter x:Key="SaveDataConverter"/>
 		<CollectionViewSource x:Key="ActiveProjectsViewSource" CollectionViewType="ListCollectionView"/>
 		<CollectionViewSource x:Key="ManagedProjectsViewSource" CollectionViewType="ListCollectionView"/>
 	</Window.Resources>
@@ -25,6 +27,7 @@
 					<MenuItem Header="Backup All Projects To..." />
 				</MenuItem>
 				<MenuItem Header="Options">
+					<MenuItem x:Name="LogWindowToggle" Header="{Binding LogVisibleText, ElementName=MainAppWindow}" Click="LogWindowToggle_Click" />
 					<MenuItem Header="Save Log..." />
 				</MenuItem>
 				<MenuItem Header="Help">
@@ -84,48 +87,131 @@
 				</Grid>
 			</TabItem>
 			<TabItem Header="Templates">
-				<Grid x:Name="TemplatesParentGrid" Width="Auto" Height="Auto">
-					<Grid.ColumnDefinitions>
-						<ColumnDefinition Width="1*" />
-						<ColumnDefinition Width="1*" />
-					</Grid.ColumnDefinitions>
-					<Grid x:Name="Settings" Grid.Column="0">
-					</Grid>
-					<Grid x:Name="GitIgnoreEditor" Grid.Column="1">
-						<Grid.RowDefinitions>
-							<RowDefinition Height="Auto"/>
-							<RowDefinition Height="Auto"/>
-							<RowDefinition Height="Auto"/>
-						</Grid.RowDefinitions>
-
-						<Grid Grid.Row="0" Width="Auto" Height="Auto">
-							<Grid.ColumnDefinitions>
-								<ColumnDefinition Width="Auto"/>
-								<ColumnDefinition Width="Auto"/>
-							</Grid.ColumnDefinitions>
-							<Label x:Name="GitIgnoreLabel" Content="Default .gitignore Template" Grid.Column="0" Width="Auto" HorizontalAlignment="Left" VerticalAlignment="Center" ToolTip="{Binding Source={x:Static c:TooltipText.GitIgnore}}">
-								<Label.Style>
-									<Style TargetType="Label">
-										<Setter Property="Foreground" Value="Black" />
-										<Style.Triggers>
-											<Trigger Property="IsMouseOver" Value="True">
-												<Setter Property="Foreground" Value="#FF3A6FFF" />
-											</Trigger>
-										</Style.Triggers>
-									</Style>
-								</Label.Style>
-							</Label>
+				<TabControl TabStripPlacement="Left">
+					<TabItem Header=".gitignore" >
+						<c:TemplateEditor LabelText="Default .gitignore Template" 
+							TooltipText="{x:Static c:TooltipText.GitIgnore}" 
+							EditorText="{Binding DefaultGitIgnoreText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
+							BrowseText="Select Default .gitignore File" FileLocationText="{Binding AppSettings.GitIgnoreFile, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+							/>
+					</TabItem>
+					<TabItem Header="README.md" >
+						<c:TemplateEditor LabelText="Default Readme Template" 
+							TooltipText="{x:Static c:TooltipText.Readme}" 
+							EditorText="{Binding DefaultReadmeText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
+							BrowseText="Select Readme Template File" FileLocationText="{Binding AppSettings.ReadmeTemplateFile, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+							/>
+					</TabItem>
+					<TabItem Header="CHANGELOG.md" >
+						<c:TemplateEditor LabelText="Default Changelog Template" 
+							TooltipText="{x:Static c:TooltipText.Changelog}" 
+							EditorText="{Binding DefaultChangelogText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
+							BrowseText="Select Changelog Template File" FileLocationText="{Binding AppSettings.ChangelogTemplateFile, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+							/>
+					</TabItem>
+					<TabItem Header="Custom License" >
+						<c:TemplateEditor LabelText="Custom License Template" 
+							TooltipText="{x:Static c:TooltipText.CustomLicense}" 
+							EditorText="{Binding CustomLicenseText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
+							BrowseText="Select Custom License Template File" FileLocationText="{Binding AppSettings.CustomLicenseFile, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"			  
+							/>
+					</TabItem>
+					<TabItem Header="Keywords">
+						<Grid>
+							<Grid.RowDefinitions>
+								<RowDefinition Height="Auto" />
+								<RowDefinition Height="*" />
+								<RowDefinition Height="Auto" />
+							</Grid.RowDefinitions>
+							<Grid Grid.Row="0" Width="Auto" Height="Auto">
+								<Grid.ColumnDefinitions>
+									<ColumnDefinition Width="Auto"/>
+									<ColumnDefinition Width="*"/>
+								</Grid.ColumnDefinitions>
+								<Label x:Name="TemplateLabel" Content="Template Keywords" Grid.Column="0" Width="Auto" HorizontalAlignment="Left" VerticalAlignment="Center" ToolTip="{x:Static c:TooltipText.TemplateKeywords}" Padding="2,0,50,0">
+									<Label.Style>
+										<Style TargetType="Label">
+											<Setter Property="Foreground" Value="Black" />
+											<Style.Triggers>
+												<Trigger Property="IsMouseOver" Value="True">
+													<Setter Property="Foreground" Value="#FF3A6FFF" />
+												</Trigger>
+											</Style.Triggers>
+										</Style>
+									</Label.Style>
+								</Label>
+								<StackPanel Grid.Column="1" HorizontalAlignment="Right" x:Name="KeywordCommandsGrid" Orientation="Horizontal">
+									<StackPanel.Resources>
+										<Style TargetType="Button">
+											<Setter Property="Margin" Value="1,0" />
+											<Setter Property="Padding" Value="4,2" />
+										</Style>
+									</StackPanel.Resources>
+									<Button x:Name="SaveKeywordsButton" Content="Save As..." Click="SaveKeywordsButton_Click" />
+									<Button x:Name="OpenKeywordsButton" Content="Open..." Click="OpenKeywordsButton_Click" />
+									<Button Content="Default..." Click="KeywordsList_Default_Click" ToolTip="Reset Keywords to Default" />
+								</StackPanel>
+							</Grid>
+							<Grid Grid.Row="1" x:Name="KeywordListGrid"  Margin="50,10,50,0">
+								<Grid.RowDefinitions>
+									<RowDefinition Height="Auto" />
+									<RowDefinition Height="*" />
+								</Grid.RowDefinitions>
+								<StackPanel Grid.Row="0" x:Name="DefaultKeywords" Orientation="Vertical">
+									<StackPanel.Resources>
+										<Style TargetType="c:TemplateKeywordControl">
+											<Setter Property="KeywordNameReadOnly" Value="True"/>
+											<Setter Property="KeywordValueReadOnly" Value="True"/>
+										</Style>
+										<Style TargetType="{x:Type TextBox}">
+											<Setter Property="Background" >
+												<Setter.Value>
+													<SolidColorBrush Color="{x:Static SystemColors.ControlLightColor}"/>
+												</Setter.Value>
+											</Setter>
+										</Style>
+									</StackPanel.Resources>
+									<TextBlock Text="Application Keywords (Read-only)" Background="{DynamicResource {x:Static SystemColors.MenuBarBrushKey}}" />
+									<c:TemplateKeywordControl KeywordName="$ProjectName" KeywordValue="Auto-Assigned (Mod Data: Name)" />
+									<c:TemplateKeywordControl KeywordName="$Author" KeywordValue="Auto-Assigned (Mod Data: Author)" />
+									<c:TemplateKeywordControl KeywordName="$Date" KeywordValue="Auto-Assigned (Current Date)" />
+								</StackPanel>
+								<Grid x:Name="ParentGrid_UserKeywords" Grid.Row="1" >
+									<Grid.RowDefinitions>
+										<RowDefinition Height="Auto"/>
+										<RowDefinition Height="*" />
+									</Grid.RowDefinitions>
+									<TextBlock Text="User Keywords" Background="{DynamicResource {x:Static SystemColors.MenuBarBrushKey}}"/>
+									<ItemsControl Grid.Row="1" x:Name="UserKeywords" ItemsSource="{Binding KeywordList}">
+										<ItemsControl.ItemTemplate>
+											<DataTemplate DataType="c:TemplateKeywordControl">
+												<c:TemplateKeywordControl DataContext="{Binding}" KeywordName="{Binding KeywordName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" KeywordValue="{Binding KeywordValue, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+											</DataTemplate>
+										</ItemsControl.ItemTemplate>
+										<ItemsControl.ItemsPanel>
+											<ItemsPanelTemplate>
+												<StackPanel Orientation="Vertical" CanVerticallyScroll="True" ScrollViewer.VerticalScrollBarVisibility="Auto" />
+											</ItemsPanelTemplate>
+										</ItemsControl.ItemsPanel>
+									</ItemsControl>
+								</Grid>
+							</Grid>
+							<Grid Grid.Row="2">
+								<StackPanel HorizontalAlignment="Center" Orientation="Horizontal">
+									<StackPanel.Resources>
+										<Style TargetType="Button">
+											<Setter Property="Margin" Value="1,0" />
+											<Setter Property="Padding" Value="4,2" />
+											<Setter Property="Width" Value="55" />
+										</Style>
+									</StackPanel.Resources>
+									<Button Content="Add" Click="KeywordsList_Add_Click" ToolTip="Add New Keyword"/>
+									<Button Content="Remove" Click="KeywordsList_Remove_Click" ToolTip="Remove Last Keyword" />
+								</StackPanel>
+							</Grid>
 						</Grid>
-
-
-						<Border BorderThickness="1" BorderBrush="Black" Grid.Row="1" Width="Auto" MaxHeight="300">
-							<TextBox x:Name="GitIgnoreText"  Text="{Binding DefaultGitIgnoreText}" Width="Auto" Height="Auto" Margin="0" Padding="0" Background="#FFBFBFBF" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto"/>
-						</Border>
-						<Grid x:Name="GitIgnoreButtons" Grid.Row="2">
-
-						</Grid>
-					</Grid>
-				</Grid>
+					</TabItem>
+				</TabControl>
 			</TabItem>
 			<TabItem x:Name="Tab_Settings" Header="Settings">
 				<Grid x:Name="Settings_ParentGrid" HorizontalAlignment="Center" VerticalAlignment="Center">
@@ -148,19 +234,19 @@
 						<RowDefinition />
 						<RowDefinition />
 					</Grid.RowDefinitions>
-					<TextBlock Grid.Row="0" Text="Backups Root Directory"/>
+					<TextBlock Grid.Row="0" Text="Backup Root Directory"/>
 					<TextBlock Grid.Row="1" Text="Repository Root Directory"/>
 					<TextBlock Grid.Row="2" Text="Default .gitignore File"/>
 					<TextBlock Grid.Row="3" Text="Readme Template File"/>
 					<TextBlock Grid.Row="4" Text="Changelog Template File"/>
 					<TextBlock Grid.Row="5" Text="Custom License Template File"/>
 
-					<c:FileBrowseControl Grid.Column="1" Grid.Row="0" FileLocationText="{Binding Path=AppSettings.BackupRootDriectory, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-					<c:FileBrowseControl Grid.Column="1" Grid.Row="1" FileLocationText="{Binding Path=AppSettings.GitRootDirectory, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-					<c:FileBrowseControl Grid.Column="1" Grid.Row="2" FileLocationText="{Binding Path=AppSettings.GitIgnoreFile, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-					<c:FileBrowseControl Grid.Column="1" Grid.Row="3" FileLocationText="{Binding Path=AppSettings.ReadmeTemplateFile, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-					<c:FileBrowseControl Grid.Column="1" Grid.Row="4" FileLocationText="{Binding Path=AppSettings.ChangelogTemplateFile, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-					<c:FileBrowseControl Grid.Column="1" Grid.Row="5" FileLocationText="{Binding Path=AppSettings.CustomLicenseFile, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+					<c:FileBrowseControl Grid.Column="1" Grid.Row="0" FileBrowseType="Directory" BrowseText="Select Backup Root Directory" FileLocationText="{Binding AppSettings.BackupRootDirectory, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+					<c:FileBrowseControl Grid.Column="1" Grid.Row="1" FileBrowseType="Directory" BrowseText="Select Repository Root Directory" FileLocationText="{Binding AppSettings.GitRootDirectory, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+					<c:FileBrowseControl Grid.Column="1" Grid.Row="2" BrowseText="Select Default .gitignore File" FileLocationText="{Binding AppSettings.GitIgnoreFile, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+					<c:FileBrowseControl Grid.Column="1" Grid.Row="3" BrowseText="Select Readme Template File" FileLocationText="{Binding AppSettings.ReadmeTemplateFile, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+					<c:FileBrowseControl Grid.Column="1" Grid.Row="4" BrowseText="Select Changelog Template File" FileLocationText="{Binding AppSettings.ChangelogTemplateFile, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+					<c:FileBrowseControl Grid.Column="1" Grid.Row="5" BrowseText="Select Custom License Template File" FileLocationText="{Binding AppSettings.CustomLicenseFile, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
 				</Grid>
 			</TabItem>
 		</TabControl>

@@ -137,9 +137,8 @@ namespace LL.DOS2.SourceControl.Properties {
         
         /// <summary>
         ///   Looks up a localized string similar to #Keywords
-        ///#ProjectName = The name of the project, without the GUID.
-        ///#ProjectGUID = Just the GUID of the project.
-        ///
+        ///#	ProjectName = The name of the project, without the GUID.
+        ///#	ProjectGUID = Just the GUID of the project.
         ///
         ///#Directories to scan
         ///

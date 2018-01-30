@@ -10,38 +10,30 @@ namespace LL.DOS2.SourceControl.Data
 	{
 		public static string GitIgnore => Properties.Resources.DefaultGitIgnore;
 		public static string Readme => Properties.Resources.DefaultReadme;
+		public static string DOS2_SteamAppID => "435150";
+		public static string SourceControlDataFileName => @"DOS2SourceControl.json";
 	}
 
 	public static class DefaultPaths
 	{
-		public static string Backups
-		{
-			get => @"Projects_Backups";
-		}
+		public static string AppSettings => @"Settings/AppSettings.json";
 
-		public static string GitRoot
-		{
-			get => @"Projects_Git";
-		}
+		public static string DirectoryLayout => @"Settings/DirectoryLayout.default.txt";
 
-		public static string GitIgnore
-		{
-			get => @"Settings/.gitignore.default";
-		}
+		public static string GitIgnore => @"Settings/.gitignore.default";
 
-		public static string ReadmeTemplate
-		{
-			get => @"Settings/README.md.default";
-		}
+		public static string ReadmeTemplate => @"Settings/README.md.default";
 
-		public static string ChangelogTemplate
-		{
-			get => @"Settings/CHANGELOG.md.default";
-		}
+		public static string ChangelogTemplate => @"Settings/CHANGELOG.md.default";
 
-		public static string CustomLicense
-		{
-			get => @"Settings/LICENSE.default";
-		}
+		public static string CustomLicense  => @"Settings/LICENSE.default";
+
+		public static string Keywords => @"Settings/Keywords.json";
+
+		//Folders
+
+		public static string Backups => @"Backups";
+
+		public static string GitRoot => @"Projects";
 	}
 }

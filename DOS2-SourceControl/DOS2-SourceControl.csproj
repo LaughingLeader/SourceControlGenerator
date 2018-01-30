@@ -37,6 +37,9 @@
     <Reference Include="Newtonsoft.Json, Version=10.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.10.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
+    <Reference Include="Ookii.Dialogs.Wpf">
+      <HintPath>..\..\_Libraries\Ookii.Dialogs\Ookii.Dialogs.Wpf.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
@@ -63,9 +66,20 @@
     </Compile>
     <Compile Include="Controls\LogTypeColorConverter.cs" />
     <Compile Include="Controls\PaddedGridViewColumnHeader.cs" />
+    <Compile Include="Controls\TemplateEditor.xaml.cs">
+      <DependentUpon>TemplateEditor.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\TemplateKeywordControl.xaml.cs">
+      <DependentUpon>TemplateKeywordControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Controls\TooltipText.cs" />
+    <Compile Include="Core\Commands\LoadCommands.cs" />
+    <Compile Include="Core\Commands\SaveCommands.cs" />
+    <Compile Include="Core\FileCommands.cs" />
+    <Compile Include="Data\KeywordData.cs" />
     <Compile Include="Data\View\LogData.cs" />
     <Compile Include="Data\PropertyChangedBase.cs" />
+    <Compile Include="Enum\FileBrowseType.cs" />
     <Compile Include="FileGen\GitGenerator.cs" />
     <Compile Include="Data\DefaultValues.cs" />
     <Compile Include="Data\MainAppData.cs" />
@@ -78,6 +92,14 @@
       <DependentUpon>LogWindow.xaml</DependentUpon>
     </Compile>
     <Page Include="Controls\FileBrowseControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\TemplateEditor.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\TemplateKeywordControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -134,9 +156,7 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Core\Model\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <Resource Include="Resources\Icons\Log_MouseOver.png" />
     <Resource Include="Resources\Icons\Log_Normal.png" />
