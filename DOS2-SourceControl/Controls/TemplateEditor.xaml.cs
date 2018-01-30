@@ -62,16 +62,25 @@ namespace LL.DOS2.SourceControl.Controls
 			DependencyProperty.Register("BrowseText", typeof(string), typeof(TemplateEditor), new PropertyMetadata(""));
 
 
-		public string FileLocationText
+		public string TemplateFileLocationText
 		{
-			get { return (string)GetValue(FileLocationTextProperty); }
-			set { SetValue(FileLocationTextProperty, value); }
+			get { return (string)GetValue(TemplateFileLocationTextProperty); }
+			set { SetValue(TemplateFileLocationTextProperty, value); }
 		}
 
-		// Using a DependencyProperty as the backing store for BrowseFileLocation.  This enables animation, styling, binding, etc...
-		public static readonly DependencyProperty FileLocationTextProperty =
-			DependencyProperty.Register("FileLocationText", typeof(string), typeof(TemplateEditor), new PropertyMetadata(""));
+		// Using a DependencyProperty as the backing store for TemplateFileLocationText.  This enables animation, styling, binding, etc...
+		public static readonly DependencyProperty TemplateFileLocationTextProperty =
+			DependencyProperty.Register("TemplateFileLocationText", typeof(string), typeof(TemplateEditor), new PropertyMetadata(""));
 
+		public Action OnFileOpened
+		{
+			get { return (Action)GetValue(OnFileOpenedProperty); }
+			set { SetValue(OnFileOpenedProperty, value); }
+		}
+
+		// Using a DependencyProperty as the backing store for OnFileOpened.  This enables animation, styling, binding, etc...
+		public static readonly DependencyProperty OnFileOpenedProperty =
+			DependencyProperty.Register("OnFileOpened", typeof(Action), typeof(TemplateEditor), new PropertyMetadata(null));
 
 
 		public TemplateEditor()

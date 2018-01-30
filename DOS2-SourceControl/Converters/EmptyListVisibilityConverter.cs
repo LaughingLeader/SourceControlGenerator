@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Data;
 
-namespace LL.DOS2.SourceControl.Controls
+namespace LL.DOS2.SourceControl.Converters
 {
 	public class EmptyListVisibilityConverter : IValueConverter
 	{

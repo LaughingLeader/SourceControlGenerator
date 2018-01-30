@@ -3,6 +3,8 @@ using System.IO;
 using System.Diagnostics;
 using LL.DOS2.SourceControl.Util;
 using System;
+using LL.DOS2.SourceControl.Data;
+using System.ComponentModel;
 
 namespace LL.DOS2.SourceControl.Util
 {

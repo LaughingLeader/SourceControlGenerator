@@ -34,6 +34,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Common.Functions.GetRelativePath, Version=1.0.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\CDorst.Common.Functions.GetRelativePath.1.0.1\lib\netstandard2.0\Common.Functions.GetRelativePath.dll</HintPath>
+    </Reference>
     <Reference Include="Newtonsoft.Json, Version=10.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.10.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
@@ -60,11 +63,12 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="Controls\EmptyListVisibilityConverter.cs" />
+    <Compile Include="Converters\EmptyListVisibilityConverter.cs" />
     <Compile Include="Controls\FileBrowseControl.xaml.cs">
       <DependentUpon>FileBrowseControl.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Controls\LogTypeColorConverter.cs" />
+    <Compile Include="Converters\FooterOutputColorConverter.cs" />
+    <Compile Include="Converters\LogTypeColorConverter.cs" />
     <Compile Include="Controls\PaddedGridViewColumnHeader.cs" />
     <Compile Include="Controls\TemplateEditor.xaml.cs">
       <DependentUpon>TemplateEditor.xaml</DependentUpon>

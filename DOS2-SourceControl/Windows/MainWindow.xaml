@@ -5,12 +5,14 @@
 		xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 		xmlns:local="clr-namespace:LL.DOS2.SourceControl"
 		xmlns:c="clr-namespace:LL.DOS2.SourceControl.Controls"
+		xmlns:cv="clr-namespace:LL.DOS2.SourceControl.Converters"
 		xmlns:fc="clr-namespace:LL.DOS2.SourceControl.Core.Commands"
 		xmlns:core="clr-namespace:LL.DOS2.SourceControl.Core"
 		mc:Ignorable="d"
 		Title="DOS2 Source Control Helper" Height="600" Width="800" Loaded="Window_Loaded" Closing="MainAppWindow_Closing">
 	<Window.Resources>
-		<c:EmptyListVisibilityConverter x:Key="EmptyListVisibilityConverter"/>
+		<cv:EmptyListVisibilityConverter x:Key="EmptyListVisibilityConverter"/>
+		<cv:FooterOutputColorConverter x:Key="FooterOutputColorConverter"/>
 		<fc:SaveDataConverter x:Key="SaveDataConverter"/>
 		<CollectionViewSource x:Key="ActiveProjectsViewSource" CollectionViewType="ListCollectionView"/>
 		<CollectionViewSource x:Key="ManagedProjectsViewSource" CollectionViewType="ListCollectionView"/>
@@ -19,6 +21,7 @@
 		<Grid.RowDefinitions>
 			<RowDefinition Height="Auto" />
 			<RowDefinition Height="*" />
+			<RowDefinition Height="Auto" />
 		</Grid.RowDefinitions>
 		<DockPanel Grid.Row="0">
 			<Menu DockPanel.Dock="Top">
@@ -37,7 +40,7 @@
 				</MenuItem>
 			</Menu>
 		</DockPanel>
-		<TabControl Grid.Row="1" SelectionChanged="PreventInitialTextboxFocus">
+		<TabControl Grid.Row="1" SelectionChanged="PreventInitialTextboxFocus" BorderThickness="0,1,0,0">
 			<TabItem Header="Projects">
 				<Grid x:Name="Projects_ParentGrid" Width="Auto" Height="Auto">
 					<Grid.ColumnDefinitions>
@@ -87,33 +90,33 @@
 				</Grid>
 			</TabItem>
 			<TabItem Header="Templates">
-				<TabControl TabStripPlacement="Left">
+				<TabControl TabStripPlacement="Left" Padding="5,0,0,0" BorderThickness="0" Background="#FFF1F1F1">
 					<TabItem Header=".gitignore" >
 						<c:TemplateEditor LabelText="Default .gitignore Template" 
 							TooltipText="{x:Static c:TooltipText.GitIgnore}" 
 							EditorText="{Binding DefaultGitIgnoreText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
-							BrowseText="Select Default .gitignore File" FileLocationText="{Binding AppSettings.GitIgnoreFile, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+							BrowseText="Select Default .gitignore File" TemplateFileLocationText="{Binding AppSettings.GitIgnoreFile, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
 							/>
 					</TabItem>
 					<TabItem Header="README.md" >
 						<c:TemplateEditor LabelText="Default Readme Template" 
 							TooltipText="{x:Static c:TooltipText.Readme}" 
 							EditorText="{Binding DefaultReadmeText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
-							BrowseText="Select Readme Template File" FileLocationText="{Binding AppSettings.ReadmeTemplateFile, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+							BrowseText="Select Readme Template File" TemplateFileLocationText="{Binding AppSettings.ReadmeTemplateFile, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
 							/>
 					</TabItem>
 					<TabItem Header="CHANGELOG.md" >
 						<c:TemplateEditor LabelText="Default Changelog Template" 
 							TooltipText="{x:Static c:TooltipText.Changelog}" 
 							EditorText="{Binding DefaultChangelogText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
-							BrowseText="Select Changelog Template File" FileLocationText="{Binding AppSettings.ChangelogTemplateFile, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+							BrowseText="Select Changelog Template File" TemplateFileLocationText="{Binding AppSettings.ChangelogTemplateFile, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
 							/>
 					</TabItem>
 					<TabItem Header="Custom License" >
 						<c:TemplateEditor LabelText="Custom License Template" 
 							TooltipText="{x:Static c:TooltipText.CustomLicense}" 
 							EditorText="{Binding CustomLicenseText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
-							BrowseText="Select Custom License Template File" FileLocationText="{Binding AppSettings.CustomLicenseFile, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"			  
+							BrowseText="Select Custom License Template File" TemplateFileLocationText="{Binding AppSettings.CustomLicenseFile, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"			  
 							/>
 					</TabItem>
 					<TabItem Header="Keywords">
@@ -147,8 +150,11 @@
 											<Setter Property="Padding" Value="4,2" />
 										</Style>
 									</StackPanel.Resources>
-									<Button x:Name="SaveKeywordsButton" Content="Save As..." Click="SaveKeywordsButton_Click" />
-									<Button x:Name="OpenKeywordsButton" Content="Open..." Click="OpenKeywordsButton_Click" />
+									<c:FileBrowseControl BrowseText="Select Keywords File" FileLocationText="{Binding AppSettings.KeywordsFile, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+									OnOpen="{Binding LoadKeywords, ElementName=MainAppWindow}"/>
+									<Button x:Name="SaveKeywordsButton" Content="Save" Click="SaveKeywordsButton_Click" />
+									<Button x:Name="SaveAsKeywordsButton" Content="Save As..." Click="SaveAsKeywordsButton_Click" />
+									<!--<Button x:Name="OpenKeywordsButton" Content="Open..." Click="OpenKeywordsButton_Click" />-->
 									<Button Content="Default..." Click="KeywordsList_Default_Click" ToolTip="Reset Keywords to Default" />
 								</StackPanel>
 							</Grid>
@@ -236,19 +242,23 @@
 					</Grid.RowDefinitions>
 					<TextBlock Grid.Row="0" Text="Backup Root Directory"/>
 					<TextBlock Grid.Row="1" Text="Repository Root Directory"/>
-					<TextBlock Grid.Row="2" Text="Default .gitignore File"/>
-					<TextBlock Grid.Row="3" Text="Readme Template File"/>
-					<TextBlock Grid.Row="4" Text="Changelog Template File"/>
-					<TextBlock Grid.Row="5" Text="Custom License Template File"/>
 
 					<c:FileBrowseControl Grid.Column="1" Grid.Row="0" FileBrowseType="Directory" BrowseText="Select Backup Root Directory" FileLocationText="{Binding AppSettings.BackupRootDirectory, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
 					<c:FileBrowseControl Grid.Column="1" Grid.Row="1" FileBrowseType="Directory" BrowseText="Select Repository Root Directory" FileLocationText="{Binding AppSettings.GitRootDirectory, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-					<c:FileBrowseControl Grid.Column="1" Grid.Row="2" BrowseText="Select Default .gitignore File" FileLocationText="{Binding AppSettings.GitIgnoreFile, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-					<c:FileBrowseControl Grid.Column="1" Grid.Row="3" BrowseText="Select Readme Template File" FileLocationText="{Binding AppSettings.ReadmeTemplateFile, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-					<c:FileBrowseControl Grid.Column="1" Grid.Row="4" BrowseText="Select Changelog Template File" FileLocationText="{Binding AppSettings.ChangelogTemplateFile, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-					<c:FileBrowseControl Grid.Column="1" Grid.Row="5" BrowseText="Select Custom License Template File" FileLocationText="{Binding AppSettings.CustomLicenseFile, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
 				</Grid>
 			</TabItem>
 		</TabControl>
+		<Grid x:Name="FooterGrid" Grid.Row="2">
+			<Grid.ColumnDefinitions>
+				<ColumnDefinition Width="105" />
+				<ColumnDefinition Width="*" />
+			</Grid.ColumnDefinitions>
+			
+			<Border Grid.Column="0" BorderThickness="1" BorderBrush="{DynamicResource {x:Static SystemColors.ActiveBorderBrushKey}}" />
+			<Border Grid.Column="1" BorderThickness="1" BorderBrush="{DynamicResource {x:Static SystemColors.ActiveBorderBrushKey}}" />
+
+			<TextBox Grid.Column="0" x:Name="FooterOuputTextboxDate" Text="{Binding Path=FooterOutputDate, ElementName=MainAppWindow}" IsReadOnly="True" Margin="0" BorderThickness="0" TextAlignment="Center" Background="{x:Null}" />
+			<TextBox Grid.Column="1" x:Name="FooterOuputTextboxText" Text="{Binding Path=FooterOutputText, ElementName=MainAppWindow}" IsReadOnly="True" TextAlignment="Left" Foreground="{Binding Path=FooterOutputType, ElementName=MainAppWindow, Converter={StaticResource FooterOutputColorConverter}}" Margin="0" BorderThickness="0" Background="{x:Null}" Padding="4,0,0,0" />
+		</Grid>
 	</Grid>
 </Window>

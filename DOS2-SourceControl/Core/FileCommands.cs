@@ -8,6 +8,7 @@ using Ookii.Dialogs.Wpf;
 using LL.DOS2.SourceControl.Data;
 using LL.DOS2.SourceControl.Core.Commands;
 using System.Windows;
+using System.Windows.Input;
 
 namespace LL.DOS2.SourceControl.Core
 {
@@ -92,6 +93,28 @@ namespace LL.DOS2.SourceControl.Core
 		{
 			loadCommands = new LoadCommands(AppData);
 			saveCommands = new SaveCommands(AppData);
+		}
+	}
+
+	public class FileCommand : ICommand
+	{
+		public event EventHandler CanExecuteChanged;
+
+		private Action RunAction;
+
+		public bool CanExecute(object parameter)
+		{
+			return RunAction != null;
+		}
+
+		public void Execute(object parameter)
+		{
+			RunAction?.Invoke();
+		}
+
+		public FileCommand(Action runAction)
+		{
+			RunAction = runAction;
 		}
 	}
 }

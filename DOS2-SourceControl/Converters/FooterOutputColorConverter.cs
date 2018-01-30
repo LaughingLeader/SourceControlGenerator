@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -9,23 +8,21 @@ using System.Windows.Data;
 using System.Windows.Media;
 using LL.DOS2.SourceControl.Util;
 
-namespace LL.DOS2.SourceControl.Controls
+namespace LL.DOS2.SourceControl.Converters
 {
-	public class LogTypeColorConverter : IValueConverter
+	public class FooterOutputColorConverter : IValueConverter
 	{
 		public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
 		{
-			LogType logType = (LogType)value;			
+			LogType logType = (LogType)value;
 			switch (logType)
 			{
-				case LogType.Activity:
-					return SystemColors.WindowBrush;
 				case LogType.Important:
-					return Colors.Azure;
+					return Colors.Green;
 				case LogType.Error:
-					return Colors.Salmon;
+					return Colors.Red;
 				default:
-					return SystemColors.WindowBrush;
+					return Colors.Black;
 			}
 		}
 

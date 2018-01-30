@@ -11,6 +11,7 @@ using System.Windows.Controls;
 using Microsoft.Win32;
 using Ookii.Dialogs.Wpf;
 using LL.DOS2.SourceControl.Enum;
+using System.Windows.Input;
 
 namespace LL.DOS2.SourceControl.Controls
 {
@@ -97,11 +98,40 @@ namespace LL.DOS2.SourceControl.Controls
 			DependencyProperty.Register("FileBrowseType", typeof(FileBrowseType),
 			typeof(FileBrowseControl), new PropertyMetadata(FileBrowseType.File));
 
+
+		public ICommand OnOpen
+		{
+			get { return (ICommand)GetValue(OnOpenProperty); }
+			set { SetValue(OnOpenProperty, value); }
+		}
+
+		// Using a DependencyProperty as the backing store for OnOpen.  This enables animation, styling, binding, etc...
+		public static readonly DependencyProperty OnOpenProperty =
+			DependencyProperty.Register("OnOpen", typeof(ICommand), typeof(FileBrowseControl), new PropertyMetadata(null));
+
+
 		public FileBrowseControl()
 		{
 			InitializeComponent();
 
 			//this.DataContext = this;
+		}
+
+		private bool PathIsRelative(string path)
+		{
+			try
+			{
+				DirectoryInfo appDir = new DirectoryInfo(Directory.GetCurrentDirectory());
+				FileInfo file = new FileInfo(path);
+
+				if (file.FullName.Contains(appDir.FullName)) return true;
+			}
+			catch(Exception ex)
+			{
+				Log.Here().Error("Error in relative path check: {0}", ex.ToString());
+			}
+
+			return false;
 		}
 
 		private void FileBrowseButton_Click(object sender, RoutedEventArgs e)
@@ -160,8 +190,20 @@ namespace LL.DOS2.SourceControl.Controls
 				if (result == true)
 				{
 					string filename = fileDialog.FileName;
+
+					if(PathIsRelative(filename))
+					{
+						filename = Common.Functions.GetRelativePath.RelativePathGetter.Relative(Directory.GetCurrentDirectory(), fileDialog.FileName);
+					}
+
 					FileLocationText = filename;
 					LastFileLocation = Path.GetDirectoryName(FileLocationText);
+					OnOpen?.Execute(this);
+
+					if(OnOpen == null)
+					{
+						System.Diagnostics.Debug.WriteLine("OnOpen is null!");
+					}
 				}
 			}
 			else if (FileBrowseType == FileBrowseType.Directory)
@@ -176,8 +218,15 @@ namespace LL.DOS2.SourceControl.Controls
 
 				if(result == true)
 				{
-					FileLocationText = folderDialog.SelectedPath;
+					string path = folderDialog.SelectedPath;
+					if (PathIsRelative(path))
+					{
+						path = folderDialog.SelectedPath.Replace(Directory.GetCurrentDirectory(), "");
+					}
+
+					FileLocationText = path;
 					LastFileLocation = FileLocationText;
+					OnOpen?.Execute(this);
 				}
 			}
 		}

@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Input;
 using LL.DOS2.SourceControl.Data;
 using LL.DOS2.SourceControl.Data.View;
 using Microsoft.Win32;
@@ -13,6 +14,21 @@ using Newtonsoft.Json;
 
 namespace LL.DOS2.SourceControl.Core.Commands
 {
+	public class LoadKeywordsCommand : ICommand
+	{
+		public event EventHandler CanExecuteChanged;
+
+		public bool CanExecute(object parameter)
+		{
+			return FileCommands.Load != null;
+		}
+
+		public void Execute(object parameter)
+		{
+			FileCommands.Load.LoadUserKeywords();
+		}
+	}
+
 	public class LoadCommands
 	{
 		private MainAppData Data { get; set; }

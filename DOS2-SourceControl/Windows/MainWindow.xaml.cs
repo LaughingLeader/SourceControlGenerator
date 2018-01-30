@@ -14,8 +14,10 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using LL.DOS2.SourceControl.Core;
+using LL.DOS2.SourceControl.Core.Commands;
 using LL.DOS2.SourceControl.Data;
 using LL.DOS2.SourceControl.Data.View;
+using LL.DOS2.SourceControl.Util;
 using LL.DOS2.SourceControl.Windows;
 
 namespace LL.DOS2.SourceControl.Windows
@@ -45,6 +47,43 @@ namespace LL.DOS2.SourceControl.Windows
 			get => LogWindowShown ? "Close Log Window" : "Open Log Window";
 		}
 
+		private string footerOutputDate;
+
+		public string FooterOutputDate
+		{
+			get { return footerOutputDate; }
+			set
+			{
+				footerOutputDate = value;
+				RaisePropertyChanged("FooterOutputDate");
+			}
+		}
+
+
+		private string footerOutputText;
+
+		public string FooterOutputText
+		{
+			get { return footerOutputText; }
+			set
+			{
+				footerOutputText = value;
+				RaisePropertyChanged("FooterOutputText");
+			}
+		}
+
+		private LogType footerOutputType;
+
+		public LogType FooterOutputType
+		{
+			get { return footerOutputType; }
+			set
+			{
+				footerOutputType = value;
+				RaisePropertyChanged("FooterOutputType");
+			}
+		}
+
 		public event PropertyChangedEventHandler PropertyChanged;
 
 		public void RaisePropertyChanged(string propertyName)
@@ -63,10 +102,40 @@ namespace LL.DOS2.SourceControl.Windows
 			}
 		}
 
+		private static MainWindow _instance;
+
+		public static void FooterLog(LogType logType, string Message, params object[] Vars)
+		{
+			if (_instance != null)
+			{
+				Message = String.Format(Message, Vars);
+				_instance.FooterOutputText = Message;
+				_instance.FooterOutputType = logType;
+				_instance.FooterOutputDate = DateTime.Now.ToShortTimeString();
+				Log.AllCallback?.Invoke(Message, logType);
+			}
+		}
+
+		//public LoadKeywordsCommand LoadKeywords { get; set; }
+
+		private FileCommand loadKeywords;
+
+		public FileCommand LoadKeywords
+		{
+			get { return loadKeywords; }
+			set
+			{
+				loadKeywords = value;
+				RaisePropertyChanged("LoadKeywords");
+			}
+		}
+
+
 		public MainWindow()
 		{
 			InitializeComponent();
 
+			_instance = this;
 			_settingsController = new SettingsController(this);
 
 			this.DataContext = SettingsController.Data;
@@ -75,7 +144,10 @@ namespace LL.DOS2.SourceControl.Windows
 			managedProjectsViewSource = (CollectionViewSource)(FindResource("ManagedProjectsViewSource"));
 			managedProjectsViewSource.Source = SettingsController.Data.ManagedProjects;
 
+			LoadKeywords = new FileCommand(FileCommands.Load.LoadUserKeywords);
+
 			logWindow = new LogWindow();
+			logWindow.Hide();
 		}
 
 		private void HandleColumnHeaderSizeChanged(object sender, SizeChangedEventArgs sizeChangedEventArgs)
@@ -160,6 +232,18 @@ namespace LL.DOS2.SourceControl.Windows
 		}
 
 		private void SaveKeywordsButton_Click(object sender, RoutedEventArgs e)
+		{
+			if(FileCommands.WriteToFile(this.SettingsController.Data.AppSettings.KeywordsFile, this.SettingsController.Data.KeywordListText))
+			{
+				FooterLog(LogType.Important, "Saved Keywords to {0}", this.SettingsController.Data.AppSettings.KeywordsFile);
+			}
+			else
+			{
+				FooterLog(LogType.Important, "Error saving Keywords to {0}", this.SettingsController.Data.AppSettings.KeywordsFile);
+			}
+		}
+
+		private void SaveAsKeywordsButton_Click(object sender, RoutedEventArgs e)
 		{
 			FileCommands.Save.OpenDialog(this, "Save Keywords", this.SettingsController.Data.AppSettings.KeywordsFile, this.SettingsController.Data.KeywordListText);
 		}

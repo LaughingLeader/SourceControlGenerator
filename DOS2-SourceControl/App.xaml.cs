@@ -6,7 +6,7 @@ using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
-
+using System.Windows.Data;
 using LL.DOS2.SourceControl.Core;
 using LL.DOS2.SourceControl.Data;
 using LL.DOS2.SourceControl.Data.View;
@@ -21,14 +21,6 @@ namespace LL.DOS2.SourceControl
 	{
 		public static ObservableCollection<LogData> LogEntries { get; set; }
 		private int logIndex = 0;
-
-		public App()
-		{
-			LL.DOS2.SourceControl.Helpers.Init();
-
-			LogEntries = new ObservableCollection<LogData>();
-			Log.AllCallback = AddLogMessage;
-		}
 
 		public void AddLogMessage(string LogMessage, LogType logType)
 		{
@@ -46,6 +38,14 @@ namespace LL.DOS2.SourceControl
 		protected override void OnStartup(StartupEventArgs e)
 		{
 			base.OnStartup(e);
+		}
+
+		public App()
+		{
+			LL.DOS2.SourceControl.Helpers.Init();
+
+			LogEntries = new ObservableCollection<LogData>();
+			Log.AllCallback = AddLogMessage;
 		}
 	}
 }
