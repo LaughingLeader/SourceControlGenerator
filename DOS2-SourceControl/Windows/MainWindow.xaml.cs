@@ -175,7 +175,14 @@ namespace LL.DOS2.SourceControl.Windows
 				}
 				else
 				{
-					SettingsController.Data.ManageButtonsText = "Select a Project";
+					if(SettingsController.Data.AvailableProjects.Count > 0)
+					{
+						SettingsController.Data.ManageButtonsText = "Select a Project";
+					}
+					else
+					{
+						SettingsController.Data.ManageButtonsText = "No New Projects Found";
+					}
 				}
 
 			}
@@ -211,7 +218,7 @@ namespace LL.DOS2.SourceControl.Windows
 		private void PreventInitialTextboxFocus(object sender, SelectionChangedEventArgs e)
 		{
 			TabItem tab = (TabItem)this.FindName("Tab_Settings");
-			if (tab.IsSelected)
+			if (tab != null && tab.IsSelected)
 			{
 				tab.Focus();
 			}

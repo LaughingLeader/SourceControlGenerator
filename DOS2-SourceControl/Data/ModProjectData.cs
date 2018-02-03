@@ -49,20 +49,29 @@ namespace LL.DOS2.SourceControl.Data
 		}
 
 
+		private string version;
+
 		public string Version
 		{
-			get
+			get { return version; }
+			set
 			{
-				//(major version << 28) | (minor version << 24) | (revision << 16) | (build << 0)
-				if(ModuleInfo != null)
-				{
-					return ModuleInfo.Version;
-				}
-				return "";
+				version = value;
+				RaisePropertyChanged("Version");
 			}
 		}
 
+		private DateTime lastBackup;	
 
+		public DateTime LastBackup
+		{
+			get { return lastBackup; }
+			set
+			{
+				lastBackup = value;
+				RaisePropertyChanged("LastBackup");
+			}
+		}
 
 		public ModProjectData(FileInfo ModMetaFile, string ProjectsFolderPath)
 		{
@@ -165,6 +174,15 @@ namespace LL.DOS2.SourceControl.Data
 				}
 
 				Tooltip = tooltipText;
+
+				//(major version << 28) | (minor version << 24) | (revision << 16) | (build << 0)
+				var major = (ModuleInfo.Version >> 28);
+				var minor = (ModuleInfo.Version >> 24) & 0x0F;
+				var revision = (ModuleInfo.Version >> 16) & 0xFF;
+				var build = (ModuleInfo.Version & 0xFFFF);
+				//var version = ((ModuleInfo.Version << 28) | (ModuleInfo.Version << 24) | (ModuleInfo.Version << 16) | (ModuleInfo.Version << 0)).ToString("X");
+				//Log.Here().Important("[{5}] Bitshift test: {6} = {4} = {0}.{1}.{2}.{3}", major, minor, revision, build, version, ModuleInfo.Name, ModuleInfo.Version);
+				Version = String.Format("{0}.{1}.{2}.{3}", major, minor, revision, build);
 			}
 		}
 	}

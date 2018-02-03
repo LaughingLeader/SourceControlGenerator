@@ -86,7 +86,6 @@
     <Compile Include="Data\KeywordData.cs" />
     <Compile Include="Data\View\LogData.cs" />
     <Compile Include="Data\PropertyChangedBase.cs" />
-    <Compile Include="Data\View\ProjectEntryData.cs" />
     <Compile Include="Enum\FileBrowseType.cs" />
     <Compile Include="FileGen\GitGenerator.cs" />
     <Compile Include="Data\DefaultValues.cs" />
@@ -188,6 +187,9 @@
     <Resource Include="Resources\Icons\GitLogo_Disabled.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Icons\Folder.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

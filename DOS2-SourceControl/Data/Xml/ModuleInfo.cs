@@ -28,7 +28,7 @@ namespace LL.DOS2.SourceControl.Data.Xml
 		public string Tags { get; set; }
 		public string Type { get; set; }
 		public string UUID { get; set; }
-		public int Version { get; set; }
+		public Int32 Version { get; set; }
 
 		public List<String> TargetModes { get; set; }
 
@@ -48,7 +48,23 @@ namespace LL.DOS2.SourceControl.Data.Xml
 					{
 						if (property.Name == "TargetModes") continue;
 						var value = XmlDataHelper.GetAttributeValue(moduleInfoXml, property.Name);
-						property.SetValue(this, value);
+
+						if(property.Name == "Version")
+						{
+							Int32 version = 0;
+							if(!Int32.TryParse(value, out version))
+							{
+								Log.Here().Error("Error parsing ModuleInfo version string {0} to int.", value);
+							}
+							else
+							{
+								property.SetValue(this, version);
+							}
+						}
+						else
+						{
+							property.SetValue(this, value);
+						}
 						//Log.Here().Activity("Set {0} to {1}", property.Name, value);
 					}
 

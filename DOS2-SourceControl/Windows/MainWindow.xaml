@@ -117,15 +117,52 @@
 															</Image.Style>
 														</Image>
 													</Button>
+													<Button x:Name="Btn_DataFolders" ToolTip="Open Data Folder..." >
+														<Image Source="/DOS2SourceControl;component/Resources/Icons/Folder.png" Stretch="UniformToFill"/>
+														<Button.ContextMenu>
+															<ContextMenu>
+																<MenuItem Header="Open Mods Folder..." />
+																<MenuItem Header="Open Public Folder..." />
+																<MenuItem Header="Open Editor Folder..." />
+																<MenuItem Header="Open Project Folder..." />
+															</ContextMenu>
+														</Button.ContextMenu>
+														<Button.Style>
+															<Style TargetType="{x:Type Button}">
+																<Style.Triggers>
+																	<EventTrigger RoutedEvent="Click">
+																		<EventTrigger.Actions>
+																			<BeginStoryboard>
+																				<Storyboard>
+																					<BooleanAnimationUsingKeyFrames Storyboard.TargetProperty="ContextMenu.IsOpen">
+																						<DiscreteBooleanKeyFrame KeyTime="0:0:0" Value="True"/>
+																					</BooleanAnimationUsingKeyFrames>
+																				</Storyboard>
+																			</BeginStoryboard>
+																		</EventTrigger.Actions>
+																	</EventTrigger>
+																</Style.Triggers>
+																<Setter Property="ContextMenu">
+																	<Setter.Value>
+																		<ContextMenu>
+																			<MenuItem />
+																			<MenuItem />
+																		</ContextMenu>
+																	</Setter.Value>
+																</Setter>
+															</Style>
+														</Button.Style>
+													</Button>
 												</StackPanel>
 											</DataTemplate>
 										</DataGridTemplateColumn.CellTemplate>
 									</DataGridTemplateColumn>
-									<DataGridTextColumn Header="Name" Binding="{Binding ModuleInfo.Name}" Width="*" />
+									<DataGridTextColumn Header="Name" Binding="{Binding ModuleInfo.Name}" Width="Auto" />
 									<DataGridTextColumn Header="Author" Binding="{Binding ModuleInfo.Author}" />
+									<DataGridTextColumn Header="Version" Binding="{Binding Version}" />
 									<DataGridTextColumn Header="Type" Binding="{Binding ModuleInfo.Type}" />
 									<DataGridTextColumn Header="Description" Binding="{Binding ModuleInfo.Description}" />
-									<DataGridTextColumn Header="Version" Binding="{Binding ModuleInfo.Version}" />
+									<DataGridTextColumn Header="Last Backup" Binding="{Binding LastBackup}" />
 								</DataGrid.Columns>
 							</DataGrid>
 							<StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Center" >
@@ -233,18 +270,41 @@
 											</Setter>
 										</Style>
 									</StackPanel.Resources>
-									<TextBlock Text="Application Keywords (Read-only)" Background="{DynamicResource {x:Static SystemColors.MenuBarBrushKey}}" />
-									<c:TemplateKeywordControl KeywordName="$ProjectName" KeywordValue="Auto-Assigned (Mod Data: Name)" />
-									<c:TemplateKeywordControl KeywordName="$Author" KeywordValue="Auto-Assigned (Mod Data: Author)" />
-									<c:TemplateKeywordControl KeywordName="$Date" KeywordValue="Auto-Assigned (Current Date)" />
+									<Border BorderThickness="1"  BorderBrush="{DynamicResource {x:Static SystemColors.ActiveBorderBrushKey}}" >
+										<TextBlock Text="Application Keywords (Auto-Assigned)" Background="{DynamicResource {x:Static SystemColors.MenuBarBrushKey}}" Margin="2" />
+									</Border>
+									<c:TemplateKeywordControl KeywordName="$Author" KeywordValue="Mod Data: Author" />
+									<c:TemplateKeywordControl KeywordName="$DependencyProjects" KeywordValue="Mod Data: Dependencies" />
+									<c:TemplateKeywordControl KeywordName="$Description" KeywordValue="Mod Data: Description" />
+									<c:TemplateKeywordControl KeywordName="$ModType" KeywordValue="Mod Data: Type" />
+									<c:TemplateKeywordControl KeywordName="$ProjectName" KeywordValue="Mod Data: Name" />
+									<c:TemplateKeywordControl KeywordName="$Targets" KeywordValue="Mod Data: Targets" />
+									<c:TemplateKeywordControl KeywordName="$Version" KeywordValue="Mod Data: Version" />
+									<c:TemplateKeywordControl KeywordName="$Date" KeywordValue="Current Date" />
 								</StackPanel>
 								<Grid x:Name="ParentGrid_UserKeywords" Grid.Row="1" >
 									<Grid.RowDefinitions>
 										<RowDefinition Height="Auto"/>
+										<RowDefinition Height="Auto" />
 										<RowDefinition Height="*" />
 									</Grid.RowDefinitions>
-									<TextBlock Text="User Keywords" Background="{DynamicResource {x:Static SystemColors.MenuBarBrushKey}}"/>
-									<ItemsControl Grid.Row="1" x:Name="UserKeywords" ItemsSource="{Binding KeywordList}">
+									<Border Grid.Row="0" BorderThickness="1,0,1,1" BorderBrush="{DynamicResource {x:Static SystemColors.ActiveBorderBrushKey}}">
+										<Grid x:Name="DateFormatPanel">
+											<Grid.ColumnDefinitions>
+												<ColumnDefinition Width="149" />
+												<ColumnDefinition Width="*" />
+											</Grid.ColumnDefinitions>
+											<TextBlock Text="Date Format" Grid.Column="0" FontFamily="Neuton" TextAlignment="Left" Margin="2" />
+											<ComboBox x:Name="DateFormatValueBox" Grid.Column="1" FontFamily="Neuton" SelectedIndex="0" >
+												<ComboBoxItem Content="d - Short Date Pattern (mm/dd/yyy)" />
+												<ComboBoxItem Content="D - Long Date Pattern (Monday, June 15, 2009)" />
+											</ComboBox>
+										</Grid>
+									</Border>
+									<Border Grid.Row="1" BorderThickness="1,0,1,1"  BorderBrush="{DynamicResource {x:Static SystemColors.ActiveBorderBrushKey}}" >
+										<TextBlock Text="User Keywords" Background="{DynamicResource {x:Static SystemColors.MenuBarBrushKey}}" Margin="2" />
+									</Border>
+									<ItemsControl Grid.Row="2" x:Name="UserKeywords" ItemsSource="{Binding KeywordList}" BorderThickness="1" BorderBrush="{DynamicResource {x:Static SystemColors.ActiveBorderBrushKey}}" ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.HorizontalScrollBarVisibility="Auto" >
 										<ItemsControl.ItemTemplate>
 											<DataTemplate DataType="c:TemplateKeywordControl">
 												<c:TemplateKeywordControl DataContext="{Binding}" KeywordName="{Binding KeywordName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" KeywordValue="{Binding KeywordValue, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
