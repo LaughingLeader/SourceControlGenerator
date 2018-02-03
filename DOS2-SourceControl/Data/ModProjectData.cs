@@ -12,22 +12,61 @@ using LL.DOS2.SourceControl.Data.Xml;
 
 namespace LL.DOS2.SourceControl.Data
 {
-	public class ModProjectData
+	public class ModProjectData : PropertyChangedBase
 	{
 		public ProjectInfo ProjectInfo { get; set; }
-		public ModuleInfo ModInfo { get; set; }
+		public ModuleInfo ModuleInfo { get; set; }
 		public List<DependencyInfo> Dependencies { get; set; }
 
 		public string Name
 		{
-			get => ModInfo.Name;
+			get => ModuleInfo.Name;
 		}
 
-		public string Tooltip { get; set; }
+		private string tooltip;
+
+		public string Tooltip
+		{
+			get { return tooltip; }
+			set
+			{
+				tooltip = value;
+				RaisePropertyChanged("Tooltip");
+			}
+		}
+
+
+		private bool gitGenerated = false;
+
+		public bool GitGenerated
+		{
+			get { return gitGenerated; }
+			set
+			{
+				gitGenerated = value;
+				RaisePropertyChanged("GitGenerated");
+			}
+		}
+
+
+		public string Version
+		{
+			get
+			{
+				//(major version << 28) | (minor version << 24) | (revision << 16) | (build << 0)
+				if(ModuleInfo != null)
+				{
+					return ModuleInfo.Version;
+				}
+				return "";
+			}
+		}
+
+
 
 		public ModProjectData(FileInfo ModMetaFile, string ProjectsFolderPath)
 		{
-			this.ModInfo = new ModuleInfo();
+			this.ModuleInfo = new ModuleInfo();
 			this.ProjectInfo = new ProjectInfo();
 			this.Dependencies = new List<DependencyInfo>();		
 
@@ -46,7 +85,7 @@ namespace LL.DOS2.SourceControl.Data
 
 				if (modMetaXml != null)
 				{
-					this.ModInfo.LoadFromXml(modMetaXml);
+					this.ModuleInfo.LoadFromXml(modMetaXml);
 
 					try
 					{
@@ -63,12 +102,12 @@ namespace LL.DOS2.SourceControl.Data
 									Version = XmlDataHelper.GetAttributeValue(node, "Version")
 								};
 								Dependencies.Add(dependencyInfo);
-								Log.Here().Activity("[{0}] Dependency ({1}) added.", this.ModInfo.Name, dependencyInfo.Name);
+								Log.Here().Activity("[{0}] Dependency ({1}) added.", this.ModuleInfo.Name, dependencyInfo.Name);
 							}
 						}
 						else
 						{
-							Log.Here().Activity("[{0}] No dependencies found.", this.ModInfo.Name);
+							Log.Here().Activity("[{0}] No dependencies found.", this.ModuleInfo.Name);
 						}
 						
 					}
@@ -77,7 +116,7 @@ namespace LL.DOS2.SourceControl.Data
 						Log.Here().Error("Error parsing mod dependencies: {0}", ex.ToString());
 					}
 
-					Log.Here().Important("[{0}] All mod data loaded.", this.ModInfo.Name);
+					Log.Here().Important("[{0}] All mod data loaded.", this.ModuleInfo.Name);
 				}
 				else
 				{
@@ -87,7 +126,7 @@ namespace LL.DOS2.SourceControl.Data
 
 			try
 			{
-				string projectMetaFilePath = Path.Combine(ProjectsFolderPath, ModInfo.Name, "meta.lsx");
+				string projectMetaFilePath = Path.Combine(ProjectsFolderPath, ModuleInfo.Name, "meta.lsx");
 
 				Log.Here().Activity("Attempting to load project meta.lsx at {0}", projectMetaFilePath);
 
@@ -101,18 +140,18 @@ namespace LL.DOS2.SourceControl.Data
 			}
 			catch (Exception ex)
 			{
-				Log.Here().Error("Error loading project meta.lsx for {0}: {1}", this.ModInfo.Name, ex.ToString());
+				Log.Here().Error("Error loading project meta.lsx for {0}: {1}", this.ModuleInfo.Name, ex.ToString());
 			}
 
-			if(ModInfo != null)
+			if(ModuleInfo != null)
 			{
 				var tooltipText = "";
-				if(!String.IsNullOrEmpty(ModInfo.Author))
+				if(!String.IsNullOrEmpty(ModuleInfo.Author))
 				{
-					tooltipText = "created by " + ModInfo.Author;
-					if (ModInfo.TargetModes != null && ModInfo.TargetModes.Count > 0)
+					tooltipText = "created by " + ModuleInfo.Author;
+					if (ModuleInfo.TargetModes != null && ModuleInfo.TargetModes.Count > 0)
 					{
-						tooltipText = tooltipText+ " [" + String.Join(", ", ModInfo.TargetModes.ToArray()) + "]";
+						tooltipText = tooltipText+ " [" + String.Join(", ", ModuleInfo.TargetModes.ToArray()) + "]";
 					}
 				}
 

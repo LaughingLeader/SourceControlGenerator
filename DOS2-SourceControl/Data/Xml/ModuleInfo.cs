@@ -28,7 +28,7 @@ namespace LL.DOS2.SourceControl.Data.Xml
 		public string Tags { get; set; }
 		public string Type { get; set; }
 		public string UUID { get; set; }
-		public string Version { get; set; }
+		public int Version { get; set; }
 
 		public List<String> TargetModes { get; set; }
 

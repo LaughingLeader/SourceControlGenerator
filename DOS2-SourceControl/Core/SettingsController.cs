@@ -103,7 +103,10 @@ namespace LL.DOS2.SourceControl.Core
 				var modData = Data.ModProjects.Where(p => p.Name == project.Name).FirstOrDefault();
 				if(modData != null)
 				{
-
+					//Data.ManagedProjects.Add(new ProjectEntryData(modData.ProjectInfo, modData.ModInfo));
+					Data.ManagedProjects.Add(modData);
+					var availableProject = Data.AvailableProjects.Where(p => p.Name == project.Name).FirstOrDefault();
+					if (availableProject != null) Data.AvailableProjects.Remove(availableProject);
 				}
 			}
 		}

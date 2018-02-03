@@ -274,5 +274,18 @@ namespace LL.DOS2.SourceControl.Windows
 				SettingsController.Data.KeywordList.Add(new KeywordData());
 			});
 		}
+
+		private void ManagedProjectsDataGrid_SelectionChanged(object sender, SelectionChangedEventArgs e)
+		{
+			bool projectSelected = false;
+			DataGrid managedGrid = (DataGrid)this.FindName("ManagedProjectsDataGrid");
+			if(managedGrid != null)
+			{
+				if (managedGrid.SelectedItems.Count > 0) projectSelected = true;
+				Log.Here().Activity("Selected projects: {0}", managedGrid.SelectedItems.Count);
+			}
+
+			SettingsController.Data.ProjectSelected = projectSelected;
+		}
 	}
 }

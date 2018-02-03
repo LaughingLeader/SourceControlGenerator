@@ -19,8 +19,23 @@ namespace LL.DOS2.SourceControl.Data
 	{
 		public List<string> ProjectDirectoryLayouts { get; set; }
 		public List<ModProjectData> ModProjects { get; set; }
+		public List<SourceControlData> GitProjects { get; set; }
 
 		//Visible Data
+
+		private bool projectSelected;
+
+		public bool ProjectSelected
+		{
+			get { return projectSelected; }
+			set
+			{
+				projectSelected = value;
+				RaisePropertyChanged("ProjectSelected");
+			}
+		}
+
+
 		private AppSettingsData appSettings;
 
 		public AppSettingsData AppSettings
@@ -95,9 +110,9 @@ namespace LL.DOS2.SourceControl.Data
 			}
 		}
 
-		private ObservableCollection<SourceControlData> managedProjects;
+		private ObservableCollection<ModProjectData> managedProjects;
 
-		public ObservableCollection<SourceControlData> ManagedProjects
+		public ObservableCollection<ModProjectData> ManagedProjects
 		{
 			get { return managedProjects; }
 			set

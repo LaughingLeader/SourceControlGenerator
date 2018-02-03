@@ -82,8 +82,64 @@
 								<RowDefinition Height="Auto"/>
 							</Grid.RowDefinitions>
 							<Label Content="Managed Projects" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Row="0" />
-							<DataGrid Grid.Row="1" DataContext="{StaticResource ManagedProjectsViewSource}" ItemsSource="{Binding}" AutoGenerateColumns="False">
+							<DataGrid x:Name="ManagedProjectsDataGrid" Grid.Row="1" ItemsSource="{Binding ManagedProjects}" AutoGenerateColumns="False" IsReadOnly="True" SelectionChanged="ManagedProjectsDataGrid_SelectionChanged" >
+								<DataGrid.Columns>
+									<DataGridTemplateColumn Header="" Width="Auto">
+										<DataGridTemplateColumn.CellTemplate>
+											<DataTemplate>
+												<StackPanel Orientation="Horizontal">
+													<StackPanel.Resources>
+														<Style TargetType="Button">
+															<Setter Property="MinHeight" Value="16" />
+															<Setter Property="MinWidth" Value="16" />
+															<Setter Property="MaxHeight" Value="16" />
+															<Setter Property="MaxWidth" Value="16" />
+														</Style>
+													</StackPanel.Resources>
+													<Button x:Name="Btn_Backup" ToolTip="Open Backup Folder..." >
+														<Image Source="/DOS2SourceControl;component/Resources/Icons/7zipIcon.png" Stretch="UniformToFill"/>
+													</Button>
+													<Button x:Name="Btn_GenGit" IsEnabled="{Binding GitGenerated}" >
+														<Image Stretch="UniformToFill" ToolTipService.ShowOnDisabled="True">
+															<Image.Style>
+																<Style TargetType="Image">
+																	<Style.Triggers>
+																		<Trigger Property="IsEnabled" Value="False">
+																			<Setter Property="Source" Value="/DOS2SourceControl;component/Resources/Icons/GitLogo_Disabled.png" />
+																			<Setter Property="ToolTip" Value="Git Repo Not Detected" />
+																		</Trigger>
+																		<Trigger Property="IsEnabled" Value="True">
+																			<Setter Property="Source" Value="/DOS2SourceControl;component/Resources/Icons/GitLogo.png" />
+																			<Setter Property="ToolTip" Value="Open Git Repo..." />
+																		</Trigger>
+																	</Style.Triggers>
+																</Style>
+															</Image.Style>
+														</Image>
+													</Button>
+												</StackPanel>
+											</DataTemplate>
+										</DataGridTemplateColumn.CellTemplate>
+									</DataGridTemplateColumn>
+									<DataGridTextColumn Header="Name" Binding="{Binding ModuleInfo.Name}" Width="*" />
+									<DataGridTextColumn Header="Author" Binding="{Binding ModuleInfo.Author}" />
+									<DataGridTextColumn Header="Type" Binding="{Binding ModuleInfo.Type}" />
+									<DataGridTextColumn Header="Description" Binding="{Binding ModuleInfo.Description}" />
+									<DataGridTextColumn Header="Version" Binding="{Binding ModuleInfo.Version}" />
+								</DataGrid.Columns>
 							</DataGrid>
+							<StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Center" >
+								<StackPanel.Resources>
+									<Style TargetType="Button">
+										<Setter Property="Margin" Value="2,0" />
+										<Setter Property="Padding" Value="4,2,4,2" />
+										<Setter Property="IsEnabled" Value="{Binding ProjectSelected}" />
+									</Style>
+								</StackPanel.Resources>
+								<Button Content="Backup Selected" />
+								<Button Content="Backup Selected To..." />
+								<Button Content="Create Git Repos for Selected..." />
+							</StackPanel>
 						</Grid>
 					</Border>
 

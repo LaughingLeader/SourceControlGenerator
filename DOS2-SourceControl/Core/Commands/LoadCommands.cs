@@ -216,15 +216,15 @@ namespace LL.DOS2.SourceControl.Core.Commands
 			}
 		}
 
-		public void LoadManagedProjects()
+		public void LoadGitProjects()
 		{
-			if (Data.ManagedProjects == null)
+			if (Data.GitProjects == null)
 			{
-				Data.ManagedProjects = new ObservableCollection<SourceControlData>();
+				Data.GitProjects = new List<SourceControlData>();
 			}
 			else
 			{
-				Data.ManagedProjects.Clear();
+				Data.GitProjects.Clear();
 			}
 
 			if (Data.AppSettings != null && !String.IsNullOrEmpty(Data.AppSettings.GitRootDirectory) && Directory.Exists(Data.AppSettings.GitRootDirectory))
@@ -238,9 +238,9 @@ namespace LL.DOS2.SourceControl.Core.Commands
 					{
 						if (File.Exists(projectFilePath))
 						{
-							SourceControlData projectData = JsonConvert.DeserializeObject<SourceControlData>(File.ReadAllText(projectFilePath));
-							Data.ManagedProjects.Add(projectData);
-							Log.Here().Activity("Source control project file found for project {0}. Adding to active projects.", projectData.ProjectName);
+							SourceControlData gitProjectData = JsonConvert.DeserializeObject<SourceControlData>(File.ReadAllText(projectFilePath));
+							Data.GitProjects.Add(gitProjectData);
+							Log.Here().Activity("Source control project file found for project {0}. Adding to active projects.", gitProjectData.ProjectName);
 						}
 					}
 				}
@@ -248,6 +248,32 @@ namespace LL.DOS2.SourceControl.Core.Commands
 			else
 			{
 				Log.Here().Important("No git root directory not found. Skipping.");
+			}
+		}
+
+		public void LoadManagedProjects()
+		{
+			if (Data.ManagedProjects == null)
+			{
+				Data.ManagedProjects = new ObservableCollection<ModProjectData>();
+			}
+			else
+			{
+				Data.ManagedProjects.Clear();
+			}
+
+			if(Data.GitProjects != null && Data.GitProjects.Count > 0 && Data.ModProjects != null && Data.ModProjects.Count > 0)
+			{
+				foreach(var gitProject in Data.GitProjects)
+				{
+					var modProject = Data.ModProjects.Where(x => x.Name == gitProject.ProjectName).FirstOrDefault();
+					if (modProject != null)
+					{
+						//Data.ManagedProjects.Add(new ProjectEntryData(modProject.ProjectInfo, modProject.ModInfo));
+						modProject.GitGenerated = true;
+						Data.ManagedProjects.Add(modProject);
+					}
+				}
 			}
 		}
 
@@ -272,7 +298,7 @@ namespace LL.DOS2.SourceControl.Core.Commands
 
 						if (projectIsUnmanaged && Data.ManagedProjects != null)
 						{
-							if (Data.ManagedProjects.Any(p => p.ProjectName == project.Name))
+							if (Data.ManagedProjects.Any(p => p.Name == project.Name))
 							{
 								projectIsUnmanaged = false;
 							}
@@ -329,7 +355,7 @@ namespace LL.DOS2.SourceControl.Core.Commands
 								{
 									Log.Here().Activity("Meta file found for project {0}. Reading file.", modFolderName);
 									ModProjectData modProjectData = new ModProjectData(metaFile, projectsPath);
-									Log.Here().Activity("Finished reading meta files for mod: {0}", modProjectData.ModInfo.Name);
+									Log.Here().Activity("Finished reading meta files for mod: {0}", modProjectData.ModuleInfo.Name);
 									Data.ModProjects.Add(modProjectData);
 								}
 							}
@@ -389,6 +415,7 @@ namespace LL.DOS2.SourceControl.Core.Commands
 			LoadDirectoryLayout();
 			LoadUserKeywords();
 			LoadModProjects();
+			LoadGitProjects();
 			LoadManagedProjects();
 			LoadAvailableProjects();
 		}

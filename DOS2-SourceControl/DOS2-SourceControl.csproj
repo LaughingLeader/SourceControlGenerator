@@ -63,6 +63,9 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Controls\ProjectEntryControl.xaml.cs">
+      <DependentUpon>ProjectEntryControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Converters\EmptyListVisibilityConverter.cs" />
     <Compile Include="Controls\FileBrowseControl.xaml.cs">
       <DependentUpon>FileBrowseControl.xaml</DependentUpon>
@@ -83,6 +86,7 @@
     <Compile Include="Data\KeywordData.cs" />
     <Compile Include="Data\View\LogData.cs" />
     <Compile Include="Data\PropertyChangedBase.cs" />
+    <Compile Include="Data\View\ProjectEntryData.cs" />
     <Compile Include="Enum\FileBrowseType.cs" />
     <Compile Include="FileGen\GitGenerator.cs" />
     <Compile Include="Data\DefaultValues.cs" />
@@ -96,6 +100,10 @@
       <DependentUpon>LogWindow.xaml</DependentUpon>
     </Compile>
     <Page Include="Controls\FileBrowseControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\ProjectEntryControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -160,10 +168,26 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
-  <ItemGroup />
   <ItemGroup>
-    <Resource Include="Resources\Icons\Log_MouseOver.png" />
-    <Resource Include="Resources\Icons\Log_Normal.png" />
+    <Resource Include="Resources\Icons\7zipIcon.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Resources\Icons\GitLogo.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Icons\Log_MouseOver.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Resources\Icons\Log_Normal.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Icons\GitLogo_Disabled.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
