@@ -43,6 +43,7 @@ namespace LL.DOS2.SourceControl
 		public App()
 		{
 			LL.DOS2.SourceControl.Helpers.Init();
+			FileCommands.Init();
 
 			LogEntries = new ObservableCollection<LogData>();
 			Log.AllCallback = AddLogMessage;

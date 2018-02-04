@@ -9,69 +9,22 @@ using System.Windows;
 using System.Windows.Data;
 using System.Windows.Input;
 using LL.DOS2.SourceControl.Data;
+using LL.DOS2.SourceControl.Data.View;
 using Microsoft.Win32;
 using Newtonsoft.Json;
 
 namespace LL.DOS2.SourceControl.Core.Commands
 {
-	public class SaveDataConverter : IMultiValueConverter
-	{
-		public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
-		{
-			return values.Clone();
-		}
-
-		public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
-		{
-			throw new NotImplementedException();
-		}
-	}
-
-	public class SaveToFileCommand : ICommand
-	{
-		public event EventHandler CanExecuteChanged;
-
-		public bool CanExecute(object parameter)
-		{
-			return true;
-		}
-
-		public void Execute(object parameter)
-		{
-			var values = (object[])parameter;
-			string filePath = (String)values[0];
-
-			if(!String.IsNullOrEmpty(filePath))
-			{
-				Log.Here().Important("Attempting to save file: {0}", filePath);
-				if (values.Count() == 3)
-				{
-					string jsonMode = (String)values[2];
-					if (!string.IsNullOrEmpty(jsonMode) && values[1] != null)
-					{
-						string json = JsonConvert.SerializeObject(values[1], Newtonsoft.Json.Formatting.Indented);
-						FileCommands.WriteToFile(filePath, json);
-					}
-				}
-				else
-				{
-					string fileContents = (String)values[1];
-					if(fileContents != null)
-					{
-						FileCommands.WriteToFile(filePath, fileContents);
-					}
-				}
-			}
-		}
-	}
-
 	public class SaveCommands
 	{
 		private MainAppData Data { get; set; }
 
-		public SaveToFileCommand SaveCommand { get; set; }
+		public void SetData(MainAppData data)
+		{
+			Data = data;
+		}
 
-		public void OpenDialog(Window ParentWindow, string Title, string FilePath, string FileContent)
+		public void OpenDialogAndSave(Window ParentWindow, string Title, string FilePath, string FileContent, Action<bool, string> OnSave = null)
 		{
 			SaveFileDialog fileDialog = new SaveFileDialog();
 			fileDialog.Title = Title;
@@ -82,7 +35,23 @@ namespace LL.DOS2.SourceControl.Core.Commands
 			Nullable<bool> result = fileDialog.ShowDialog(ParentWindow);
 			if (result == true)
 			{
-				FileCommands.WriteToFile(fileDialog.FileName, FileContent);
+				bool success = FileCommands.WriteToFile(fileDialog.FileName, FileContent);
+				OnSave?.Invoke(success, fileDialog.FileName);
+			}
+		}
+
+		public void OpenDialog(Window ParentWindow, string Title, string FilePath, string FileContent, Action<string> SaveAction)
+		{
+			SaveFileDialog fileDialog = new SaveFileDialog();
+			fileDialog.Title = Title;
+			fileDialog.InitialDirectory = Directory.GetParent(FilePath).FullName;
+			fileDialog.FileName = Path.GetFileName(FilePath);
+			fileDialog.OverwritePrompt = true;
+
+			Nullable<bool> result = fileDialog.ShowDialog(ParentWindow);
+			if (result == true)
+			{
+				SaveAction?.Invoke(fileDialog.FileName);
 			}
 		}
 
@@ -97,20 +66,20 @@ namespace LL.DOS2.SourceControl.Core.Commands
 			}
 		}
 
-		public void SaveGitIgnore()
+		public void SaveGitIgnore(string content)
 		{
 			if (Data.AppSettings != null)
 			{
 				Log.Here().Activity("Saving .gitignore.default to {0}", Data.AppSettings.GitIgnoreFile);
 
-				if (FileCommands.IsPathValid(Data.AppSettings.GitIgnoreFile))
+				if (FileCommands.IsValidPath(Data.AppSettings.GitIgnoreFile))
 				{
-					FileCommands.WriteToFile(Data.AppSettings.GitIgnoreFile, Data.DefaultGitIgnoreText);
+					FileCommands.WriteToFile(Data.AppSettings.GitIgnoreFile, content);
 				}
 				else
 				{
 					Log.Here().Error("Invalid path for default .gitignore file: {0}. Using default path: {1}", Data.AppSettings.GitIgnoreFile, DefaultPaths.GitIgnore);
-					FileCommands.WriteToFile(DefaultPaths.GitIgnore, Data.DefaultGitIgnoreText);
+					FileCommands.WriteToFile(DefaultPaths.GitIgnore, content);
 				}
 			}
 		}
@@ -133,12 +102,6 @@ namespace LL.DOS2.SourceControl.Core.Commands
 					}
 				}
 			}
-		}
-
-		public SaveCommands(MainAppData AppData)
-		{
-			Data = AppData;
-			SaveCommand = new SaveToFileCommand();
 		}
 	}
 }

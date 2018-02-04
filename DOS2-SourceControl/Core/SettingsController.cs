@@ -121,7 +121,7 @@ namespace LL.DOS2.SourceControl.Core
 		{
 			mainWindow = MainAppWindow;
 			Data = new MainAppData();
-			FileCommands.Init(Data);
+			FileCommands.SetData(Data);
 			Start();
 		}
 	}

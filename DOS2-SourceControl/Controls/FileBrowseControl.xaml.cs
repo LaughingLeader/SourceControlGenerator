@@ -12,6 +12,7 @@ using Microsoft.Win32;
 using Ookii.Dialogs.Wpf;
 using LL.DOS2.SourceControl.Enum;
 using System.Windows.Input;
+using LL.DOS2.SourceControl.Core;
 
 namespace LL.DOS2.SourceControl.Controls
 {
@@ -20,7 +21,7 @@ namespace LL.DOS2.SourceControl.Controls
 	/// </summary>
 	public partial class FileBrowseControl : UserControl
 	{
-		public string BrowseText
+		public string OpenFileText
 		{
 			get { return (string)GetValue(BrowseTextProperty); }
 			set
@@ -75,7 +76,7 @@ namespace LL.DOS2.SourceControl.Controls
 		}
 
 		public static readonly DependencyProperty BrowseTextProperty =
-			DependencyProperty.Register("BrowseText", typeof(string),
+			DependencyProperty.Register("OpenFileText", typeof(string),
 			typeof(FileBrowseControl), new PropertyMetadata(""));
 
 		public static readonly DependencyProperty FileLocationTextProperty =
@@ -115,23 +116,6 @@ namespace LL.DOS2.SourceControl.Controls
 			InitializeComponent();
 
 			//this.DataContext = this;
-		}
-
-		private bool PathIsRelative(string path)
-		{
-			try
-			{
-				DirectoryInfo appDir = new DirectoryInfo(Directory.GetCurrentDirectory());
-				FileInfo file = new FileInfo(path);
-
-				if (file.FullName.Contains(appDir.FullName)) return true;
-			}
-			catch(Exception ex)
-			{
-				Log.Here().Error("Error in relative path check: {0}", ex.ToString());
-			}
-
-			return false;
 		}
 
 		private void FileBrowseButton_Click(object sender, RoutedEventArgs e)
@@ -175,7 +159,7 @@ namespace LL.DOS2.SourceControl.Controls
 			if (FileBrowseType == FileBrowseType.File)
 			{
 				OpenFileDialog fileDialog = new OpenFileDialog();
-				fileDialog.Title = BrowseText;
+				fileDialog.Title = OpenFileText;
 				fileDialog.InitialDirectory = LastFileLocation;
 				fileDialog.DefaultExt = DefaultExt;
 				fileDialog.Filter = Filter;
@@ -191,7 +175,7 @@ namespace LL.DOS2.SourceControl.Controls
 				{
 					string filename = fileDialog.FileName;
 
-					if(PathIsRelative(filename))
+					if(FileCommands.PathIsRelative(filename))
 					{
 						filename = Common.Functions.GetRelativePath.RelativePathGetter.Relative(Directory.GetCurrentDirectory(), fileDialog.FileName);
 					}
@@ -210,7 +194,7 @@ namespace LL.DOS2.SourceControl.Controls
 			{
 				VistaFolderBrowserDialog folderDialog = new VistaFolderBrowserDialog();
 				folderDialog.SelectedPath = LastFileLocation;
-				folderDialog.Description = BrowseText;
+				folderDialog.Description = OpenFileText;
 				folderDialog.UseDescriptionForTitle = true;
 				folderDialog.ShowNewFolderButton = true;		
 
@@ -219,7 +203,7 @@ namespace LL.DOS2.SourceControl.Controls
 				if(result == true)
 				{
 					string path = folderDialog.SelectedPath;
-					if (PathIsRelative(path))
+					if (FileCommands.PathIsRelative(path))
 					{
 						path = folderDialog.SelectedPath.Replace(Directory.GetCurrentDirectory(), "");
 					}

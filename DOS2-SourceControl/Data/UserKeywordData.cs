@@ -47,5 +47,15 @@ namespace LL.DOS2.SourceControl.Data
 				RaisePropertyChanged("Keywords");
 			}
 		}
+
+		public void ResetToDefault()
+		{
+			if (Keywords.Count > 0) Keywords.Clear();
+			Keywords.Add(new KeywordData());
+			Keywords.Add(new KeywordData());
+			Keywords.Add(new KeywordData());
+
+			DateCustom = "MMMM dd, yyyy";
+		}
 	}
 }

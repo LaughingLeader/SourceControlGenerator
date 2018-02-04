@@ -9,6 +9,8 @@ using LL.DOS2.SourceControl.Data;
 using LL.DOS2.SourceControl.Core.Commands;
 using System.Windows;
 using System.Windows.Input;
+using System.Text.RegularExpressions;
+using LL.DOS2.SourceControl.Data.View;
 
 namespace LL.DOS2.SourceControl.Core
 {
@@ -29,12 +31,12 @@ namespace LL.DOS2.SourceControl.Core
 				FileInfo file = new FileInfo(filePath);
 				File.WriteAllText(filePath, Contents);
 
-				Log.Here().Activity("Created file: {0}", filePath);
+				Log.Here().Activity("Saved file: {0}", filePath);
 				return true;
 			}
 			catch (Exception e)
 			{
-				Log.Here().Error("Error creating file at {0} - {1}", filePath, e.ToString());
+				Log.Here().Error("Error saving file at {0} - {1}", filePath, e.ToString());
 				return false;
 			}
 		}
@@ -82,39 +84,77 @@ namespace LL.DOS2.SourceControl.Core
 			}
 		}
 
+		/*
 		public static bool IsPathValid(String pathString)
 		{
 			Uri pathUri;
 			Boolean isValidUri = Uri.TryCreate(pathString, UriKind.Absolute, out pathUri);
 			return isValidUri && pathUri != null && pathUri.IsLoopback;
 		}
+		*/
 
-		public static void Init(MainAppData AppData)
+		public static bool IsValidPath(string path)
 		{
-			loadCommands = new LoadCommands(AppData);
-			saveCommands = new SaveCommands(AppData);
+			if (String.IsNullOrWhiteSpace(path)) return false;
+
+			if (PathIsRelative(path)) return true;
+
+			if (path.Length < 3) return false;
+
+						Regex driveCheck = new Regex(@"^[a-zA-Z]:\\$");
+
+			if (!driveCheck.IsMatch(path.Substring(0, 3)))
+			{
+				return false;
+			}
+
+			var x1 = (path.Substring(3, path.Length - 3));
+			string strTheseAreInvalidFileNameChars = new string(Path.GetInvalidPathChars());
+			strTheseAreInvalidFileNameChars += @":?*";
+			Regex containsABadCharacter = new Regex("[" + Regex.Escape(strTheseAreInvalidFileNameChars) + "]");
+
+			if (containsABadCharacter.IsMatch(path.Substring(3, path.Length - 3)))
+			{
+				return false;
+			}
+
+			var driveLetterWithColonAndSlash = Path.GetPathRoot(path);
+
+			if (!DriveInfo.GetDrives().Any(x => x.Name == driveLetterWithColonAndSlash))
+			{
+				return false;
+			}
+
+			return true;
 		}
-	}
 
-	public class FileCommand : ICommand
-	{
-		public event EventHandler CanExecuteChanged;
-
-		private Action RunAction;
-
-		public bool CanExecute(object parameter)
+		public static bool PathIsRelative(string path)
 		{
-			return RunAction != null;
+			try
+			{
+				DirectoryInfo appDir = new DirectoryInfo(Directory.GetCurrentDirectory());
+				FileInfo file = new FileInfo(path);
+
+				if (file.FullName.Contains(appDir.FullName)) return true;
+			}
+			catch (Exception ex)
+			{
+				Log.Here().Error("Error in relative path check: {0}", ex.ToString());
+			}
+
+			return false;
 		}
 
-		public void Execute(object parameter)
+		public static void Init()
 		{
-			RunAction?.Invoke();
+			loadCommands = new LoadCommands();
+			saveCommands = new SaveCommands();
 		}
 
-		public FileCommand(Action runAction)
+		public static void SetData(MainAppData AppData)
 		{
-			RunAction = runAction;
+			loadCommands.SetData(AppData);
+			saveCommands.SetData(AppData);
 		}
 	}
 }

@@ -12,8 +12,10 @@ using System.Xml;
 using System.ComponentModel;
 using System.Collections.ObjectModel;
 using LL.DOS2.SourceControl.Data.View;
+using LL.DOS2.SourceControl.Core;
+using LL.DOS2.SourceControl.Core.Commands;
 
-namespace LL.DOS2.SourceControl.Data
+namespace LL.DOS2.SourceControl.Data.View
 {
 	public class MainAppData : PropertyChangedBase
 	{
@@ -48,56 +50,6 @@ namespace LL.DOS2.SourceControl.Data
 			}
 		}
 
-
-		private string defaultGitIgnoreText;
-
-		public string DefaultGitIgnoreText
-		{
-			get { return defaultGitIgnoreText; }
-			set
-			{
-				defaultGitIgnoreText = value;
-				RaisePropertyChanged("DefaultGitIgnoreText");
-			}
-		}
-
-		private string defaultReadmeText;
-
-		public string DefaultReadmeText
-		{
-			get { return defaultReadmeText; }
-			set
-			{
-				defaultReadmeText = value;
-				RaisePropertyChanged("DefaultReadmeText");
-			}
-		}
-
-		private string defaultChangelogText;
-
-		public string DefaultChangelogText
-		{
-			get { return defaultChangelogText; }
-			set
-			{
-				defaultChangelogText = value;
-				RaisePropertyChanged("DefaultChangelogText");
-			}
-		}
-
-		private string customLicenseText;
-
-		public string CustomLicenseText
-		{
-			get { return customLicenseText; }
-			set
-			{
-				customLicenseText = value;
-				RaisePropertyChanged("CustomLicenseText");
-			}
-		}
-
-
 		private ObservableCollection<AvailableProjectViewData> availableProjects;
 
 		public ObservableCollection<AvailableProjectViewData> AvailableProjects
@@ -122,6 +74,7 @@ namespace LL.DOS2.SourceControl.Data
 			}
 		}
 
+		public ObservableCollection<TemplateEditorData> Templates { get; set; }
 		public ObservableCollection<KeywordData> AppKeyList { get; set; }
 		public ObservableCollection<KeywordData> DateKeyList { get; set; }
 
@@ -163,11 +116,27 @@ namespace LL.DOS2.SourceControl.Data
 			}
 		}
 
+		private CallbackCommand loadKeywords;
+
+		public CallbackCommand LoadKeywords
+		{
+			get { return loadKeywords; }
+			set
+			{
+				loadKeywords = value;
+				RaisePropertyChanged("LoadKeywords");
+			}
+		}
+
 
 		public MainAppData()
 		{
 			ManageButtonsText = "Select a Project";
 
+			LoadKeywords = new CallbackCommand(FileCommands.Load.LoadUserKeywords);
+
+			Templates = new ObservableCollection<TemplateEditorData>();
+			
 			AppKeyList = new ObservableCollection<KeywordData>();
 			AppKeyList.Add(new KeywordData()
 			{

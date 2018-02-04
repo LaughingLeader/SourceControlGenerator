@@ -7,33 +7,26 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
+using LL.DOS2.SourceControl.Controls;
 using LL.DOS2.SourceControl.Data;
 using LL.DOS2.SourceControl.Data.View;
+using LL.DOS2.SourceControl.Windows;
 using Microsoft.Win32;
 using Newtonsoft.Json;
+using Ookii.Dialogs.Wpf;
 
 namespace LL.DOS2.SourceControl.Core.Commands
 {
-	public class LoadKeywordsCommand : ICommand
-	{
-		public event EventHandler CanExecuteChanged;
-
-		public bool CanExecute(object parameter)
-		{
-			return FileCommands.Load != null;
-		}
-
-		public void Execute(object parameter)
-		{
-			FileCommands.Load.LoadUserKeywords();
-		}
-	}
-
 	public class LoadCommands
 	{
 		private MainAppData Data { get; set; }
 
-		public void OpenDialog(Window ParentWindow, string Title, string FilePath, Action<string> OnLoaded)
+		public void SetData(MainAppData data)
+		{
+			Data = data;
+		}
+
+		public void OpenFileDialog(Window ParentWindow, string Title, string FilePath, Action<string> OnFileSelected)
 		{
 			OpenFileDialog fileDialog = new OpenFileDialog();
 			fileDialog.Title = Title;
@@ -43,7 +36,29 @@ namespace LL.DOS2.SourceControl.Core.Commands
 			Nullable<bool> result = fileDialog.ShowDialog(ParentWindow);
 			if (result == true)
 			{
-				OnLoaded?.Invoke(fileDialog.FileName);
+				OnFileSelected?.Invoke(fileDialog.FileName);
+			}
+		}
+
+		public void OpenFolderDialog(Window ParentWindow, string Title, string FilePath, Action<string> OnFolderSelected)
+		{
+			VistaFolderBrowserDialog folderDialog = new VistaFolderBrowserDialog();
+			folderDialog.SelectedPath = FilePath;
+			folderDialog.Description = Title;
+			folderDialog.UseDescriptionForTitle = true;
+			folderDialog.ShowNewFolderButton = true;
+
+			Nullable<bool> result = folderDialog.ShowDialog(ParentWindow);
+
+			if (result == true)
+			{
+				string path = folderDialog.SelectedPath;
+				if (FileCommands.PathIsRelative(path))
+				{
+					path = folderDialog.SelectedPath.Replace(Directory.GetCurrentDirectory(), "");
+				}
+
+				OnFolderSelected?.Invoke(path);
 			}
 		}
 
@@ -82,66 +97,115 @@ namespace LL.DOS2.SourceControl.Core.Commands
 				Log.Here().Activity("DOS2 data directory set to {0}", Data.AppSettings.DOS2DataDirectory);
 			}
 
+		}
 
-			if (File.Exists(Data.AppSettings.GitIgnoreFile))
+		public void LoadTemplates()
+		{
+			string defaultIgnoreText = "";
+			string defaultReadmeText = "";
+			string defaultChangelogText = "";
+			string defaultLicenseText = "";
+
+			if (File.Exists(DefaultPaths.GitIgnore))
 			{
-				Data.DefaultGitIgnoreText = File.ReadAllText(Data.AppSettings.GitIgnoreFile);
-				Log.Here().Important("Loaded .gitignore template file at {0}", Data.AppSettings.GitIgnoreFile);
+				defaultIgnoreText = File.ReadAllText(DefaultPaths.GitIgnore);
 			}
 			else
 			{
-				if (File.Exists(DefaultPaths.GitIgnore))
-				{
-					Data.DefaultGitIgnoreText = File.ReadAllText(DefaultPaths.GitIgnore);
-				}
-				else
-				{
-					Data.DefaultGitIgnoreText = Properties.Resources.DefaultGitIgnore;
-					File.WriteAllText(DefaultPaths.GitIgnore, Data.DefaultGitIgnoreText);
-				}
+				defaultIgnoreText = Properties.Resources.DefaultGitIgnore;
+				File.WriteAllText(DefaultPaths.GitIgnore, defaultIgnoreText);
+			}
+
+			if (File.Exists(DefaultPaths.ReadmeTemplate))
+			{
+				defaultReadmeText = File.ReadAllText(DefaultPaths.ReadmeTemplate);
+			}
+			else
+			{
+				defaultReadmeText = Properties.Resources.DefaultReadme;
+				File.WriteAllText(DefaultPaths.ReadmeTemplate, defaultReadmeText);
+			}
+
+			if (File.Exists(DefaultPaths.ChangelogTemplate))
+			{
+				defaultChangelogText = File.ReadAllText(DefaultPaths.ChangelogTemplate);
+			}
+			else
+			{
+				defaultChangelogText = Properties.Resources.DefaultChangelog;
+				File.WriteAllText(DefaultPaths.ChangelogTemplate, defaultChangelogText);
+			}
+
+			
+
+			
+
+
+			string ignoreText = defaultIgnoreText;
+			string readmeText = defaultReadmeText;
+			string changelogText = defaultChangelogText;
+			string licenseText = defaultLicenseText;
+
+			if (File.Exists(Data.AppSettings.GitIgnoreFile))
+			{
+				ignoreText = File.ReadAllText(Data.AppSettings.GitIgnoreFile);
+				Log.Here().Important("Loaded .gitignore template file at {0}", Data.AppSettings.GitIgnoreFile);
 			}
 
 			if (File.Exists(Data.AppSettings.ReadmeTemplateFile))
 			{
-				Data.DefaultReadmeText = File.ReadAllText(Data.AppSettings.ReadmeTemplateFile);
+				readmeText = File.ReadAllText(Data.AppSettings.ReadmeTemplateFile);
 				Log.Here().Important("Loaded readme template file at {0}", Data.AppSettings.ReadmeTemplateFile);
-			}
-			else
-			{
-				if (File.Exists(DefaultPaths.ReadmeTemplate))
-				{
-					Data.DefaultReadmeText = File.ReadAllText(DefaultPaths.ReadmeTemplate);
-				}
-				else
-				{
-					Data.DefaultReadmeText = Properties.Resources.DefaultReadme;
-					File.WriteAllText(DefaultPaths.ReadmeTemplate, Data.DefaultReadmeText);
-				}
 			}
 
 			if (File.Exists(Data.AppSettings.ChangelogTemplateFile))
 			{
-				Data.DefaultChangelogText = File.ReadAllText(Data.AppSettings.ChangelogTemplateFile);
+				changelogText = File.ReadAllText(Data.AppSettings.ChangelogTemplateFile);
 				Log.Here().Important("Loaded changelog template file at {0}", Data.AppSettings.ChangelogTemplateFile);
-			}
-			else
-			{
-				if (File.Exists(DefaultPaths.ChangelogTemplate))
-				{
-					Data.DefaultChangelogText = File.ReadAllText(DefaultPaths.ChangelogTemplate);
-				}
-				else
-				{
-					Data.DefaultChangelogText = Properties.Resources.DefaultChangelog;
-					File.WriteAllText(DefaultPaths.ChangelogTemplate, Data.DefaultChangelogText);
-				}
 			}
 
 			if (File.Exists(Data.AppSettings.CustomLicenseFile))
 			{
-				Data.CustomLicenseText = File.ReadAllText(Data.AppSettings.CustomLicenseFile);
+				licenseText = File.ReadAllText(Data.AppSettings.CustomLicenseFile);
 				Log.Here().Important("Custom license file found and loaded.");
 			}
+
+			Data.Templates.Add(new TemplateEditorData(
+				".gitignore",
+				"Default GitIgnore Template",
+				defaultIgnoreText,
+				ignoreText,
+				() => { return Data.AppSettings.GitIgnoreFile; },
+				(string val) => { Data.AppSettings.GitIgnoreFile = val; },
+				TooltipText.GitIgnore
+			));
+			Data.Templates.Add(new TemplateEditorData(
+				"README.md",
+				"Default Readme Template",
+				defaultReadmeText,
+				readmeText,
+				() => { return Data.AppSettings.ReadmeTemplateFile; },
+				(string val) => { Data.AppSettings.ReadmeTemplateFile = val; },
+				TooltipText.Readme
+			));
+			Data.Templates.Add(new TemplateEditorData(
+				"CHANGELOG.md",
+				"Default Changelog Template",
+				defaultChangelogText,
+				changelogText,
+				() => { return Data.AppSettings.ChangelogTemplateFile; },
+				(string val) => { Data.AppSettings.ChangelogTemplateFile = val; },
+				TooltipText.Changelog
+			));
+			Data.Templates.Add(new TemplateEditorData(
+				"Custom License",
+				"Custom License Template",
+				defaultLicenseText,
+				licenseText,
+				() => { return Data.AppSettings.CustomLicenseFile; },
+				(string val) => { Data.AppSettings.CustomLicenseFile = val; },
+				TooltipText.CustomLicense
+			));
 		}
 
 		public void LoadDirectoryLayout()
@@ -316,6 +380,13 @@ namespace LL.DOS2.SourceControl.Core.Commands
 					}
 				}
 			}
+
+			/*
+			Data.AvailableProjects.Add(new AvailableProjectViewData()
+			{
+				Name = "TestMod"
+			});
+			*/
 		}
 
 		public void LoadModProjects()
@@ -364,7 +435,7 @@ namespace LL.DOS2.SourceControl.Core.Commands
 				}
 				else
 				{
-					Log.Here().Error("Loading available projects failed. DOS2 data directory not found.");
+					Log.Here().Error("Loading available projects failed. DOS2 data directory not found at {0}", Data.AppSettings.DOS2DataDirectory);
 				}
 			}
 		}
@@ -373,7 +444,28 @@ namespace LL.DOS2.SourceControl.Core.Commands
 		{
 			if (Data != null && Data.AppSettings != null)
 			{
-				LoadUserKeywords(Data.AppSettings.KeywordsFile);
+				
+				if(File.Exists(Data.AppSettings.KeywordsFile))
+				{
+					LoadUserKeywords(Data.AppSettings.KeywordsFile);
+				}
+				else
+				{
+					if(File.Exists(DefaultPaths.Keywords))
+					{
+						LoadUserKeywords(DefaultPaths.Keywords);
+					}
+					else
+					{
+						if (Data.UserKeywords == null)
+						{
+							Data.UserKeywords = new UserKeywordData();
+							Data.UserKeywords.ResetToDefault();
+
+							FileCommands.Save.SaveUserKeywords();
+						}
+					}
+				}
 			}
 		}
 
@@ -396,22 +488,7 @@ namespace LL.DOS2.SourceControl.Core.Commands
 			}
 			else
 			{
-				Log.Here().Important("Keywords.json not set or AppSettings is null. Skipping.");
-			}
-
-			if (Data.UserKeywords == null)
-			{
-				Data.UserKeywords = new UserKeywordData()
-				{
-					DateCustom = "MMMM dd, yyyy",
-					Keywords = new ObservableCollection<KeywordData>()
-					{
-						new KeywordData(),
-						new KeywordData(),
-						new KeywordData(),
-						new KeywordData()
-					}
-				};
+				MainWindow.FooterLog("Problem loading keywords file at file path \"{0}\"", filePath);
 			}
 		}
 
@@ -419,16 +496,12 @@ namespace LL.DOS2.SourceControl.Core.Commands
 		{
 			LoadAppSettings();
 			LoadDirectoryLayout();
+			LoadTemplates();
 			LoadUserKeywords();
 			LoadModProjects();
 			LoadGitProjects();
 			LoadManagedProjects();
 			LoadAvailableProjects();
-		}
-
-		public LoadCommands(MainAppData AppData)
-		{
-			this.Data = AppData;
 		}
 	}
 }

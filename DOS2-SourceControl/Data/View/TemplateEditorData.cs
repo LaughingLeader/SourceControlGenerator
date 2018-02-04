@@ -1,13 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using LL.DOS2.SourceControl.Controls;
+using LL.DOS2.SourceControl.Core;
+using LL.DOS2.SourceControl.Core.Commands;
+using LL.DOS2.SourceControl.Util;
+using LL.DOS2.SourceControl.Windows;
 
 namespace LL.DOS2.SourceControl.Data.View
 {
-    public class TemplateEditorData : PropertyChangedBase
-    {
+	public class TemplateEditorData : PropertyChangedBase
+	{
 		private string name;
 
 		public string Name
@@ -32,15 +38,40 @@ namespace LL.DOS2.SourceControl.Data.View
 			}
 		}
 
-		private string browseText;
+		private string editorText;
 
-		public string BrowseText
+		public string EditorText
 		{
-			get { return browseText; }
+			get { return editorText; }
 			set
 			{
-				browseText = value;
-				RaisePropertyChanged("BrowseText");
+				editorText = value;
+				RaisePropertyChanged("EditorText");
+			}
+		}
+
+
+		private string openFileText;
+
+		public string OpenFileText
+		{
+			get { return openFileText; }
+			set
+			{
+				openFileText = value;
+				RaisePropertyChanged("OpenFileText");
+			}
+		}
+
+		private string saveAsText;
+
+		public string SaveAsText
+		{
+			get { return saveAsText; }
+			set
+			{
+				saveAsText = value;
+				RaisePropertyChanged("SaveAsText");
 			}
 		}
 
@@ -68,9 +99,22 @@ namespace LL.DOS2.SourceControl.Data.View
 			}
 		}
 
-		private Action saveCommand;
+		private Func<string> GetFilePath;
+		private Action<string> SetFilePath;
 
-		public Action SaveCommand
+		public string FilePath
+		{
+			get { return GetFilePath != null ? GetFilePath.Invoke() : ""; }
+			set
+			{
+				SetFilePath?.Invoke(value);
+				RaisePropertyChanged("FilePath");
+			}
+		}
+
+		private SaveFileCommand saveCommand;
+
+		public SaveFileCommand SaveCommand
 		{
 			get { return saveCommand; }
 			set
@@ -80,9 +124,9 @@ namespace LL.DOS2.SourceControl.Data.View
 			}
 		}
 
-		private Action saveAsCommand;
+		private SaveFileAsCommand saveAsCommand;
 
-		public Action SaveAsCommand
+		public SaveFileAsCommand SaveAsCommand
 		{
 			get { return saveAsCommand; }
 			set
@@ -92,9 +136,9 @@ namespace LL.DOS2.SourceControl.Data.View
 			}
 		}
 
-		private Action openCommand;
+		private ActionCommand openCommand;
 
-		public Action OpenCommand
+		public ActionCommand OpenCommand
 		{
 			get { return openCommand; }
 			set
@@ -104,5 +148,74 @@ namespace LL.DOS2.SourceControl.Data.View
 			}
 		}
 
+		public void SetToDefault()
+		{
+			EditorText = DefaultEditorText;
+			RaisePropertyChanged("EditorText");
+		}
+
+		public TemplateEditorData() { }
+
+		public TemplateEditorData(string TemplateName, string Label, string DefaultText, string Text, Func<string> getFilePath, Action<string> setFilePath, string Tooltip = "", string BrowseFileText = "")
+		{
+			Name = TemplateName;
+			LabelText = Label;
+			DefaultEditorText = DefaultText;
+			EditorText = Text;
+
+			GetFilePath = getFilePath;
+			SetFilePath = setFilePath;
+
+			TooltipText = Tooltip;
+			if(String.IsNullOrEmpty(BrowseFileText))
+			{
+				OpenFileText = "Select " + LabelText;
+			}
+			else
+			{
+				OpenFileText = BrowseFileText;
+			}
+
+			SaveAsText = "Save " + Name + " As...";
+
+			OpenCommand = new ActionCommand((object param) => 
+			{
+				FileBrowseControl fileBrowseControl = (FileBrowseControl)param;
+				if (fileBrowseControl != null)
+				{
+					FilePath = fileBrowseControl.FileLocationText;
+					EditorText = File.ReadAllText(FilePath);
+				}
+			});
+
+			SaveCommand = new SaveFileCommand((bool success) =>
+			{
+				if (success)
+				{
+					MainWindow.FooterLog("Saved {0} to {1}", Name, FilePath);
+				}
+				else
+				{
+					MainWindow.FooterLog("Error saving {0} to {1}", Name, FilePath);
+				}
+			});
+
+			SaveAsCommand = new SaveFileAsCommand((bool success, string path) =>
+			{
+				if (success)
+				{
+					if (FileCommands.PathIsRelative(path))
+					{
+						path = Common.Functions.GetRelativePath.RelativePathGetter.Relative(Directory.GetCurrentDirectory(), path);
+					}
+					FilePath = path;
+					MainWindow.FooterLog("Saved {0} to {1}", Name, FilePath);
+				}
+				else
+				{
+					MainWindow.FooterLog("Error saving {0} to {1}", Name, path);
+				}
+			});
+		}
 	}
 }

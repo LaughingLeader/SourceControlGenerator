@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -104,32 +105,19 @@ namespace LL.DOS2.SourceControl.Windows
 
 		private static MainWindow _instance;
 
-		public static void FooterLog(LogType logType, string Message, params object[] Vars)
+		public static void FooterLog(string Message, params object[] Vars)
 		{
 			if (_instance != null)
 			{
 				Message = String.Format(Message, Vars);
 				_instance.FooterOutputText = Message;
-				_instance.FooterOutputType = logType;
+				_instance.FooterOutputType = LogType.Important;
 				_instance.FooterOutputDate = DateTime.Now.ToShortTimeString();
-				Log.AllCallback?.Invoke(Message, logType);
+				Log.AllCallback?.Invoke(Message, LogType.Important);
 			}
 		}
 
 		//public LoadKeywordsCommand LoadKeywords { get; set; }
-
-		private FileCommand loadKeywords;
-
-		public FileCommand LoadKeywords
-		{
-			get { return loadKeywords; }
-			set
-			{
-				loadKeywords = value;
-				RaisePropertyChanged("LoadKeywords");
-			}
-		}
-
 
 		public MainWindow()
 		{
@@ -144,10 +132,13 @@ namespace LL.DOS2.SourceControl.Windows
 			managedProjectsViewSource = (CollectionViewSource)(FindResource("ManagedProjectsViewSource"));
 			managedProjectsViewSource.Source = SettingsController.Data.ManagedProjects;
 
-			LoadKeywords = new FileCommand(FileCommands.Load.LoadUserKeywords);
-
 			logWindow = new LogWindow();
 			logWindow.Hide();
+		}
+
+		internal static void FooterLog(object important, string v, string labelText, object templateFileLocationText)
+		{
+			throw new NotImplementedException();
 		}
 
 		private void HandleColumnHeaderSizeChanged(object sender, SizeChangedEventArgs sizeChangedEventArgs)
@@ -242,22 +233,39 @@ namespace LL.DOS2.SourceControl.Windows
 		{
 			if(FileCommands.WriteToFile(this.SettingsController.Data.AppSettings.KeywordsFile, this.SettingsController.Data.KeywordListText))
 			{
-				FooterLog(LogType.Important, "Saved Keywords to {0}", this.SettingsController.Data.AppSettings.KeywordsFile);
+				FooterLog("Saved Keywords to {0}", this.SettingsController.Data.AppSettings.KeywordsFile);
 			}
 			else
 			{
-				FooterLog(LogType.Important, "Error saving Keywords to {0}", this.SettingsController.Data.AppSettings.KeywordsFile);
+				FooterLog("Error saving Keywords to {0}", this.SettingsController.Data.AppSettings.KeywordsFile);
+			}
+		}
+
+		private void OnKeywordsSaveAs(bool success, string path)
+		{
+			if (success)
+			{
+				if(FileCommands.PathIsRelative(path))
+				{
+					path = Common.Functions.GetRelativePath.RelativePathGetter.Relative(Directory.GetCurrentDirectory(), path);
+				}
+				this.SettingsController.Data.AppSettings.KeywordsFile = path;
+				MainWindow.FooterLog("Saved Keywords to {0}", path);
+			}
+			else
+			{
+				MainWindow.FooterLog("Error saving Keywords to {0}", path);
 			}
 		}
 
 		private void SaveAsKeywordsButton_Click(object sender, RoutedEventArgs e)
 		{
-			FileCommands.Save.OpenDialog(this, "Save Keywords", this.SettingsController.Data.AppSettings.KeywordsFile, this.SettingsController.Data.KeywordListText);
+			FileCommands.Save.OpenDialogAndSave(this, "Save Keywords", this.SettingsController.Data.AppSettings.KeywordsFile, this.SettingsController.Data.KeywordListText, OnKeywordsSaveAs);
 		}
 
 		private void OpenKeywordsButton_Click(object sender, RoutedEventArgs e)
 		{
-			FileCommands.Load.OpenDialog(this, "Open Keywords", this.SettingsController.Data.AppSettings.KeywordsFile, FileCommands.Load.LoadUserKeywords);
+			FileCommands.Load.OpenFileDialog(this, "Open Keywords", this.SettingsController.Data.AppSettings.KeywordsFile, FileCommands.Load.LoadUserKeywords);
 		}
 
 		private void KeywordsList_Add_Click(object sender, RoutedEventArgs e)
@@ -272,13 +280,9 @@ namespace LL.DOS2.SourceControl.Windows
 
 		private void KeywordsList_Default_Click(object sender, RoutedEventArgs e)
 		{
-			FileCommands.OpenConfirmationDialog(this, "Reset Keyword List", "Reset Keyword values to default?", "Confirm or Cancel", () =>
+			FileCommands.OpenConfirmationDialog(this, "Reset Keyword List?", "Reset Keyword values to default?", "Changes will be lost.", () =>
 			{
-				SettingsController.Data.UserKeywords.Keywords.Clear();
-				SettingsController.Data.UserKeywords.Keywords.Add(new KeywordData());
-				SettingsController.Data.UserKeywords.Keywords.Add(new KeywordData());
-				SettingsController.Data.UserKeywords.Keywords.Add(new KeywordData());
-				SettingsController.Data.UserKeywords.Keywords.Add(new KeywordData());
+				SettingsController.Data.UserKeywords.ResetToDefault();
 			});
 		}
 

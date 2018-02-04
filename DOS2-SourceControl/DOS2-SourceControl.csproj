@@ -73,15 +73,22 @@
     <Compile Include="Converters\FooterOutputColorConverter.cs" />
     <Compile Include="Converters\LogTypeColorConverter.cs" />
     <Compile Include="Controls\PaddedGridViewColumnHeader.cs" />
-    <Compile Include="Controls\TemplateEditor.xaml.cs">
-      <DependentUpon>TemplateEditor.xaml</DependentUpon>
+    <Compile Include="Controls\TemplateEditorControl.xaml.cs">
+      <DependentUpon>TemplateEditorControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="Controls\TemplateKeywordControl.xaml.cs">
       <DependentUpon>TemplateKeywordControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="Controls\TooltipText.cs" />
-    <Compile Include="Core\Commands\LoadCommands.cs" />
-    <Compile Include="Core\Commands\SaveCommands.cs" />
+    <Compile Include="Core\Commands\ActionCommand.cs" />
+    <Compile Include="Core\Commands\CallbackCommand.cs" />
+    <Compile Include="Core\SubFileCommands\LoadCommands.cs" />
+    <Compile Include="Core\Commands\OpenFileBrowseCommand.cs" />
+    <Compile Include="Core\Commands\OpenFileCommand.cs" />
+    <Compile Include="Core\Commands\RelayCommand.cs" />
+    <Compile Include="Core\Commands\SaveFileAsCommand.cs" />
+    <Compile Include="Core\SubFileCommands\SaveCommands.cs" />
+    <Compile Include="Core\Commands\SaveFileCommand.cs" />
     <Compile Include="Core\FileCommands.cs" />
     <Compile Include="Data\KeywordData.cs" />
     <Compile Include="Data\UserKeywordData.cs" />
@@ -92,7 +99,7 @@
     <Compile Include="Extensions\Extensions.cs" />
     <Compile Include="FileGen\GitGenerator.cs" />
     <Compile Include="Data\DefaultValues.cs" />
-    <Compile Include="Data\MainAppData.cs" />
+    <Compile Include="Data\View\MainAppData.cs" />
     <Compile Include="Data\AppSettingsData.cs" />
     <Compile Include="Util\Log.cs" />
     <Compile Include="Core\SettingsController.cs" />
@@ -109,7 +116,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Controls\TemplateEditor.xaml">
+    <Page Include="Controls\TemplateEditorControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -194,5 +201,6 @@
   <ItemGroup>
     <Resource Include="Resources\Icons\Folder.png" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

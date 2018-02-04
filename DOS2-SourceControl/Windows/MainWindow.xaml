@@ -8,33 +8,19 @@
 		xmlns:cv="clr-namespace:LL.DOS2.SourceControl.Converters"
 		xmlns:fc="clr-namespace:LL.DOS2.SourceControl.Core.Commands"
 		xmlns:core="clr-namespace:LL.DOS2.SourceControl.Core"
+		xmlns:vdata="clr-namespace:LL.DOS2.SourceControl.Data.View"
 		mc:Ignorable="d"
-		Title="DOS2 Source Control Helper" Height="600" Width="800" Loaded="Window_Loaded" Closing="MainAppWindow_Closing">
+		Title="DOS2 Source Control Helper" Height="600" Width="800" Loaded="Window_Loaded" Closing="MainAppWindow_Closing"
+		WindowStartupLocation="CenterOwner"
+		>
 	<Window.Resources>
 		<cv:EmptyListVisibilityConverter x:Key="EmptyListVisibilityConverter"/>
 		<cv:FooterOutputColorConverter x:Key="FooterOutputColorConverter"/>
-		<fc:SaveDataConverter x:Key="SaveDataConverter"/>
 		<CollectionViewSource x:Key="ActiveProjectsViewSource" CollectionViewType="ListCollectionView"/>
 		<CollectionViewSource x:Key="ManagedProjectsViewSource" CollectionViewType="ListCollectionView"/>
 		<DataTemplate x:Key="AlternatingKeywordsTemplate" DataType="c:TemplateKeywordControl">
-			<c:TemplateKeywordControl DataContext="{Binding}" KeywordName="{Binding KeywordName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" KeywordValue="{Binding KeywordValue, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
-				<c:TemplateKeywordControl.Style>
-					<Style TargetType="{x:Type c:TemplateKeywordControl}">
-						<Style.Triggers>
-							<DataTrigger Binding="{Binding Path=(ItemsControl.AlternationIndex), 
-												   RelativeSource={RelativeSource AncestorType={x:Type c:TemplateKeywordControl}}}" 
-								 Value="0">
-								<Setter Property="Background" Value="White" />
-							</DataTrigger>
-							<DataTrigger Binding="{Binding Path=(ItemsControl.AlternationIndex), 
-												   RelativeSource={RelativeSource AncestorType={x:Type c:TemplateKeywordControl}}}" 
-								 Value="1">
-								<Setter Property="Background" Value="LightGray" />
-							</DataTrigger>
-						</Style.Triggers>
-					</Style>
-				</c:TemplateKeywordControl.Style>
-			</c:TemplateKeywordControl>
+			<c:TemplateKeywordControl DataContext="{Binding}" KeywordName="{Binding KeywordName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
+									  KeywordValue="{Binding KeywordValue, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
 		</DataTemplate>
 		<SolidColorBrush x:Key="Expander.MouseOver.Circle.Stroke" Color="#FF5593FF"/>
 		<SolidColorBrush x:Key="Expander.MouseOver.Circle.Fill" Color="#FFF3F9FF"/>
@@ -319,7 +305,7 @@
 				</MenuItem>
 			</Menu>
 		</DockPanel>
-		<TabControl Grid.Row="1" SelectionChanged="PreventInitialTextboxFocus" BorderThickness="0,1,0,0">
+		<TabControl x:Name="MainTabsControl" Grid.Row="1" SelectionChanged="PreventInitialTextboxFocus" BorderThickness="0,1,0,0">
 			<TabItem Header="Projects">
 				<Grid x:Name="Projects_ParentGrid" Width="Auto" Height="Auto">
 					<Grid.ColumnDefinitions>
@@ -462,205 +448,193 @@
 				</Grid>
 			</TabItem>
 			<TabItem Header="Templates">
-				<TabControl TabStripPlacement="Left" Padding="5,0,0,0" BorderThickness="1,0,0,0" Background="{DynamicResource {x:Static SystemColors.ControlLightBrushKey}}">
-					<TabItem Header=".gitignore" >
-						<c:TemplateEditor LabelText="Default .gitignore Template" 
-							TooltipText="{x:Static c:TooltipText.GitIgnore}" 
-							EditorText="{Binding DefaultGitIgnoreText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
-							BrowseText="Select Default .gitignore File" TemplateFileLocationText="{Binding AppSettings.GitIgnoreFile, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-							/>
-					</TabItem>
-					<TabItem Header="README.md" >
-						<c:TemplateEditor LabelText="Default Readme Template" 
-							TooltipText="{x:Static c:TooltipText.Readme}" 
-							EditorText="{Binding DefaultReadmeText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
-							BrowseText="Select Readme Template File" TemplateFileLocationText="{Binding AppSettings.ReadmeTemplateFile, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-							/>
-					</TabItem>
-					<TabItem Header="CHANGELOG.md" >
-						<c:TemplateEditor LabelText="Default Changelog Template" 
-							TooltipText="{x:Static c:TooltipText.Changelog}" 
-							EditorText="{Binding DefaultChangelogText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
-							BrowseText="Select Changelog Template File" TemplateFileLocationText="{Binding AppSettings.ChangelogTemplateFile, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-							/>
-					</TabItem>
-					<TabItem Header="Custom License" >
-						<c:TemplateEditor LabelText="Custom License Template" 
-							TooltipText="{x:Static c:TooltipText.CustomLicense}" 
-							EditorText="{Binding CustomLicenseText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
-							BrowseText="Select Custom License Template File" TemplateFileLocationText="{Binding AppSettings.CustomLicenseFile, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"			  
-							/>
-					</TabItem>
-					<TabItem Header="Keywords">
-						<TabItem.Resources>
-							<Style x:Key="KeywordBorderStyle" TargetType="Border">
-								<!-- <Border BorderThickness="1" Grid.Row="0" BorderBrush="{DynamicResource }" Background="{DynamicResource {x:Static SystemColors.MenuBrushKey}}" >-->
-								<Setter Property="BorderThickness" Value="1"/>
-								<Setter Property="BorderBrush">
-									<Setter.Value>
-										<SolidColorBrush Color="{x:Static SystemColors.ControlLightColor}" />
-									</Setter.Value>
-								</Setter>
-								<Setter Property="Background">
-									<Setter.Value>
-										<SolidColorBrush Color="{x:Static SystemColors.MenuColor}" />
-									</Setter.Value>
-								</Setter>
-							</Style>
-							<Style x:Key="KeywordBorderStyleMouseOver" TargetType="Border">
-								<!-- <Border BorderThickness="1" Grid.Row="0" BorderBrush="{DynamicResource }" Background="{DynamicResource {x:Static SystemColors.MenuBrushKey}}" >-->
-								<Setter Property="BorderThickness" Value="1"/>
-								<Setter Property="BorderBrush">
-									<Setter.Value>
-										<SolidColorBrush Color="{x:Static SystemColors.ControlLightColor}" />
-									</Setter.Value>
-								</Setter>
-								<Setter Property="Background">
-									<Setter.Value>
-										<SolidColorBrush Color="{x:Static SystemColors.MenuColor}" />
-									</Setter.Value>
-								</Setter>
-								<Style.Triggers>
-									<Trigger Property="IsMouseOver" Value="true">
-										<Setter Property="Background">
+				<TabControl TabStripPlacement="Left" Padding="5,0,0,0" BorderThickness="1,0,0,0" Background="{DynamicResource {x:Static SystemColors.ControlLightBrushKey}}" >
+					<TabControl.Resources>
+						<CollectionViewSource x:Key="TemplateTabs" Source="{Binding Templates}"/>
+						<DataTemplate DataType="{x:Type vdata:TemplateEditorData}">
+							<c:TemplateEditorControl DataContext="{Binding}" TemplateData="{Binding}" />
+						</DataTemplate>
+						<Style TargetType="{x:Type TabItem}">
+							<Setter Property="Header" Value="{Binding Path=Name}" />
+						</Style>
+						<Style TargetType="{x:Type c:TemplateEditorControl}">
+							
+						</Style>
+					</TabControl.Resources>
+					<TabControl.ItemsSource>
+						<CompositeCollection>
+							<CollectionContainer Collection="{Binding Source={StaticResource TemplateTabs}}" />
+							<TabItem x:Name="KeywordsTab" Header="Keywords" Style="{x:Null}">
+								<TabItem.Resources>
+									<Style x:Key="KeywordBorderStyle" TargetType="Border">
+										<!-- <Border BorderThickness="1" Grid.Row="0" BorderBrush="{DynamicResource }" Background="{DynamicResource {x:Static SystemColors.MenuBrushKey}}" >-->
+										<Setter Property="BorderThickness" Value="1"/>
+										<Setter Property="BorderBrush">
 											<Setter.Value>
-												<SolidColorBrush Color="{x:Static SystemColors.ControlLightLightColor}" />
+												<SolidColorBrush Color="{x:Static SystemColors.ControlLightColor}" />
 											</Setter.Value>
 										</Setter>
-									</Trigger>
-								</Style.Triggers>
-							</Style>
-						</TabItem.Resources>
-						<Grid Background="{DynamicResource {x:Static SystemColors.WindowBrushKey}}">
-							<Grid.RowDefinitions>
-								<RowDefinition Height="Auto" />
-								<RowDefinition Height="*" />
-								<RowDefinition Height="Auto" />
-							</Grid.RowDefinitions>
-							<Grid Grid.Row="0" Width="Auto" Height="Auto" x:Name="KeywordsHeaderControls" >
-								<Grid.ColumnDefinitions>
-									<ColumnDefinition Width="Auto"/>
-									<ColumnDefinition Width="*"/>
-								</Grid.ColumnDefinitions>
-								<Label x:Name="TemplateLabel" Content="Template Keywords" Grid.Column="0" Width="Auto" HorizontalAlignment="Left" VerticalAlignment="Center" ToolTip="{x:Static c:TooltipText.TemplateKeywords}" Padding="2,0,50,0">
-									<Label.Style>
-										<Style TargetType="Label">
-											<Setter Property="Foreground" Value="Black" />
-											<Style.Triggers>
-												<Trigger Property="IsMouseOver" Value="True">
-													<Setter Property="Foreground" Value="#FF3A6FFF" />
-												</Trigger>
-											</Style.Triggers>
-										</Style>
-									</Label.Style>
-								</Label>
-								<StackPanel Grid.Column="1" HorizontalAlignment="Right" x:Name="KeywordCommandsGrid" Orientation="Horizontal">
-									<StackPanel.Resources>
-										<Style TargetType="Button">
-											<Setter Property="Margin" Value="1,0" />
-											<Setter Property="Padding" Value="4,2" />
-										</Style>
-									</StackPanel.Resources>
-									<c:FileBrowseControl BrowseText="Select Keywords File" FileLocationText="{Binding AppSettings.KeywordsFile, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-									OnOpen="{Binding LoadKeywords, ElementName=MainAppWindow}"/>
-									<Button x:Name="SaveKeywordsButton" Content="Save" Click="SaveKeywordsButton_Click" />
-									<Button x:Name="SaveAsKeywordsButton" Content="Save As..." Click="SaveAsKeywordsButton_Click" />
-									<!--<Button x:Name="OpenKeywordsButton" Content="Open..." Click="OpenKeywordsButton_Click" />-->
-									<Button Content="Default..." Click="KeywordsList_Default_Click" ToolTip="Reset Keywords to Default" />
-								</StackPanel>
-							</Grid>
-							<ScrollViewer Grid.Row="1" x:Name="KeywordListScrollViewer" VerticalScrollBarVisibility="Auto" Background="{DynamicResource {x:Static SystemColors.ScrollBarBrushKey}}" >
-								<Grid x:Name="KeywordListGrid"  Margin="50,10,50,0">
+										<Setter Property="Background">
+											<Setter.Value>
+												<SolidColorBrush Color="{x:Static SystemColors.MenuColor}" />
+											</Setter.Value>
+										</Setter>
+									</Style>
+									<Style x:Key="KeywordBorderStyleMouseOver" TargetType="Border">
+										<!-- <Border BorderThickness="1" Grid.Row="0" BorderBrush="{DynamicResource }" Background="{DynamicResource {x:Static SystemColors.MenuBrushKey}}" >-->
+										<Setter Property="BorderThickness" Value="1"/>
+										<Setter Property="BorderBrush">
+											<Setter.Value>
+												<SolidColorBrush Color="{x:Static SystemColors.ControlLightColor}" />
+											</Setter.Value>
+										</Setter>
+										<Setter Property="Background">
+											<Setter.Value>
+												<SolidColorBrush Color="{x:Static SystemColors.MenuColor}" />
+											</Setter.Value>
+										</Setter>
+										<Style.Triggers>
+											<Trigger Property="IsMouseOver" Value="true">
+												<Setter Property="Background">
+													<Setter.Value>
+														<SolidColorBrush Color="{x:Static SystemColors.ControlLightLightColor}" />
+													</Setter.Value>
+												</Setter>
+											</Trigger>
+										</Style.Triggers>
+									</Style>
+								</TabItem.Resources>
+								<Grid Background="{DynamicResource {x:Static SystemColors.WindowBrushKey}}">
 									<Grid.RowDefinitions>
 										<RowDefinition Height="Auto" />
 										<RowDefinition Height="*" />
+										<RowDefinition Height="Auto" />
 									</Grid.RowDefinitions>
-									<ScrollViewer Grid.Row="0" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
-										<Grid x:Name="DefaultKeywords" >
-											<Grid.Resources>
-												<Style TargetType="c:TemplateKeywordControl">
-													<Setter Property="KeywordNameReadOnly" Value="True"/>
-													<Setter Property="KeywordValueReadOnly" Value="True"/>
+									<Grid Grid.Row="0" Width="Auto" Height="Auto" x:Name="KeywordsHeaderControls" >
+										<Grid.ColumnDefinitions>
+											<ColumnDefinition Width="Auto"/>
+											<ColumnDefinition Width="*"/>
+										</Grid.ColumnDefinitions>
+										<Label x:Name="TemplateLabel" Content="Template Keywords" Grid.Column="0" Width="Auto" HorizontalAlignment="Left" VerticalAlignment="Center" ToolTip="{x:Static c:TooltipText.TemplateKeywords}" Padding="2,0,50,0">
+											<Label.Style>
+												<Style TargetType="Label">
+													<Setter Property="Foreground" Value="Black" />
+													<Style.Triggers>
+														<Trigger Property="IsMouseOver" Value="True">
+															<Setter Property="Foreground" Value="#FF3A6FFF" />
+														</Trigger>
+													</Style.Triggers>
 												</Style>
-											</Grid.Resources>
+											</Label.Style>
+										</Label>
+										<StackPanel Grid.Column="1" HorizontalAlignment="Right" x:Name="KeywordCommandsGrid" Orientation="Horizontal" >
+											<StackPanel.Resources>
+												<Style TargetType="Button">
+													<Setter Property="Margin" Value="1,0" />
+													<Setter Property="Padding" Value="4,2" />
+												</Style>
+											</StackPanel.Resources>
+											<c:FileBrowseControl OpenFileText="Select Keywords File" FileLocationText="{Binding AppSettings.KeywordsFile, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+												OnOpen="{Binding LoadKeywords}"/>
+											<Button x:Name="SaveKeywordsButton" Content="Save" Click="SaveKeywordsButton_Click" />
+											<Button x:Name="SaveAsKeywordsButton" Content="Save As..." Click="SaveAsKeywordsButton_Click" />
+											<Button Content="Default..." Click="KeywordsList_Default_Click" ToolTip="Reset Keywords to Default" />
+										</StackPanel>
+									</Grid>
+									<ScrollViewer Grid.Row="1" x:Name="KeywordListScrollViewer" VerticalScrollBarVisibility="Auto" Background="{DynamicResource {x:Static SystemColors.ScrollBarBrushKey}}" >
+										<Grid x:Name="KeywordListGrid"  Margin="50,10,50,0">
 											<Grid.RowDefinitions>
-												<RowDefinition />
+												<RowDefinition Height="Auto" />
 												<RowDefinition Height="*" />
-												<RowDefinition />
 											</Grid.RowDefinitions>
-											<Border Grid.Row="0" Style="{StaticResource KeywordBorderStyle}" >
-												<TextBlock Text="Application Keywords (Auto-Assigned)" Margin="2" Padding="2" FontFamily="Neuton" />
-											</Border>
-											<ItemsControl Grid.Row="1" x:Name="AppKeywordsList" ItemsSource="{Binding AppKeyList}" >
-												<ItemsControl.ItemTemplate>
-													<DataTemplate DataType="c:TemplateKeywordControl">
-														<c:TemplateKeywordControl DataContext="{Binding}" KeywordName="{Binding KeywordName}" KeywordValue="{Binding KeywordValue}" KeywordNameReadOnly="True" KeywordValueReadOnly="True" />
-													</DataTemplate>
-												</ItemsControl.ItemTemplate>
-												<ItemsControl.ItemsPanel>
-													<ItemsPanelTemplate>
-														<StackPanel Orientation="Vertical" />
-													</ItemsPanelTemplate>
-												</ItemsControl.ItemsPanel>
-											</ItemsControl>
-											<Border Grid.Row="2" Style="{StaticResource KeywordBorderStyleMouseOver}" >
-												<Expander x:Name="DateKeywordsExpander"  Header="Date Keywords" Style="{DynamicResource ExpanderRightButton}" Background="{x:Null}" FontFamily="Neuton" >
-													<ScrollViewer FlowDirection="LeftToRight" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" MaxHeight="125">
-														<ItemsControl ItemsSource="{Binding DateKeyList}" >
-															<ItemsControl.ItemTemplate>
-																<DataTemplate DataType="c:TemplateKeywordControl">
-																	<c:TemplateKeywordControl DataContext="{Binding}" KeywordName="{Binding KeywordName}" KeywordValue="{Binding KeywordValue}" KeywordNameReadOnly="True" KeywordValueReadOnly="True" />
-																</DataTemplate>
-															</ItemsControl.ItemTemplate>
+											<ScrollViewer Grid.Row="0" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
+												<Grid x:Name="DefaultKeywords" >
+													<Grid.Resources>
+														<Style TargetType="c:TemplateKeywordControl">
+															<Setter Property="KeywordNameReadOnly" Value="True"/>
+															<Setter Property="KeywordValueReadOnly" Value="True"/>
+														</Style>
+													</Grid.Resources>
+													<Grid.RowDefinitions>
+														<RowDefinition />
+														<RowDefinition Height="*" />
+														<RowDefinition />
+													</Grid.RowDefinitions>
+													<Border Grid.Row="0" Style="{StaticResource KeywordBorderStyle}" >
+														<TextBlock Text="Application Keywords (Auto-Assigned)" Margin="2" Padding="2" FontFamily="Neuton" />
+													</Border>
+													<ItemsControl Grid.Row="1" x:Name="AppKeywordsList" ItemsSource="{Binding AppKeyList}" >
+														<ItemsControl.ItemTemplate>
+															<DataTemplate DataType="c:TemplateKeywordControl">
+																<c:TemplateKeywordControl DataContext="{Binding}" KeywordName="{Binding KeywordName}" KeywordValue="{Binding KeywordValue}" KeywordNameReadOnly="True" KeywordValueReadOnly="True" />
+															</DataTemplate>
+														</ItemsControl.ItemTemplate>
+														<ItemsControl.ItemsPanel>
+															<ItemsPanelTemplate>
+																<StackPanel Orientation="Vertical" />
+															</ItemsPanelTemplate>
+														</ItemsControl.ItemsPanel>
+													</ItemsControl>
+													<Border Grid.Row="2" Style="{StaticResource KeywordBorderStyleMouseOver}" >
+														<Expander x:Name="DateKeywordsExpander"  Header="Date Keywords" Style="{DynamicResource ExpanderRightButton}" Background="{x:Null}" FontFamily="Neuton" >
+															<ScrollViewer FlowDirection="LeftToRight" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" MaxHeight="125">
+																<ItemsControl ItemsSource="{Binding DateKeyList}" >
+																	<ItemsControl.ItemTemplate>
+																		<DataTemplate DataType="c:TemplateKeywordControl">
+																			<c:TemplateKeywordControl DataContext="{Binding}" KeywordName="{Binding KeywordName}" KeywordValue="{Binding KeywordValue}" KeywordNameReadOnly="True" KeywordValueReadOnly="True" />
+																		</DataTemplate>
+																	</ItemsControl.ItemTemplate>
+																	<ItemsControl.ItemsPanel>
+																		<ItemsPanelTemplate>
+																			<StackPanel Orientation="Vertical" />
+																		</ItemsPanelTemplate>
+																	</ItemsControl.ItemsPanel>
+																</ItemsControl>
+															</ScrollViewer>
+														</Expander>
+													</Border>
+												</Grid>
+											</ScrollViewer>
+											<Grid x:Name="ParentGrid_UserKeywords" Grid.Row="1" >
+												<Grid.RowDefinitions>
+													<RowDefinition Height="Auto"/>
+													<RowDefinition Height="*" />
+												</Grid.RowDefinitions>
+												<Border Grid.Row="0" Style="{StaticResource KeywordBorderStyle}" >
+													<TextBlock Text="User Keywords" Background="{DynamicResource {x:Static SystemColors.MenuBarBrushKey}}" Margin="2" Padding="2" FontFamily="Neuton" />
+												</Border>
+												<ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
+													<StackPanel Orientation="Vertical" DataContext="{Binding UserKeywords}">
+														<c:TemplateKeywordControl KeywordName="$DateCustom" KeywordValue="{Binding DateCustom, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" KeywordNameReadOnly="True" KeywordValueReadOnly="False" FontFamily="Neuton"  />
+														<ItemsControl x:Name="UserKeywords" ItemsSource="{Binding Keywords}" ItemTemplate="{StaticResource AlternatingKeywordsTemplate}" AlternationCount="2" >
 															<ItemsControl.ItemsPanel>
 																<ItemsPanelTemplate>
 																	<StackPanel Orientation="Vertical" />
 																</ItemsPanelTemplate>
 															</ItemsControl.ItemsPanel>
 														</ItemsControl>
-													</ScrollViewer>
-												</Expander>
-											</Border>
+													</StackPanel>
+												</ScrollViewer>
+											</Grid>
 										</Grid>
 									</ScrollViewer>
-									<Grid x:Name="ParentGrid_UserKeywords" Grid.Row="1" >
-										<Grid.RowDefinitions>
-											<RowDefinition Height="Auto"/>
-											<RowDefinition Height="*" />
-										</Grid.RowDefinitions>
-										<Border Grid.Row="0" Style="{StaticResource KeywordBorderStyle}" >
-											<TextBlock Text="User Keywords" Background="{DynamicResource {x:Static SystemColors.MenuBarBrushKey}}" Margin="2" Padding="2" FontFamily="Neuton" />
-										</Border>
-										<ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
-											<StackPanel Orientation="Vertical" DataContext="{Binding UserKeywords}">
-												<c:TemplateKeywordControl KeywordName="$DateCustom" KeywordValue="{Binding DateCustom, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" KeywordNameReadOnly="True" KeywordValueReadOnly="False" FontFamily="Neuton"  />
-												<ItemsControl x:Name="UserKeywords" ItemsSource="{Binding Keywords}" ItemTemplate="{StaticResource AlternatingKeywordsTemplate}" AlternationCount="2" >
-													<ItemsControl.ItemsPanel>
-														<ItemsPanelTemplate>
-															<StackPanel Orientation="Vertical" />
-														</ItemsPanelTemplate>
-													</ItemsControl.ItemsPanel>
-												</ItemsControl>
-											</StackPanel>
-										</ScrollViewer>
+									<Grid Grid.Row="2" x:Name="KeywordsFooterControls" >
+										<StackPanel HorizontalAlignment="Center" Orientation="Horizontal">
+											<StackPanel.Resources>
+												<Style TargetType="Button">
+													<Setter Property="Margin" Value="1,0" />
+													<Setter Property="Padding" Value="4,2" />
+													<Setter Property="Width" Value="55" />
+												</Style>
+											</StackPanel.Resources>
+											<Button Content="Add" Click="KeywordsList_Add_Click" ToolTip="Add New Keyword"/>
+											<Button Content="Remove" Click="KeywordsList_Remove_Click" ToolTip="Remove Last Keyword" />
+										</StackPanel>
 									</Grid>
 								</Grid>
-							</ScrollViewer>
-							<Grid Grid.Row="2" x:Name="KeywordsFooterControls" >
-								<StackPanel HorizontalAlignment="Center" Orientation="Horizontal">
-									<StackPanel.Resources>
-										<Style TargetType="Button">
-											<Setter Property="Margin" Value="1,0" />
-											<Setter Property="Padding" Value="4,2" />
-											<Setter Property="Width" Value="55" />
-										</Style>
-									</StackPanel.Resources>
-									<Button Content="Add" Click="KeywordsList_Add_Click" ToolTip="Add New Keyword"/>
-									<Button Content="Remove" Click="KeywordsList_Remove_Click" ToolTip="Remove Last Keyword" />
-								</StackPanel>
-							</Grid>
-						</Grid>
-					</TabItem>
+							</TabItem>
+						</CompositeCollection>
+					</TabControl.ItemsSource>
 				</TabControl>
 			</TabItem>
 			<TabItem x:Name="Tab_Settings" Header="Settings">
@@ -687,8 +661,8 @@
 					<TextBlock Grid.Row="0" Text="Backup Root Directory"/>
 					<TextBlock Grid.Row="1" Text="Repository Root Directory"/>
 
-					<c:FileBrowseControl Grid.Column="1" Grid.Row="0" FileBrowseType="Directory" BrowseText="Select Backup Root Directory" FileLocationText="{Binding AppSettings.BackupRootDirectory, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-					<c:FileBrowseControl Grid.Column="1" Grid.Row="1" FileBrowseType="Directory" BrowseText="Select Repository Root Directory" FileLocationText="{Binding AppSettings.GitRootDirectory, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+					<c:FileBrowseControl Grid.Column="1" Grid.Row="0" FileBrowseType="Directory" OpenFileText="Select Backup Root Directory" FileLocationText="{Binding AppSettings.BackupRootDirectory, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+					<c:FileBrowseControl Grid.Column="1" Grid.Row="1" FileBrowseType="Directory" OpenFileText="Select Repository Root Directory" FileLocationText="{Binding AppSettings.GitRootDirectory, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
 				</Grid>
 			</TabItem>
 		</TabControl>
