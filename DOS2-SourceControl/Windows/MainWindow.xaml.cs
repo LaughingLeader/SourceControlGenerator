@@ -262,23 +262,23 @@ namespace LL.DOS2.SourceControl.Windows
 
 		private void KeywordsList_Add_Click(object sender, RoutedEventArgs e)
 		{
-			SettingsController.Data.KeywordList.Add(new Data.KeywordData());
+			SettingsController.Data.UserKeywords.AddKeyword();
 		}
 
 		private void KeywordsList_Remove_Click(object sender, RoutedEventArgs e)
 		{
-			SettingsController.Data.KeywordList.Remove(SettingsController.Data.KeywordList.Last());
+			SettingsController.Data.UserKeywords.RemoveLast();
 		}
 
 		private void KeywordsList_Default_Click(object sender, RoutedEventArgs e)
 		{
 			FileCommands.OpenConfirmationDialog(this, "Reset Keyword List", "Reset Keyword values to default?", "Confirm or Cancel", () =>
 			{
-				SettingsController.Data.KeywordList.Clear();
-				SettingsController.Data.KeywordList.Add(new KeywordData());
-				SettingsController.Data.KeywordList.Add(new KeywordData());
-				SettingsController.Data.KeywordList.Add(new KeywordData());
-				SettingsController.Data.KeywordList.Add(new KeywordData());
+				SettingsController.Data.UserKeywords.Keywords.Clear();
+				SettingsController.Data.UserKeywords.Keywords.Add(new KeywordData());
+				SettingsController.Data.UserKeywords.Keywords.Add(new KeywordData());
+				SettingsController.Data.UserKeywords.Keywords.Add(new KeywordData());
+				SettingsController.Data.UserKeywords.Keywords.Add(new KeywordData());
 			});
 		}
 

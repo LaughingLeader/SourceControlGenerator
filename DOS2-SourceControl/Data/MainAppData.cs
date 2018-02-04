@@ -122,17 +122,9 @@ namespace LL.DOS2.SourceControl.Data
 			}
 		}
 
-		private ObservableCollection<KeywordData> keywordList;
+		public ObservableCollection<KeywordData> AppKeyList { get; set; }
+		public ObservableCollection<KeywordData> DateKeyList { get; set; }
 
-		public ObservableCollection<KeywordData> KeywordList
-		{
-			get { return keywordList; }
-			set
-			{
-				keywordList = value;
-				RaisePropertyChanged("KeywordList");
-			}
-		}
 
 		private string manageButtonsText;
 
@@ -150,18 +142,155 @@ namespace LL.DOS2.SourceControl.Data
 		{
 			get
 			{
-				if(KeywordList.Count > 0)
+				if(UserKeywords != null)
 				{
-					string json = JsonConvert.SerializeObject(KeywordList, Newtonsoft.Json.Formatting.Indented);
+					string json = JsonConvert.SerializeObject(UserKeywords, Newtonsoft.Json.Formatting.Indented);
 					return json;
 				}
 				return "";
 			}
 		}
 
+		private UserKeywordData userKeywordData;
+
+		public UserKeywordData UserKeywords
+		{
+			get { return userKeywordData; }
+			set
+			{
+				userKeywordData = value;
+				RaisePropertyChanged("UserKeywords");
+			}
+		}
+
+
 		public MainAppData()
 		{
 			ManageButtonsText = "Select a Project";
+
+			AppKeyList = new ObservableCollection<KeywordData>();
+			AppKeyList.Add(new KeywordData()
+			{
+				KeywordName = "$Author",
+				KeywordValue = "Mod Data: Author",
+				Replace = (modProjectData) => { return modProjectData.ModuleInfo.Author; }
+			});
+			AppKeyList.Add(new KeywordData()
+			{
+				KeywordName = "$Description",
+				KeywordValue = "Mod Data: Description",
+				Replace = (modProjectData) => { return modProjectData.ModuleInfo.Description; }
+			});
+			AppKeyList.Add(new KeywordData()
+			{
+				KeywordName = "$ModType",
+				KeywordValue = "Mod Data: Type",
+				Replace = (modProjectData) => { return modProjectData.ModuleInfo.Type; }
+			});
+			AppKeyList.Add(new KeywordData()
+			{
+				KeywordName = "$ProjectName",
+				KeywordValue = "Mod Data: Name",
+				Replace = (modProjectData) => { return modProjectData.ModuleInfo.Name; }
+			});
+			AppKeyList.Add(new KeywordData()
+			{
+				KeywordName = "$Version",
+				KeywordValue = "Mod Data: Version",
+				Replace = (modProjectData) => { return modProjectData.Version; }
+			});
+			AppKeyList.Add(new KeywordData()
+			{
+				KeywordName = "$Targets",
+				KeywordValue = "Mod Data: Targets",
+				Replace = (modProjectData) => { return String.Join(",", modProjectData.ModuleInfo.TargetModes.ToArray()); }
+			});
+			AppKeyList.Add(new KeywordData()
+			{
+				KeywordName = "$DependencyProjects",
+				KeywordValue = "Mod Data: Dependencies",
+				Replace = (modProjectData) => { return modProjectData.Dependencies.ToDelimitedString(d => d.Name); }
+			});
+
+			DateKeyList = new ObservableCollection<KeywordData>();
+			DateKeyList.Add(new KeywordData()
+			{
+				KeywordName = "$Date",
+				KeywordValue = "Current Date (Short Format = mm/dd/yyyy)",
+				Replace = (modProjectData) => { return DateTime.Now.ToString("d"); }
+			});
+			DateKeyList.Add(new KeywordData()
+			{
+				KeywordName = "$DateShortLong",
+				KeywordValue = DateTime.Now.ToString("D"),
+				Replace = (modProjectData) => { return DateTime.Now.ToString("D"); }
+			});
+			DateKeyList.Add(new KeywordData()
+			{
+				KeywordName = "$DateFullShort",
+				KeywordValue = DateTime.Now.ToString("f"),
+				Replace = (modProjectData) => { return DateTime.Now.ToString("f"); }
+			});
+			DateKeyList.Add(new KeywordData()
+			{
+				KeywordName = "$DateFullLong",
+				KeywordValue = DateTime.Now.ToString("F"),
+				Replace = (modProjectData) => { return DateTime.Now.ToString("F"); }
+			});
+			DateKeyList.Add(new KeywordData()
+			{
+				KeywordName = "$DateGeneralShort",
+				KeywordValue = DateTime.Now.ToString("g"),
+				Replace = (modProjectData) => { return DateTime.Now.ToString("g"); }
+			});
+			DateKeyList.Add(new KeywordData()
+			{
+				KeywordName = "$DateGeneralLong",
+				KeywordValue = DateTime.Now.ToString("G"),
+				Replace = (modProjectData) => { return DateTime.Now.ToString("G"); }
+			});
+			DateKeyList.Add(new KeywordData()
+			{
+				KeywordName = "$DateMonthDay",
+				KeywordValue = DateTime.Now.ToString("M"),
+				Replace = (modProjectData) => { return DateTime.Now.ToString("M"); }
+			});
+			DateKeyList.Add(new KeywordData()
+			{
+				KeywordName = "$DateMonthYear",
+				KeywordValue = DateTime.Now.ToString("Y"),
+				Replace = (modProjectData) => { return DateTime.Now.ToString("Y"); }
+			});
+			DateKeyList.Add(new KeywordData()
+			{
+				KeywordName = "$DateTimeShort",
+				KeywordValue = DateTime.Now.ToString("t"),
+				Replace = (modProjectData) => { return DateTime.Now.ToString("t"); }
+			});
+			DateKeyList.Add(new KeywordData()
+			{
+				KeywordName = "$DateTimeLong",
+				KeywordValue = DateTime.Now.ToString("T"),
+				Replace = (modProjectData) => { return DateTime.Now.ToString("T"); }
+			});
+			DateKeyList.Add(new KeywordData()
+			{
+				KeywordName = "$DateRoundTrip",
+				KeywordValue = DateTime.Now.ToString("O"),
+				Replace = (modProjectData) => { return DateTime.Now.ToString("O"); }
+			});
+			DateKeyList.Add(new KeywordData()
+			{
+				KeywordName = "$DateRFC1123",
+				KeywordValue = DateTime.Now.ToString("R"),
+				Replace = (modProjectData) => { return DateTime.Now.ToString("R"); }
+			});
+			DateKeyList.Add(new KeywordData()
+			{
+				KeywordName = "$DateUniversal",
+				KeywordValue = DateTime.Now.ToString("U"),
+				Replace = (modProjectData) => { return DateTime.Now.ToString("U"); }
+			});
 		}
 	}
 }

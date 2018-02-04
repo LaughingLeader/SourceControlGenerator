@@ -13,7 +13,17 @@
 			<ColumnDefinition Width="150"/>
 			<ColumnDefinition Width="*"/>
 		</Grid.ColumnDefinitions>
-		<TextBox Grid.Column="0" x:Name="KeywordNameBox" Text="{Binding KeywordName, ElementName=TemplateKeywordMain}" IsReadOnly="{Binding KeywordNameReadOnly, ElementName=TemplateKeywordMain}" Foreground="#FF415AF9" FontFamily="Neuton" FontWeight="Bold" />
-		<TextBox Grid.Column="1" x:Name="KeywordValueBox" Text="{Binding KeywordValue, ElementName=TemplateKeywordMain}" IsReadOnly="{Binding KeywordValueReadOnly, ElementName=TemplateKeywordMain}" FontFamily="Neuton" />
+		<Grid.Resources>
+			<Style TargetType="TextBox">
+				<Setter Property="Padding" Value="2" />
+				<Setter Property="BorderBrush">
+					<Setter.Value>
+						<SolidColorBrush Color="{x:Static SystemColors.ControlLightColor}" />
+					</Setter.Value>
+				</Setter>
+			</Style>
+		</Grid.Resources>
+		<TextBox Grid.Column="0" x:Name="KeywordNameBox" BorderThickness="1,0.5" Text="{Binding KeywordName, ElementName=TemplateKeywordMain}" IsReadOnly="{Binding KeywordNameReadOnly, ElementName=TemplateKeywordMain}" Foreground="#FF415AF9" FontFamily="Neuton" FontWeight="Bold" />
+		<TextBox Grid.Column="1" x:Name="KeywordValueBox" BorderThickness="0,0.5,1,0.5" Text="{Binding KeywordValue, ElementName=TemplateKeywordMain}" IsReadOnly="{Binding KeywordValueReadOnly, ElementName=TemplateKeywordMain}" FontFamily="Neuton" />
 	</Grid>
 </UserControl>

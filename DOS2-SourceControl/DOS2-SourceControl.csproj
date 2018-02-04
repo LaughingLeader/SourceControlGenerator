@@ -84,9 +84,12 @@
     <Compile Include="Core\Commands\SaveCommands.cs" />
     <Compile Include="Core\FileCommands.cs" />
     <Compile Include="Data\KeywordData.cs" />
+    <Compile Include="Data\UserKeywordData.cs" />
     <Compile Include="Data\View\LogData.cs" />
     <Compile Include="Data\PropertyChangedBase.cs" />
+    <Compile Include="Data\View\TemplateEditorData.cs" />
     <Compile Include="Enum\FileBrowseType.cs" />
+    <Compile Include="Extensions\Extensions.cs" />
     <Compile Include="FileGen\GitGenerator.cs" />
     <Compile Include="Data\DefaultValues.cs" />
     <Compile Include="Data\MainAppData.cs" />

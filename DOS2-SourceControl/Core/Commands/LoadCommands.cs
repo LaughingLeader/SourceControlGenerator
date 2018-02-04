@@ -386,7 +386,7 @@ namespace LL.DOS2.SourceControl.Core.Commands
 					Log.Here().Important("Deserializing Keywords list from {0}", filePath);
 					try
 					{
-						Data.KeywordList = JsonConvert.DeserializeObject<ObservableCollection<KeywordData>>(File.ReadAllText(filePath));
+						Data.UserKeywords = JsonConvert.DeserializeObject<UserKeywordData>(File.ReadAllText(filePath));
 					}
 					catch (Exception ex)
 					{
@@ -399,13 +399,19 @@ namespace LL.DOS2.SourceControl.Core.Commands
 				Log.Here().Important("Keywords.json not set or AppSettings is null. Skipping.");
 			}
 
-			if (Data.KeywordList == null)
+			if (Data.UserKeywords == null)
 			{
-				Data.KeywordList = new ObservableCollection<KeywordData>();
-				Data.KeywordList.Add(new KeywordData());
-				Data.KeywordList.Add(new KeywordData());
-				Data.KeywordList.Add(new KeywordData());
-				Data.KeywordList.Add(new KeywordData());
+				Data.UserKeywords = new UserKeywordData()
+				{
+					DateCustom = "MMMM dd, yyyy",
+					Keywords = new ObservableCollection<KeywordData>()
+					{
+						new KeywordData(),
+						new KeywordData(),
+						new KeywordData(),
+						new KeywordData()
+					}
+				};
 			}
 		}
 

@@ -5,7 +5,7 @@
 			 xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
 			 xmlns:local="clr-namespace:LL.DOS2.SourceControl.Controls"
 			 mc:Ignorable="d" 
-			 d:DesignHeight="300" d:DesignWidth="300" x:Name="TemplateEditorControl">
+			 d:DesignHeight="300" d:DesignWidth="500" x:Name="TemplateEditorControl">
 	<Grid x:Name="Editor_ParentGrid" Grid.Column="1">
 		<Grid.RowDefinitions>
 			<RowDefinition Height="Auto"/>
@@ -15,8 +15,7 @@
 
 		<Grid Grid.Row="0" Width="Auto" Height="Auto">
 			<Grid.ColumnDefinitions>
-				<ColumnDefinition Width="Auto" MinWidth="100" />
-				<ColumnDefinition Width="50" />
+				<ColumnDefinition Width="Auto" />
 				<ColumnDefinition Width="*"/>
 			</Grid.ColumnDefinitions>
 			<Label x:Name="TemplateLabel" Content="{Binding Path=LabelText, ElementName=TemplateEditorControl}" Grid.Column="0" Width="Auto" HorizontalAlignment="Left" VerticalAlignment="Center" ToolTip="{Binding Path=TooltipText, ElementName=TemplateEditorControl}">
@@ -31,14 +30,28 @@
 					</Style>
 				</Label.Style>
 			</Label>
-			<local:FileBrowseControl Grid.Column="2" HorizontalAlignment="Right" BrowseText="{Binding BrowseText, ElementName=TemplateEditorControl}" FileLocationText="{Binding TemplateFileLocationText, ElementName=TemplateEditorControl}" OnOpen="{Binding OnFileOpened, ElementName=TemplateEditorControl}" />
+			<StackPanel Grid.Column="1" HorizontalAlignment="Right" x:Name="KeywordCommandsGrid" Orientation="Horizontal">
+				<StackPanel.Resources>
+					<Style TargetType="Button">
+						<Setter Property="Margin" Value="1,0" />
+						<Setter Property="Padding" Value="4,2" />
+					</Style>
+				</StackPanel.Resources>
+				<local:FileBrowseControl BrowseText="{Binding BrowseText, ElementName=TemplateEditorControl}" FileLocationText="{Binding TemplateFileLocationText, ElementName=TemplateEditorControl}" OnOpen="{Binding OnFileOpened, ElementName=TemplateEditorControl}" />
+				<Button x:Name="SaveButton" Content="Save" Click="SaveButton_Click" />
+				<Button x:Name="SaveAsButton" Content="Save As..." Click="SaveAsButton_Click" />
+				<!--<Button x:Name="OpenKeywordsButton" Content="Open..." Click="OpenKeywordsButton_Click" />-->
+				<Button x:Name="DefaultButton" Content="Default..." ToolTip="Reset Keywords to Default" Click="DefaultButton_Click" />
+			</StackPanel>
 		</Grid>
 
 		<Border BorderThickness="1" BorderBrush="Black" Grid.Row="1" Width="Auto" MaxHeight="300">
-			<TextBox x:Name="TemplateText"  Text="{Binding Path=EditorText, ElementName=TemplateEditorControl}" Width="Auto" Height="Auto" Margin="0" Padding="0" Background="#FFBFBFBF" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto"/>
+			<TextBox x:Name="TemplateText"  Text="{Binding Path=EditorText, ElementName=TemplateEditorControl}" Width="Auto" Height="Auto" Margin="0" Padding="0" Background="{DynamicResource {x:Static SystemColors.ControlLightLightBrushKey}}" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto"/>
 		</Border>
 		<Grid x:Name="EditorCommands" Grid.Row="2">
-
+			<StackPanel>
+				<Button Content="Reset to Default" />
+			</StackPanel>
 		</Grid>
 	</Grid>
 </UserControl>

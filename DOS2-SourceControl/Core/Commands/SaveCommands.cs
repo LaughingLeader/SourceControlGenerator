@@ -117,14 +117,14 @@ namespace LL.DOS2.SourceControl.Core.Commands
 
 		public void SaveUserKeywords()
 		{
-			if (Data.KeywordList != null && Data.KeywordList.Count > 0)
+			if (Data.UserKeywords != null)
 			{
 				if (Data.AppSettings != null && !String.IsNullOrEmpty(Data.AppSettings.KeywordsFile))
 				{
-					Log.Here().Important("Serializing and saving Keywords list.");
+					Log.Here().Important("Serializing and saving user keywords data.");
 					try
 					{
-						string json = JsonConvert.SerializeObject(Data.KeywordList);
+						string json = JsonConvert.SerializeObject(Data.UserKeywords);
 						FileCommands.WriteToFile(Data.AppSettings.KeywordsFile, json);
 					}
 					catch (Exception ex)

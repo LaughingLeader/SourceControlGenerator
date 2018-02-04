@@ -12,6 +12,9 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using LL.DOS2.SourceControl.Core;
+using LL.DOS2.SourceControl.Util;
+using LL.DOS2.SourceControl.Windows;
 
 namespace LL.DOS2.SourceControl.Controls
 {
@@ -82,10 +85,72 @@ namespace LL.DOS2.SourceControl.Controls
 		public static readonly DependencyProperty OnFileOpenedProperty =
 			DependencyProperty.Register("OnFileOpened", typeof(Action), typeof(TemplateEditor), new PropertyMetadata(null));
 
+		public Action<TemplateEditor> OnSave
+		{
+			get { return (Action<TemplateEditor>)GetValue(OnSaveProperty); }
+			set { SetValue(OnSaveProperty, value); }
+		}
+
+		// Using a DependencyProperty as the backing store for OnSave.  This enables animation, styling, binding, etc...
+		public static readonly DependencyProperty OnSaveProperty =
+			DependencyProperty.Register("SaveCommand", typeof(Action<TemplateEditor>), typeof(TemplateEditor), new PropertyMetadata(null));
+
+		public Action<TemplateEditor> OnSaveAs
+		{
+			get { return (Action<TemplateEditor>)GetValue(OnSaveAsProperty); }
+			set { SetValue(OnSaveAsProperty, value); }
+		}
+
+		// Using a DependencyProperty as the backing store for OnSaveAs.  This enables animation, styling, binding, etc...
+		public static readonly DependencyProperty OnSaveAsProperty =
+			DependencyProperty.Register("SaveAsCommand", typeof(Action<TemplateEditor>), typeof(TemplateEditor), new PropertyMetadata(null));
+
+		public Action<TemplateEditor> OnDefault
+		{
+			get { return (Action<TemplateEditor>)GetValue(OnDefaultProperty); }
+			set { SetValue(OnDefaultProperty, value); }
+		}
+
+		// Using a DependencyProperty as the backing store for OnDefault.  This enables animation, styling, binding, etc...
+		public static readonly DependencyProperty OnDefaultProperty =
+			DependencyProperty.Register("OnDefault", typeof(Action<TemplateEditor>), typeof(TemplateEditor), new PropertyMetadata(null));
 
 		public TemplateEditor()
 		{
 			InitializeComponent();
+		}
+
+		private string GetOutputText()
+		{
+			string output = EditorText;
+			if(!String.IsNullOrEmpty(output))
+			{
+				//Replace keynames with actual values
+			}
+
+			return output;
+		}
+
+		private void SaveButton_Click(object sender, RoutedEventArgs e)
+		{
+			if(FileCommands.WriteToFile(this.TemplateFileLocationText, GetOutputText()))
+			{
+				MainWindow.FooterLog(LogType.Important, "Saved template {0} to {1}", LabelText, this.TemplateFileLocationText);
+			}
+			else
+			{
+				MainWindow.FooterLog(LogType.Important, "Error saving template {0} to {1}", LabelText, this.TemplateFileLocationText);
+			}
+		}
+
+		private void SaveAsButton_Click(object sender, RoutedEventArgs e)
+		{
+			FileCommands.Save.OpenDialog(App.Current.MainWindow, "Save " + LabelText, TemplateFileLocationText, GetOutputText());
+		}
+
+		private void DefaultButton_Click(object sender, RoutedEventArgs e)
+		{
+
 		}
 	}
 }
