@@ -18,6 +18,8 @@ namespace LL.DOS2.SourceControl.Data
 	{
 		public static string AppSettings => @"Settings/AppSettings.json";
 
+		public static string ProjectsAppData => @"Settings/ManagedProjects.json";
+
 		public static string DirectoryLayout => @"Settings/DirectoryLayout.default.txt";
 
 		public static string GitIgnore => @"Settings/.gitignore.default";

@@ -5,17 +5,17 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
 
-namespace LL.DOS2.SourceControl.Core.Commands
+namespace LL.DOS2.SourceControl.Commands
 {
-	public class ActionCommand : ICommand
+	public class CallbackCommand : ICommand
 	{
-		private Action<object> execute;
+		private Action callback;
 
 		public event EventHandler CanExecuteChanged;
 
-		public ActionCommand(Action<object> execute)
+		public CallbackCommand(Action callback)
 		{
-			this.execute = execute;
+			this.callback = callback;
 		}
 
 		public bool CanExecute(object parameter)
@@ -25,7 +25,7 @@ namespace LL.DOS2.SourceControl.Core.Commands
 
 		public void Execute(object parameter)
 		{
-			this.execute?.Invoke(parameter);
+			this.callback?.Invoke();
 		}
 	}
 }

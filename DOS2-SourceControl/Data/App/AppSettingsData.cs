@@ -104,12 +104,25 @@ namespace LL.DOS2.SourceControl.Data
 			}
 		}
 
+		private string projectsAppData;
+
+		public string ProjectsAppData
+		{
+			get { return projectsAppData; }
+			set
+			{
+				projectsAppData = value;
+				RaisePropertyChanged("ProjectsAppData");
+			}
+		}
+
 
 		public AppSettingsData()
 		{
 			DOS2DataDirectory = "";
 			BackupRootDirectory = DefaultPaths.Backups;
 			GitRootDirectory = DefaultPaths.GitRoot;
+			ProjectsAppData = DefaultPaths.ProjectsAppData;
 			GitIgnoreFile = DefaultPaths.GitIgnore;
 			ReadmeTemplateFile = DefaultPaths.ReadmeTemplate;
 			ChangelogTemplateFile = DefaultPaths.ChangelogTemplate;

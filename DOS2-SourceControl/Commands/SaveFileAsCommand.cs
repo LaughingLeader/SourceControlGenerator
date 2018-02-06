@@ -7,7 +7,7 @@ using System.Windows.Data;
 using System.Windows.Input;
 using Newtonsoft.Json;
 
-namespace LL.DOS2.SourceControl.Core.Commands
+namespace LL.DOS2.SourceControl.Commands
 {
 	public class SaveFileAsCommandDataConverter : IMultiValueConverter
 	{
@@ -48,8 +48,7 @@ namespace LL.DOS2.SourceControl.Core.Commands
 		{
 			if(parameter != null && FileCommands.Save != null)
 			{
-				SaveFileAsCommandData data = (SaveFileAsCommandData)parameter;
-				if(data != null)
+				if(parameter is SaveFileAsCommandData data)
 				{
 					return FileCommands.IsValidPath(data.FilePath);
 				}
@@ -59,9 +58,7 @@ namespace LL.DOS2.SourceControl.Core.Commands
 
 		public void Execute(object parameter)
 		{
-			SaveFileAsCommandData data = (SaveFileAsCommandData)parameter;
-
-			if (data != null)
+			if (parameter != null && parameter is SaveFileAsCommandData data)
 			{
 				Log.Here().Important("Attempting to save file: {0}", data.FilePath);
 				if (String.IsNullOrEmpty(data.DialogTitle)) data.DialogTitle = "Save File As";

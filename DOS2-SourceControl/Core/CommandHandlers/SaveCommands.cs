@@ -13,7 +13,7 @@ using LL.DOS2.SourceControl.Data.View;
 using Microsoft.Win32;
 using Newtonsoft.Json;
 
-namespace LL.DOS2.SourceControl.Core.Commands
+namespace LL.DOS2.SourceControl.Commands
 {
 	public class SaveCommands
 	{
@@ -64,6 +64,19 @@ namespace LL.DOS2.SourceControl.Core.Commands
 				string json = JsonConvert.SerializeObject(Data.AppSettings, Newtonsoft.Json.Formatting.Indented);
 				FileCommands.WriteToFile(DefaultPaths.AppSettings, json);
 			}
+		}
+
+		public bool SaveManagedProjects()
+		{
+			Log.Here().Important("Saving Managed Projects data to {0}", Data.AppSettings.ProjectsAppData);
+
+			if (Data.AppProjects != null && Data.AppProjects.ManagedProjects.Count > 0 && Data.AppSettings != null && FileCommands.IsValidPath(Data.AppSettings.ProjectsAppData))
+			{
+				string json = JsonConvert.SerializeObject(Data.AppProjects, Newtonsoft.Json.Formatting.Indented);
+				return FileCommands.WriteToFile(Data.AppSettings.ProjectsAppData, json);
+			}
+
+			return false;
 		}
 
 		public void SaveGitIgnore(string content)

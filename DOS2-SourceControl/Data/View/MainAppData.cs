@@ -13,7 +13,7 @@ using System.ComponentModel;
 using System.Collections.ObjectModel;
 using LL.DOS2.SourceControl.Data.View;
 using LL.DOS2.SourceControl.Core;
-using LL.DOS2.SourceControl.Core.Commands;
+using LL.DOS2.SourceControl.Commands;
 
 namespace LL.DOS2.SourceControl.Data.View
 {
@@ -21,7 +21,7 @@ namespace LL.DOS2.SourceControl.Data.View
 	{
 		public List<string> ProjectDirectoryLayouts { get; set; }
 		public List<ModProjectData> ModProjects { get; set; }
-		public List<SourceControlData> GitProjects { get; set; }
+		public ManagedProjectsData AppProjects { get; set; }
 
 		//Visible Data
 
@@ -36,7 +36,6 @@ namespace LL.DOS2.SourceControl.Data.View
 				RaisePropertyChanged("ProjectSelected");
 			}
 		}
-
 
 		private AppSettingsData appSettings;
 
@@ -128,10 +127,22 @@ namespace LL.DOS2.SourceControl.Data.View
 			}
 		}
 
+		private string availableProjectsToggleText;
+
+		public string AvailableProjectsToggleText
+		{
+			get { return availableProjectsToggleText; }
+			set
+			{
+				availableProjectsToggleText = value;
+				RaisePropertyChanged("AvailableProjectsToggleText");
+			}
+		}
 
 		public MainAppData()
 		{
 			ManageButtonsText = "Select a Project";
+			AvailableProjectsToggleText = "Hide Available Projects";
 
 			LoadKeywords = new CallbackCommand(FileCommands.Load.LoadUserKeywords);
 
@@ -180,14 +191,14 @@ namespace LL.DOS2.SourceControl.Data.View
 				KeywordValue = "Mod Data: Dependencies",
 				Replace = (modProjectData) => { return modProjectData.Dependencies.ToDelimitedString(d => d.Name); }
 			});
-
-			DateKeyList = new ObservableCollection<KeywordData>();
-			DateKeyList.Add(new KeywordData()
+			AppKeyList.Add(new KeywordData()
 			{
 				KeywordName = "$Date",
 				KeywordValue = "Current Date (Short Format = mm/dd/yyyy)",
 				Replace = (modProjectData) => { return DateTime.Now.ToString("d"); }
 			});
+
+			DateKeyList = new ObservableCollection<KeywordData>();
 			DateKeyList.Add(new KeywordData()
 			{
 				KeywordName = "$DateShortLong",

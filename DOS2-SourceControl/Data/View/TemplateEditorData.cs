@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using LL.DOS2.SourceControl.Controls;
 using LL.DOS2.SourceControl.Core;
-using LL.DOS2.SourceControl.Core.Commands;
+using LL.DOS2.SourceControl.Commands;
 using LL.DOS2.SourceControl.Util;
 using LL.DOS2.SourceControl.Windows;
 

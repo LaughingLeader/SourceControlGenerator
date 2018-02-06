@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
 
-namespace LL.DOS2.SourceControl.Core.Commands
+namespace LL.DOS2.SourceControl.Commands
 {
 	public class OpenFileBrowserCommand : ICommand
 	{

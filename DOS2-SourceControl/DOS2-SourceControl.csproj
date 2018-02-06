@@ -80,18 +80,19 @@
       <DependentUpon>TemplateKeywordControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="Controls\TooltipText.cs" />
-    <Compile Include="Core\Commands\ActionCommand.cs" />
-    <Compile Include="Core\Commands\CallbackCommand.cs" />
-    <Compile Include="Core\SubFileCommands\LoadCommands.cs" />
-    <Compile Include="Core\Commands\OpenFileBrowseCommand.cs" />
-    <Compile Include="Core\Commands\OpenFileCommand.cs" />
-    <Compile Include="Core\Commands\RelayCommand.cs" />
-    <Compile Include="Core\Commands\SaveFileAsCommand.cs" />
-    <Compile Include="Core\SubFileCommands\SaveCommands.cs" />
-    <Compile Include="Core\Commands\SaveFileCommand.cs" />
+    <Compile Include="Commands\ActionCommand.cs" />
+    <Compile Include="Commands\CallbackCommand.cs" />
+    <Compile Include="Core\CommandHandlers\LoadCommands.cs" />
+    <Compile Include="Commands\OpenFileBrowseCommand.cs" />
+    <Compile Include="Commands\OpenFileCommand.cs" />
+    <Compile Include="Commands\RelayCommand.cs" />
+    <Compile Include="Commands\SaveFileAsCommand.cs" />
+    <Compile Include="Core\CommandHandlers\SaveCommands.cs" />
+    <Compile Include="Commands\SaveFileCommand.cs" />
     <Compile Include="Core\FileCommands.cs" />
-    <Compile Include="Data\KeywordData.cs" />
-    <Compile Include="Data\UserKeywordData.cs" />
+    <Compile Include="Data\App\KeywordData.cs" />
+    <Compile Include="Data\App\ManagedProjectsData.cs" />
+    <Compile Include="Data\App\UserKeywordData.cs" />
     <Compile Include="Data\View\LogData.cs" />
     <Compile Include="Data\PropertyChangedBase.cs" />
     <Compile Include="Data\View\TemplateEditorData.cs" />
@@ -100,7 +101,7 @@
     <Compile Include="FileGen\GitGenerator.cs" />
     <Compile Include="Data\DefaultValues.cs" />
     <Compile Include="Data\View\MainAppData.cs" />
-    <Compile Include="Data\AppSettingsData.cs" />
+    <Compile Include="Data\App\AppSettingsData.cs" />
     <Compile Include="Util\Log.cs" />
     <Compile Include="Core\SettingsController.cs" />
     <Compile Include="Util\HelperUtil\DOS2Helper.cs" />
@@ -132,8 +133,8 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Data\ModProjectData.cs" />
-    <Compile Include="Data\SourceControlData.cs" />
+    <Compile Include="Data\View\ModProjectData.cs" />
+    <Compile Include="Data\App\SourceControlData.cs" />
     <Compile Include="Data\View\AvailableProjectViewData.cs" />
     <Compile Include="Data\View\GitGenerationSettings.cs" />
     <Compile Include="Data\Xml\DependencyInfo.cs" />

@@ -4,9 +4,9 @@
 			 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
 			 xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
 			 xmlns:local="clr-namespace:LL.DOS2.SourceControl.Controls"
-			 xmlns:cmd="clr-namespace:LL.DOS2.SourceControl.Core.Commands"
+			 xmlns:cmd="clr-namespace:LL.DOS2.SourceControl.Commands"
 			 mc:Ignorable="d" 
-			 d:DesignHeight="800" d:DesignWidth="500" x:Name="TemplateEditorMain" >
+			 d:DesignHeight="600" d:DesignWidth="500" x:Name="TemplateEditorMain" >
 	<UserControl.Resources>
 		<cmd:SaveFileCommandDataConverter x:Key="SaveFileCommandDataConverter"/>
 		<cmd:SaveFileAsCommandDataConverter x:Key="SaveFileAsCommandDataConverter"/>

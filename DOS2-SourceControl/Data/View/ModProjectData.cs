@@ -14,8 +14,56 @@ namespace LL.DOS2.SourceControl.Data
 {
 	public class ModProjectData : PropertyChangedBase
 	{
-		public ProjectInfo ProjectInfo { get; set; }
-		public ModuleInfo ModuleInfo { get; set; }
+		private ProjectAppData projectAppData;
+
+		public ProjectAppData ProjectAppData
+		{
+			get { return projectAppData; }
+			set
+			{
+				projectAppData = value;
+				RaisePropertyChanged("ProjectAppData");
+			}
+		}
+
+		private ProjectInfo projectInfo;
+
+		public ProjectInfo ProjectInfo
+		{
+			get { return projectInfo; }
+			set
+			{
+				projectInfo = value;
+				RaisePropertyChanged("ProjectInfo");
+			}
+		}
+
+		private ModuleInfo moduleInfo;
+
+		public ModuleInfo ModuleInfo
+		{
+			get { return moduleInfo; }
+			set
+			{
+				moduleInfo = value;
+				RaisePropertyChanged("ModuleInfo");
+				RaisePropertyChanged("Dependencies");
+				RaisePropertyChanged("Name");
+			}
+		}
+
+		private SourceControlData gitData;
+
+		public SourceControlData GitData
+		{
+			get { return gitData; }
+			set
+			{
+				gitData = value;
+				RaisePropertyChanged("GitGenerated");
+			}
+		}
+
 		public List<DependencyInfo> Dependencies { get; set; }
 
 		public string Name
@@ -35,16 +83,11 @@ namespace LL.DOS2.SourceControl.Data
 			}
 		}
 
-
-		private bool gitGenerated = false;
-
 		public bool GitGenerated
 		{
-			get { return gitGenerated; }
-			set
+			get
 			{
-				gitGenerated = value;
-				RaisePropertyChanged("GitGenerated");
+				return GitData != null;
 			}
 		}
 
@@ -61,17 +104,48 @@ namespace LL.DOS2.SourceControl.Data
 			}
 		}
 
-		private DateTime lastBackup;	
-
-		public DateTime LastBackup
+		public DateTime? LastBackup
 		{
-			get { return lastBackup; }
+			get
+			{
+				if (ProjectAppData != null) return ProjectAppData.LastBackup;
+				return null;
+			}
 			set
 			{
-				lastBackup = value;
-				RaisePropertyChanged("LastBackup");
+				if (ProjectAppData != null)
+				{
+					ProjectAppData.LastBackup = value;
+					RaisePropertyChanged("LastBackup");
+					RaisePropertyChanged("LastBackupText");
+				}
 			}
 		}
+
+		public string LastBackupText
+		{
+			get
+			{
+				if(LastBackup != null)
+				{
+					return LastBackup?.ToShortDateString();
+				}
+				return "";
+			}
+		}
+
+		private bool selected;
+
+		public bool Selected
+		{
+			get { return selected; }
+			set
+			{
+				selected = value;
+				RaisePropertyChanged("Selected");
+			}
+		}
+
 
 		public ModProjectData(FileInfo ModMetaFile, string ProjectsFolderPath)
 		{

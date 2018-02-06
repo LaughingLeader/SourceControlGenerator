@@ -104,5 +104,10 @@ namespace LL.DOS2.SourceControl.Controls
 				}
 			}
 		}
+
+		private void TestClick(object sender, RoutedEventArgs e)
+		{
+			Log.Here().Important("Clicked!");
+		}
 	}
 }

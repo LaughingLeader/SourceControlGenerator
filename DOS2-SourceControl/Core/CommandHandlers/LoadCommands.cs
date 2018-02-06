@@ -15,7 +15,7 @@ using Microsoft.Win32;
 using Newtonsoft.Json;
 using Ookii.Dialogs.Wpf;
 
-namespace LL.DOS2.SourceControl.Core.Commands
+namespace LL.DOS2.SourceControl.Commands
 {
 	public class LoadCommands
 	{
@@ -135,11 +135,6 @@ namespace LL.DOS2.SourceControl.Core.Commands
 				defaultChangelogText = Properties.Resources.DefaultChangelog;
 				File.WriteAllText(DefaultPaths.ChangelogTemplate, defaultChangelogText);
 			}
-
-			
-
-			
-
 
 			string ignoreText = defaultIgnoreText;
 			string readmeText = defaultReadmeText;
@@ -282,15 +277,6 @@ namespace LL.DOS2.SourceControl.Core.Commands
 
 		public void LoadGitProjects()
 		{
-			if (Data.GitProjects == null)
-			{
-				Data.GitProjects = new List<SourceControlData>();
-			}
-			else
-			{
-				Data.GitProjects.Clear();
-			}
-
 			if (Data.AppSettings != null && !String.IsNullOrEmpty(Data.AppSettings.GitRootDirectory) && Directory.Exists(Data.AppSettings.GitRootDirectory))
 			{
 				Log.Here().Activity("Scanning git root directory for added projects.");
@@ -302,9 +288,26 @@ namespace LL.DOS2.SourceControl.Core.Commands
 					{
 						if (File.Exists(projectFilePath))
 						{
-							SourceControlData gitProjectData = JsonConvert.DeserializeObject<SourceControlData>(File.ReadAllText(projectFilePath));
-							Data.GitProjects.Add(gitProjectData);
-							Log.Here().Activity("Source control project file found for project {0}. Adding to active projects.", gitProjectData.ProjectName);
+							try
+							{
+								SourceControlData gitProjectData = JsonConvert.DeserializeObject<SourceControlData>(File.ReadAllText(projectFilePath));
+								gitProjectData.RepositoryPath = projectFilePath;
+
+								ModProjectData modProject = Data.ModProjects.Where(p => p.Name == gitProjectData.ProjectName).FirstOrDefault();
+								if(modProject != null)
+								{
+									modProject.GitData = gitProjectData;
+									Log.Here().Activity("Source control project file found for project {0}.", gitProjectData.ProjectName);
+								}
+								else
+								{
+									Log.Here().Error("Source control project file found for project {0}, but mod project data does not exist!", gitProjectData.ProjectName);
+								}
+							}
+							catch(Exception ex)
+							{
+								Log.Here().Error("Error deserializing source control file at {0}: {1}", projectFilePath, ex.ToString());
+							}
 						}
 					}
 				}
@@ -326,15 +329,43 @@ namespace LL.DOS2.SourceControl.Core.Commands
 				Data.ManagedProjects.Clear();
 			}
 
-			if(Data.GitProjects != null && Data.GitProjects.Count > 0 && Data.ModProjects != null && Data.ModProjects.Count > 0)
+			if (Data.AppProjects != null)
 			{
-				foreach(var gitProject in Data.GitProjects)
+				//Data.AppProjects.Destroy();
+			}
+
+			string projectsAppDataPath = DefaultPaths.ProjectsAppData;
+
+			if(Data.AppSettings != null && File.Exists(Data.AppSettings.ProjectsAppData))
+			{
+				projectsAppDataPath = Data.AppSettings.ProjectsAppData;
+			}
+
+			if(!String.IsNullOrEmpty(projectsAppDataPath) && File.Exists(projectsAppDataPath))
+			{
+				try
 				{
-					var modProject = Data.ModProjects.Where(x => x.Name == gitProject.ProjectName).FirstOrDefault();
+					Data.AppProjects = JsonConvert.DeserializeObject<ManagedProjectsData>(File.ReadAllText(projectsAppDataPath));
+				}
+				catch(Exception ex)
+				{
+					Log.Here().Error("Error deserializing managaed projects data at {0}: {1}", projectsAppDataPath, ex.ToString());
+				}
+			}
+
+
+			if(Data.AppProjects == null)
+			{
+				Data.AppProjects = new ManagedProjectsData();
+			}
+			else
+			{
+				foreach(var project in Data.AppProjects.ManagedProjects)
+				{
+					//var modProject = Data.ModProjects.Where(x => x.Name == project.Name && x.ModuleInfo.UUID == project.GUID).FirstOrDefault();
+					var modProject = Data.ModProjects.Where(x => x.Name == project.Name).FirstOrDefault();
 					if (modProject != null)
 					{
-						//Data.ManagedProjects.Add(new ProjectEntryData(modProject.ProjectInfo, modProject.ModInfo));
-						modProject.GitGenerated = true;
 						Data.ManagedProjects.Add(modProject);
 					}
 				}
@@ -358,9 +389,9 @@ namespace LL.DOS2.SourceControl.Core.Commands
 				{
 					if (!string.IsNullOrEmpty(project.Name))
 					{
-						bool projectIsUnmanaged = (Data.ManagedProjects == null || Data.ManagedProjects != null && Data.ManagedProjects.Count <= 0);
+						bool projectIsUnmanaged = true;
 
-						if (projectIsUnmanaged && Data.ManagedProjects != null)
+						if (Data.ManagedProjects != null)
 						{
 							if (Data.ManagedProjects.Any(p => p.Name == project.Name))
 							{
@@ -379,6 +410,19 @@ namespace LL.DOS2.SourceControl.Core.Commands
 						}
 					}
 				}
+			}
+
+			Data.AvailableProjects.Add(new AvailableProjectViewData()
+			{
+				Name = "SJjjsjdiasjdiasidiahdisahdihaisdhddddddddddddddddddddddddddddddddddddddddiasdias"
+			});
+
+			for(var i = 0; i < 15;i++)
+			{
+				Data.AvailableProjects.Add(new AvailableProjectViewData()
+				{
+					Name = "Project_" + i
+				});
 			}
 
 			/*

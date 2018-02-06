@@ -24,7 +24,7 @@ namespace LL.DOS2.SourceControl.Core
 
 		private MainWindow mainWindow;
 
-		public bool GenerateGitFiles(AvailableProjectViewData project, GitGenerationSettings generationSettings)
+		public bool GenerateGitFiles(ModProjectData project, GitGenerationSettings generationSettings)
 		{
 			if(!string.IsNullOrEmpty(Data.AppSettings.GitRootDirectory))
 			{
@@ -96,8 +96,26 @@ namespace LL.DOS2.SourceControl.Core
 			return false;
 		}
 
+		public bool GenerateBackupFolder(ModProjectData project)
+		{
+			string projectBackupDirectory = Path.Combine(Data.AppSettings.BackupRootDirectory, project.Name);
+			try
+			{
+				Directory.CreateDirectory(projectBackupDirectory);
+				return true;
+			}
+			catch(Exception ex)
+			{
+				MainWindow.FooterError("Error creating backup directory for {0}: {1}", project.Name, ex.Message);
+			}
+
+			return false;
+		}
+
 		public void AddProjectsToManaged(List<AvailableProjectViewData> selectedItems)
 		{
+			bool bSaveData = false;
+
 			foreach(var project in selectedItems)
 			{
 				var modData = Data.ModProjects.Where(p => p.Name == project.Name).FirstOrDefault();
@@ -107,6 +125,47 @@ namespace LL.DOS2.SourceControl.Core
 					Data.ManagedProjects.Add(modData);
 					var availableProject = Data.AvailableProjects.Where(p => p.Name == project.Name).FirstOrDefault();
 					if (availableProject != null) Data.AvailableProjects.Remove(availableProject);
+
+					if(Data.AppProjects != null)
+					{
+						if(Data.AppProjects.ManagedProjects.Any(p => p.Name == modData.Name))
+						{
+							if(modData.ProjectAppData == null)
+							{
+								ProjectAppData data = Data.AppProjects.ManagedProjects.Where(p => p.Name == modData.Name && p.GUID == modData.ModuleInfo.UUID).FirstOrDefault();
+								if (data != null)
+								{
+									modData.ProjectAppData = data;
+								}
+							}
+						}
+						else
+						{
+							ProjectAppData data = new ProjectAppData()
+							{
+								Name = modData.Name,
+								GUID = modData.ModuleInfo.UUID,
+								LastBackup = null
+							};
+							Data.AppProjects.ManagedProjects.Add(data);
+							modData.ProjectAppData = data;
+
+							bSaveData = true;
+						}
+						
+					}
+				}
+			}
+
+			if(bSaveData)
+			{
+				if (FileCommands.Save.SaveManagedProjects())
+				{
+					MainWindow.FooterLog("Saved Managed Projects data to {0}.", Data.AppSettings.ProjectsAppData);
+				}
+				else
+				{
+					MainWindow.FooterError("Error saving Managed Projects data to {0}.", Data.AppSettings.ProjectsAppData);
 				}
 			}
 		}

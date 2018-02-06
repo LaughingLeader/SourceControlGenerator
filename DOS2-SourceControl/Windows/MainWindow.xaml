@@ -6,11 +6,11 @@
 		xmlns:local="clr-namespace:LL.DOS2.SourceControl"
 		xmlns:c="clr-namespace:LL.DOS2.SourceControl.Controls"
 		xmlns:cv="clr-namespace:LL.DOS2.SourceControl.Converters"
-		xmlns:fc="clr-namespace:LL.DOS2.SourceControl.Core.Commands"
+		xmlns:fc="clr-namespace:LL.DOS2.SourceControl.Commands"
 		xmlns:core="clr-namespace:LL.DOS2.SourceControl.Core"
 		xmlns:vdata="clr-namespace:LL.DOS2.SourceControl.Data.View"
 		mc:Ignorable="d"
-		Title="DOS2 Source Control Helper" Height="600" Width="800" Loaded="Window_Loaded" Closing="MainAppWindow_Closing"
+		Title="DOS2 Source Control Helper" Height="600" Width="1024" Loaded="Window_Loaded" Closing="MainAppWindow_Closing"
 		WindowStartupLocation="CenterOwner"
 		>
 	<Window.Resources>
@@ -305,146 +305,219 @@
 				</MenuItem>
 			</Menu>
 		</DockPanel>
-		<TabControl x:Name="MainTabsControl" Grid.Row="1" SelectionChanged="PreventInitialTextboxFocus" BorderThickness="0,1,0,0">
-			<TabItem Header="Projects">
+		<TabControl x:Name="MainTabsControl" Grid.Row="1" SelectionChanged="PreventInitialTextboxFocus" BorderThickness="0,1,0,0" BorderBrush="{DynamicResource {x:Static SystemColors.ControlDarkDarkBrushKey}}" Background="{DynamicResource {x:Static SystemColors.ControlBrushKey}}" Padding="0">
+			<TabItem Header="Projects" >
 				<Grid x:Name="Projects_ParentGrid" Width="Auto" Height="Auto">
 					<Grid.ColumnDefinitions>
-						<ColumnDefinition Width="Auto" MinWidth="214"/>
-						<ColumnDefinition />
+						<ColumnDefinition Width="*" Name="ManagedProjectsRow" />
+						<ColumnDefinition Width="Auto" />
 					</Grid.ColumnDefinitions>
-					<Grid x:Name="AvailableProjects" Grid.Column="0" Margin="0,0,2,0">
-						<Grid.RowDefinitions>
-							<RowDefinition Height="Auto"/>
-							<RowDefinition Height="Auto"/>
-							<RowDefinition Height="Auto"/>
-							<RowDefinition Height="Auto"/>
-						</Grid.RowDefinitions>
-						<Label Content="Available Projects" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Row="0" Margin="0" />
-						<ListBox x:Name="AvailableProjectsList" Grid.Row="1" ItemsSource="{Binding AvailableProjects}" Width="Auto" MaxHeight="250" HorizontalContentAlignment="Center" SelectionMode="Extended" SelectionChanged="AvailableProjectsList_SelectionChanged">
-							<ListBox.ItemContainerStyle>
-								<Style TargetType="ListBoxItem">
-									<Setter Property="Padding" Value="5" />
-									<Setter Property="HorizontalAlignment" Value="Stretch"/>
+					<Grid x:Name="AvailableProjectsView" Grid.Column="1" >
+						<Grid.ColumnDefinitions>
+							<ColumnDefinition Width="Auto" />
+							<ColumnDefinition Width="*" Name="AvailableProjectsRow" />
+						</Grid.ColumnDefinitions>
+						<StackPanel x:Name="SideWindowButtons" Grid.Column="0" Orientation="Vertical" Background="{DynamicResource {x:Static SystemColors.ControlBrushKey}}" >
+							<StackPanel.Resources>
+								<Style TargetType="Button">
+									<Setter Property="LayoutTransform">
+										<Setter.Value>
+											<RotateTransform Angle="-90" />
+										</Setter.Value>
+									</Setter>
 								</Style>
-							</ListBox.ItemContainerStyle>
-							<ListBox.ItemTemplate>
-								<DataTemplate>
-									<TextBlock HorizontalAlignment="Center" TextAlignment="Center" Text="{Binding Name}" ToolTip="{Binding Tooltip}" ToolTipService.InitialShowDelay="0" ToolTipService.BetweenShowDelay="0"/>
-								</DataTemplate>
-							</ListBox.ItemTemplate>
-						</ListBox>
-						<TextBlock Text="No New Mod Projects Found" Grid.Row="1" Visibility="{Binding AvailableProjects, Converter={StaticResource EmptyListVisibilityConverter}}" FontStyle="Italic" Foreground="#FF4D4D4D" Margin="5,5,0,5" Padding="0,0,10,0" HorizontalAlignment="Center" />
-						<Grid Grid.Row="2" Margin="0,5,0,0">
-							<Button x:Name="AddSelectedProjectsButton" Click="AddSelectedProjectsButton_Click" Content="{Binding ManageButtonsText}" HorizontalAlignment="Center" Padding="10,5" FontFamily="Roboto" MinWidth="129" MinHeight="20" />
-						</Grid>
+							</StackPanel.Resources>
+							<Button x:Name="Btn_AvailableProjects" Content="Available" ToolTip="{Binding AvailableProjectsToggleText}" Click="Btn_AvailableProjects_Click" HorizontalAlignment="Right" BorderThickness="1,0.5,0,1" />
+						</StackPanel>
+						<ScrollViewer Grid.Column="1" Padding="10,0,10,0" Background="{DynamicResource {x:Static SystemColors.ControlLightLightBrushKey}}" VerticalScrollBarVisibility="Disabled" HorizontalScrollBarVisibility="Disabled" >
+							<Grid x:Name="AvailableProjects" >
+								<Grid.RowDefinitions>
+									<RowDefinition Height="Auto"/>
+									<RowDefinition Height="Auto"/>
+									<RowDefinition Height="Auto"/>
+								</Grid.RowDefinitions>
+								<Label Content="Available Projects" HorizontalAlignment="Center" VerticalAlignment="Center" Grid.Row="0" Margin="0" />
+								<Grid Grid.Row="1"  MaxHeight="300" Width="200" MaxWidth="200">
+									<Grid>
+										<ListBox x:Name="AvailableProjectsList" ItemsSource="{Binding AvailableProjects}" HorizontalContentAlignment="Left" SelectionMode="Extended" SelectionChanged="AvailableProjectsList_SelectionChanged" ScrollViewer.HorizontalScrollBarVisibility="Auto" ScrollViewer.VerticalScrollBarVisibility="Auto">
+											<ListBox.ItemContainerStyle>
+												<Style TargetType="ListBoxItem">
+													<Setter Property="Padding" Value="5" />
+													<Setter Property="HorizontalAlignment" Value="Stretch"/>
+												</Style>
+											</ListBox.ItemContainerStyle>
+											<ListBox.ItemTemplate>
+												<DataTemplate>
+													<TextBlock HorizontalAlignment="Center" TextAlignment="Center" Text="{Binding Name}" ToolTip="{Binding Tooltip}" ToolTipService.InitialShowDelay="0" ToolTipService.BetweenShowDelay="0"/>
+												</DataTemplate>
+											</ListBox.ItemTemplate>
+										</ListBox>
+										<TextBlock Text="No New Mod Projects Found" Visibility="{Binding AvailableProjects, Converter={StaticResource EmptyListVisibilityConverter}}" FontStyle="Italic" Foreground="#FF4D4D4D" Margin="5,5,0,5" Padding="0,0,10,0" HorizontalAlignment="Center" />
+									</Grid>
+								</Grid>
+								<Grid Grid.Row="2" Margin="0,5,0,0">
+									<Button x:Name="AddSelectedProjectsButton" Click="AddSelectedProjectsButton_Click" Content="{Binding ManageButtonsText}" HorizontalAlignment="Center" Padding="10,5" FontFamily="Roboto" MinWidth="129" MinHeight="20" />
+								</Grid>
+							</Grid>
+						</ScrollViewer>
 					</Grid>
-					<Border BorderThickness="0" Grid.Column="1" BorderBrush="{DynamicResource {x:Static SystemColors.ActiveBorderBrushKey}}" Background="{DynamicResource {x:Static SystemColors.ControlBrushKey}}">
-						<Grid x:Name="ManagedProjects" Margin="2,0,0,0">
+					<Grid x:Name="ManagedProjectsBorder" Grid.Column="0" >
+						<Grid x:Name="ManagedProjectsGrid" Margin="0">
 							<Grid.RowDefinitions>
 								<RowDefinition Height="Auto"/>
-								<RowDefinition Height="Auto"/>
-								<RowDefinition Height="Auto"/>
-								<RowDefinition Height="Auto"/>
+								<RowDefinition Height="*" MinHeight="100"/>
+								<RowDefinition Height="5" Name="ProjectsGridSplit"/>
+								<RowDefinition Height="*" MinHeight="30"/>
 							</Grid.RowDefinitions>
-							<Label Content="Managed Projects" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Row="0" />
-							<DataGrid x:Name="ManagedProjectsDataGrid" Grid.Row="1" ItemsSource="{Binding ManagedProjects}" AutoGenerateColumns="False" IsReadOnly="True" SelectionChanged="ManagedProjectsDataGrid_SelectionChanged" >
-								<DataGrid.Columns>
-									<DataGridTemplateColumn Header="" Width="Auto">
-										<DataGridTemplateColumn.CellTemplate>
-											<DataTemplate>
-												<StackPanel Orientation="Horizontal">
-													<StackPanel.Resources>
-														<Style TargetType="Button">
-															<Setter Property="MinHeight" Value="16" />
-															<Setter Property="MinWidth" Value="16" />
-															<Setter Property="MaxHeight" Value="16" />
-															<Setter Property="MaxWidth" Value="16" />
-														</Style>
-													</StackPanel.Resources>
-													<Button x:Name="Btn_Backup" ToolTip="Open Backup Folder..." >
-														<Image Source="/DOS2SourceControl;component/Resources/Icons/7zipIcon.png" Stretch="UniformToFill"/>
-													</Button>
-													<Button x:Name="Btn_GenGit" IsEnabled="{Binding GitGenerated}" >
-														<Image Stretch="UniformToFill" ToolTipService.ShowOnDisabled="True">
-															<Image.Style>
-																<Style TargetType="Image">
-																	<Style.Triggers>
-																		<Trigger Property="IsEnabled" Value="False">
-																			<Setter Property="Source" Value="/DOS2SourceControl;component/Resources/Icons/GitLogo_Disabled.png" />
-																			<Setter Property="ToolTip" Value="Git Repo Not Detected" />
-																		</Trigger>
-																		<Trigger Property="IsEnabled" Value="True">
-																			<Setter Property="Source" Value="/DOS2SourceControl;component/Resources/Icons/GitLogo.png" />
-																			<Setter Property="ToolTip" Value="Open Git Repo..." />
-																		</Trigger>
-																	</Style.Triggers>
+							<Grid Grid.Row="0">
+								<Grid.ColumnDefinitions>
+									<ColumnDefinition />
+									<ColumnDefinition />
+								</Grid.ColumnDefinitions>
+								<Label Content="Managed Projects" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Row="0" />
+							</Grid>
+							<Border Grid.Row="1" BorderThickness="1" BorderBrush="{DynamicResource {x:Static SystemColors.ControlLightBrushKey}}">
+								<ScrollViewer x:Name="ProjectsDataGridScrollViewer" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" >
+									<DataGrid x:Name="ManagedProjectsDataGrid" ItemsSource="{Binding ManagedProjects}" AutoGenerateColumns="False" IsReadOnly="True" SelectionChanged="ManagedProjectsDataGrid_SelectionChanged" BorderBrush="{x:Null}" BorderThickness="0" >
+										<DataGrid.Resources>
+											<Style x:Key="ColumnElementStyle" TargetType="TextBlock">
+												<Setter Property="Margin" Value="5,0,10,0" />
+											</Style>
+										</DataGrid.Resources>
+										<DataGrid.Columns>
+											<DataGridTemplateColumn>
+												<DataGridTemplateColumn.Header>
+													<CheckBox Checked="ManagedProjects_SelectAll" Unchecked="ManagedProjects_SelectNone" />
+												</DataGridTemplateColumn.Header>
+												<DataGridTemplateColumn.CellTemplate>
+													<DataTemplate>
+														<CheckBox IsChecked="{Binding Selected}" />
+													</DataTemplate>
+												</DataGridTemplateColumn.CellTemplate>
+											</DataGridTemplateColumn>
+											<DataGridTemplateColumn Header="" Width="Auto">
+												<DataGridTemplateColumn.CellTemplate>
+													<DataTemplate>
+														<StackPanel Orientation="Horizontal">
+															<StackPanel.Resources>
+																<Style TargetType="Button">
+																	<Setter Property="MinHeight" Value="16" />
+																	<Setter Property="MinWidth" Value="16" />
+																	<Setter Property="MaxHeight" Value="16" />
+																	<Setter Property="MaxWidth" Value="16" />
 																</Style>
-															</Image.Style>
-														</Image>
-													</Button>
-													<Button x:Name="Btn_DataFolders" ToolTip="Open Data Folder..." >
-														<Image Source="/DOS2SourceControl;component/Resources/Icons/Folder.png" Stretch="UniformToFill"/>
-														<Button.ContextMenu>
-															<ContextMenu>
-																<MenuItem Header="Open Mods Folder..." />
-																<MenuItem Header="Open Public Folder..." />
-																<MenuItem Header="Open Editor Folder..." />
-																<MenuItem Header="Open Project Folder..." />
-															</ContextMenu>
-														</Button.ContextMenu>
-														<Button.Style>
-															<Style TargetType="{x:Type Button}">
-																<Style.Triggers>
-																	<EventTrigger RoutedEvent="Click">
-																		<EventTrigger.Actions>
-																			<BeginStoryboard>
-																				<Storyboard>
-																					<BooleanAnimationUsingKeyFrames Storyboard.TargetProperty="ContextMenu.IsOpen">
-																						<DiscreteBooleanKeyFrame KeyTime="0:0:0" Value="True"/>
-																					</BooleanAnimationUsingKeyFrames>
-																				</Storyboard>
-																			</BeginStoryboard>
-																		</EventTrigger.Actions>
-																	</EventTrigger>
-																</Style.Triggers>
-																<Setter Property="ContextMenu">
-																	<Setter.Value>
-																		<ContextMenu>
-																			<MenuItem />
-																			<MenuItem />
-																		</ContextMenu>
-																	</Setter.Value>
-																</Setter>
-															</Style>
-														</Button.Style>
-													</Button>
-												</StackPanel>
-											</DataTemplate>
-										</DataGridTemplateColumn.CellTemplate>
-									</DataGridTemplateColumn>
-									<DataGridTextColumn Header="Name" Binding="{Binding ModuleInfo.Name}" Width="Auto" />
-									<DataGridTextColumn Header="Author" Binding="{Binding ModuleInfo.Author}" />
-									<DataGridTextColumn Header="Version" Binding="{Binding Version}" />
-									<DataGridTextColumn Header="Type" Binding="{Binding ModuleInfo.Type}" />
-									<DataGridTextColumn Header="Description" Binding="{Binding ModuleInfo.Description}" />
-									<DataGridTextColumn Header="Last Backup" Binding="{Binding LastBackup}" />
-								</DataGrid.Columns>
-							</DataGrid>
-							<StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Center" >
-								<StackPanel.Resources>
-									<Style TargetType="Button">
-										<Setter Property="Margin" Value="2,0" />
-										<Setter Property="Padding" Value="4,2,4,2" />
-										<Setter Property="IsEnabled" Value="{Binding ProjectSelected}" />
-									</Style>
-								</StackPanel.Resources>
-								<Button Content="Backup Selected" />
-								<Button Content="Backup Selected To..." />
-								<Button Content="Create Git Repos for Selected..." />
-							</StackPanel>
+															</StackPanel.Resources>
+															<Button x:Name="Btn_Backup" ToolTip="Open Backup Folder..." >
+																<Image Source="/DOS2SourceControl;component/Resources/Icons/7zipIcon.png" Stretch="UniformToFill"/>
+															</Button>
+															<Button x:Name="Btn_GenGit" IsEnabled="{Binding GitGenerated}" >
+																<Image Stretch="UniformToFill" ToolTipService.ShowOnDisabled="True">
+																	<Image.Style>
+																		<Style TargetType="Image">
+																			<Style.Triggers>
+																				<Trigger Property="IsEnabled" Value="False">
+																					<Setter Property="Source" Value="/DOS2SourceControl;component/Resources/Icons/GitLogo_Disabled.png" />
+																					<Setter Property="ToolTip" Value="Git Repo Not Detected" />
+																				</Trigger>
+																				<Trigger Property="IsEnabled" Value="True">
+																					<Setter Property="Source" Value="/DOS2SourceControl;component/Resources/Icons/GitLogo.png" />
+																					<Setter Property="ToolTip" Value="Open Git Repo..." />
+																				</Trigger>
+																			</Style.Triggers>
+																		</Style>
+																	</Image.Style>
+																</Image>
+															</Button>
+															<Button x:Name="Btn_DataFolders" ToolTip="Open Data Folder..." >
+																<Image Source="/DOS2SourceControl;component/Resources/Icons/Folder.png" Stretch="UniformToFill"/>
+																<Button.ContextMenu>
+																	<ContextMenu>
+																		<MenuItem Header="Open Mods Folder..." />
+																		<MenuItem Header="Open Public Folder..." />
+																		<MenuItem Header="Open Editor Folder..." />
+																		<MenuItem Header="Open Project Folder..." />
+																	</ContextMenu>
+																</Button.ContextMenu>
+																<Button.Style>
+																	<Style TargetType="{x:Type Button}">
+																		<Style.Triggers>
+																			<EventTrigger RoutedEvent="Click">
+																				<EventTrigger.Actions>
+																					<BeginStoryboard>
+																						<Storyboard>
+																							<BooleanAnimationUsingKeyFrames Storyboard.TargetProperty="ContextMenu.IsOpen">
+																								<DiscreteBooleanKeyFrame KeyTime="0:0:0" Value="True"/>
+																							</BooleanAnimationUsingKeyFrames>
+																						</Storyboard>
+																					</BeginStoryboard>
+																				</EventTrigger.Actions>
+																			</EventTrigger>
+																		</Style.Triggers>
+																		<Setter Property="ContextMenu">
+																			<Setter.Value>
+																				<ContextMenu>
+																					<MenuItem />
+																					<MenuItem />
+																				</ContextMenu>
+																			</Setter.Value>
+																		</Setter>
+																	</Style>
+																</Button.Style>
+															</Button>
+														</StackPanel>
+													</DataTemplate>
+												</DataGridTemplateColumn.CellTemplate>
+											</DataGridTemplateColumn>
+											<DataGridTextColumn Header="Name" Binding="{Binding ModuleInfo.Name}" Width="Auto" ElementStyle="{StaticResource ColumnElementStyle}" />
+											<DataGridTextColumn Header="Author" Binding="{Binding ModuleInfo.Author}" ElementStyle="{StaticResource ColumnElementStyle}" />
+											<DataGridTextColumn Header="Version" Binding="{Binding Version}" ElementStyle="{StaticResource ColumnElementStyle}" />
+											<DataGridTextColumn Header="Type" Binding="{Binding ModuleInfo.Type}"  ElementStyle="{StaticResource ColumnElementStyle}" />
+											<DataGridTextColumn Header="Description" Binding="{Binding ModuleInfo.Description}"  ElementStyle="{StaticResource ColumnElementStyle}" />
+											<DataGridTextColumn Header="Last Backup" Binding="{Binding LastBackupText}"  ElementStyle="{StaticResource ColumnElementStyle}" />
+										</DataGrid.Columns>
+										<DataGrid.CellStyle>
+											<!--Override Highlighting so that its easy to see what is selected even when the control is not focused-->
+											<Style TargetType="{x:Type DataGridCell}">
+												<Style.Triggers>
+													<Trigger  Property="IsSelected" Value="true">
+														<Setter Property="Background" Value="{DynamicResource {x:Static SystemColors.HighlightBrushKey}}" />
+														<Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.HighlightTextBrushKey}}" />
+														<Setter Property="BorderBrush" Value="{DynamicResource {x:Static SystemColors.HighlightBrushKey}}" />
+													</Trigger>
+													<MultiDataTrigger>
+														<MultiDataTrigger.Conditions>
+															<Condition Binding="{Binding RelativeSource={RelativeSource Self}, Path=IsSelected}" Value="True" />
+															<Condition Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=DataGrid}, Path=IsKeyboardFocusWithin}" Value="False" />
+														</MultiDataTrigger.Conditions>
+														<MultiDataTrigger.Setters>
+															<Setter Property="Background" Value="{DynamicResource {x:Static SystemColors.HighlightBrushKey}}" />
+															<Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.HighlightTextBrushKey}}" />
+															<Setter Property="BorderBrush" Value="{DynamicResource {x:Static SystemColors.HighlightBrushKey}}" />
+														</MultiDataTrigger.Setters>
+													</MultiDataTrigger>
+												</Style.Triggers>
+											</Style>
+										</DataGrid.CellStyle>
+									</DataGrid>
+								</ScrollViewer>
+							</Border>
+							<GridSplitter x:Name="ProjectsDataGridSplitter" Grid.Row="2" Height="2" HorizontalAlignment="Stretch" Foreground="{x:Null}" Background="{DynamicResource {x:Static SystemColors.ControlDarkBrushKey}}"/>
+							<Grid x:Name="ProjectActions" Grid.Row="3" MaxHeight="30" VerticalAlignment="Top" Margin="0,5,0,0">
+								<StackPanel Orientation="Horizontal" HorizontalAlignment="Center" >
+									<StackPanel.Resources>
+										<Style TargetType="Button">
+											<Setter Property="Margin" Value="2,0" />
+											<Setter Property="Padding" Value="4,2,4,2" />
+											<Setter Property="IsEnabled" Value="{Binding ProjectSelected}" />
+										</Style>
+									</StackPanel.Resources>
+									<Button Content="Backup Selected" />
+									<Button Content="Backup Selected To..." />
+									<Button Content="Create Git Repos for Selected..." />
+								</StackPanel>
+							</Grid>
 						</Grid>
-					</Border>
-
+					</Grid>
 				</Grid>
 			</TabItem>
 			<TabItem Header="Templates">

@@ -6,13 +6,13 @@ using System.Text;
 using System.Threading.Tasks;
 using Ookii.Dialogs.Wpf;
 using LL.DOS2.SourceControl.Data;
-using LL.DOS2.SourceControl.Core.Commands;
+using LL.DOS2.SourceControl.Commands;
 using System.Windows;
 using System.Windows.Input;
 using System.Text.RegularExpressions;
 using LL.DOS2.SourceControl.Data.View;
 
-namespace LL.DOS2.SourceControl.Core
+namespace LL.DOS2.SourceControl
 {
 	public static class FileCommands
 	{
