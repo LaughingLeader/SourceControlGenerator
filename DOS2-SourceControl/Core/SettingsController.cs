@@ -29,55 +29,77 @@ namespace LL.DOS2.SourceControl.Core
 			if(!string.IsNullOrEmpty(Data.AppSettings.GitRootDirectory))
 			{
 				string gitProjectRootDirectory = Path.Combine(Data.AppSettings.GitRootDirectory, project.Name);
-				string sourceControlFile = Path.Combine(gitProjectRootDirectory, DefaultValues.SourceControlDataFileName);
-				string readmeFile = Path.Combine(gitProjectRootDirectory, "README.md");
-				string changelogFile = Path.Combine(gitProjectRootDirectory, "CHANGELOG.md");
-				string licenseFile = Path.Combine(gitProjectRootDirectory, "LICENSE");
 
-				Directory.CreateDirectory(gitProjectRootDirectory);
+				var rootRepoDirectory = Directory.CreateDirectory(gitProjectRootDirectory);
 
-				SourceControlData sourceControlData = new SourceControlData();
-				sourceControlData.ProjectName = project.Name;
-
-				string json = JsonConvert.SerializeObject(sourceControlData, Newtonsoft.Json.Formatting.Indented);
-				if(!FileCommands.WriteToFile(sourceControlFile, json))
+				foreach (var templateSetting in generationSettings.TemplateSettings)
 				{
-					Log.Here().Error("[{0}] Failed to write {1}", project.Name, sourceControlFile);
+					var templateData = Data.Templates.Where(t => t.Name == templateSetting.TemplateName).FirstOrDefault();
+					if(templateData != null)
+					{
+						if (templateSetting.Enabled)
+						{
+							string outputFIlePath = Path.Combine(gitProjectRootDirectory, templateData.Filename);
+							string outputText = GitGenerator.ReplaceKeywords(templateData.EditorText, project, Data);
+							if (!FileCommands.WriteToFile(outputFIlePath, outputText))
+							{
+								Log.Here().Error("[{0}] Failed to create template file at {1}", project.Name, templateData.FilePath);
+							}
+						}
+						else
+						{
+							Log.Here().Activity("[{0}] Skipping {1}", project.Name, templateSetting.TemplateName);
+						}
+					}
 				}
 
-				if(generationSettings.GenerateReadme)
+				if(generationSettings.SelectedLicense != LicenseType.None)
 				{
-					string readmeText = GitGenerator.GenerateReadmeText(Data.AppSettings, project.Name);
-					if (!FileCommands.WriteToFile(readmeFile, readmeText))
+					string outputText = "";
+					if(generationSettings.SelectedLicense == LicenseType.Custom)
 					{
-						Log.Here().Error("[{0}] Failed to write {1}", project.Name, readmeFile);
+						var customLicenseTemplate = Data.Templates.Where(t => t.Name == "LICENSE").FirstOrDefault();
+						if (customLicenseTemplate != null)
+						{
+							outputText = customLicenseTemplate.EditorText;
+						}
 					}
+					else
+					{
+						switch (generationSettings.SelectedLicense)
+						{
+							case LicenseType.MIT:
+								outputText = Properties.Resources.License_MIT;
+								break;
+							case LicenseType.Apache:
+								outputText = Properties.Resources.License_Apache;
+								break;
+							case LicenseType.GNU:
+								outputText = Properties.Resources.License_GNU;
+								break;
+						}
+					}
+
+					if(!String.IsNullOrEmpty(outputText))
+					{
+						outputText = GitGenerator.ReplaceKeywords(outputText, project, Data);
+					}
+
+					string licenseFile = Path.Combine(gitProjectRootDirectory, "LICENSE");
+
+					if (!FileCommands.WriteToFile(licenseFile, outputText))
+					{
+						Log.Here().Error("[{0}] Failed to write license template file at {1}", project.Name, licenseFile);
+					}
+				}
+
+				if(GitGenerator.CreateJunctions(project, Data))
+				{
+					Log.Here().Activity("[{0}] Successfully created junctions.", project.Name);
 				}
 				else
 				{
-					Log.Here().Activity("[{0}] Skipping README.md.", project.Name);
-				}
-				
-				if(generationSettings.GenerateChangelog)
-				{
-					string changelogText = GitGenerator.GenerateChangelogText(Data.AppSettings, project.Name);
-					if (!FileCommands.WriteToFile(changelogFile, changelogText))
-					{
-						Log.Here().Error("[{0}] Failed to write {1}", project.Name, changelogFile);
-					}
-				}
-				else
-				{
-					Log.Here().Activity("[{0}] Skipping CHANGELOG.md.", project.Name);
-				}
-
-				if(generationSettings.GenerateLicense)
-				{
-					string licenseText = GitGenerator.GenerateLicense(Data.AppSettings, project.Name, generationSettings);
-					if (!FileCommands.WriteToFile(licenseFile, licenseText))
-					{
-						Log.Here().Error("[{0}] Failed to write {1}", project.Name, licenseFile);
-					}
+					Log.Here().Error("[{0}] Problem creating junctions.", project.Name);
 				}
 
 				if(GitGenerator.CreateRepository(gitProjectRootDirectory))
@@ -89,8 +111,6 @@ namespace LL.DOS2.SourceControl.Core
 					Log.Here().Error("Error creating git repository for project {0}.", project.Name);
 				}
 				
-				
-
 				return true;
 			}
 			return false;

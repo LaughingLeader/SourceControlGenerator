@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace LL.DOS2.SourceControl.Controls
+namespace LL.DOS2.SourceControl.Data.View
 {
 	static public class TooltipText
 	{
@@ -13,5 +13,9 @@ namespace LL.DOS2.SourceControl.Controls
 		static public string Changelog => "A changelog file with details on each update.";
 		static public string CustomLicense => "A custom license to use instead of the more common three (MIT, Apache, GNU).";
 		static public string TemplateKeywords => "Words that get replaced when generating templates.";
+		static public string Generation_Templates => "These files are created when generating the repository files.\nKeywords will be replaced with the appropriate values.";
+		static public string Generation_License => "Select a license to generate.";
+		static public string Generation_Confirm => "Generate git repository files for selected projects.";
+		static public string Generation_Cancel => "Cancel git repository creation.";
 	}
 }

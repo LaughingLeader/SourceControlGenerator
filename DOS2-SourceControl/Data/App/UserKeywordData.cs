@@ -50,6 +50,7 @@ namespace LL.DOS2.SourceControl.Data
 
 		public void ResetToDefault()
 		{
+			if(keywords == null) keywords = new ObservableCollection<KeywordData>();
 			if (Keywords.Count > 0) Keywords.Clear();
 			Keywords.Add(new KeywordData());
 			Keywords.Add(new KeywordData());

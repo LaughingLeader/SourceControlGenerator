@@ -387,7 +387,7 @@
 										<DataGrid.Columns>
 											<DataGridTemplateColumn>
 												<DataGridTemplateColumn.Header>
-													<CheckBox Checked="ManagedProjects_SelectAll" Unchecked="ManagedProjects_SelectNone" />
+													<CheckBox Checked="ManagedProjects_SelectAll" Unchecked="ManagedProjects_SelectNone" ToolTip="Select/Deselect All" />
 												</DataGridTemplateColumn.Header>
 												<DataGridTemplateColumn.CellTemplate>
 													<DataTemplate>
@@ -395,7 +395,12 @@
 													</DataTemplate>
 												</DataGridTemplateColumn.CellTemplate>
 											</DataGridTemplateColumn>
-											<DataGridTemplateColumn Header="" Width="Auto">
+											<DataGridTemplateColumn Width="Auto" >
+												<DataGridTemplateColumn.HeaderTemplate>
+													<DataTemplate>
+														<TextBlock Text="Shortcuts" ToolTipService.ToolTip="Project Shortcuts" />
+													</DataTemplate>
+												</DataGridTemplateColumn.HeaderTemplate>
 												<DataGridTemplateColumn.CellTemplate>
 													<DataTemplate>
 														<StackPanel Orientation="Horizontal">
@@ -513,7 +518,7 @@
 									</StackPanel.Resources>
 									<Button Content="Backup Selected" />
 									<Button Content="Backup Selected To..." />
-									<Button Content="Create Git Repos for Selected..." />
+									<Button x:Name="GitGenerationButton" Content="Create Git Repos for Selected..." Click="GitGenerationButton_Click"  />
 								</StackPanel>
 							</Grid>
 						</Grid>
@@ -588,7 +593,7 @@
 											<ColumnDefinition Width="Auto"/>
 											<ColumnDefinition Width="*"/>
 										</Grid.ColumnDefinitions>
-										<Label x:Name="TemplateLabel" Content="Template Keywords" Grid.Column="0" Width="Auto" HorizontalAlignment="Left" VerticalAlignment="Center" ToolTip="{x:Static c:TooltipText.TemplateKeywords}" Padding="2,0,50,0">
+										<Label x:Name="TemplateLabel" Content="Template Keywords" Grid.Column="0" Width="Auto" HorizontalAlignment="Left" VerticalAlignment="Center" ToolTip="{x:Static vdata:TooltipText.TemplateKeywords}" Padding="2,0,50,0">
 											<Label.Style>
 												<Style TargetType="Label">
 													<Setter Property="Foreground" Value="Black" />

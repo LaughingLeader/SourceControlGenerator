@@ -23,7 +23,6 @@ namespace LL.DOS2.SourceControl.Data
 			}
 		}
 
-
 		private string gitRootDirectory;
 
 		public string GitRootDirectory
@@ -116,6 +115,18 @@ namespace LL.DOS2.SourceControl.Data
 			}
 		}
 
+		private string gitGenerationSettings;
+
+		public string GitGenSettingsFile
+		{
+			get { return gitGenerationSettings; }
+			set
+			{
+				gitGenerationSettings = value;
+				RaisePropertyChanged("GitGenSettingsFile");
+			}
+		}
+
 
 		public AppSettingsData()
 		{
@@ -128,6 +139,7 @@ namespace LL.DOS2.SourceControl.Data
 			ChangelogTemplateFile = DefaultPaths.ChangelogTemplate;
 			CustomLicenseFile = DefaultPaths.CustomLicense;
 			KeywordsFile = DefaultPaths.Keywords;
+			GitGenSettingsFile = DefaultPaths.GitGenSettings;
 		}
 	}
 

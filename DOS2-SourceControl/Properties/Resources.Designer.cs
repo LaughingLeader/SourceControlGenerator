@@ -75,9 +75,9 @@ namespace LL.DOS2.SourceControl.Properties {
         /// <summary>
         ///   Looks up a localized string similar to #Levels
         ///######################
-        ///Mods/ModName_GUID/Levels/*
-        ///Mods/ModName_GUID/Globals/*
-        ///Editor/Mods/ModName_GUID/Levels/*
+        ///Mods/$ModFolderName/Levels/*
+        ///Mods/$ModFolderName/Globals/*
+        ///Editor/Mods/$ModFolderName/Levels/*
         ///
         ///#Compiled Story files
         ///######################
@@ -86,8 +86,8 @@ namespace LL.DOS2.SourceControl.Properties {
         ///
         ///#Assets
         ///######################*
-        ///Public/ModName_GUID/Assets/*
-        ///#Public/ModName_GUID/GUI/*
+        ///Public/$ModFolderName/Assets/*
+        ///#Public/$ModFolderName/GUI/*
         ///
         ///#Editor files
         ///######################
@@ -105,9 +105,7 @@ namespace LL.DOS2.SourceControl.Properties {
         ///*.dds
         ///*.tga
         ///*.png
-        ///*.ttf
-        ///
-        ///# L [rest of string was truncated]&quot;;.
+        ///*. [rest of string was truncated]&quot;;.
         /// </summary>
         public static string DefaultGitIgnore {
             get {
@@ -137,8 +135,8 @@ namespace LL.DOS2.SourceControl.Properties {
         
         /// <summary>
         ///   Looks up a localized string similar to #Keywords
-        ///#	ProjectName = The name of the project, without the GUID.
-        ///#	ProjectGUID = Just the GUID of the project.
+        ///# ProjectName = The name of the project, without the GUID.
+        ///# ProjectGUID = The GUID(UUID) of the project.
         ///
         ///#Directories to scan
         ///
@@ -201,7 +199,7 @@ namespace LL.DOS2.SourceControl.Properties {
         /// <summary>
         ///   Looks up a localized string similar to MIT License
         ///
-        ///Copyright (c) $Year $Author
+        ///Copyright (c) $DateYear $Author
         ///
         ///Permission is hereby granted, free of charge, to any person obtaining a copy
         ///of this software and associated documentation files (the &quot;Software&quot;), to deal
@@ -210,7 +208,7 @@ namespace LL.DOS2.SourceControl.Properties {
         ///copies of the Software, and to permit persons to whom the Software is
         ///furnished to do so, subject to the following conditions:
         ///
-        ///The above copyright notic [rest of string was truncated]&quot;;.
+        ///The above copyright n [rest of string was truncated]&quot;;.
         /// </summary>
         public static string License_MIT {
             get {

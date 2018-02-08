@@ -33,6 +33,7 @@ namespace LL.DOS2.SourceControl.Windows
 		public SettingsController SettingsController => _settingsController;
 
 		private LogWindow logWindow;
+		private GitGenerationWindow gitGenerationWindow;
 
 		private bool gridSplitterMoving = false;
 
@@ -362,19 +363,28 @@ namespace LL.DOS2.SourceControl.Windows
 					}
 				}
 				//Log.Here().Activity("Selected projects: {0}", managedGrid.SelectedItems.Count);
-				foreach (var row in managedGrid.ItemsSource)
-				{
-					if (!managedGrid.SelectedItems.Contains(row))
-					{
-						if (row is ModProjectData data)
-						{
-							data.Selected = false;
-						}
-					}
-				}
+				DeselectSelectedRows();
 			}
 
 			SettingsController.Data.ProjectSelected = projectSelected;
+		}
+
+		private async void DeselectSelectedRows()
+		{
+			Task.Delay(200);
+
+			DataGrid managedGrid = (DataGrid)this.FindName("ManagedProjectsDataGrid");
+
+			foreach (var row in managedGrid.ItemsSource)
+			{
+				if (!managedGrid.SelectedItems.Contains(row))
+				{
+					if (row is ModProjectData data)
+					{
+						data.Selected = false;
+					}
+				}
+			}
 		}
 
 		private void ManagedProjects_SelectAll(object sender, RoutedEventArgs e)
@@ -414,6 +424,46 @@ namespace LL.DOS2.SourceControl.Windows
 					}
 
 					if(managedGrid.SelectedItems.Contains(row)) managedGrid.SelectedItems.Remove(row);
+				}
+			}
+		}
+
+		private void GitGenerationButton_Click(object sender, RoutedEventArgs e)
+		{
+			if (gitGenerationWindow == null)
+			{
+				gitGenerationWindow = new GitGenerationWindow();
+			}
+
+			var selectedProjects = SettingsController.Data.ManagedProjects.Where(p => p.Selected).ToList();
+			if(selectedProjects != null && selectedProjects.Count > 0)
+			{
+				gitGenerationWindow.Init(this, SettingsController.Data.GitGenerationSettings, selectedProjects);
+				gitGenerationWindow.Show();
+			}
+			else
+			{
+				if (gitGenerationWindow.IsVisible) gitGenerationWindow.Hide();
+			}
+
+			if(SettingsController.Data.GitGenerationSettings.TemplateSettings.Count <= 0)
+			{
+				Log.Here().Error("Template settings are empty!");
+			}
+		}
+
+		public void StartGitGeneration()
+		{
+			Log.Here().Important("Generating git repositories for selected projects.");
+			foreach(var project in SettingsController.Data.GitGenerationSettings.ExportProjects)
+			{
+				if(SettingsController.GenerateGitFiles(project, SettingsController.Data.GitGenerationSettings))
+				{
+					Log.Here().Important("Git repository successfully generated for {0}.", project.Name);
+				}
+				else
+				{
+					Log.Here().Error("Error generating git repository for {0}.", project.Name);
 				}
 			}
 		}

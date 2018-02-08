@@ -7,62 +7,74 @@ using System.Text;
 using System.Threading.Tasks;
 using LL.DOS2.SourceControl.Data;
 using LL.DOS2.SourceControl.Data.View;
+using LL.DOS2.SourceControl.Util;
 using Microsoft.Win32;
 
 namespace LL.DOS2.SourceControl.FileGen
 {
 	public static class GitGenerator
 	{
-		public static string GenerateReadmeText(AppSettingsData AppSettings, string ProjectName)
+		public static string GenerateTemplateFile(string defaultText, string filePath, ModProjectData modProjectData, MainAppData mainAppData)
 		{
-			string defaultText = Properties.Resources.DefaultReadme;
-			if (!string.IsNullOrEmpty(AppSettings.ReadmeTemplateFile) && File.Exists(AppSettings.ReadmeTemplateFile))
+			if (!string.IsNullOrEmpty(filePath) && File.Exists(filePath))
 			{
-				defaultText = File.ReadAllText(AppSettings.ReadmeTemplateFile);
+				defaultText = File.ReadAllText(filePath);
 			}
 
-			if (defaultText.Contains("$ProjectName")) defaultText.Replace("$ProjectName", ProjectName);
+			defaultText = ReplaceKeywords(defaultText, modProjectData, mainAppData);
 
 			return defaultText;
 		}
 
-		public static string GenerateChangelogText(AppSettingsData AppSettings, string ProjectName)
+		public static bool CreateJunctions(ModProjectData modProjectData, MainAppData mainAppData)
 		{
-			string defaultText = Properties.Resources.DefaultChangelog;
-			if (!string.IsNullOrEmpty(AppSettings.ChangelogTemplateFile) && File.Exists(AppSettings.ChangelogTemplateFile))
+			if(mainAppData.ProjectDirectoryLayouts != null && mainAppData.ProjectDirectoryLayouts.Count > 0)
 			{
-				defaultText = File.ReadAllText(AppSettings.ChangelogTemplateFile);
-			}
+				string repositoryProjectDirectory = Path.Combine(mainAppData.AppSettings.GitRootDirectory, modProjectData.Name);
 
-			if (defaultText.Contains("$ProjectName")) defaultText.Replace("$ProjectName", ProjectName);
+				Log.Here().Activity("Creating junctions for {0} at {1}. Building directory layouts.", modProjectData.Name, repositoryProjectDirectory);
 
-			return defaultText;
-		}
+				int junctionsCreated = 0;
+				int maxJunctions = mainAppData.ProjectDirectoryLayouts.Count;
 
-		public static string GenerateLicense(AppSettingsData AppSettings, string ProjectName, GitGenerationSettings generationSettings)
-		{
-			string defaultText = Properties.Resources.License_MIT;
+				foreach(var directoryBaseName in mainAppData.ProjectDirectoryLayouts)
+				{
+					var projectSubdirectoryName = directoryBaseName.Replace("ProjectName", modProjectData.Name).Replace("ProjectGUID", modProjectData.ModuleInfo.UUID);
+					var junctionSourceDirectory = Path.Combine(mainAppData.AppSettings.DOS2DataDirectory, projectSubdirectoryName);
+					var junctionTargetDirectory = Path.Combine(repositoryProjectDirectory, projectSubdirectoryName);
 
-			switch (generationSettings.LicenseType)
-			{
-				case LicenseType.Custom:
-					if (!string.IsNullOrEmpty(AppSettings.CustomLicenseFile) && File.Exists(AppSettings.CustomLicenseFile))
+					Log.Here().Activity("Looking for mod directory at {0}", junctionSourceDirectory);
+					if(Directory.Exists(junctionSourceDirectory))
 					{
-						defaultText = File.ReadAllText(AppSettings.CustomLicenseFile);
+						Log.Here().Important("Directory \"{0}\" found. Creating junction.", projectSubdirectoryName);
+
+						if(!JunctionHelper.Exists(junctionTargetDirectory))
+						{
+							try
+							{
+								JunctionHelper.Create(junctionSourceDirectory, junctionTargetDirectory, true);
+								junctionsCreated++;
+								Log.Here().Important("Junction successfully created at {0}", junctionTargetDirectory);
+							}
+							catch(Exception ex)
+							{
+								Log.Here().Error("Error creating junction at {0}: {1}", junctionTargetDirectory, ex.ToString());
+							}
+						}
+						else
+						{
+							Log.Here().Important("Junction already exists at \"{0}\". Skipping.", junctionTargetDirectory);
+							if (maxJunctions > 0) maxJunctions--;
+						}
 					}
-					break;
-				case LicenseType.Apache:
-					defaultText = Properties.Resources.License_Apache;
-					break;
-				case LicenseType.GNU:
-					defaultText = Properties.Resources.License_GNU;
-					break;
+				}
+
+				if(junctionsCreated >= maxJunctions)
+				{
+					return true;
+				}
 			}
-
-			if (defaultText.Contains("$Author")) defaultText.Replace("$Author", generationSettings.Author);
-			if (defaultText.Contains("$Year")) defaultText.Replace("$Year", DateTime.Now.Year.ToString());
-
-			return defaultText;
+			return false;
 		}
 
 		public static bool CreateRepository(string RepoPath)
@@ -79,6 +91,8 @@ namespace LL.DOS2.SourceControl.FileGen
 				process.StartInfo.FileName = @"cmd.exe";
 				process.StartInfo.UseShellExecute = false;
 				process.StartInfo.RedirectStandardInput = true;
+				process.StartInfo.CreateNoWindow = true;
+				process.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
 				process.Start();
 
 				StreamWriter stream = process.StandardInput;
@@ -88,12 +102,45 @@ namespace LL.DOS2.SourceControl.FileGen
 				stream.Close();
 
 				process.WaitForExit();
+				return true;
 			}
 			catch(Exception ex)
 			{
 				Log.Here().Error("Error creating git repository: {0}", ex.ToString());
 			}
 			return false;
+		}
+
+		private static bool KeywordIsValid(KeywordData k)
+		{
+			return k.Replace != null && !String.IsNullOrEmpty(k.KeywordName) && !String.IsNullOrEmpty(k.KeywordValue);
+		}
+
+		public static string ReplaceKeywords(string sourceText, ModProjectData modProjectData, MainAppData mainAppData)
+		{
+			string replacedText = sourceText;
+
+			foreach(var keywordData in mainAppData.AppKeyList.Where(k => KeywordIsValid(k)))
+			{
+				replacedText = replacedText.Replace(keywordData.KeywordName, keywordData.Replace?.Invoke(modProjectData));
+			}
+
+			foreach(var keywordData in mainAppData.DateKeyList.Where(k => KeywordIsValid(k)))
+			{
+				replacedText = replacedText.Replace(keywordData.KeywordName, keywordData.Replace?.Invoke(modProjectData));
+			}
+
+			foreach (var keywordData in mainAppData.UserKeywords.Keywords.Where(k => KeywordIsValid(k)))
+			{
+				replacedText = replacedText.Replace(keywordData.KeywordName, keywordData.Replace?.Invoke(modProjectData));
+			}
+
+			if(!String.IsNullOrEmpty(mainAppData.UserKeywords.DateCustom))
+			{
+				replacedText = replacedText.Replace("$DateCustom", DateTime.Now.ToString(mainAppData.UserKeywords.DateCustom));
+			}
+
+			return replacedText;
 		}
 
 		public static string GetGitInstallPath()

@@ -14,6 +14,8 @@ namespace LL.DOS2.SourceControl.Data.View
 {
 	public class TemplateEditorData : PropertyChangedBase
 	{
+		public string ID { get; set; }
+
 		private string name;
 
 		public string Name
@@ -112,6 +114,8 @@ namespace LL.DOS2.SourceControl.Data.View
 			}
 		}
 
+		public string Filename { get; set; }
+
 		private SaveFileCommand saveCommand;
 
 		public SaveFileCommand SaveCommand
@@ -156,29 +160,27 @@ namespace LL.DOS2.SourceControl.Data.View
 
 		public TemplateEditorData() { }
 
-		public TemplateEditorData(string TemplateName, string Label, string DefaultText, string Text, Func<string> getFilePath, Action<string> setFilePath, string Tooltip = "", string BrowseFileText = "")
+		public TemplateEditorData(Func<string> getFilePath, Action<string> setFilePath)
 		{
-			Name = TemplateName;
-			LabelText = Label;
-			DefaultEditorText = DefaultText;
-			EditorText = Text;
-
 			GetFilePath = getFilePath;
 			SetFilePath = setFilePath;
+		}
 
-			TooltipText = Tooltip;
-			if(String.IsNullOrEmpty(BrowseFileText))
+		public TemplateEditorData Init()
+		{
+			if (String.IsNullOrEmpty(OpenFileText))
 			{
 				OpenFileText = "Select " + LabelText;
 			}
-			else
+
+			if(String.IsNullOrEmpty(Name) && !String.IsNullOrEmpty(Filename))
 			{
-				OpenFileText = BrowseFileText;
+				Name = Filename;
 			}
 
 			SaveAsText = "Save " + Name + " As...";
 
-			OpenCommand = new ActionCommand((object param) => 
+			OpenCommand = new ActionCommand((object param) =>
 			{
 				FileBrowseControl fileBrowseControl = (FileBrowseControl)param;
 				if (fileBrowseControl != null)
@@ -216,6 +218,8 @@ namespace LL.DOS2.SourceControl.Data.View
 					MainWindow.FooterLog("Error saving {0} to {1}", Name, path);
 				}
 			});
+
+			return this;
 		}
 	}
 }

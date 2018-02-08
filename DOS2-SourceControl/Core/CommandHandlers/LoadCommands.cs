@@ -166,41 +166,52 @@ namespace LL.DOS2.SourceControl.Commands
 			}
 
 			Data.Templates.Add(new TemplateEditorData(
-				".gitignore",
-				"Default GitIgnore Template",
-				defaultIgnoreText,
-				ignoreText,
 				() => { return Data.AppSettings.GitIgnoreFile; },
-				(string val) => { Data.AppSettings.GitIgnoreFile = val; },
-				TooltipText.GitIgnore
-			));
+				(string val) => { Data.AppSettings.GitIgnoreFile = val; }
+			) {
+				ID = DefaultValues.TemplateID_Ignore,
+				Filename = ".gitignore",
+				LabelText = "Default GitIgnore Template",
+				DefaultEditorText = defaultIgnoreText,
+				EditorText = ignoreText,
+				TooltipText = TooltipText.GitIgnore
+			}.Init());
+
 			Data.Templates.Add(new TemplateEditorData(
-				"README.md",
-				"Default Readme Template",
-				defaultReadmeText,
-				readmeText,
 				() => { return Data.AppSettings.ReadmeTemplateFile; },
-				(string val) => { Data.AppSettings.ReadmeTemplateFile = val; },
-				TooltipText.Readme
-			));
+				(string val) => { Data.AppSettings.ReadmeTemplateFile = val; }
+			) {
+				ID = DefaultValues.TemplateID_Readme,
+				Filename = "README.md",
+				LabelText = "Default Readme Template",
+				DefaultEditorText = defaultReadmeText,
+				EditorText = readmeText,
+				TooltipText = TooltipText.Readme
+			}.Init());
+
 			Data.Templates.Add(new TemplateEditorData(
-				"CHANGELOG.md",
-				"Default Changelog Template",
-				defaultChangelogText,
-				changelogText,
 				() => { return Data.AppSettings.ChangelogTemplateFile; },
-				(string val) => { Data.AppSettings.ChangelogTemplateFile = val; },
-				TooltipText.Changelog
-			));
+				(string val) => { Data.AppSettings.ChangelogTemplateFile = val; }
+			) {
+				ID = DefaultValues.TemplateID_Changelog,
+				Filename = "CHANGELOG.md",
+				LabelText = "Default Changelog Template",
+				DefaultEditorText = defaultChangelogText,
+				EditorText = changelogText,
+				TooltipText = TooltipText.Changelog
+			}.Init());
+
 			Data.Templates.Add(new TemplateEditorData(
-				"Custom License",
-				"Custom License Template",
-				defaultLicenseText,
-				licenseText,
 				() => { return Data.AppSettings.CustomLicenseFile; },
-				(string val) => { Data.AppSettings.CustomLicenseFile = val; },
-				TooltipText.CustomLicense
-			));
+				(string val) => { Data.AppSettings.CustomLicenseFile = val; }
+			){
+				ID = DefaultValues.TemplateID_License,
+				Filename = "LICENSE",
+				LabelText = "Custom License Template",
+				DefaultEditorText = defaultLicenseText,
+				EditorText = licenseText,
+				TooltipText = TooltipText.CustomLicense
+			}.Init());
 		}
 
 		public void LoadDirectoryLayout()
@@ -412,6 +423,7 @@ namespace LL.DOS2.SourceControl.Commands
 				}
 			}
 
+			//DEBUG
 			Data.AvailableProjects.Add(new AvailableProjectViewData()
 			{
 				Name = "SJjjsjdiasjdiasidiahdisahdihaisdhddddddddddddddddddddddddddddddddddddddddiasdias"
@@ -515,7 +527,7 @@ namespace LL.DOS2.SourceControl.Commands
 
 		public void LoadUserKeywords(string filePath)
 		{
-			if (Data.AppSettings != null && !String.IsNullOrEmpty(filePath))
+			if (Data != null && !String.IsNullOrEmpty(filePath))
 			{
 				if (File.Exists(filePath))
 				{
@@ -526,7 +538,7 @@ namespace LL.DOS2.SourceControl.Commands
 					}
 					catch (Exception ex)
 					{
-						Log.Here().Error("Error deserializing Keywords.json: {0}", ex.ToString());
+						Log.Here().Error("Error deserializing {0}: {1}", filePath, ex.ToString());
 					}
 				}
 			}
@@ -534,6 +546,71 @@ namespace LL.DOS2.SourceControl.Commands
 			{
 				MainWindow.FooterLog("Problem loading keywords file at file path \"{0}\"", filePath);
 			}
+		}
+
+		public void LoadGitGenerationSettings()
+		{
+			string filePath = DefaultPaths.GitGenSettings;
+			if (Data != null && Data.AppSettings != null && File.Exists(Data.AppSettings.GitGenSettingsFile))
+			{
+				filePath = Data.AppSettings.GitGenSettingsFile;
+			}
+
+			if (File.Exists(filePath))
+			{
+				try
+				{
+					Data.GitGenerationSettings = JsonConvert.DeserializeObject<GitGenerationSettings>(File.ReadAllText(filePath));
+					Log.Here().Important("Git generation settings file loaded.");
+				}
+				catch (Exception ex)
+				{
+					Log.Here().Error("Error deserializing {0}: {1}", filePath, ex.ToString());
+				}
+			}
+
+			bool settingsNeedSaving = false;
+
+			if(Data.GitGenerationSettings == null)
+			{
+				Data.GitGenerationSettings = new GitGenerationSettings();
+				settingsNeedSaving = true;
+			}
+
+			//Rebuild from previous settings, in case a template name has changed, or new templates were added.
+			List<TemplateGenerationData> previousSettings = null;
+			if (Data.GitGenerationSettings.TemplateSettings != null && Data.GitGenerationSettings.TemplateSettings.Count > 0)
+			{
+				previousSettings = Data.GitGenerationSettings.TemplateSettings.ToList();
+			}
+
+			ObservableCollection<TemplateGenerationData> templateSettings = new ObservableCollection<TemplateGenerationData>();
+			foreach (var template in Data.Templates.Where(t => t.Name != "LICENSE"))
+			{
+				TemplateGenerationData tdata = new TemplateGenerationData()
+				{
+					ID = template.ID,
+					TemplateName = template.Name,
+					Enabled = true,
+					TooltipText = template.TooltipText
+				};
+
+				if (previousSettings != null)
+				{
+					var previousData = previousSettings.Where(s => s.ID == template.ID).FirstOrDefault();
+					if (previousData != null)
+					{
+						tdata.Enabled = previousData.Enabled;
+						settingsNeedSaving = true;
+					}
+				}
+
+				templateSettings.Add(tdata);
+			}
+
+			Data.GitGenerationSettings.TemplateSettings = templateSettings;
+
+			if (settingsNeedSaving) FileCommands.Save.SaveGitGenerationSettings(DefaultPaths.GitGenSettings);
 		}
 
 		public void LoadAll()
@@ -546,6 +623,7 @@ namespace LL.DOS2.SourceControl.Commands
 			LoadGitProjects();
 			LoadManagedProjects();
 			LoadAvailableProjects();
+			LoadGitGenerationSettings();
 		}
 	}
 }

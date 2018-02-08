@@ -70,6 +70,7 @@
     <Compile Include="Controls\FileBrowseControl.xaml.cs">
       <DependentUpon>FileBrowseControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Converters\EnumToCollectionConverter.cs" />
     <Compile Include="Converters\FooterOutputColorConverter.cs" />
     <Compile Include="Converters\LogTypeColorConverter.cs" />
     <Compile Include="Controls\PaddedGridViewColumnHeader.cs" />
@@ -79,7 +80,7 @@
     <Compile Include="Controls\TemplateKeywordControl.xaml.cs">
       <DependentUpon>TemplateKeywordControl.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Controls\TooltipText.cs" />
+    <Compile Include="Data\View\TooltipText.cs" />
     <Compile Include="Commands\ActionCommand.cs" />
     <Compile Include="Commands\CallbackCommand.cs" />
     <Compile Include="Core\CommandHandlers\LoadCommands.cs" />
@@ -102,10 +103,15 @@
     <Compile Include="Data\DefaultValues.cs" />
     <Compile Include="Data\View\MainAppData.cs" />
     <Compile Include="Data\App\AppSettingsData.cs" />
+    <Compile Include="Util\EnumHelper.cs" />
+    <Compile Include="Util\JunctionHelper.cs" />
     <Compile Include="Util\Log.cs" />
     <Compile Include="Core\SettingsController.cs" />
     <Compile Include="Util\HelperUtil\DOS2Helper.cs" />
     <Compile Include="Util\HelperUtil\RegisteryHelper.cs" />
+    <Compile Include="Windows\GitGenerationWindow.xaml.cs">
+      <DependentUpon>GitGenerationWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Windows\LogWindow.xaml.cs">
       <DependentUpon>LogWindow.xaml</DependentUpon>
     </Compile>
@@ -125,6 +131,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Windows\GitGenerationWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Windows\MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -136,7 +146,7 @@
     <Compile Include="Data\View\ModProjectData.cs" />
     <Compile Include="Data\App\SourceControlData.cs" />
     <Compile Include="Data\View\AvailableProjectViewData.cs" />
-    <Compile Include="Data\View\GitGenerationSettings.cs" />
+    <Compile Include="Data\App\GitGenerationSettings.cs" />
     <Compile Include="Data\Xml\DependencyInfo.cs" />
     <Compile Include="Data\Xml\ModuleInfo.cs" />
     <Compile Include="Data\Xml\ProjectInfo.cs" />
@@ -202,6 +212,26 @@
   <ItemGroup>
     <Resource Include="Resources\Icons\Folder.png" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <None Include="Resources\DefaultChangelog.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\DefaultGitIgnore.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\DefaultReadme.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\DirectoryLayout.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\License_Apache.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\License_GNU.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\License_MIT.txt" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

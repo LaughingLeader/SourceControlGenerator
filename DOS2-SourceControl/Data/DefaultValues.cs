@@ -12,6 +12,11 @@ namespace LL.DOS2.SourceControl.Data
 		public static string Readme => Properties.Resources.DefaultReadme;
 		public static string DOS2_SteamAppID => "435150";
 		public static string SourceControlDataFileName => @"DOS2SourceControl.json";
+
+		public static string TemplateID_Ignore = "1";
+		public static string TemplateID_Readme = "2";
+		public static string TemplateID_Changelog = "3";
+		public static string TemplateID_License = "4";
 	}
 
 	public static class DefaultPaths
@@ -31,6 +36,8 @@ namespace LL.DOS2.SourceControl.Data
 		public static string CustomLicense  => @"Settings/LICENSE.default";
 
 		public static string Keywords => @"Settings/Keywords.json";
+
+		public static string GitGenSettings => @"Settings/GitGeneration.json";
 
 		//Folders
 

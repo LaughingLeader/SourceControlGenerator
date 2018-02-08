@@ -106,12 +106,40 @@ namespace LL.DOS2.SourceControl.Commands
 					Log.Here().Important("Serializing and saving user keywords data.");
 					try
 					{
-						string json = JsonConvert.SerializeObject(Data.UserKeywords);
+						string json = JsonConvert.SerializeObject(Data.UserKeywords, Newtonsoft.Json.Formatting.Indented);
 						FileCommands.WriteToFile(Data.AppSettings.KeywordsFile, json);
 					}
 					catch (Exception ex)
 					{
 						Log.Here().Error("Error serializing Keywords.json: {0}", ex.ToString());
+					}
+				}
+			}
+		}
+
+		public void SaveGitGenerationSettings()
+		{
+			if (Data != null && Data.AppSettings != null)
+			{
+				SaveGitGenerationSettings(Data.AppSettings.GitGenSettingsFile);
+			}
+		}
+
+		public void SaveGitGenerationSettings(string filePath)
+		{
+			if (Data.GitGenerationSettings != null)
+			{
+				if (!String.IsNullOrEmpty(filePath))
+				{
+					Log.Here().Important("Serializing and saving git generation settings data.");
+					try
+					{
+						string json = JsonConvert.SerializeObject(Data.GitGenerationSettings, Newtonsoft.Json.Formatting.Indented);
+						FileCommands.WriteToFile(filePath, json);
+					}
+					catch (Exception ex)
+					{
+						Log.Here().Error("Error serializing {0}: {1}", filePath, ex.ToString());
 					}
 				}
 			}

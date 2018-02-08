@@ -1,0 +1,87 @@
+﻿<Window x:Class="LL.DOS2.SourceControl.Windows.GitGenerationWindow"
+		xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+		xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+		xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+		xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+		xmlns:data="clr-namespace:LL.DOS2.SourceControl.Data"
+		xmlns:viewdata="clr-namespace:LL.DOS2.SourceControl.Data.View"
+		xmlns:convert="clr-namespace:LL.DOS2.SourceControl.Converters"
+		xmlns:local="clr-namespace:LL.DOS2.SourceControl.Windows"
+		mc:Ignorable="d"
+		Title="Git Generation Settings" Height="200" Width="400">
+	<Grid>
+		<Grid.RowDefinitions>
+			<RowDefinition Height="*" />
+			<RowDefinition Height="Auto" />
+		</Grid.RowDefinitions>
+		<ScrollViewer x:Name="SettingsView" VerticalScrollBarVisibility="Auto" Background="{DynamicResource {x:Static SystemColors.MenuBarBrushKey}}" Padding="5" >
+			<ScrollViewer.Resources>
+				<Style TargetType="{x:Type Label}">
+					<Setter Property="Background">
+						<Setter.Value>
+							<SolidColorBrush Color="{x:Static SystemColors.ControlLightColor}" />
+						</Setter.Value>
+					</Setter>
+					<Setter Property="HorizontalContentAlignment" Value="Center" />
+					<Setter Property="VerticalContentAlignment" Value="Center" />
+				</Style>
+			</ScrollViewer.Resources>
+			<Grid Margin="2">
+				<Grid.ColumnDefinitions>
+					<ColumnDefinition Width="0.5*" />
+					<ColumnDefinition Width="*" />
+				</Grid.ColumnDefinitions>
+				<Grid.RowDefinitions>
+					<RowDefinition Height="0.5*" />
+					<RowDefinition Height="*" />
+				</Grid.RowDefinitions>
+				<Grid.Resources>
+					<Style TargetType="{x:Type Border}">
+						<Setter Property="BorderBrush">
+							<Setter.Value>
+								<SolidColorBrush Color="{x:Static SystemColors.ControlDarkColor}" />
+							</Setter.Value>
+						</Setter>
+					</Style>
+				</Grid.Resources>
+				<Border BorderThickness="1,1,0,0">
+					<Label Content="License" Height="Auto" ToolTip="{x:Static viewdata:TooltipText.Generation_License}"  />
+				</Border>
+				<Border Grid.Column="1" BorderThickness="1,1,1,0" Background="{DynamicResource {x:Static SystemColors.ControlLightLightBrushKey}}" >
+					<ComboBox x:Name="LicenseComboBox" ItemsSource="{Binding Path=SelectedLicense, Converter={convert:EnumToCollectionConverter}, Mode=OneTime}"
+						SelectedValuePath="Value"
+						DisplayMemberPath="Description"
+						SelectedValue="{Binding Path=SelectedLicense}"
+						HorizontalAlignment="Center"  VerticalAlignment="Center"
+						Margin="5,5" />
+				</Border>
+				<Border Grid.Row="1" BorderThickness="1,1,0,1" Background="{DynamicResource {x:Static SystemColors.ControlLightBrushKey}}">
+					<Label Content="Templates" Background="{x:Null}" ToolTip="{x:Static viewdata:TooltipText.Generation_Templates}"  />
+				</Border>
+				<Border Grid.Row="1" Grid.Column="1" BorderThickness="1" Background="{DynamicResource {x:Static SystemColors.ControlLightLightBrushKey}}">
+					<ItemsControl x:Name="GenerationSettingsControl" ItemsSource="{Binding TemplateSettings}" 
+						  VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0,10,0,10"
+						  >
+						<ItemsControl.ItemTemplate>
+							<DataTemplate DataType="{x:Type data:TemplateGenerationData}">
+								<CheckBox IsChecked="{Binding Enabled, Mode=TwoWay}" ToolTip="{Binding TooltipText}">
+									<TextBlock Text="{Binding TemplateName}" HorizontalAlignment="Left" />
+								</CheckBox>
+							</DataTemplate>
+						</ItemsControl.ItemTemplate>
+					</ItemsControl>
+				</Border>
+			</Grid>
+		</ScrollViewer>
+		<StackPanel Orientation="Horizontal" Grid.Row="1" HorizontalAlignment="Center" >
+			<StackPanel.Resources>
+				<Style TargetType="{x:Type Button}">
+					<Setter Property="Margin" Value="3,2" />
+					<Setter Property="Padding" Value="4" />
+				</Style>
+			</StackPanel.Resources>
+			<Button x:Name="ConfirmButton" Content="Generate" ToolTip="{x:Static viewdata:TooltipText.Generation_Confirm}" Click="ConfirmButton_Click" />
+			<Button x:Name="CancelButton" Content="Cancel" ToolTip="{x:Static viewdata:TooltipText.Generation_Cancel}" Click="CancelButton_Click" />
+		</StackPanel>
+	</Grid>
+</Window>

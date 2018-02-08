@@ -49,6 +49,20 @@ namespace LL.DOS2.SourceControl.Data.View
 			}
 		}
 
+		private GitGenerationSettings gitGenerationSettings;
+
+		public GitGenerationSettings GitGenerationSettings
+		{
+			get { return gitGenerationSettings; }
+			set
+			{
+				gitGenerationSettings = value;
+				RaisePropertyChanged("GitGenerationSettings");
+			}
+		}
+
+
+
 		private ObservableCollection<AvailableProjectViewData> availableProjects;
 
 		public ObservableCollection<AvailableProjectViewData> AvailableProjects
@@ -181,6 +195,18 @@ namespace LL.DOS2.SourceControl.Data.View
 			});
 			AppKeyList.Add(new KeywordData()
 			{
+				KeywordName = "$UUID",
+				KeywordValue = "Mod Data: UUID",
+				Replace = (modProjectData) => { return modProjectData.ModuleInfo.UUID; }
+			});
+			AppKeyList.Add(new KeywordData()
+			{
+				KeywordName = "$ModFolderName",
+				KeywordValue = "Mod Data: Name_UUID",
+				Replace = (modProjectData) => { return modProjectData.Name + "_" + modProjectData.ModuleInfo.UUID; }
+			});
+			AppKeyList.Add(new KeywordData()
+			{
 				KeywordName = "$Targets",
 				KeywordValue = "Mod Data: Targets",
 				Replace = (modProjectData) => { return String.Join(",", modProjectData.ModuleInfo.TargetModes.ToArray()); }
@@ -199,6 +225,24 @@ namespace LL.DOS2.SourceControl.Data.View
 			});
 
 			DateKeyList = new ObservableCollection<KeywordData>();
+			DateKeyList.Add(new KeywordData()
+			{
+				KeywordName = "$DateYear",
+				KeywordValue = DateTime.Now.Year.ToString(),
+				Replace = (modProjectData) => { return DateTime.Now.Year.ToString(); }
+			});
+			DateKeyList.Add(new KeywordData()
+			{
+				KeywordName = "$DateMonth",
+				KeywordValue = DateTime.Now.Month.ToString(),
+				Replace = (modProjectData) => { return DateTime.Now.Month.ToString(); }
+			});
+			DateKeyList.Add(new KeywordData()
+			{
+				KeywordName = "$DateDay",
+				KeywordValue = DateTime.Now.Day.ToString(),
+				Replace = (modProjectData) => { return DateTime.Now.Day.ToString(); }
+			});
 			DateKeyList.Add(new KeywordData()
 			{
 				KeywordName = "$DateShortLong",
