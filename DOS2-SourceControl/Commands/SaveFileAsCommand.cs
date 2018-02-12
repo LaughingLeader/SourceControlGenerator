@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Data;
 using System.Windows.Input;
+using LL.DOS2.SourceControl.Data.Command;
 using Newtonsoft.Json;
 
 namespace LL.DOS2.SourceControl.Commands
@@ -13,12 +15,20 @@ namespace LL.DOS2.SourceControl.Commands
 	{
 		public object Convert(object[] values, Type targetType, object parameter, System.Globalization.CultureInfo culture)
 		{
-			return new SaveFileAsCommandData()
+			if (values != null)
 			{
-				FilePath = values[0].ToString(),
-				Content = values[1].ToString(),
-				DialogTitle = values[2].ToString()
-			};
+				var commandData = new SaveFileCommandData();
+
+				if (values.Length >= 0) commandData.Content = values[0]?.ToString();
+				if (values.Length > 1) commandData.DialogTitle = values[1]?.ToString();
+				if (values.Length >= 2) commandData.FileName = values[2]?.ToString();
+				if (values.Length >= 3) commandData.FilePath = values[3]?.ToString();
+				if (values.Length >= 4) commandData.DefaultFilePath = values[4]?.ToString();
+
+				return commandData;
+			}
+			
+			return null;
 		}
 
 		public object[] ConvertBack(object value, Type[] targetTypes, object parameter, System.Globalization.CultureInfo culture)
@@ -27,16 +37,9 @@ namespace LL.DOS2.SourceControl.Commands
 		}
 	}
 
-	public class SaveFileAsCommandData
-	{
-		public string FilePath { get; set; }
-		public string Content { get; set; }
-		public string DialogTitle { get; set; }
-	}
-
 	public class SaveFileAsCommand : ICommand
 	{
-		private Action<bool, string> OnSave;
+		public Action<bool, string> OnSaveAs { get; set; }
 
 		public event EventHandler CanExecuteChanged
 		{
@@ -48,23 +51,24 @@ namespace LL.DOS2.SourceControl.Commands
 		{
 			if(parameter != null && FileCommands.Save != null)
 			{
-				if(parameter is SaveFileAsCommandData data)
+				if(parameter is SaveFileCommandData data)
 				{
-					return FileCommands.IsValidPath(data.FilePath);
+					//return FileCommands.IsValidPath(data.FilePath);
+					return true;
 				}
 			}
 			return false;
 		}
 
-		public void Execute(object parameter)
+		public virtual void Execute(object parameter)
 		{
-			if (parameter != null && parameter is SaveFileAsCommandData data)
+			if (parameter != null && parameter is SaveFileCommandData data)
 			{
 				Log.Here().Important("Attempting to save file: {0}", data.FilePath);
 				if (String.IsNullOrEmpty(data.DialogTitle)) data.DialogTitle = "Save File As";
-				if (!String.IsNullOrEmpty(data.Content))
+				if (data.Content != null)
 				{
-					FileCommands.Save.OpenDialogAndSave(App.Current.MainWindow, data.DialogTitle, data.FilePath, data.Content, OnSave);
+					FileCommands.Save.OpenDialogAndSave(App.Current.MainWindow, data.DialogTitle, data.FilePath, data.Content, OnSaveAs, data.FileName, data.DefaultFilePath);
 				}
 			}
 		}
@@ -72,7 +76,7 @@ namespace LL.DOS2.SourceControl.Commands
 		public SaveFileAsCommand() { }
 		public SaveFileAsCommand(Action<bool, string> onSaveCallback)
 		{
-			OnSave = onSaveCallback;
+			OnSaveAs = onSaveCallback;
 		}
 	}
 }

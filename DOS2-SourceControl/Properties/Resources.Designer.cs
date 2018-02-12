@@ -73,6 +73,18 @@ namespace LL.DOS2.SourceControl.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to .gitignore export-ignore
+        ///LICENSE export-ignore
+        ///README.md export-ignore
+        ///CHANGELOG.md export-ignore.
+        /// </summary>
+        public static string DefaultGitAttributes {
+            get {
+                return ResourceManager.GetString("DefaultGitAttributes", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to #Levels
         ///######################
         ///Mods/$ModFolderName/Levels/*

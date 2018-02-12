@@ -111,6 +111,41 @@ namespace LL.DOS2.SourceControl.FileGen
 			return false;
 		}
 
+		public static bool Archive(string RepoPath, string OutputFileName, bool IgnoreGitFiles = true)
+		{
+			try
+			{
+				string command = "git archive -o \"" + OutputFileName + "\"";
+				if(IgnoreGitFiles)
+				{
+					command += " --worktree-attributes";
+				}
+
+				Process process = new Process();
+
+				process.StartInfo.FileName = @"cmd.exe";
+				process.StartInfo.UseShellExecute = false;
+				process.StartInfo.RedirectStandardInput = true;
+				process.StartInfo.CreateNoWindow = true;
+				process.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
+				process.Start();
+
+				StreamWriter stream = process.StandardInput;
+
+				stream.WriteLine("cd \"" + RepoPath + "\"");
+				stream.WriteLine(command);
+				stream.Close();
+
+				process.WaitForExit();
+				return true;
+			}
+			catch (Exception ex)
+			{
+				Log.Here().Error("Error creating git archive: {0}", ex.ToString());
+			}
+			return false;
+		}
+
 		private static bool KeywordIsValid(KeywordData k)
 		{
 			return k.Replace != null && !String.IsNullOrEmpty(k.KeywordName) && !String.IsNullOrEmpty(k.KeywordValue);

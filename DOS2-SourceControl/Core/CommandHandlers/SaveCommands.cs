@@ -24,12 +24,39 @@ namespace LL.DOS2.SourceControl.Commands
 			Data = data;
 		}
 
-		public void OpenDialogAndSave(Window ParentWindow, string Title, string FilePath, string FileContent, Action<bool, string> OnSave = null)
+		public void OpenDialogAndSave(Window ParentWindow, string Title, string FilePath, string FileContent, Action<bool, string> OnSave = null, string FileName = "", string DefaultFilePath="")
 		{
 			SaveFileDialog fileDialog = new SaveFileDialog();
 			fileDialog.Title = Title;
-			fileDialog.InitialDirectory = Directory.GetParent(FilePath).FullName;
-			fileDialog.FileName = Path.GetFileName(FilePath);
+
+			if (!String.IsNullOrEmpty(FileName)) fileDialog.FileName = FileName;
+
+			if (!String.IsNullOrEmpty(FilePath))
+			{
+				FileAttributes fileAttributes = File.GetAttributes(FilePath);
+
+				if ((fileAttributes & FileAttributes.Directory) != FileAttributes.Directory)
+				{
+					if (String.IsNullOrEmpty(DefaultFilePath) || (!String.IsNullOrEmpty(DefaultFilePath) && FilePath != DefaultFilePath))
+					{
+						//Override the file name with the incoming path, unless that file name matches a default file path.
+						//This is to suggest to the user to make a new file instead of overwriting application defaults.
+
+						fileDialog.FileName = Path.GetFileName(FilePath);
+					}
+					fileDialog.InitialDirectory = Directory.GetParent(FilePath).FullName;
+				}
+				else
+				{
+					fileDialog.InitialDirectory = Path.GetFullPath(FilePath);
+				}
+			}
+			else
+			{
+				fileDialog.InitialDirectory = Directory.GetCurrentDirectory();
+			}
+
+			
 			fileDialog.OverwritePrompt = true;
 
 			Nullable<bool> result = fileDialog.ShowDialog(ParentWindow);

@@ -80,6 +80,8 @@ namespace LL.DOS2.SourceControl.Commands
 					dataDirectory = dataDirectory + @"\Data";
 					Data.AppSettings.DOS2DataDirectory = dataDirectory;
 				}
+
+				FileCommands.Save.SaveAppSettings();
 			}
 
 			if (String.IsNullOrEmpty(Data.AppSettings.DOS2DataDirectory))
@@ -101,117 +103,76 @@ namespace LL.DOS2.SourceControl.Commands
 
 		public void LoadTemplates()
 		{
-			string defaultIgnoreText = "";
-			string defaultReadmeText = "";
-			string defaultChangelogText = "";
-			string defaultLicenseText = "";
-
-			if (File.Exists(DefaultPaths.GitIgnore))
+			Data.Templates.Add(new TemplateEditorData()
 			{
-				defaultIgnoreText = File.ReadAllText(DefaultPaths.GitIgnore);
-			}
-			else
-			{
-				defaultIgnoreText = Properties.Resources.DefaultGitIgnore;
-				File.WriteAllText(DefaultPaths.GitIgnore, defaultIgnoreText);
-			}
-
-			if (File.Exists(DefaultPaths.ReadmeTemplate))
-			{
-				defaultReadmeText = File.ReadAllText(DefaultPaths.ReadmeTemplate);
-			}
-			else
-			{
-				defaultReadmeText = Properties.Resources.DefaultReadme;
-				File.WriteAllText(DefaultPaths.ReadmeTemplate, defaultReadmeText);
-			}
-
-			if (File.Exists(DefaultPaths.ChangelogTemplate))
-			{
-				defaultChangelogText = File.ReadAllText(DefaultPaths.ChangelogTemplate);
-			}
-			else
-			{
-				defaultChangelogText = Properties.Resources.DefaultChangelog;
-				File.WriteAllText(DefaultPaths.ChangelogTemplate, defaultChangelogText);
-			}
-
-			string ignoreText = defaultIgnoreText;
-			string readmeText = defaultReadmeText;
-			string changelogText = defaultChangelogText;
-			string licenseText = defaultLicenseText;
-
-			if (File.Exists(Data.AppSettings.GitIgnoreFile))
-			{
-				ignoreText = File.ReadAllText(Data.AppSettings.GitIgnoreFile);
-				Log.Here().Important("Loaded .gitignore template file at {0}", Data.AppSettings.GitIgnoreFile);
-			}
-
-			if (File.Exists(Data.AppSettings.ReadmeTemplateFile))
-			{
-				readmeText = File.ReadAllText(Data.AppSettings.ReadmeTemplateFile);
-				Log.Here().Important("Loaded readme template file at {0}", Data.AppSettings.ReadmeTemplateFile);
-			}
-
-			if (File.Exists(Data.AppSettings.ChangelogTemplateFile))
-			{
-				changelogText = File.ReadAllText(Data.AppSettings.ChangelogTemplateFile);
-				Log.Here().Important("Loaded changelog template file at {0}", Data.AppSettings.ChangelogTemplateFile);
-			}
-
-			if (File.Exists(Data.AppSettings.CustomLicenseFile))
-			{
-				licenseText = File.ReadAllText(Data.AppSettings.CustomLicenseFile);
-				Log.Here().Important("Custom license file found and loaded.");
-			}
-
-			Data.Templates.Add(new TemplateEditorData(
-				() => { return Data.AppSettings.GitIgnoreFile; },
-				(string val) => { Data.AppSettings.GitIgnoreFile = val; }
-			) {
 				ID = DefaultValues.TemplateID_Ignore,
-				Filename = ".gitignore",
+				Name = ".gitignore",
+				FileName = ".gitignore.template",
 				LabelText = "Default GitIgnore Template",
-				DefaultEditorText = defaultIgnoreText,
-				EditorText = ignoreText,
-				TooltipText = TooltipText.GitIgnore
-			}.Init());
-
-			Data.Templates.Add(new TemplateEditorData(
-				() => { return Data.AppSettings.ReadmeTemplateFile; },
-				(string val) => { Data.AppSettings.ReadmeTemplateFile = val; }
-			) {
+				TooltipText = TooltipText.GitIgnore,
+				DefaultEditorText = Properties.Resources.DefaultGitIgnore,
+				DefaultFilePath = DefaultPaths.GitIgnore,
+				GetFilePath = () => { return Data.AppSettings.GitIgnoreFile; },
+				SetFilePath = (string val) => { Data.AppSettings.GitIgnoreFile = val; }
+			});
+			
+			Data.Templates.Add(new TemplateEditorData()
+			{
 				ID = DefaultValues.TemplateID_Readme,
-				Filename = "README.md",
+				Name = "README.md",
+				FileName = "README.md.template",
 				LabelText = "Default Readme Template",
-				DefaultEditorText = defaultReadmeText,
-				EditorText = readmeText,
-				TooltipText = TooltipText.Readme
-			}.Init());
-
-			Data.Templates.Add(new TemplateEditorData(
-				() => { return Data.AppSettings.ChangelogTemplateFile; },
-				(string val) => { Data.AppSettings.ChangelogTemplateFile = val; }
-			) {
+				TooltipText = TooltipText.Readme,
+				DefaultEditorText = Properties.Resources.DefaultReadme,
+				DefaultFilePath = DefaultPaths.ReadmeTemplate,
+				GetFilePath = () => { return Data.AppSettings.ReadmeTemplateFile; },
+				SetFilePath = (string val) => { Data.AppSettings.ReadmeTemplateFile = val; }
+			});
+			
+			Data.Templates.Add(new TemplateEditorData()
+			{
 				ID = DefaultValues.TemplateID_Changelog,
-				Filename = "CHANGELOG.md",
+				Name = "CHANGELOG.md",
+				FileName = "CHANGELOG.md.template",
 				LabelText = "Default Changelog Template",
-				DefaultEditorText = defaultChangelogText,
-				EditorText = changelogText,
-				TooltipText = TooltipText.Changelog
-			}.Init());
-
-			Data.Templates.Add(new TemplateEditorData(
-				() => { return Data.AppSettings.CustomLicenseFile; },
-				(string val) => { Data.AppSettings.CustomLicenseFile = val; }
-			){
+				TooltipText = TooltipText.Changelog,
+				DefaultEditorText = Properties.Resources.DefaultChangelog,
+				DefaultFilePath = DefaultPaths.ChangelogTemplate,
+				GetFilePath = () => { return Data.AppSettings.ChangelogTemplateFile; },
+				SetFilePath = (string val) => { Data.AppSettings.ChangelogTemplateFile = val; }
+			});
+			
+			Data.Templates.Add(new TemplateEditorData()
+			{
 				ID = DefaultValues.TemplateID_License,
-				Filename = "LICENSE",
+				Name = "LICENSE",
+				FileName = "LICENSE.template",
 				LabelText = "Custom License Template",
-				DefaultEditorText = defaultLicenseText,
-				EditorText = licenseText,
-				TooltipText = TooltipText.CustomLicense
-			}.Init());
+				TooltipText = TooltipText.CustomLicense,
+				DefaultEditorText = "",
+				DefaultFilePath = "",
+				GetFilePath = () => { return Data.AppSettings.CustomLicenseFile; },
+				SetFilePath = (string val) => { Data.AppSettings.CustomLicenseFile = val; }
+			});
+
+			Data.Templates.Add(new TemplateEditorData()
+			{
+				ID = DefaultValues.TemplateID_Attributes,
+				Name = "attributes",
+				FileName = "attributes.template",
+				LabelText = "Default GitAttributes Template",
+				TooltipText = TooltipText.GitAttributes,
+				DefaultEditorText = Properties.Resources.DefaultGitAttributes,
+				DefaultFilePath = DefaultPaths.GitAttributes,
+				GetFilePath = () => { return Data.AppSettings.GitAttributesFile; },
+				SetFilePath = (string val) => { Data.AppSettings.GitAttributesFile = val; }
+			});
+
+			for (int i = 0 ; i < Data.Templates.Count; i++)
+			{
+				var template = Data.Templates[i];
+				template.Init();
+			}
 		}
 
 		public void LoadDirectoryLayout()

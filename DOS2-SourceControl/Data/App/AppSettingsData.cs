@@ -55,6 +55,18 @@ namespace LL.DOS2.SourceControl.Data
 			}
 		}
 
+		private string gitAttributesFile;
+
+		public string GitAttributesFile
+		{
+			get { return gitAttributesFile; }
+			set
+			{
+				gitAttributesFile = value;
+				RaisePropertyChanged("GitAttributesFile");
+			}
+		}
+
 		private string readmeTemplateFile;
 
 		public string ReadmeTemplateFile
@@ -135,9 +147,10 @@ namespace LL.DOS2.SourceControl.Data
 			GitRootDirectory = DefaultPaths.GitRoot;
 			ProjectsAppData = DefaultPaths.ProjectsAppData;
 			GitIgnoreFile = DefaultPaths.GitIgnore;
+			GitAttributesFile = DefaultPaths.GitAttributes;
 			ReadmeTemplateFile = DefaultPaths.ReadmeTemplate;
 			ChangelogTemplateFile = DefaultPaths.ChangelogTemplate;
-			CustomLicenseFile = DefaultPaths.CustomLicense;
+			CustomLicenseFile = "";
 			KeywordsFile = DefaultPaths.Keywords;
 			GitGenSettingsFile = DefaultPaths.GitGenSettings;
 		}

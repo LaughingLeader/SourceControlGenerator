@@ -29,7 +29,7 @@
 				<Setter Property="VerticalAlignment" Value="Center" />
 			</Style>
 		</Grid.Resources>
-		<TextBox x:Name="FolderBrowseDisplay" Grid.Column="0" Text="{Binding Path=FileLocationText, ElementName=FileBrowser}" Width="270" MinHeight="20" Height="20" BorderThickness="1" />
+		<TextBox x:Name="FilePathDisplay" Grid.Column="0" Text="{Binding Path=FileLocationText, ElementName=FileBrowser, Mode=TwoWay}" Width="270" MinHeight="20" Height="20" BorderThickness="1" IsReadOnly="True" />
 		<Button x:Name="FileBrowseButton" Grid.Column="1" Style="{StaticResource OpenBrowseButton}" BorderThickness="0,1,1,1" Margin="-1,0,0,0" ToolTip="Browse..." BorderBrush="#FFABADB3" FontSize="16" TextOptions.TextFormattingMode="Display" FontFamily="Bitter" Click="FileBrowseButton_Click"/>
 	</Grid>
 </UserControl>

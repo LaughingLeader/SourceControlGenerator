@@ -121,6 +121,9 @@
   <data name="DefaultChangelog" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\DefaultChangelog.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
   </data>
+  <data name="DefaultGitAttributes" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\DefaultAttributes.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
+  </data>
   <data name="DefaultGitIgnore" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\DefaultGitIgnore.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
   </data>

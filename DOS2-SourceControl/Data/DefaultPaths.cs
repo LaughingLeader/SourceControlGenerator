@@ -8,8 +8,8 @@ namespace LL.DOS2.SourceControl.Data
 {
 	public static class DefaultValues
 	{
-		public static string GitIgnore => Properties.Resources.DefaultGitIgnore;
-		public static string Readme => Properties.Resources.DefaultReadme;
+		//public static string GitIgnore => Properties.Resources.DefaultGitIgnore;
+		//public static string Readme => Properties.Resources.DefaultReadme;
 		public static string DOS2_SteamAppID => "435150";
 		public static string SourceControlDataFileName => @"DOS2SourceControl.json";
 
@@ -17,6 +17,7 @@ namespace LL.DOS2.SourceControl.Data
 		public static string TemplateID_Readme = "2";
 		public static string TemplateID_Changelog = "3";
 		public static string TemplateID_License = "4";
+		public static string TemplateID_Attributes = "5";
 	}
 
 	public static class DefaultPaths
@@ -29,11 +30,13 @@ namespace LL.DOS2.SourceControl.Data
 
 		public static string GitIgnore => @"Settings/.gitignore.default";
 
+		public static string GitAttributes => @"Settings/attributes.default";
+
 		public static string ReadmeTemplate => @"Settings/README.md.default";
 
 		public static string ChangelogTemplate => @"Settings/CHANGELOG.md.default";
 
-		public static string CustomLicense  => @"Settings/LICENSE.default";
+		//public static string CustomLicense  => @"Settings/LICENSE.default";
 
 		public static string Keywords => @"Settings/Keywords.json";
 

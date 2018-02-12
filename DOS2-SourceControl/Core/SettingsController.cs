@@ -39,7 +39,7 @@ namespace LL.DOS2.SourceControl.Core
 					{
 						if (templateSetting.Enabled)
 						{
-							string outputFIlePath = Path.Combine(gitProjectRootDirectory, templateData.Filename);
+							string outputFIlePath = Path.Combine(gitProjectRootDirectory, templateData.FileName);
 							string outputText = GitGenerator.ReplaceKeywords(templateData.EditorText, project, Data);
 							if (!FileCommands.WriteToFile(outputFIlePath, outputText))
 							{
@@ -129,6 +129,19 @@ namespace LL.DOS2.SourceControl.Core
 				MainWindow.FooterError("Error creating backup directory for {0}: {1}", project.Name, ex.Message);
 			}
 
+			return false;
+		}
+
+		public bool BackupGitProject(ModProjectData project)
+		{
+			if (!string.IsNullOrEmpty(Data.AppSettings.GitRootDirectory))
+			{
+				string gitProjectRootDirectory = Path.Combine(Data.AppSettings.GitRootDirectory, project.Name);
+				if (Directory.Exists(gitProjectRootDirectory))
+				{
+					
+				}
+			}
 			return false;
 		}
 

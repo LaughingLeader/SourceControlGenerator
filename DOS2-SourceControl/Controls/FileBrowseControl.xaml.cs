@@ -165,7 +165,7 @@ namespace LL.DOS2.SourceControl.Controls
 				fileDialog.Filter = Filter;
 				fileDialog.Multiselect = false;
 
-				if(File.Exists(FileLocationText))
+				if(FileCommands.IsValidPath(FileLocationText))
 				{
 					fileDialog.FileName = Path.GetFileName(FileLocationText);
 				}

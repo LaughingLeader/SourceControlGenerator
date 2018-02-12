@@ -43,6 +43,9 @@
     <Reference Include="Ookii.Dialogs.Wpf">
       <HintPath>..\..\_Libraries\Ookii.Dialogs\Ookii.Dialogs.Wpf.dll</HintPath>
     </Reference>
+    <Reference Include="SharpCompress, Version=0.19.2.0, Culture=neutral, PublicKeyToken=afb0a02973931d96, processorArchitecture=MSIL">
+      <HintPath>..\packages\SharpCompress.0.19.2\lib\net45\SharpCompress.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
@@ -80,6 +83,7 @@
     <Compile Include="Controls\TemplateKeywordControl.xaml.cs">
       <DependentUpon>TemplateKeywordControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Data\Command\SaveFileCommandData.cs" />
     <Compile Include="Data\View\TooltipText.cs" />
     <Compile Include="Commands\ActionCommand.cs" />
     <Compile Include="Commands\CallbackCommand.cs" />
@@ -100,7 +104,7 @@
     <Compile Include="Enum\FileBrowseType.cs" />
     <Compile Include="Extensions\Extensions.cs" />
     <Compile Include="FileGen\GitGenerator.cs" />
-    <Compile Include="Data\DefaultValues.cs" />
+    <Compile Include="Data\DefaultPaths.cs" />
     <Compile Include="Data\View\MainAppData.cs" />
     <Compile Include="Data\App\AppSettingsData.cs" />
     <Compile Include="Util\EnumHelper.cs" />
@@ -232,6 +236,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\License_MIT.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\DefaultAttributes.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

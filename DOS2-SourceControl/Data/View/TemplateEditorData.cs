@@ -101,8 +101,8 @@ namespace LL.DOS2.SourceControl.Data.View
 			}
 		}
 
-		private Func<string> GetFilePath;
-		private Action<string> SetFilePath;
+		public Func<string> GetFilePath { private get; set; }
+		public Action<string> SetFilePath { private get; set; }
 
 		public string FilePath
 		{
@@ -114,7 +114,18 @@ namespace LL.DOS2.SourceControl.Data.View
 			}
 		}
 
-		public string Filename { get; set; }
+		private string filename;
+
+		public string FileName
+		{
+			get { return filename; }
+			set
+			{
+				filename = value;
+				RaisePropertyChanged("FileName");
+			}
+		}
+
 
 		private SaveFileCommand saveCommand;
 
@@ -152,30 +163,87 @@ namespace LL.DOS2.SourceControl.Data.View
 			}
 		}
 
+		private string defaultFilePath;
+
+		public string DefaultFilePath
+		{
+			get { return defaultFilePath; }
+			set
+			{
+				defaultFilePath = value;
+				RaisePropertyChanged("DefaultFilePath");
+			}
+		}
+
+
 		public void SetToDefault()
 		{
 			EditorText = DefaultEditorText;
 			RaisePropertyChanged("EditorText");
 		}
 
-		public TemplateEditorData() { }
-
-		public TemplateEditorData(Func<string> getFilePath, Action<string> setFilePath)
+		private void OnSave(bool success)
 		{
-			GetFilePath = getFilePath;
-			SetFilePath = setFilePath;
+			if (success)
+			{
+				MainWindow.FooterLog("Saved {0} to {1}", Name, FilePath);
+			}
+			else
+			{
+				MainWindow.FooterLog("Error saving {0} to {1}", Name, FilePath);
+			}
 		}
 
-		public TemplateEditorData Init()
+		private void OnSaveAs(bool success, string path)
 		{
+			if (success)
+			{
+				if (FileCommands.PathIsRelative(path))
+				{
+					path = Common.Functions.GetRelativePath.RelativePathGetter.Relative(Directory.GetCurrentDirectory(), path);
+				}
+				FilePath = path;
+				MainWindow.FooterLog("Saved {0} to {1}", Name, FilePath);
+			}
+			else
+			{
+				MainWindow.FooterLog("Error saving {0} to {1}", Name, path);
+			}
+		}
+
+		public void Init()
+		{
+			if (File.Exists(DefaultFilePath))
+			{
+				DefaultEditorText = File.ReadAllText(DefaultFilePath);
+			}
+			else if(FileCommands.IsValidPath(DefaultFilePath) && !String.IsNullOrEmpty(DefaultEditorText))
+			{
+				File.WriteAllText(DefaultFilePath, DefaultEditorText);
+			}
+
+			if (DefaultEditorText == null) DefaultEditorText = "";
+
+			if (String.IsNullOrEmpty(Name) && !String.IsNullOrEmpty(FileName))
+			{
+				Name = FileName;
+			}
+
+			if (File.Exists(FilePath))
+			{
+				EditorText = File.ReadAllText(FilePath);
+				Log.Here().Important("Loaded {0} template file at {1}", Name, FilePath);
+			}
+			else
+			{
+				EditorText = DefaultEditorText;
+				Log.Here().Error("Template file {0} not found at {1}. Using default template.", Name, FilePath);
+			}
+
+
 			if (String.IsNullOrEmpty(OpenFileText))
 			{
 				OpenFileText = "Select " + LabelText;
-			}
-
-			if(String.IsNullOrEmpty(Name) && !String.IsNullOrEmpty(Filename))
-			{
-				Name = Filename;
 			}
 
 			SaveAsText = "Save " + Name + " As...";
@@ -187,39 +255,13 @@ namespace LL.DOS2.SourceControl.Data.View
 				{
 					FilePath = fileBrowseControl.FileLocationText;
 					EditorText = File.ReadAllText(FilePath);
+					FileCommands.Save.SaveAppSettings();
 				}
 			});
 
-			SaveCommand = new SaveFileCommand((bool success) =>
-			{
-				if (success)
-				{
-					MainWindow.FooterLog("Saved {0} to {1}", Name, FilePath);
-				}
-				else
-				{
-					MainWindow.FooterLog("Error saving {0} to {1}", Name, FilePath);
-				}
-			});
+			SaveCommand = new SaveFileCommand(OnSave, OnSaveAs);
 
-			SaveAsCommand = new SaveFileAsCommand((bool success, string path) =>
-			{
-				if (success)
-				{
-					if (FileCommands.PathIsRelative(path))
-					{
-						path = Common.Functions.GetRelativePath.RelativePathGetter.Relative(Directory.GetCurrentDirectory(), path);
-					}
-					FilePath = path;
-					MainWindow.FooterLog("Saved {0} to {1}", Name, FilePath);
-				}
-				else
-				{
-					MainWindow.FooterLog("Error saving {0} to {1}", Name, path);
-				}
-			});
-
-			return this;
+			SaveAsCommand = new SaveFileAsCommand(OnSaveAs);
 		}
 	}
 }
