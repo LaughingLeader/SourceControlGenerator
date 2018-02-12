@@ -198,6 +198,8 @@ namespace LL.DOS2.SourceControl.Data.View
 		{
 			if (success)
 			{
+				if (Path.GetFileName(path) == Path.GetFileName(DefaultFilePath)) SaveCommand.OpenSaveAsOnDefault = false;
+
 				if (FileCommands.PathIsRelative(path))
 				{
 					path = Common.Functions.GetRelativePath.RelativePathGetter.Relative(Directory.GetCurrentDirectory(), path);
@@ -260,7 +262,6 @@ namespace LL.DOS2.SourceControl.Data.View
 			});
 
 			SaveCommand = new SaveFileCommand(OnSave, OnSaveAs);
-
 			SaveAsCommand = new SaveFileAsCommand(OnSaveAs);
 		}
 	}

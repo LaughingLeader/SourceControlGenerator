@@ -14,11 +14,13 @@ namespace LL.DOS2.SourceControl.Commands
 	{
 		public Action<bool> OnSave { get; set; }
 
+		public bool OpenSaveAsOnDefault { get; set; }
+
 		override public void Execute(object parameter)
 		{
 			if (parameter != null && parameter is SaveFileCommandData data)
 			{
-				if(data.DefaultFilePath == data.FilePath)
+				if(OpenSaveAsOnDefault && data.DefaultFilePath == data.FilePath)
 				{
 					FileCommands.Save.OpenDialogAndSave(App.Current.MainWindow, data.DialogTitle, data.FilePath, data.Content, this.OnSaveAs, data.FileName, data.DefaultFilePath);
 				}
@@ -33,6 +35,7 @@ namespace LL.DOS2.SourceControl.Commands
 		public SaveFileCommand(Action<bool> onSaveCallback, Action<bool, string> onSaveAsCallback) : base(onSaveAsCallback)
 		{
 			OnSave = onSaveCallback;
+			OpenSaveAsOnDefault = true;
 		}
 	}
 }
