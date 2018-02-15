@@ -28,6 +28,11 @@ namespace LL.DOS2.SourceControl.Data
 
 		public static string DirectoryLayout => @"Settings/DirectoryLayout.default.txt";
 
+		public static string TemplateSettings => @"Settings/Templates.xml";
+
+		public static string TemplateFiles => @"Templates/";
+
+		/*
 		public static string GitIgnore => @"Settings/.gitignore.default";
 
 		public static string GitAttributes => @"Settings/attributes.default";
@@ -35,6 +40,7 @@ namespace LL.DOS2.SourceControl.Data
 		public static string ReadmeTemplate => @"Settings/README.md.default";
 
 		public static string ChangelogTemplate => @"Settings/CHANGELOG.md.default";
+		*/
 
 		//public static string CustomLicense  => @"Settings/LICENSE.default";
 

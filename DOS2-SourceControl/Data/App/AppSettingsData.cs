@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using LL.DOS2.SourceControl.Data.App;
 using Newtonsoft.Json;
 
 namespace LL.DOS2.SourceControl.Data
@@ -43,6 +45,21 @@ namespace LL.DOS2.SourceControl.Data
 			}
 		}
 
+		private string templatesSettingsFile;
+
+		public string TemplateSettingsFile
+		{
+			get { return templatesSettingsFile; }
+			set
+			{
+				templatesSettingsFile = value;
+				RaisePropertyChanged("TemplateSettingsFile");
+			}
+		}
+
+		public ObservableCollection<TemplateFileData> TemplateFiles { get; set; }
+
+		/*
 		private string gitIgnoreFile;
 
 		public string GitIgnoreFile
@@ -102,6 +119,7 @@ namespace LL.DOS2.SourceControl.Data
 				RaisePropertyChanged("CustomLicenseFile");
 			}
 		}
+		*/
 
 		private string keywordsFile;
 
@@ -146,13 +164,18 @@ namespace LL.DOS2.SourceControl.Data
 			BackupRootDirectory = DefaultPaths.Backups;
 			GitRootDirectory = DefaultPaths.GitRoot;
 			ProjectsAppData = DefaultPaths.ProjectsAppData;
+			/*
 			GitIgnoreFile = DefaultPaths.GitIgnore;
 			GitAttributesFile = DefaultPaths.GitAttributes;
 			ReadmeTemplateFile = DefaultPaths.ReadmeTemplate;
 			ChangelogTemplateFile = DefaultPaths.ChangelogTemplate;
 			CustomLicenseFile = "";
+			*/
+			TemplateSettingsFile = DefaultPaths.TemplateSettings;
 			KeywordsFile = DefaultPaths.Keywords;
 			GitGenSettingsFile = DefaultPaths.GitGenSettings;
+
+			TemplateFiles = new ObservableCollection<TemplateFileData>();
 		}
 	}
 

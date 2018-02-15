@@ -34,10 +34,10 @@ namespace LL.DOS2.SourceControl.Data.Xml
 
 			if(rootXml != null)
 			{
-				this.Name = XmlDataHelper.GetAttributeValue(rootXml, "Name");
-				this.Type = XmlDataHelper.GetAttributeValue(rootXml, "Type");
-				this.Module = XmlDataHelper.GetAttributeValue(rootXml, "Module");
-				this.UUID = XmlDataHelper.GetAttributeValue(rootXml, "UUID");
+				this.Name = XmlDataHelper.GetDOS2AttributeValue(rootXml, "Name");
+				this.Type = XmlDataHelper.GetDOS2AttributeValue(rootXml, "Type");
+				this.Module = XmlDataHelper.GetDOS2AttributeValue(rootXml, "Module");
+				this.UUID = XmlDataHelper.GetDOS2AttributeValue(rootXml, "UUID");
 			}
 			else
 			{

@@ -227,5 +227,29 @@ namespace LL.DOS2.SourceControl.Properties {
                 return ResourceManager.GetString("License_MIT", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &lt;!--
+        ///New template:
+        ///&lt;Template ID= &quot;&quot;&gt;
+        ///	&lt;Property Name=&quot;TabName&quot;&gt;&lt;/Property&gt;
+        ///	&lt;Property Name=&quot;LabelText&quot;&gt;&lt;/Property&gt;
+        ///	&lt;Property Name=&quot;DefaultFileName&quot;&gt;&lt;/Property&gt;
+        ///	&lt;Property Name=&quot;TooltipText&quot;&gt;&lt;![CDATA[]]&gt;&lt;/Property&gt;
+        ///	&lt;Property Name=&quot;DefaultEditorText&quot;&gt;&lt;/Property&gt;
+        ///&lt;/Template&gt;
+        ///
+        ///# Property
+        ///	Type Values:
+        ///		Text
+        ///			This is the default if unspecified. Uses the value supplied by the element. CDATA tags are recommended for escaping text file content.
+        ///		Resource
+        ///			Tells the program to fetch the value  [rest of string was truncated]&quot;;.
+        /// </summary>
+        public static string Templates {
+            get {
+                return ResourceManager.GetString("Templates", resourceCulture);
+            }
+        }
     }
 }

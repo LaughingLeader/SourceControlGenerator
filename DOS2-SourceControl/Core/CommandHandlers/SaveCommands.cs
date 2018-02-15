@@ -37,6 +37,7 @@ namespace LL.DOS2.SourceControl.Commands
 
 				if ((fileAttributes & FileAttributes.Directory) != FileAttributes.Directory)
 				{
+					/*
 					if (String.IsNullOrEmpty(DefaultFilePath) || (!String.IsNullOrEmpty(DefaultFilePath) && FilePath != DefaultFilePath))
 					{
 						//Override the file name with the incoming path, unless that file name matches a default file path.
@@ -44,6 +45,7 @@ namespace LL.DOS2.SourceControl.Commands
 
 						fileDialog.FileName = Path.GetFileName(FilePath);
 					}
+					*/
 					fileDialog.InitialDirectory = Directory.GetParent(FilePath).FullName;
 				}
 				else
@@ -88,8 +90,30 @@ namespace LL.DOS2.SourceControl.Commands
 
 			if (Data.AppSettings != null)
 			{
+				SaveTemplates();
 				string json = JsonConvert.SerializeObject(Data.AppSettings, Newtonsoft.Json.Formatting.Indented);
 				FileCommands.WriteToFile(DefaultPaths.AppSettings, json);
+			}
+		}
+
+		private void SaveTemplates()
+		{
+			if (Data.AppSettings.TemplateFiles != null)
+			{
+				Data.AppSettings.TemplateFiles.Clear();
+			}
+			else
+			{
+				Data.AppSettings.TemplateFiles = new System.Collections.ObjectModel.ObservableCollection<SourceControl.Data.App.TemplateFileData>();
+			}
+
+			foreach (var templateData in Data.Templates)
+			{
+				Data.AppSettings.TemplateFiles.Add(new SourceControl.Data.App.TemplateFileData()
+				{
+					ID = templateData.ID,
+					FilePath = templateData.FilePath
+				});
 			}
 		}
 
@@ -106,6 +130,7 @@ namespace LL.DOS2.SourceControl.Commands
 			return false;
 		}
 
+		/*
 		public void SaveGitIgnore(string content)
 		{
 			if (Data.AppSettings != null)
@@ -123,6 +148,7 @@ namespace LL.DOS2.SourceControl.Commands
 				}
 			}
 		}
+		*/
 
 		public void SaveUserKeywords()
 		{

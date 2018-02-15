@@ -47,7 +47,7 @@ namespace LL.DOS2.SourceControl.Data.Xml
 					foreach (PropertyInfo property in propInfo)
 					{
 						if (property.Name == "TargetModes") continue;
-						var value = XmlDataHelper.GetAttributeValue(moduleInfoXml, property.Name);
+						var value = XmlDataHelper.GetDOS2AttributeValue(moduleInfoXml, property.Name);
 
 						if(property.Name == "Version")
 						{

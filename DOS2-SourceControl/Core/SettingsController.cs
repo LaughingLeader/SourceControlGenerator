@@ -39,11 +39,11 @@ namespace LL.DOS2.SourceControl.Core
 					{
 						if (templateSetting.Enabled)
 						{
-							string outputFIlePath = Path.Combine(gitProjectRootDirectory, templateData.FileName);
+							string outputFIlePath = Path.Combine(gitProjectRootDirectory, templateData.ExportPath);
 							string outputText = GitGenerator.ReplaceKeywords(templateData.EditorText, project, Data);
 							if (!FileCommands.WriteToFile(outputFIlePath, outputText))
 							{
-								Log.Here().Error("[{0}] Failed to create template file at {1}", project.Name, templateData.FilePath);
+								Log.Here().Error("[{0}] Failed to create template file at {1}", project.Name, templateData.ExportPath);
 							}
 						}
 						else

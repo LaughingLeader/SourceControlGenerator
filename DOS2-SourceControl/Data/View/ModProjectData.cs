@@ -179,10 +179,10 @@ namespace LL.DOS2.SourceControl.Data
 							{
 								DependencyInfo dependencyInfo = new DependencyInfo()
 								{
-									Folder = XmlDataHelper.GetAttributeValue(node, "Folder"),
-									MD5 = XmlDataHelper.GetAttributeValue(node, "MD5"),
-									Name = XmlDataHelper.GetAttributeValue(node, "Name"),
-									Version = XmlDataHelper.GetAttributeValue(node, "Version")
+									Folder = XmlDataHelper.GetDOS2AttributeValue(node, "Folder"),
+									MD5 = XmlDataHelper.GetDOS2AttributeValue(node, "MD5"),
+									Name = XmlDataHelper.GetDOS2AttributeValue(node, "Name"),
+									Version = XmlDataHelper.GetDOS2AttributeValue(node, "Version")
 								};
 								Dependencies.Add(dependencyInfo);
 								Log.Here().Activity("[{0}] Dependency ({1}) added.", this.ModuleInfo.Name, dependencyInfo.Name);

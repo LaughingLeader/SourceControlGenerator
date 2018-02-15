@@ -9,6 +9,8 @@ using LL.DOS2.SourceControl.Core;
 using LL.DOS2.SourceControl.Commands;
 using LL.DOS2.SourceControl.Util;
 using LL.DOS2.SourceControl.Windows;
+using System.Xml.Linq;
+using LL.DOS2.SourceControl.Data.Xml;
 
 namespace LL.DOS2.SourceControl.Data.View
 {
@@ -101,6 +103,7 @@ namespace LL.DOS2.SourceControl.Data.View
 			}
 		}
 
+		/*
 		public Func<string> GetFilePath { private get; set; }
 		public Action<string> SetFilePath { private get; set; }
 
@@ -113,6 +116,20 @@ namespace LL.DOS2.SourceControl.Data.View
 				RaisePropertyChanged("FilePath");
 			}
 		}
+		*/
+
+		private string filePath;
+
+		public string FilePath
+		{
+			get { return filePath; }
+			set
+			{
+				filePath = value;
+				RaisePropertyChanged("FilePath");
+			}
+		}
+
 
 		private string filename;
 
@@ -125,6 +142,19 @@ namespace LL.DOS2.SourceControl.Data.View
 				RaisePropertyChanged("FileName");
 			}
 		}
+
+		private string exportPath;
+
+		public string ExportPath
+		{
+			get { return exportPath; }
+			set
+			{
+				exportPath = value;
+				RaisePropertyChanged("ExportPath");
+			}
+		}
+
 
 
 		private SaveFileCommand saveCommand;
@@ -175,7 +205,6 @@ namespace LL.DOS2.SourceControl.Data.View
 			}
 		}
 
-
 		public void SetToDefault()
 		{
 			EditorText = DefaultEditorText;
@@ -198,14 +227,24 @@ namespace LL.DOS2.SourceControl.Data.View
 		{
 			if (success)
 			{
-				if (Path.GetFileName(path) == Path.GetFileName(DefaultFilePath)) SaveCommand.OpenSaveAsOnDefault = false;
+				//if (Path.GetFileName(path) == Path.GetFileName(DefaultFilePath)) SaveCommand.OpenSaveAsOnDefault = false;
 
 				if (FileCommands.PathIsRelative(path))
 				{
 					path = Common.Functions.GetRelativePath.RelativePathGetter.Relative(Directory.GetCurrentDirectory(), path);
 				}
-				FilePath = path;
+
+				bool saveAppSettings = false;
+
+				if(FilePath != path)
+				{
+					saveAppSettings = true;
+					FilePath = path;
+				}
+
 				MainWindow.FooterLog("Saved {0} to {1}", Name, FilePath);
+
+				if (saveAppSettings) FileCommands.Save.SaveAppSettings();
 			}
 			else
 			{
@@ -213,8 +252,72 @@ namespace LL.DOS2.SourceControl.Data.View
 			}
 		}
 
+		private static string GetPropetyValueFromXml(XElement xmlData, string propertyName, string defaultValue = "")
+		{
+			XElement element = XmlDataHelper.GetDescendantByAttributeValue(xmlData, "Property", "Name", propertyName);
+			string value = "";
+			if(element != null)
+			{
+				string type = element.Attribute("Type")?.Value;
+				if (type == null) type = "String";
+
+				string contents = element.Value;
+				if(!String.IsNullOrWhiteSpace(contents))
+				{
+					if(type == "Resource")
+					{
+						var resourceVal = Properties.Resources.ResourceManager.GetString(contents, Properties.Resources.Culture);
+						if (resourceVal != null) return resourceVal;
+					}
+					else if(type == "File")
+					{
+						if(File.Exists(contents))
+						{
+							try
+							{
+								var fileContents = File.ReadAllText(contents);
+								return fileContents;
+							}
+							catch(Exception ex)
+							{
+								Log.Here().Error("Error loading file(\"{0}\") specified in templates.xml: {1}", contents, ex.ToString());
+							}
+						}
+					}
+					else
+					{
+						return contents;
+					}
+				}
+			}
+
+			return value;
+		}
+
+		public static TemplateEditorData LoadFromXml(XElement xmlData)
+		{
+			string ID = XmlDataHelper.GetAttributeAsString(xmlData, "ID", "");
+			if(!String.IsNullOrWhiteSpace(ID))
+			{
+				TemplateEditorData data = new TemplateEditorData()
+				{
+					ID = ID,
+					Name = GetPropetyValueFromXml(xmlData, "TabName"),
+					LabelText = GetPropetyValueFromXml(xmlData, "LabelText"),
+					FileName = GetPropetyValueFromXml(xmlData, "DefaultTemplateFileName"),
+					ExportPath = GetPropetyValueFromXml(xmlData, "ExportPath"),
+					DefaultEditorText = GetPropetyValueFromXml(xmlData, "DefaultEditorText"),
+					TooltipText = GetPropetyValueFromXml(xmlData, "TooltipText")
+				};
+				return data;
+			}
+
+			return null;
+		}
+
 		public void Init()
 		{
+			/*
 			if (File.Exists(DefaultFilePath))
 			{
 				DefaultEditorText = File.ReadAllText(DefaultFilePath);
@@ -222,6 +325,14 @@ namespace LL.DOS2.SourceControl.Data.View
 			else if(FileCommands.IsValidPath(DefaultFilePath) && !String.IsNullOrEmpty(DefaultEditorText))
 			{
 				File.WriteAllText(DefaultFilePath, DefaultEditorText);
+			}
+			*/
+
+			DefaultFilePath = Path.Combine(DefaultPaths.TemplateFiles, FileName);
+
+			if (String.IsNullOrWhiteSpace(FilePath))
+			{
+				FilePath = DefaultFilePath;
 			}
 
 			if (DefaultEditorText == null) DefaultEditorText = "";
@@ -263,6 +374,11 @@ namespace LL.DOS2.SourceControl.Data.View
 
 			SaveCommand = new SaveFileCommand(OnSave, OnSaveAs);
 			SaveAsCommand = new SaveFileAsCommand(OnSaveAs);
+
+			if(!File.Exists(FilePath) && FileCommands.IsValidPath(FilePath) && !String.IsNullOrWhiteSpace(EditorText))
+			{
+				FileCommands.WriteToFile(filePath, EditorText);
+			}
 		}
 	}
 }

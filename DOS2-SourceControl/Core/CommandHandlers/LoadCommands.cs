@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
+using System.Xml.Linq;
 using LL.DOS2.SourceControl.Controls;
 using LL.DOS2.SourceControl.Data;
 using LL.DOS2.SourceControl.Data.View;
@@ -20,6 +21,8 @@ namespace LL.DOS2.SourceControl.Commands
 	public class LoadCommands
 	{
 		private MainAppData Data { get; set; }
+
+		private bool SaveAppSettings = false;
 
 		public void SetData(MainAppData data)
 		{
@@ -81,7 +84,7 @@ namespace LL.DOS2.SourceControl.Commands
 					Data.AppSettings.DOS2DataDirectory = dataDirectory;
 				}
 
-				FileCommands.Save.SaveAppSettings();
+				SaveAppSettings = true;
 			}
 
 			if (String.IsNullOrEmpty(Data.AppSettings.DOS2DataDirectory))
@@ -103,6 +106,7 @@ namespace LL.DOS2.SourceControl.Commands
 
 		public void LoadTemplates()
 		{
+			/*
 			Data.Templates.Add(new TemplateEditorData()
 			{
 				ID = DefaultValues.TemplateID_Ignore,
@@ -167,8 +171,48 @@ namespace LL.DOS2.SourceControl.Commands
 				GetFilePath = () => { return Data.AppSettings.GitAttributesFile; },
 				SetFilePath = (string val) => { Data.AppSettings.GitAttributesFile = val; }
 			});
+			*/
 
-			for (int i = 0 ; i < Data.Templates.Count; i++)
+			string templateFilePath = DefaultPaths.TemplateSettings;
+			if(File.Exists(Data.AppSettings.TemplateSettingsFile))
+			{
+				templateFilePath = Data.AppSettings.TemplateSettingsFile;
+			}
+			else if(!File.Exists(templateFilePath))
+			{
+				FileCommands.WriteToFile(templateFilePath, Properties.Resources.Templates);
+			}
+
+			XDocument templateXml = null;
+			try
+			{
+				templateXml = XDocument.Load(templateFilePath);
+
+				foreach(var template in templateXml.Descendants("Template"))
+				{
+					TemplateEditorData templateData = TemplateEditorData.LoadFromXml(template);
+					Data.Templates.Add(templateData);
+				}
+			}
+			catch (Exception ex)
+			{
+				Log.Here().Error("Error loading mod meta.lsx: {0}", ex.ToString());
+
+			}
+
+			if(Data.AppSettings.TemplateFiles != null && Data.AppSettings.TemplateFiles.Count > 0)
+			{
+				foreach(var templateFile in Data.AppSettings.TemplateFiles)
+				{
+					var data = Data.Templates.Where(t => t.ID == templateFile.ID).FirstOrDefault();
+					if (data != null)
+					{
+						data.FilePath = templateFile.FilePath;
+					}
+				}
+			}
+
+			for (int i = 0; i < Data.Templates.Count; i++)
 			{
 				var template = Data.Templates[i];
 				template.Init();
@@ -546,7 +590,7 @@ namespace LL.DOS2.SourceControl.Commands
 			}
 
 			ObservableCollection<TemplateGenerationData> templateSettings = new ObservableCollection<TemplateGenerationData>();
-			foreach (var template in Data.Templates.Where(t => t.Name != "LICENSE"))
+			foreach (var template in Data.Templates.Where(t => t.ID.ToLower() != "license"))
 			{
 				TemplateGenerationData tdata = new TemplateGenerationData()
 				{
@@ -585,6 +629,12 @@ namespace LL.DOS2.SourceControl.Commands
 			LoadManagedProjects();
 			LoadAvailableProjects();
 			LoadGitGenerationSettings();
+
+			if(SaveAppSettings)
+			{
+				FileCommands.Save.SaveAppSettings();
+				SaveAppSettings = false;
+			}
 		}
 	}
 }

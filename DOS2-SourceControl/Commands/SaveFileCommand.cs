@@ -35,7 +35,7 @@ namespace LL.DOS2.SourceControl.Commands
 		public SaveFileCommand(Action<bool> onSaveCallback, Action<bool, string> onSaveAsCallback) : base(onSaveAsCallback)
 		{
 			OnSave = onSaveCallback;
-			OpenSaveAsOnDefault = true;
+			OpenSaveAsOnDefault = false;
 		}
 	}
 }
