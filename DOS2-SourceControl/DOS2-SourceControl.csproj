@@ -104,6 +104,7 @@
     <Compile Include="Data\View\TemplateEditorData.cs" />
     <Compile Include="Enum\FileBrowseType.cs" />
     <Compile Include="Extensions\Extensions.cs" />
+    <Compile Include="FileGen\BackupGenerator.cs" />
     <Compile Include="FileGen\GitGenerator.cs" />
     <Compile Include="Data\DefaultPaths.cs" />
     <Compile Include="Data\View\MainAppData.cs" />

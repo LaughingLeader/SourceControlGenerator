@@ -77,7 +77,7 @@ namespace LL.DOS2.SourceControl.FileGen
 			return false;
 		}
 
-		public static bool CreateRepository(string RepoPath)
+		public static bool InitRepository(string RepoPath)
 		{
 			try
 			{
@@ -99,10 +99,11 @@ namespace LL.DOS2.SourceControl.FileGen
 
 				stream.WriteLine("cd \"" + RepoPath + "\"");
 				stream.WriteLine("git init");
+				stream.WriteLine("git config core.longpaths true");
 				stream.Close();
 
-				process.WaitForExit();
-				return true;
+				process.WaitForExit(5000);
+				if (process.ExitCode == 0) return true;
 			}
 			catch(Exception ex)
 			{
@@ -111,14 +112,46 @@ namespace LL.DOS2.SourceControl.FileGen
 			return false;
 		}
 
-		public static bool Archive(string RepoPath, string OutputFileName, bool IgnoreGitFiles = true)
+		public static bool Commit(string RepoPath, string CommitMessage)
 		{
 			try
 			{
-				string command = "git archive -o \"" + OutputFileName + "\"";
-				if(IgnoreGitFiles)
+				Process process = new Process();
+
+				process.StartInfo.FileName = @"cmd.exe";
+				process.StartInfo.UseShellExecute = false;
+				process.StartInfo.RedirectStandardInput = true;
+				process.StartInfo.CreateNoWindow = true;
+				process.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
+				process.Start();
+
+				StreamWriter stream = process.StandardInput;
+
+				stream.WriteLine("cd \"" + RepoPath + "\"");
+				stream.WriteLine("git add -A");
+				stream.WriteLine("git commit -m \"" + CommitMessage + "\"");
+				stream.Close();
+
+				process.WaitForExit(5000);
+				if (process.ExitCode == 0) return true;
+			}
+			catch (Exception ex)
+			{
+				Log.Here().Error("Error creating commit for git repository: {0}", ex.ToString());
+			}
+			return false;
+		}
+
+		public static bool Archive(string RepoPath, string OutputFileName, bool UseAttributesFile = true)
+		{
+			try
+			{
+				Directory.CreateDirectory(Path.GetDirectoryName(OutputFileName));
+
+				string command = "git archive HEAD --output=\"" + OutputFileName + "\"";
+				if(UseAttributesFile)
 				{
-					command += " --worktree-attributes";
+					//command += " --worktree-attributes";
 				}
 
 				Process process = new Process();
@@ -136,8 +169,8 @@ namespace LL.DOS2.SourceControl.FileGen
 				stream.WriteLine(command);
 				stream.Close();
 
-				process.WaitForExit();
-				return true;
+				process.WaitForExit(5000);
+				if (process.ExitCode == 0) return true;
 			}
 			catch (Exception ex)
 			{

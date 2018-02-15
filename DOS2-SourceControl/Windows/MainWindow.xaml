@@ -292,6 +292,7 @@
 			<Menu DockPanel.Dock="Top">
 				<MenuItem Header="File">
 					<MenuItem Header="Refresh Available Projects" />
+					<MenuItem Header="Backup All Projects" />
 					<MenuItem Header="Backup All Projects To..." />
 				</MenuItem>
 				<MenuItem Header="Options">
@@ -516,9 +517,9 @@
 											<Setter Property="IsEnabled" Value="{Binding ProjectSelected}" />
 										</Style>
 									</StackPanel.Resources>
-									<Button Content="Backup Selected" />
-									<Button Content="Backup Selected To..." />
-									<Button x:Name="GitGenerationButton" Content="Create Git Repos for Selected..." Click="GitGenerationButton_Click"  />
+									<Button x:Name="BackupButton" Content="Backup Selected" Click="BackupButton_Click" />
+									<Button x:Name="BackupSeletedButton" Content="Backup Selected To..." Click="BackupSeletedButton_Click" />
+									<Button x:Name="GitGenerationButton" Content="Create Git Repos for Selected..." Click="GitGenerationButton_Click" />
 								</StackPanel>
 							</Grid>
 						</Grid>
@@ -526,7 +527,30 @@
 				</Grid>
 			</TabItem>
 			<TabItem Header="Templates">
-				<TabControl TabStripPlacement="Left" Padding="5,0,0,0" BorderThickness="1,0,0,0" Background="{DynamicResource {x:Static SystemColors.ControlLightBrushKey}}" >
+				<TabControl TabStripPlacement="Left" Padding="0,5,0,0" >
+					<TabControl.Template>
+						<ControlTemplate TargetType="TabControl">
+							<Grid>
+								<Grid.ColumnDefinitions>
+									<ColumnDefinition Width="Auto" />
+									<ColumnDefinition />
+								</Grid.ColumnDefinitions>
+								<ScrollViewer VerticalScrollBarVisibility="Auto" >
+									<TabPanel x:Name="HeaderPanel"
+						  Panel.ZIndex ="1" 
+						  KeyboardNavigation.TabIndex="1"
+						  Grid.Column="0"
+						  Grid.Row="0"
+						  Margin="2,2,2,0"
+						  IsItemsHost="true"/>
+								</ScrollViewer>
+								<ContentPresenter x:Name="PART_SelectedContentHost"
+									  SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"
+									  Margin="{TemplateBinding Padding}"
+									  ContentSource="SelectedContent" Grid.Column="1"/>
+							</Grid>
+						</ControlTemplate>
+					</TabControl.Template>
 					<TabControl.Resources>
 						<CollectionViewSource x:Key="TemplateTabs" Source="{Binding Templates}"/>
 						<DataTemplate DataType="{x:Type vdata:TemplateEditorData}">
@@ -542,178 +566,179 @@
 					<TabControl.ItemsSource>
 						<CompositeCollection>
 							<CollectionContainer Collection="{Binding Source={StaticResource TemplateTabs}}" />
-							<TabItem x:Name="KeywordsTab" Header="Keywords" Style="{x:Null}">
-								<TabItem.Resources>
-									<Style x:Key="KeywordBorderStyle" TargetType="Border">
-										<!-- <Border BorderThickness="1" Grid.Row="0" BorderBrush="{DynamicResource }" Background="{DynamicResource {x:Static SystemColors.MenuBrushKey}}" >-->
-										<Setter Property="BorderThickness" Value="1"/>
-										<Setter Property="BorderBrush">
-											<Setter.Value>
-												<SolidColorBrush Color="{x:Static SystemColors.ControlLightColor}" />
-											</Setter.Value>
-										</Setter>
-										<Setter Property="Background">
-											<Setter.Value>
-												<SolidColorBrush Color="{x:Static SystemColors.MenuColor}" />
-											</Setter.Value>
-										</Setter>
-									</Style>
-									<Style x:Key="KeywordBorderStyleMouseOver" TargetType="Border">
-										<!-- <Border BorderThickness="1" Grid.Row="0" BorderBrush="{DynamicResource }" Background="{DynamicResource {x:Static SystemColors.MenuBrushKey}}" >-->
-										<Setter Property="BorderThickness" Value="1"/>
-										<Setter Property="BorderBrush">
-											<Setter.Value>
-												<SolidColorBrush Color="{x:Static SystemColors.ControlLightColor}" />
-											</Setter.Value>
-										</Setter>
-										<Setter Property="Background">
-											<Setter.Value>
-												<SolidColorBrush Color="{x:Static SystemColors.MenuColor}" />
-											</Setter.Value>
-										</Setter>
-										<Style.Triggers>
-											<Trigger Property="IsMouseOver" Value="true">
-												<Setter Property="Background">
-													<Setter.Value>
-														<SolidColorBrush Color="{x:Static SystemColors.ControlLightLightColor}" />
-													</Setter.Value>
-												</Setter>
-											</Trigger>
-										</Style.Triggers>
-									</Style>
-								</TabItem.Resources>
-								<Grid Background="{DynamicResource {x:Static SystemColors.WindowBrushKey}}">
-									<Grid.RowDefinitions>
-										<RowDefinition Height="Auto" />
-										<RowDefinition Height="*" />
-										<RowDefinition Height="Auto" />
-									</Grid.RowDefinitions>
-									<Grid Grid.Row="0" Width="Auto" Height="Auto" x:Name="KeywordsHeaderControls" >
-										<Grid.ColumnDefinitions>
-											<ColumnDefinition Width="Auto"/>
-											<ColumnDefinition Width="*"/>
-										</Grid.ColumnDefinitions>
-										<Label x:Name="TemplateLabel" Content="Template Keywords" Grid.Column="0" Width="Auto" HorizontalAlignment="Left" VerticalAlignment="Center" ToolTip="{x:Static vdata:TooltipText.TemplateKeywords}" Padding="2,0,50,0">
-											<Label.Style>
-												<Style TargetType="Label">
-													<Setter Property="Foreground" Value="Black" />
-													<Style.Triggers>
-														<Trigger Property="IsMouseOver" Value="True">
-															<Setter Property="Foreground" Value="#FF3A6FFF" />
-														</Trigger>
-													</Style.Triggers>
-												</Style>
-											</Label.Style>
-										</Label>
-										<StackPanel Grid.Column="1" HorizontalAlignment="Right" x:Name="KeywordCommandsGrid" Orientation="Horizontal" >
-											<StackPanel.Resources>
-												<Style TargetType="Button">
-													<Setter Property="Margin" Value="1,0" />
-													<Setter Property="Padding" Value="4,2" />
-												</Style>
-											</StackPanel.Resources>
-											<c:FileBrowseControl OpenFileText="Select Keywords File" FileLocationText="{Binding AppSettings.KeywordsFile, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-												OnOpen="{Binding LoadKeywords}"/>
-											<Button x:Name="SaveKeywordsButton" Content="Save" Click="SaveKeywordsButton_Click" />
-											<Button x:Name="SaveAsKeywordsButton" Content="Save As..." Click="SaveAsKeywordsButton_Click" />
-											<Button Content="Default..." Click="KeywordsList_Default_Click" ToolTip="Reset Keywords to Default" />
-										</StackPanel>
-									</Grid>
-									<ScrollViewer Grid.Row="1" x:Name="KeywordListScrollViewer" VerticalScrollBarVisibility="Auto" Background="{DynamicResource {x:Static SystemColors.ScrollBarBrushKey}}" >
-										<Grid x:Name="KeywordListGrid"  Margin="50,10,50,0">
-											<Grid.RowDefinitions>
-												<RowDefinition Height="Auto" />
-												<RowDefinition Height="*" />
-											</Grid.RowDefinitions>
-											<ScrollViewer Grid.Row="0" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
-												<Grid x:Name="DefaultKeywords" >
-													<Grid.Resources>
-														<Style TargetType="c:TemplateKeywordControl">
-															<Setter Property="KeywordNameReadOnly" Value="True"/>
-															<Setter Property="KeywordValueReadOnly" Value="True"/>
-														</Style>
-													</Grid.Resources>
-													<Grid.RowDefinitions>
-														<RowDefinition />
-														<RowDefinition Height="*" />
-														<RowDefinition />
-													</Grid.RowDefinitions>
-													<Border Grid.Row="0" Style="{StaticResource KeywordBorderStyle}" >
-														<TextBlock Text="Application Keywords (Auto-Assigned)" Margin="2" Padding="2" FontFamily="Neuton" />
-													</Border>
-													<ItemsControl Grid.Row="1" x:Name="AppKeywordsList" ItemsSource="{Binding AppKeyList}" >
-														<ItemsControl.ItemTemplate>
-															<DataTemplate DataType="c:TemplateKeywordControl">
-																<c:TemplateKeywordControl DataContext="{Binding}" KeywordName="{Binding KeywordName}" KeywordValue="{Binding KeywordValue}" KeywordNameReadOnly="True" KeywordValueReadOnly="True" />
-															</DataTemplate>
-														</ItemsControl.ItemTemplate>
-														<ItemsControl.ItemsPanel>
-															<ItemsPanelTemplate>
-																<StackPanel Orientation="Vertical" />
-															</ItemsPanelTemplate>
-														</ItemsControl.ItemsPanel>
-													</ItemsControl>
-													<Border Grid.Row="2" Style="{StaticResource KeywordBorderStyleMouseOver}" >
-														<Expander x:Name="DateKeywordsExpander"  Header="Date Keywords" Style="{DynamicResource ExpanderRightButton}" Background="{x:Null}" FontFamily="Neuton" >
-															<ScrollViewer FlowDirection="LeftToRight" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" MaxHeight="125">
-																<ItemsControl ItemsSource="{Binding DateKeyList}" >
-																	<ItemsControl.ItemTemplate>
-																		<DataTemplate DataType="c:TemplateKeywordControl">
-																			<c:TemplateKeywordControl DataContext="{Binding}" KeywordName="{Binding KeywordName}" KeywordValue="{Binding KeywordValue}" KeywordNameReadOnly="True" KeywordValueReadOnly="True" />
-																		</DataTemplate>
-																	</ItemsControl.ItemTemplate>
-																	<ItemsControl.ItemsPanel>
-																		<ItemsPanelTemplate>
-																			<StackPanel Orientation="Vertical" />
-																		</ItemsPanelTemplate>
-																	</ItemsControl.ItemsPanel>
-																</ItemsControl>
-															</ScrollViewer>
-														</Expander>
-													</Border>
-												</Grid>
-											</ScrollViewer>
-											<Grid x:Name="ParentGrid_UserKeywords" Grid.Row="1" >
-												<Grid.RowDefinitions>
-													<RowDefinition Height="Auto"/>
-													<RowDefinition Height="*" />
-												</Grid.RowDefinitions>
-												<Border Grid.Row="0" Style="{StaticResource KeywordBorderStyle}" >
-													<TextBlock Text="User Keywords" Background="{DynamicResource {x:Static SystemColors.MenuBarBrushKey}}" Margin="2" Padding="2" FontFamily="Neuton" />
-												</Border>
-												<ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
-													<StackPanel Orientation="Vertical" DataContext="{Binding UserKeywords}">
-														<c:TemplateKeywordControl KeywordName="$DateCustom" KeywordValue="{Binding DateCustom, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" KeywordNameReadOnly="True" KeywordValueReadOnly="False" FontFamily="Neuton"  />
-														<ItemsControl x:Name="UserKeywords" ItemsSource="{Binding Keywords}" ItemTemplate="{StaticResource AlternatingKeywordsTemplate}" AlternationCount="2" >
-															<ItemsControl.ItemsPanel>
-																<ItemsPanelTemplate>
-																	<StackPanel Orientation="Vertical" />
-																</ItemsPanelTemplate>
-															</ItemsControl.ItemsPanel>
-														</ItemsControl>
-													</StackPanel>
-												</ScrollViewer>
-											</Grid>
-										</Grid>
-									</ScrollViewer>
-									<Grid Grid.Row="2" x:Name="KeywordsFooterControls" >
-										<StackPanel HorizontalAlignment="Center" Orientation="Horizontal">
-											<StackPanel.Resources>
-												<Style TargetType="Button">
-													<Setter Property="Margin" Value="1,0" />
-													<Setter Property="Padding" Value="4,2" />
-													<Setter Property="Width" Value="55" />
-												</Style>
-											</StackPanel.Resources>
-											<Button Content="Add" Click="KeywordsList_Add_Click" ToolTip="Add New Keyword"/>
-											<Button Content="Remove" Click="KeywordsList_Remove_Click" ToolTip="Remove Last Keyword" />
-										</StackPanel>
-									</Grid>
-								</Grid>
-							</TabItem>
+							
 						</CompositeCollection>
 					</TabControl.ItemsSource>
 				</TabControl>
+			</TabItem>
+			<TabItem x:Name="KeywordsTab" Header="Keywords">
+				<TabItem.Resources>
+					<Style x:Key="KeywordBorderStyle" TargetType="Border">
+						<!-- <Border BorderThickness="1" Grid.Row="0" BorderBrush="{DynamicResource }" Background="{DynamicResource {x:Static SystemColors.MenuBrushKey}}" >-->
+						<Setter Property="BorderThickness" Value="1"/>
+						<Setter Property="BorderBrush">
+							<Setter.Value>
+								<SolidColorBrush Color="{x:Static SystemColors.ControlLightColor}" />
+							</Setter.Value>
+						</Setter>
+						<Setter Property="Background">
+							<Setter.Value>
+								<SolidColorBrush Color="{x:Static SystemColors.MenuColor}" />
+							</Setter.Value>
+						</Setter>
+					</Style>
+					<Style x:Key="KeywordBorderStyleMouseOver" TargetType="Border">
+						<!-- <Border BorderThickness="1" Grid.Row="0" BorderBrush="{DynamicResource }" Background="{DynamicResource {x:Static SystemColors.MenuBrushKey}}" >-->
+						<Setter Property="BorderThickness" Value="1"/>
+						<Setter Property="BorderBrush">
+							<Setter.Value>
+								<SolidColorBrush Color="{x:Static SystemColors.ControlLightColor}" />
+							</Setter.Value>
+						</Setter>
+						<Setter Property="Background">
+							<Setter.Value>
+								<SolidColorBrush Color="{x:Static SystemColors.MenuColor}" />
+							</Setter.Value>
+						</Setter>
+						<Style.Triggers>
+							<Trigger Property="IsMouseOver" Value="true">
+								<Setter Property="Background">
+									<Setter.Value>
+										<SolidColorBrush Color="{x:Static SystemColors.ControlLightLightColor}" />
+									</Setter.Value>
+								</Setter>
+							</Trigger>
+						</Style.Triggers>
+					</Style>
+				</TabItem.Resources>
+				<Grid >
+					<Grid.RowDefinitions>
+						<RowDefinition Height="Auto"/>
+						<RowDefinition Height="*" />
+						<RowDefinition Height="Auto" />
+					</Grid.RowDefinitions>
+					<Grid Grid.Row="0" Width="Auto" Height="Auto" x:Name="KeywordsHeaderControls" Margin="5" >
+						<Grid.ColumnDefinitions>
+							<ColumnDefinition Width="Auto"/>
+							<ColumnDefinition Width="*"/>
+						</Grid.ColumnDefinitions>
+						<Label x:Name="TemplateLabel" Content="Template Keywords" Grid.Column="0" Width="Auto" HorizontalAlignment="Left" VerticalAlignment="Center" ToolTip="{x:Static vdata:TooltipText.TemplateKeywords}" Padding="2,0,50,0">
+							<Label.Style>
+								<Style TargetType="Label">
+									<Setter Property="Foreground" Value="Black" />
+									<Style.Triggers>
+										<Trigger Property="IsMouseOver" Value="True">
+											<Setter Property="Foreground" Value="#FF3A6FFF" />
+										</Trigger>
+									</Style.Triggers>
+								</Style>
+							</Label.Style>
+						</Label>
+						<StackPanel Grid.Column="1" HorizontalAlignment="Right" x:Name="KeywordCommandsGrid" Orientation="Horizontal" >
+							<StackPanel.Resources>
+								<Style TargetType="Button">
+									<Setter Property="Margin" Value="1,0" />
+									<Setter Property="Padding" Value="4,2" />
+								</Style>
+							</StackPanel.Resources>
+							<c:FileBrowseControl OpenFileText="Select Keywords File" FileLocationText="{Binding AppSettings.KeywordsFile, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+												OnOpen="{Binding LoadKeywords}"/>
+							<Button x:Name="SaveKeywordsButton" Content="Save" Click="SaveKeywordsButton_Click" />
+							<Button x:Name="SaveAsKeywordsButton" Content="Save As..." Click="SaveAsKeywordsButton_Click" />
+							<Button Content="Default..." Click="KeywordsList_Default_Click" ToolTip="Reset Keywords to Default" />
+						</StackPanel>
+					</Grid>
+					<ScrollViewer Grid.Row="1" x:Name="KeywordListScrollViewer" Margin="10,0,10,0" VerticalScrollBarVisibility="Auto" Background="{DynamicResource {x:Static SystemColors.ControlLightBrushKey}}" >
+						<Grid x:Name="KeywordListGrid" Margin="10">
+							<Grid.RowDefinitions>
+								<RowDefinition Height="Auto" />
+								<RowDefinition Height="*" />
+							</Grid.RowDefinitions>
+							<ScrollViewer Grid.Row="0" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
+								<Grid x:Name="DefaultKeywords" >
+									<Grid.Resources>
+										<Style TargetType="c:TemplateKeywordControl">
+											<Setter Property="KeywordNameReadOnly" Value="True"/>
+											<Setter Property="KeywordValueReadOnly" Value="True"/>
+										</Style>
+									</Grid.Resources>
+									<Grid.RowDefinitions>
+										<RowDefinition />
+										<RowDefinition Height="*" />
+										<RowDefinition />
+									</Grid.RowDefinitions>
+									<Border Grid.Row="0" Style="{StaticResource KeywordBorderStyle}" >
+										<TextBlock Text="Application Keywords (Auto-Assigned)" Margin="2" Padding="2" FontFamily="Neuton" />
+									</Border>
+									<ItemsControl Grid.Row="1" x:Name="AppKeywordsList" ItemsSource="{Binding AppKeyList}" >
+										<ItemsControl.ItemTemplate>
+											<DataTemplate DataType="c:TemplateKeywordControl">
+												<c:TemplateKeywordControl DataContext="{Binding}" KeywordName="{Binding KeywordName}" KeywordValue="{Binding KeywordValue}" KeywordNameReadOnly="True" KeywordValueReadOnly="True" />
+											</DataTemplate>
+										</ItemsControl.ItemTemplate>
+										<ItemsControl.ItemsPanel>
+											<ItemsPanelTemplate>
+												<StackPanel Orientation="Vertical" />
+											</ItemsPanelTemplate>
+										</ItemsControl.ItemsPanel>
+									</ItemsControl>
+									<Border Grid.Row="2" Style="{StaticResource KeywordBorderStyleMouseOver}" >
+										<Expander x:Name="DateKeywordsExpander"  Header="Date Keywords" Style="{DynamicResource ExpanderRightButton}" Background="{x:Null}" FontFamily="Neuton" >
+											<ScrollViewer FlowDirection="LeftToRight" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" MaxHeight="125">
+												<ItemsControl ItemsSource="{Binding DateKeyList}" >
+													<ItemsControl.ItemTemplate>
+														<DataTemplate DataType="c:TemplateKeywordControl">
+															<c:TemplateKeywordControl DataContext="{Binding}" KeywordName="{Binding KeywordName}" KeywordValue="{Binding KeywordValue}" KeywordNameReadOnly="True" KeywordValueReadOnly="True" />
+														</DataTemplate>
+													</ItemsControl.ItemTemplate>
+													<ItemsControl.ItemsPanel>
+														<ItemsPanelTemplate>
+															<StackPanel Orientation="Vertical" />
+														</ItemsPanelTemplate>
+													</ItemsControl.ItemsPanel>
+												</ItemsControl>
+											</ScrollViewer>
+										</Expander>
+									</Border>
+								</Grid>
+							</ScrollViewer>
+							<Grid x:Name="ParentGrid_UserKeywords" Grid.Row="1" >
+								<Grid.RowDefinitions>
+									<RowDefinition Height="Auto"/>
+									<RowDefinition Height="*" />
+								</Grid.RowDefinitions>
+								<Border Grid.Row="0" Style="{StaticResource KeywordBorderStyle}" >
+									<TextBlock Text="User Keywords" Background="{DynamicResource {x:Static SystemColors.MenuBarBrushKey}}" Margin="2" Padding="2" FontFamily="Neuton" />
+								</Border>
+								<ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
+									<StackPanel Orientation="Vertical" DataContext="{Binding UserKeywords}">
+										<c:TemplateKeywordControl KeywordName="$DateCustom" KeywordValue="{Binding DateCustom, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" KeywordNameReadOnly="True" KeywordValueReadOnly="False" FontFamily="Neuton"  />
+										<ItemsControl x:Name="UserKeywords" ItemsSource="{Binding Keywords}" ItemTemplate="{StaticResource AlternatingKeywordsTemplate}" AlternationCount="2" >
+											<ItemsControl.ItemsPanel>
+												<ItemsPanelTemplate>
+													<StackPanel Orientation="Vertical" />
+												</ItemsPanelTemplate>
+											</ItemsControl.ItemsPanel>
+										</ItemsControl>
+									</StackPanel>
+								</ScrollViewer>
+							</Grid>
+						</Grid>
+					</ScrollViewer>
+					<Grid Grid.Row="2" x:Name="KeywordsFooterControls">
+						<StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Orientation="Horizontal">
+							<StackPanel.Resources>
+								<Style TargetType="Button">
+									<Setter Property="Margin" Value="1,0" />
+									<Setter Property="Padding" Value="4,2" />
+									<Setter Property="Width" Value="55" />
+								</Style>
+							</StackPanel.Resources>
+							<Button Content="Add" Click="KeywordsList_Add_Click" ToolTip="Add New Keyword"/>
+							<Button Content="Remove" Click="KeywordsList_Remove_Click" ToolTip="Remove Last Keyword" />
+						</StackPanel>
+					</Grid>
+				</Grid>
 			</TabItem>
 			<TabItem x:Name="Tab_Settings" Header="Settings">
 				<Grid x:Name="Settings_ParentGrid" HorizontalAlignment="Center" VerticalAlignment="Center">

@@ -32,93 +32,99 @@ namespace LL.DOS2.SourceControl.Core
 
 				var rootRepoDirectory = Directory.CreateDirectory(gitProjectRootDirectory);
 
-				foreach (var templateSetting in generationSettings.TemplateSettings)
+				if(GitGenerator.InitRepository(gitProjectRootDirectory))
 				{
-					var templateData = Data.Templates.Where(t => t.Name == templateSetting.TemplateName).FirstOrDefault();
-					if(templateData != null)
+					Log.Here().Activity("Created git repository for project ({0}) at {1}", project.Name, gitProjectRootDirectory);
+
+					foreach (var templateSetting in generationSettings.TemplateSettings)
 					{
-						if (templateSetting.Enabled)
+						var templateData = Data.Templates.Where(t => t.Name == templateSetting.TemplateName).FirstOrDefault();
+						if (templateData != null)
 						{
-							string outputFIlePath = Path.Combine(gitProjectRootDirectory, templateData.ExportPath);
-							string outputText = GitGenerator.ReplaceKeywords(templateData.EditorText, project, Data);
-							if (!FileCommands.WriteToFile(outputFIlePath, outputText))
+							if (templateSetting.Enabled)
 							{
-								Log.Here().Error("[{0}] Failed to create template file at {1}", project.Name, templateData.ExportPath);
+								string outputFIlePath = Path.Combine(gitProjectRootDirectory, templateData.ExportPath);
+								string outputText = GitGenerator.ReplaceKeywords(templateData.EditorText, project, Data);
+								if (!FileCommands.WriteToFile(outputFIlePath, outputText))
+								{
+									Log.Here().Error("[{0}] Failed to create template file at {1}", project.Name, templateData.ExportPath);
+								}
+							}
+							else
+							{
+								Log.Here().Activity("[{0}] Skipping {1}", project.Name, templateSetting.TemplateName);
+							}
+						}
+					}
+
+					if (generationSettings.SelectedLicense != LicenseType.None)
+					{
+						string outputText = "";
+						if (generationSettings.SelectedLicense == LicenseType.Custom)
+						{
+							var customLicenseTemplate = Data.Templates.Where(t => t.Name == "LICENSE").FirstOrDefault();
+							if (customLicenseTemplate != null)
+							{
+								outputText = customLicenseTemplate.EditorText;
 							}
 						}
 						else
 						{
-							Log.Here().Activity("[{0}] Skipping {1}", project.Name, templateSetting.TemplateName);
+							switch (generationSettings.SelectedLicense)
+							{
+								case LicenseType.MIT:
+									outputText = Properties.Resources.License_MIT;
+									break;
+								case LicenseType.Apache:
+									outputText = Properties.Resources.License_Apache;
+									break;
+								case LicenseType.GNU:
+									outputText = Properties.Resources.License_GNU;
+									break;
+							}
+						}
+
+						if (!String.IsNullOrEmpty(outputText))
+						{
+							outputText = GitGenerator.ReplaceKeywords(outputText, project, Data);
+						}
+
+						string licenseFile = Path.Combine(gitProjectRootDirectory, "LICENSE");
+
+						if (!FileCommands.WriteToFile(licenseFile, outputText))
+						{
+							Log.Here().Error("[{0}] Failed to write license template file at {1}", project.Name, licenseFile);
 						}
 					}
-				}
 
-				if(generationSettings.SelectedLicense != LicenseType.None)
-				{
-					string outputText = "";
-					if(generationSettings.SelectedLicense == LicenseType.Custom)
+					GitGenerator.Commit(gitProjectRootDirectory, "Initial Commit");
+
+					if (GitGenerator.CreateJunctions(project, Data))
 					{
-						var customLicenseTemplate = Data.Templates.Where(t => t.Name == "LICENSE").FirstOrDefault();
-						if (customLicenseTemplate != null)
-						{
-							outputText = customLicenseTemplate.EditorText;
-						}
+						Log.Here().Activity("[{0}] Successfully created junctions.", project.Name);
 					}
 					else
 					{
-						switch (generationSettings.SelectedLicense)
-						{
-							case LicenseType.MIT:
-								outputText = Properties.Resources.License_MIT;
-								break;
-							case LicenseType.Apache:
-								outputText = Properties.Resources.License_Apache;
-								break;
-							case LicenseType.GNU:
-								outputText = Properties.Resources.License_GNU;
-								break;
-						}
+						Log.Here().Error("[{0}] Problem creating junctions.", project.Name);
 					}
 
-					if(!String.IsNullOrEmpty(outputText))
-					{
-						outputText = GitGenerator.ReplaceKeywords(outputText, project, Data);
-					}
-
-					string licenseFile = Path.Combine(gitProjectRootDirectory, "LICENSE");
-
-					if (!FileCommands.WriteToFile(licenseFile, outputText))
-					{
-						Log.Here().Error("[{0}] Failed to write license template file at {1}", project.Name, licenseFile);
-					}
-				}
-
-				if(GitGenerator.CreateJunctions(project, Data))
-				{
-					Log.Here().Activity("[{0}] Successfully created junctions.", project.Name);
-				}
-				else
-				{
-					Log.Here().Error("[{0}] Problem creating junctions.", project.Name);
-				}
-
-				if(GitGenerator.CreateRepository(gitProjectRootDirectory))
-				{
-					Log.Here().Activity("Created git repository for project ({0}) at {1}", project.Name, gitProjectRootDirectory);
+					GitGenerator.Commit(gitProjectRootDirectory, "Junctioned project folders");
 				}
 				else
 				{
 					Log.Here().Error("Error creating git repository for project {0}.", project.Name);
 				}
-				
+
 				return true;
 			}
 			return false;
 		}
 
-		public bool GenerateBackupFolder(ModProjectData project)
+		public bool GenerateBackupFolder(ModProjectData project = null)
 		{
-			string projectBackupDirectory = Path.Combine(Data.AppSettings.BackupRootDirectory, project.Name);
+			string projectBackupDirectory = Data.AppSettings.BackupRootDirectory;
+			if (project != null) projectBackupDirectory = Path.Combine(Data.AppSettings.BackupRootDirectory, project.Name);
+
 			try
 			{
 				Directory.CreateDirectory(projectBackupDirectory);
@@ -132,17 +138,46 @@ namespace LL.DOS2.SourceControl.Core
 			return false;
 		}
 
-		public bool BackupGitProject(ModProjectData project)
+		public bool BackupProject(ModProjectData project, bool UseAttributes = true, string OutputDirectory = "")
 		{
-			if (!string.IsNullOrEmpty(Data.AppSettings.GitRootDirectory))
+			if (String.IsNullOrWhiteSpace(OutputDirectory))
 			{
-				string gitProjectRootDirectory = Path.Combine(Data.AppSettings.GitRootDirectory, project.Name);
-				if (Directory.Exists(gitProjectRootDirectory))
+				OutputDirectory = Path.Combine(Path.GetFullPath(Data.AppSettings.BackupRootDirectory), project.Name);
+				Directory.CreateDirectory(OutputDirectory);
+			}
+
+			string archiveName = project.Name + "_" + DateTime.Now.ToString("yyyy-dd-M_HH-mm-ss") + ".zip";
+			string archivePath = Path.Combine(OutputDirectory, archiveName);
+			string gitProjectDirectory = "";
+
+			bool gitProjectDetected = false;
+
+			if (!String.IsNullOrEmpty(Data.AppSettings.GitRootDirectory))
+			{
+				gitProjectDirectory = Path.Combine(Data.AppSettings.GitRootDirectory, project.Name);
+				if (Directory.Exists(gitProjectDirectory))
 				{
-					
+					gitProjectDirectory = Path.Combine(Data.AppSettings.GitRootDirectory, project.Name);
+					gitProjectDetected = true;
+				}
+				else
+				{
+					//Log.Here().Error("Git project directory does not exist for {0}. Has it been created?", project.Name);
 				}
 			}
-			return false;
+			else
+			{
+				Log.Here().Error("Git projects directory not set. Configure the root project directory before backing up projects!");
+			}
+
+			if(!gitProjectDetected)
+			{
+				return BackupGenerator.CreateArchiveFromData(Data.AppSettings.DOS2DataDirectory, Data.ProjectDirectoryLayouts, project, archivePath);
+			}
+			else
+			{
+				return BackupGenerator.CreateArchiveFromRepo(gitProjectDirectory, archivePath);
+			}
 		}
 
 		public void AddProjectsToManaged(List<AvailableProjectViewData> selectedItems)
@@ -203,10 +238,35 @@ namespace LL.DOS2.SourceControl.Core
 			}
 		}
 
+		public void TestView()
+		{
+			for (int i = 0; i < 50; i++)
+			{
+				string testStr = "test_" + i;
+
+				var tdata = new TemplateEditorData()
+				{
+					ID = testStr,
+					Name = testStr
+				};
+				tdata.Init();
+				Data.Templates.Add(tdata);
+
+				var kdata = new KeywordData()
+				{
+					KeywordName = testStr,
+					KeywordValue = ""
+				};
+				Data.UserKeywords.Keywords.Add(kdata);
+			}
+		}
+
 		public void Start()
 		{
 			Log.Here().Important("Starting application.");
 			FileCommands.Load.LoadAll();
+
+			TestView();
 		}
 
 		public SettingsController(MainWindow MainAppWindow)

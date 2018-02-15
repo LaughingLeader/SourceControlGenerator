@@ -294,6 +294,11 @@ namespace LL.DOS2.SourceControl.Data.View
 			return value;
 		}
 
+		private static string ReplaceNewlineSymbols(string str)
+		{
+			return str.Replace("\\n", Environment.NewLine).Replace("\\r", Environment.NewLine);
+		}
+
 		public static TemplateEditorData LoadFromXml(XElement xmlData)
 		{
 			string ID = XmlDataHelper.GetAttributeAsString(xmlData, "ID", "");
@@ -307,7 +312,7 @@ namespace LL.DOS2.SourceControl.Data.View
 					FileName = GetPropetyValueFromXml(xmlData, "DefaultTemplateFileName"),
 					ExportPath = GetPropetyValueFromXml(xmlData, "ExportPath"),
 					DefaultEditorText = GetPropetyValueFromXml(xmlData, "DefaultEditorText"),
-					TooltipText = GetPropetyValueFromXml(xmlData, "TooltipText")
+					TooltipText = ReplaceNewlineSymbols(GetPropetyValueFromXml(xmlData, "TooltipText"))
 				};
 				return data;
 			}
@@ -328,9 +333,9 @@ namespace LL.DOS2.SourceControl.Data.View
 			}
 			*/
 
-			DefaultFilePath = Path.Combine(DefaultPaths.TemplateFiles, FileName);
+			if (!String.IsNullOrWhiteSpace(FileName)) DefaultFilePath = Path.Combine(DefaultPaths.TemplateFiles, FileName);
 
-			if (String.IsNullOrWhiteSpace(FilePath))
+			if (String.IsNullOrWhiteSpace(FilePath) && !String.IsNullOrWhiteSpace(DefaultFilePath))
 			{
 				FilePath = DefaultFilePath;
 			}

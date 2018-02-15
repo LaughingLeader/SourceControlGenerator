@@ -20,6 +20,7 @@ using LL.DOS2.SourceControl.Data;
 using LL.DOS2.SourceControl.Data.View;
 using LL.DOS2.SourceControl.Util;
 using LL.DOS2.SourceControl.Windows;
+using Ookii.Dialogs.Wpf;
 
 namespace LL.DOS2.SourceControl.Windows
 {
@@ -359,6 +360,13 @@ namespace LL.DOS2.SourceControl.Windows
 						if (item is ModProjectData data)
 						{
 							data.Selected = true;
+							/*
+							if (!canArchive)
+							{
+								string gitProjectDirectory = System.IO.Path.Combine(SettingsController.Data.AppSettings.GitRootDirectory, data.Name);
+								if (Directory.Exists(gitProjectDirectory)) canArchive = true;
+							}
+							*/
 						}
 					}
 				}
@@ -465,6 +473,54 @@ namespace LL.DOS2.SourceControl.Windows
 				{
 					Log.Here().Error("Error generating git repository for {0}.", project.Name);
 				}
+			}
+		}
+
+		private void BackupSelectedProjects(string OutputDirectory = "")
+		{
+			var selectedProjects = SettingsController.Data.ManagedProjects.Where(p => p.Selected).ToList();
+			if (selectedProjects != null && selectedProjects.Count > 0)
+			{
+				foreach (var project in selectedProjects)
+				{
+					if(SettingsController.BackupProject(project, true, OutputDirectory))
+					{
+						Log.Here().Activity("Successfully created archive for {0}.", project.Name);
+					}
+					else
+					{
+						Log.Here().Error("Failed to create archive for {0}.", project.Name);
+					}
+				}
+			}
+		}
+
+		private void BackupButton_Click(object sender, RoutedEventArgs e)
+		{
+			BackupSelectedProjects();
+		}
+
+		private void BackupSeletedButton_Click(object sender, RoutedEventArgs e)
+		{
+			if(String.IsNullOrWhiteSpace(SettingsController.Data.AppSettings.LastBackupPath))
+			{
+				SettingsController.Data.AppSettings.LastBackupPath = SettingsController.Data.AppSettings.BackupRootDirectory;
+			}
+
+			VistaFolderBrowserDialog folderDialog = new VistaFolderBrowserDialog();
+			folderDialog.SelectedPath = SettingsController.Data.AppSettings.LastBackupPath;
+			folderDialog.Description = "Select Archive Export Location";
+			folderDialog.UseDescriptionForTitle = true;
+			folderDialog.ShowNewFolderButton = true;
+
+			Nullable<bool> result = folderDialog.ShowDialog(this);
+
+			if (result == true)
+			{
+				string path = folderDialog.SelectedPath;
+				SettingsController.Data.AppSettings.LastBackupPath = path;
+
+				BackupSelectedProjects(path);
 			}
 		}
 	}

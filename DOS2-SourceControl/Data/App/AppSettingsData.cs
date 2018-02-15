@@ -157,6 +157,17 @@ namespace LL.DOS2.SourceControl.Data
 			}
 		}
 
+		private string lastBackupPath = "";
+
+		public string LastBackupPath
+		{
+			get { return lastBackupPath; }
+			set
+			{
+				lastBackupPath = value;
+				RaisePropertyChanged("LastBackupPath");
+			}
+		}
 
 		public AppSettingsData()
 		{

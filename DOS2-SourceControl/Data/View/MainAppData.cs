@@ -25,7 +25,7 @@ namespace LL.DOS2.SourceControl.Data.View
 
 		//Visible Data
 
-		private bool projectSelected;
+		private bool projectSelected = false;
 
 		public bool ProjectSelected
 		{
