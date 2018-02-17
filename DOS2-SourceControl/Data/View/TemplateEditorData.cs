@@ -93,7 +93,7 @@ namespace LL.DOS2.SourceControl.Data.View
 
 		private string tooltipText;
 
-		public string TooltipText
+		public string ToolTipText
 		{
 			get { return tooltipText; }
 			set
@@ -133,7 +133,7 @@ namespace LL.DOS2.SourceControl.Data.View
 
 		private string filename;
 
-		public string FileName
+		public string Filename
 		{
 			get { return filename; }
 			set
@@ -204,6 +204,19 @@ namespace LL.DOS2.SourceControl.Data.View
 				RaisePropertyChanged("DefaultFilePath");
 			}
 		}
+
+		public bool IsValid
+		{
+			get
+			{
+				if(!String.IsNullOrWhiteSpace(ID) && !String.IsNullOrWhiteSpace(Name) && !String.IsNullOrWhiteSpace(Filename))
+				{
+					return true;
+				}
+				return false;
+			}
+		}
+
 
 		public void SetToDefault()
 		{
@@ -309,10 +322,10 @@ namespace LL.DOS2.SourceControl.Data.View
 					ID = ID,
 					Name = GetPropetyValueFromXml(xmlData, "TabName"),
 					LabelText = GetPropetyValueFromXml(xmlData, "LabelText"),
-					FileName = GetPropetyValueFromXml(xmlData, "DefaultTemplateFileName"),
+					Filename = GetPropetyValueFromXml(xmlData, "DefaultTemplateFilename"),
 					ExportPath = GetPropetyValueFromXml(xmlData, "ExportPath"),
 					DefaultEditorText = GetPropetyValueFromXml(xmlData, "DefaultEditorText"),
-					TooltipText = ReplaceNewlineSymbols(GetPropetyValueFromXml(xmlData, "TooltipText"))
+					ToolTipText = ReplaceNewlineSymbols(GetPropetyValueFromXml(xmlData, "ToolTip"))
 				};
 				return data;
 			}
@@ -333,7 +346,7 @@ namespace LL.DOS2.SourceControl.Data.View
 			}
 			*/
 
-			if (!String.IsNullOrWhiteSpace(FileName)) DefaultFilePath = Path.Combine(DefaultPaths.TemplateFiles, FileName);
+			if (!String.IsNullOrWhiteSpace(Filename)) DefaultFilePath = Path.Combine(DefaultPaths.TemplateFiles, Filename);
 
 			if (String.IsNullOrWhiteSpace(FilePath) && !String.IsNullOrWhiteSpace(DefaultFilePath))
 			{
@@ -342,9 +355,9 @@ namespace LL.DOS2.SourceControl.Data.View
 
 			if (DefaultEditorText == null) DefaultEditorText = "";
 
-			if (String.IsNullOrEmpty(Name) && !String.IsNullOrEmpty(FileName))
+			if (String.IsNullOrEmpty(Name) && !String.IsNullOrEmpty(Filename))
 			{
-				Name = FileName;
+				Name = Filename;
 			}
 
 			if (File.Exists(FilePath))

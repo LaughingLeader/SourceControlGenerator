@@ -66,6 +66,9 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Controls\AddTemplateControl.xaml.cs">
+      <DependentUpon>AddTemplateControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Controls\ProjectEntryControl.xaml.cs">
       <DependentUpon>ProjectEntryControl.xaml</DependentUpon>
     </Compile>
@@ -115,12 +118,19 @@
     <Compile Include="Core\SettingsController.cs" />
     <Compile Include="Util\HelperUtil\DOS2Helper.cs" />
     <Compile Include="Util\HelperUtil\RegisteryHelper.cs" />
+    <Compile Include="Windows\EditTextWindow.xaml.cs">
+      <DependentUpon>EditTextWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Windows\GitGenerationWindow.xaml.cs">
       <DependentUpon>GitGenerationWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="Windows\LogWindow.xaml.cs">
       <DependentUpon>LogWindow.xaml</DependentUpon>
     </Compile>
+    <Page Include="Controls\AddTemplateControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Controls\FileBrowseControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -134,6 +144,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Controls\TemplateKeywordControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Windows\EditTextWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

@@ -427,27 +427,7 @@ namespace LL.DOS2.SourceControl.Commands
 					}
 				}
 			}
-
-			//DEBUG
-			Data.AvailableProjects.Add(new AvailableProjectViewData()
-			{
-				Name = "SJjjsjdiasjdiasidiahdisahdihaisdhddddddddddddddddddddddddddddddddddddddddiasdias"
-			});
-
-			for(var i = 0; i < 15;i++)
-			{
-				Data.AvailableProjects.Add(new AvailableProjectViewData()
-				{
-					Name = "Project_" + i
-				});
-			}
-
-			/*
-			Data.AvailableProjects.Add(new AvailableProjectViewData()
-			{
-				Name = "TestMod"
-			});
-			*/
+			
 		}
 
 		public void LoadModProjects()
@@ -597,7 +577,7 @@ namespace LL.DOS2.SourceControl.Commands
 					ID = template.ID,
 					TemplateName = template.Name,
 					Enabled = true,
-					TooltipText = template.TooltipText
+					TooltipText = template.ToolTipText
 				};
 
 				if (previousSettings != null)

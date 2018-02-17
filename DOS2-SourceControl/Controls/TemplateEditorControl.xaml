@@ -22,7 +22,7 @@
 				<ColumnDefinition Width="Auto" />
 				<ColumnDefinition Width="*"/>
 			</Grid.ColumnDefinitions>
-			<Label x:Name="TemplateLabel" Content="{Binding LabelText}" Width="Auto" HorizontalAlignment="Left" VerticalAlignment="Center" ToolTip="{Binding TooltipText}">
+			<Label x:Name="TemplateLabel" Content="{Binding LabelText}" Width="Auto" HorizontalAlignment="Left" VerticalAlignment="Center" ToolTip="{Binding ToolTipText}">
 				<Label.Style>
 					<Style TargetType="Label">
 						<Setter Property="Foreground" Value="Black" />

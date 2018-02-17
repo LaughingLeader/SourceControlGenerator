@@ -259,6 +259,19 @@ namespace LL.DOS2.SourceControl.Core
 				};
 				Data.UserKeywords.Keywords.Add(kdata);
 			}
+
+			Data.AvailableProjects.Add(new AvailableProjectViewData()
+			{
+				Name = "SJjjsjdiasjdiasidiahdisahdihaisdhddddddddddddddddddddddddddddddddddddddddiasdias"
+			});
+
+			for (var i = 0; i < 15; i++)
+			{
+				Data.AvailableProjects.Add(new AvailableProjectViewData()
+				{
+					Name = "Project_" + i
+				});
+			}
 		}
 
 		public void Start()
