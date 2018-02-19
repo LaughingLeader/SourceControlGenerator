@@ -60,6 +60,8 @@ namespace LL.DOS2.SourceControl.Windows
 				gridSplitter.DragStarted += (s, e) => { gridSplitterMoving = true; };
 				gridSplitter.DragCompleted += (s, e) => { gridSplitterMoving = false; };
 			}
+
+			SettingsController.Data.AddTemplateControlVisible = false;
 		}
 
 		public bool LogWindowShown
@@ -521,6 +523,23 @@ namespace LL.DOS2.SourceControl.Windows
 				SettingsController.Data.AppSettings.LastBackupPath = path;
 
 				BackupSelectedProjects(path);
+			}
+		}
+
+		private void Button_NewTemplate_Click(object sender, RoutedEventArgs e)
+		{
+			Log.Here().Important("Test: {0}", SettingsController.Data.AddTemplateControlVisible);
+			if(!SettingsController.Data.AddTemplateControlVisible)
+			{
+				TabControl mainTabs = (TabControl)FindName("MainTabsControl");
+
+				SettingsController.Data.CreateNewTemplateData();
+
+				Dispatcher.BeginInvoke((Action)(() =>
+				{
+					SettingsController.Data.AddTemplateControlVisible = true;
+					if (mainTabs != null) mainTabs.SelectedIndex = 1;
+				}));
 			}
 		}
 	}

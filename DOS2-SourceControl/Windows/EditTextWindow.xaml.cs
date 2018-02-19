@@ -39,6 +39,15 @@ namespace LL.DOS2.SourceControl.Windows
 
 			Title = windowTitle;
 			DataContext = this;
+
+			OnConfirm = onConfirm;
+			OnCancel = onCancel;
+		}
+
+		public void Configure(Action<string> onConfirm, Action onCancel)
+		{
+			OnConfirm = onConfirm;
+			OnCancel = onCancel;
 		}
 
 		private void ConfirmButton_Click(object sender, RoutedEventArgs e)

@@ -11,6 +11,9 @@ using LL.DOS2.SourceControl.Util;
 using LL.DOS2.SourceControl.Windows;
 using System.Xml.Linq;
 using LL.DOS2.SourceControl.Data.Xml;
+using System.ComponentModel;
+using LL.DOS2.SourceControl.Converters;
+using LL.DOS2.SourceControl.Enum;
 
 namespace LL.DOS2.SourceControl.Data.View
 {
@@ -51,6 +54,18 @@ namespace LL.DOS2.SourceControl.Data.View
 			{
 				editorText = value;
 				RaisePropertyChanged("EditorText");
+			}
+		}
+
+		private EditorTextPropertyType editorTextProperty = EditorTextPropertyType.String;
+
+		public EditorTextPropertyType EditorTextProperty
+		{
+			get { return editorTextProperty; }
+			set
+			{
+				editorTextProperty = value;
+				RaisePropertyChanged("EditorTextProperty");
 			}
 		}
 

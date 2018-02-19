@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace LL.DOS2.SourceControl
 {
-	public static class Extensions
+	public static class StringExtensions
 	{
 		public static string ToDelimitedString<T>(this IEnumerable<T> source, Func<T, string> func)
 		{

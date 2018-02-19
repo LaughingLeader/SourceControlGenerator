@@ -47,7 +47,7 @@
 						<MultiBinding Converter="{StaticResource SaveFileAsCommandDataConverter}">
 							<Binding Path="EditorText" />
 							<Binding Path="SaveAsText" />
-							<Binding Path="FileName" />
+							<Binding Path="Filename" />
 							<Binding Path="FilePath" />
 							<Binding Path="DefaultFilePath" />
 						</MultiBinding>
@@ -58,7 +58,7 @@
 						<MultiBinding Converter="{StaticResource SaveFileAsCommandDataConverter}">
 							<Binding Path="EditorText" />
 							<Binding Path="SaveAsText" />
-							<Binding Path="FileName" />
+							<Binding Path="Filename" />
 							<Binding Path="FilePath" />
 							<Binding Path="DefaultFilePath" />
 						</MultiBinding>

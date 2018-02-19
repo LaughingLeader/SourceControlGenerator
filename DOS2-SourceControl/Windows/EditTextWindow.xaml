@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:LL.DOS2.SourceControl.Windows"
         mc:Ignorable="d"
-        Title="EditTextWindow" Height="300" Width="300"
+        Title="EditTextWindow" Height="600" Width="800"
 		x:Name="EditWindow" FocusManager.FocusedElement="{Binding ElementName=EditTextBox}" Closed="EditWindow_Closed"
 		>
     <Grid>
@@ -15,7 +15,7 @@
 		</Grid.RowDefinitions>
 		<Border BorderThickness="0.5" BorderBrush="Black" Margin="2"  Background="#FFE0E0E0">
 			<ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" >
-				<TextBox x:Name="EditTextBox" Text="{Binding Text, ElementName=EditWindow, Mode=TwoWay}" Background="{x:Null}" />
+				<TextBox x:Name="EditTextBox" Text="{Binding Text, ElementName=EditWindow, Mode=TwoWay}" Background="{x:Null}" AcceptsReturn="True" />
 			</ScrollViewer>
 		</Border>
 		<UniformGrid Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Center" Rows="1" Columns="2">

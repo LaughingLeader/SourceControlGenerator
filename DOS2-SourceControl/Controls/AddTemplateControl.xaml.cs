@@ -24,19 +24,55 @@ namespace LL.DOS2.SourceControl.Controls
 	public partial class AddTemplateControl : UserControl
 	{
 		private EditTextWindow editTextWindow;
-		private TemplateEditorData data;
 
-		public AddTemplateControl(TemplateEditorData templateEditorData)
+		public TemplateEditorData TemplateData
+		{
+			get { return (TemplateEditorData)GetValue(TemplateDataProperty); }
+			set
+			{
+				SetValue(TemplateDataProperty, value);
+			}
+		}
+
+		// Using a DependencyProperty as the backing store for TemplateData.  This enables animation, styling, binding, etc...
+		public static readonly DependencyProperty TemplateDataProperty =
+			DependencyProperty.Register("TemplateData", typeof(TemplateEditorData), typeof(AddTemplateControl), new PropertyMetadata(null));
+
+		public ICommand ConfirmCommand
+		{
+			get { return (ICommand)GetValue(ConfirmCommandProperty); }
+			set { SetValue(ConfirmCommandProperty, value); }
+		}
+
+		// Using a DependencyProperty as the backing store for ConfirmCommand.  This enables animation, styling, binding, etc...
+		public static readonly DependencyProperty ConfirmCommandProperty =
+			DependencyProperty.Register("ConfirmCommand", typeof(ICommand), typeof(AddTemplateControl), new PropertyMetadata(null));
+
+
+		public ICommand CancelCommand
+		{
+			get { return (ICommand)GetValue(CancelCommandProperty); }
+			set { SetValue(CancelCommandProperty, value); }
+		}
+
+		// Using a DependencyProperty as the backing store for CancelCommand.  This enables animation, styling, binding, etc...
+		public static readonly DependencyProperty CancelCommandProperty =
+			DependencyProperty.Register("CancelCommand", typeof(ICommand), typeof(AddTemplateControl), new PropertyMetadata(null));
+
+
+
+		public AddTemplateControl()
 		{
 			InitializeComponent();
 
-			data = templateEditorData;
-			DataContext = data;
+			//Visibility = Visibility.Collapsed;
 		}
 
 		private void OnEditorTextConfirmed(string newText)
 		{
-			data.DefaultEditorText = newText;
+			TemplateData.DefaultEditorText = newText;
+
+			Log.Here().Important("Editor text changed?");
 		}
 
 		private void OnEditorTextCanceled()
@@ -46,14 +82,39 @@ namespace LL.DOS2.SourceControl.Controls
 
 		private void EditorTextExpandButton_Click(object sender, RoutedEventArgs e)
 		{
-			if (editTextWindow == null) editTextWindow = new EditTextWindow(OnEditorTextConfirmed, OnEditorTextCanceled, "Edit Default Editor Text");
-			editTextWindow.Text = data.DefaultEditorText;
+			if(TemplateData != null)
+			{
+				if (editTextWindow == null) editTextWindow = new EditTextWindow(OnEditorTextConfirmed, OnEditorTextCanceled, "Edit Default Editor Text");
+				editTextWindow.Text = TemplateData.DefaultEditorText;
 
-			Window mainWindow = Application.Current.MainWindow;
-			editTextWindow.Left = mainWindow.Left + (mainWindow.Width - editTextWindow.ActualWidth) / 2;
-			editTextWindow.Top = mainWindow.Top + (mainWindow.Height - editTextWindow.ActualHeight) / 2;
+				Window mainWindow = Application.Current.MainWindow;
+				editTextWindow.Left = mainWindow.Left + (mainWindow.Width - editTextWindow.ActualWidth) / 2;
+				editTextWindow.Top = mainWindow.Top + (mainWindow.Height - editTextWindow.ActualHeight) / 2;
 
-			editTextWindow.Show();
+				editTextWindow.Show();
+			}
+		}
+
+		private void ConfirmButton_Click(object sender, RoutedEventArgs e)
+		{
+
+		}
+
+		private void CancelButton_Click(object sender, RoutedEventArgs e)
+		{
+
+		}
+
+		private void AddTemplateMain_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
+		{
+			if(TemplateData != null)
+			{
+				
+			}
+			else
+			{
+				Log.Here().Error("Something went wrong. TemplateData is null!");
+			}
 		}
 	}
 }

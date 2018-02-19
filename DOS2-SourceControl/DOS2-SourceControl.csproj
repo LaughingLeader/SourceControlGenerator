@@ -43,6 +43,12 @@
     <Reference Include="Ookii.Dialogs.Wpf">
       <HintPath>..\..\_Libraries\Ookii.Dialogs\Ookii.Dialogs.Wpf.dll</HintPath>
     </Reference>
+    <Reference Include="PresentationFramework.Aero" />
+    <Reference Include="PresentationFramework.Aero2" />
+    <Reference Include="PresentationFramework.AeroLite" />
+    <Reference Include="PresentationFramework.Classic" />
+    <Reference Include="PresentationFramework.Luna" />
+    <Reference Include="PresentationFramework.Royale" />
     <Reference Include="SharpCompress, Version=0.19.2.0, Culture=neutral, PublicKeyToken=afb0a02973931d96, processorArchitecture=MSIL">
       <HintPath>..\packages\SharpCompress.0.19.2\lib\net45\SharpCompress.dll</HintPath>
     </Reference>
@@ -76,6 +82,7 @@
     <Compile Include="Controls\FileBrowseControl.xaml.cs">
       <DependentUpon>FileBrowseControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Converters\EnumDescriptionTypeConverter.cs" />
     <Compile Include="Converters\EnumToCollectionConverter.cs" />
     <Compile Include="Converters\FooterOutputColorConverter.cs" />
     <Compile Include="Converters\LogTypeColorConverter.cs" />
@@ -105,8 +112,10 @@
     <Compile Include="Data\View\LogData.cs" />
     <Compile Include="Data\PropertyChangedBase.cs" />
     <Compile Include="Data\View\TemplateEditorData.cs" />
+    <Compile Include="Enum\EditorTextPropertyType.cs" />
     <Compile Include="Enum\FileBrowseType.cs" />
-    <Compile Include="Extensions\Extensions.cs" />
+    <Compile Include="Extensions\EnumBindingSourceExtension.cs" />
+    <Compile Include="Extensions\StringExtensions.cs" />
     <Compile Include="FileGen\BackupGenerator.cs" />
     <Compile Include="FileGen\GitGenerator.cs" />
     <Compile Include="Data\DefaultPaths.cs" />

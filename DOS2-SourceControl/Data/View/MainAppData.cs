@@ -14,6 +14,7 @@ using System.Collections.ObjectModel;
 using LL.DOS2.SourceControl.Data.View;
 using LL.DOS2.SourceControl.Core;
 using LL.DOS2.SourceControl.Commands;
+using System.Windows.Input;
 
 namespace LL.DOS2.SourceControl.Data.View
 {
@@ -151,6 +152,71 @@ namespace LL.DOS2.SourceControl.Data.View
 				availableProjectsToggleText = value;
 				RaisePropertyChanged("AvailableProjectsToggleText");
 			}
+		}
+
+		private bool addTemplateControlVisible;
+
+		public bool AddTemplateControlVisible
+		{
+			get { return addTemplateControlVisible; }
+			set
+			{
+				addTemplateControlVisible = value;
+				RaisePropertyChanged("AddTemplateControlVisible");
+			}
+		}
+
+		private TemplateEditorData newTemplateData;
+
+		public TemplateEditorData NewTemplateData
+		{
+			get { return newTemplateData; }
+			set
+			{
+				newTemplateData = value;
+				RaisePropertyChanged("NewTemplateData");
+			}
+		}
+
+		private ICommand _addTemplateCommand = null;
+
+		public ICommand AddTemplateCommand
+		{
+			get
+			{
+				if (_addTemplateCommand == null) _addTemplateCommand = new RelayCommand(param => AddTemplate(), null);
+				return _addTemplateCommand;
+			}
+		}
+
+		private ICommand _cancelAddTemplateCommand = null;
+
+		public ICommand CancelTemplateCommand
+		{
+			get
+			{
+				if (_cancelAddTemplateCommand == null) _cancelAddTemplateCommand = new RelayCommand(param => HideAddTemplateControl(), null);
+				return _cancelAddTemplateCommand;
+			}
+		}
+
+		private void AddTemplate()
+		{
+			if (NewTemplateData != null)
+			{
+				Templates.Add(NewTemplateData);
+			}
+		}
+
+		private void HideAddTemplateControl()
+		{
+			AddTemplateControlVisible = false;
+		}
+
+		public void CreateNewTemplateData()
+		{
+			newTemplateData = new TemplateEditorData();
+			RaisePropertyChanged("NewTemplateData");
 		}
 
 		public MainAppData()

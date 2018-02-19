@@ -16,6 +16,7 @@
 	<Window.Resources>
 		<cv:EmptyListVisibilityConverter x:Key="EmptyListVisibilityConverter"/>
 		<cv:FooterOutputColorConverter x:Key="FooterOutputColorConverter"/>
+		<BooleanToVisibilityConverter  x:Key="BoolToVisibilityConverter"/>
 		<CollectionViewSource x:Key="ActiveProjectsViewSource" CollectionViewType="ListCollectionView"/>
 		<CollectionViewSource x:Key="ManagedProjectsViewSource" CollectionViewType="ListCollectionView"/>
 		<DataTemplate x:Key="AlternatingKeywordsTemplate" DataType="c:TemplateKeywordControl">
@@ -294,6 +295,7 @@
 					<MenuItem Header="Refresh Available Projects" />
 					<MenuItem Header="Backup All Projects" />
 					<MenuItem Header="Backup All Projects To..." />
+					<MenuItem Header="Create Template..." Click="Button_NewTemplate_Click" />
 				</MenuItem>
 				<MenuItem Header="Options">
 					<MenuItem x:Name="LogWindowToggle" Header="{Binding LogVisibleText, ElementName=MainAppWindow}" Click="LogWindowToggle_Click" />
@@ -527,49 +529,51 @@
 				</Grid>
 			</TabItem>
 			<TabItem Header="Templates">
-				<TabControl TabStripPlacement="Left" Padding="0,5,0,0" >
-					<TabControl.Template>
-						<ControlTemplate TargetType="TabControl">
-							<Grid>
-								<Grid.ColumnDefinitions>
-									<ColumnDefinition Width="Auto" />
-									<ColumnDefinition />
-								</Grid.ColumnDefinitions>
-								<ScrollViewer VerticalScrollBarVisibility="Auto" >
-									<TabPanel x:Name="HeaderPanel"
-						  Panel.ZIndex ="1" 
-						  KeyboardNavigation.TabIndex="1"
-						  Grid.Column="0"
-						  Grid.Row="0"
-						  Margin="2,2,2,0"
-						  IsItemsHost="true"/>
-								</ScrollViewer>
-								<ContentPresenter x:Name="PART_SelectedContentHost"
-									  SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"
-									  Margin="{TemplateBinding Padding}"
-									  ContentSource="SelectedContent" Grid.Column="1"/>
-							</Grid>
-						</ControlTemplate>
-					</TabControl.Template>
-					<TabControl.Resources>
-						<CollectionViewSource x:Key="TemplateTabs" Source="{Binding Templates}"/>
-						<DataTemplate DataType="{x:Type vdata:TemplateEditorData}">
-							<c:TemplateEditorControl DataContext="{Binding}" TemplateData="{Binding}" />
-						</DataTemplate>
-						<Style TargetType="{x:Type TabItem}">
-							<Setter Property="Header" Value="{Binding Path=Name}" />
-						</Style>
-						<Style TargetType="{x:Type c:TemplateEditorControl}">
+				<Grid>
+					<c:AddTemplateControl x:Name="NewTemplateControl" Grid.ZIndex="1" DataContext="{Binding}" Visibility="{Binding AddTemplateControlVisible, Converter={StaticResource BoolToVisibilityConverter}}" TemplateData="{Binding NewTemplateData}" ConfirmCommand="{Binding AddTemplateCommand}" CancelCommand="{Binding CancelTemplateCommand}" />
+					<TabControl  Grid.ZIndex="0" TabStripPlacement="Left" Padding="0,5,0,0" >
+						<TabControl.Template>
+							<ControlTemplate TargetType="TabControl">
+								<Grid>
+									<Grid.ColumnDefinitions>
+										<ColumnDefinition Width="Auto" />
+										<ColumnDefinition />
+									</Grid.ColumnDefinitions>
+									<ScrollViewer VerticalScrollBarVisibility="Auto" >
+										<TabPanel x:Name="HeaderPanel"
+											  Panel.ZIndex ="1" 
+											  KeyboardNavigation.TabIndex="1"
+											  Grid.Column="0"
+											  Grid.Row="0"
+											  Margin="2,2,2,0"
+											  IsItemsHost="true"/>
+									</ScrollViewer>
+									<ContentPresenter x:Name="PART_SelectedContentHost"
+										  SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"
+										  Margin="{TemplateBinding Padding}"
+										  ContentSource="SelectedContent" Grid.Column="1"/>
+								</Grid>
+							</ControlTemplate>
+						</TabControl.Template>
+						<TabControl.Resources>
+							<CollectionViewSource x:Key="TemplateTabs" Source="{Binding Templates}"/>
+							<DataTemplate DataType="{x:Type vdata:TemplateEditorData}">
+								<c:TemplateEditorControl DataContext="{Binding}" TemplateData="{Binding}" />
+							</DataTemplate>
+							<Style TargetType="{x:Type TabItem}">
+								<Setter Property="Header" Value="{Binding Path=Name}" />
+							</Style>
+							<Style TargetType="{x:Type c:TemplateEditorControl}">
 							
-						</Style>
-					</TabControl.Resources>
-					<TabControl.ItemsSource>
-						<CompositeCollection>
-							<CollectionContainer Collection="{Binding Source={StaticResource TemplateTabs}}" />
-							
-						</CompositeCollection>
-					</TabControl.ItemsSource>
-				</TabControl>
+							</Style>
+						</TabControl.Resources>
+						<TabControl.ItemsSource>
+							<CompositeCollection>
+								<CollectionContainer Collection="{Binding Source={StaticResource TemplateTabs}}" />
+							</CompositeCollection>
+						</TabControl.ItemsSource>
+					</TabControl>
+				</Grid>
 			</TabItem>
 			<TabItem x:Name="KeywordsTab" Header="Keywords">
 				<TabItem.Resources>
