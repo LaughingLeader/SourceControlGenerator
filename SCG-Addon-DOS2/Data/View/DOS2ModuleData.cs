@@ -36,17 +36,6 @@ namespace LL.SCG.DOS2.Data.View
 			}
 		}
 
-		public DOS2ModuleData() : base("DOS2", "DivinityOriginalSin2")
-		{
-			ManageButtonsText = "Select a Project";
-			AvailableProjectsToggleText = "Hide Available Projects";
-
-			ManagedProjects = new ObservableCollection<ModProjectData>();
-			ModProjects = new ObservableCollection<ModProjectData>();
-			NewProjects = new ObservableCollection<AvailableProjectViewData>();
-		}
-
-
 		private ManagedProjectsData managedProjectsData;
 
 		public ManagedProjectsData ManagedProjectsData
@@ -64,5 +53,15 @@ namespace LL.SCG.DOS2.Data.View
 		public ObservableCollection<ModProjectData> ModProjects { get; set; }
 
 		public ObservableCollection<AvailableProjectViewData> NewProjects { get; set; }
+
+		public DOS2ModuleData() : base("DOS2", "DivinityOriginalSin2")
+		{
+			ManageButtonsText = "Select a Project";
+			AvailableProjectsToggleText = "Hide Available Projects";
+
+			ManagedProjects = new ObservableCollection<ModProjectData>();
+			ModProjects = new ObservableCollection<ModProjectData>();
+			NewProjects = new ObservableCollection<AvailableProjectViewData>();
+		}
 	}
 }

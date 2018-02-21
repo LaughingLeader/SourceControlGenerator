@@ -77,8 +77,16 @@ namespace LL.SCG.Windows
 				for (var i = 0; i < modules.Length; i++)
 				{
 					var module = modules[i];
+					Log.Here().Important("Module {0} found. Attempting to initialize.", module.Name);
 					//Assembly.LoadFrom(module.FullName);
-					Loader.Call(AppDomain.CurrentDomain, module.FullName, "LL.SCG.AddonModule", "Init");
+					try
+					{
+						Loader.Call(AppDomain.CurrentDomain, module.FullName, "LL.SCG.AddonModule", "Init");
+					}
+					catch(Exception ex)
+					{
+						Log.Here().Error("Error loading module file {0}: {1}", module.Name, ex.ToString());
+					}
 				}
 			}
 		}
@@ -102,7 +110,7 @@ namespace LL.SCG.Windows
 				Log.Here().Activity("Loaded project view for module.");
 
 
-				if (Data != null) Log.Here().Important("Test: {0}", Data.Templates.ToString());
+				if (Data != null) Log.Here().Important("Test: {0}", Data.KeyList.Count);
 
 				DataContext = null;
 				DataContext = Controller.Data;

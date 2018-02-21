@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using LL.SCG.Extensions;
 
 namespace LL.SCG.Data
 {
@@ -50,13 +51,21 @@ namespace LL.SCG.Data
 
 		public void ResetToDefault()
 		{
-			if(keywords == null) keywords = new ObservableCollection<KeywordData>();
+			if(Keywords == null) Keywords = new ObservableCollection<KeywordData>();
 			if (Keywords.Count > 0) Keywords.Clear();
 			Keywords.Add(new KeywordData());
 			Keywords.Add(new KeywordData());
 			Keywords.Add(new KeywordData());
 
 			DateCustom = "MMMM dd, yyyy";
+		}
+
+		public void RemoveEmpty()
+		{
+			if(Keywords != null && Keywords.Count > 0)
+			{
+				Keywords.RemoveAll(k => k.KeywordValue == "");
+			}
 		}
 	}
 }

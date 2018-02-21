@@ -385,7 +385,7 @@ namespace LL.SCG.Core
 			return projectViewControl;
 		}
 
-		private void AddKeywords()
+		private void InitModuleKeywords()
 		{
 			Data.KeyList.Add(new KeywordData()
 			{
@@ -445,6 +445,8 @@ namespace LL.SCG.Core
 
 		public void TestView()
 		{
+			Data.UserKeywords.RemoveEmpty();
+
 			for (int i = 0; i < 50; i++)
 			{
 				string testStr = "test_" + i;
@@ -491,8 +493,10 @@ namespace LL.SCG.Core
 
 		public void Start()
 		{
+			InitModuleKeywords();
+
 			DOS2Commands.LoadAll(Data);
-			TestView();
+			//TestView();
 		}
 
 	}

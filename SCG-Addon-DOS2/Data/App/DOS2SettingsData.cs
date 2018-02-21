@@ -18,6 +18,7 @@ namespace LL.SCG.DOS2.Data.App
 
 		private string dataDirectory;
 
+		[VisibleToView("Data Directory", Enum.FileBrowseType.Directory)]
 		public string DataDirectory
 		{
 			get { return dataDirectory; }
@@ -30,6 +31,7 @@ namespace LL.SCG.DOS2.Data.App
 
 		private string directoryLayoutFile;
 
+		[VisibleToView("Directory Layout", Enum.FileBrowseType.File)]
 		public string DirectoryLayoutFile
 		{
 			get { return directoryLayoutFile; }

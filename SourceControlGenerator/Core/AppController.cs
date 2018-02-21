@@ -77,7 +77,7 @@ namespace LL.SCG.Core
 			_instance.ProjectControllers.Add(Name, projectController);
 			projectController.MainAppData = _instance.Data;
 
-			Log.Here().Important("Registered addon {0}", Name);
+			Log.Here().Important("Registered controller for module {0}.", Name);
 		}
 
 		public AppController(MainWindow MainAppWindow)

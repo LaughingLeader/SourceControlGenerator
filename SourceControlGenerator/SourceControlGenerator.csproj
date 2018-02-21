@@ -96,6 +96,8 @@
     <Compile Include="Data\App\ManagedProjectsData.cs" />
     <Compile Include="Data\View\ModuleData.cs" />
     <Compile Include="Data\View\SettingsEntryData.cs" />
+    <Compile Include="Extensions\AttributeExtensions.cs" />
+    <Compile Include="Extensions\ObservableCollectionExtensions.cs" />
     <Compile Include="FileGen\JsonInterface.cs" />
     <Compile Include="Interfaces\IModuleData.cs" />
     <Compile Include="Interfaces\IProjectData.cs" />
