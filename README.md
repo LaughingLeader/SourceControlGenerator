@@ -1,7 +1,7 @@
-Divinity: Original Sin 2 Source Control
+Source Control Generator
 =======
 
-DOS2 Source Control is an unofficial program designed to ease effort in creating git repositories and backups of your mod projects.
+Source Control Generator is a program designed to ease effort in creating git repositories and backups of your projects.
 
 ### Features:
 * Easy Git Repository Creation

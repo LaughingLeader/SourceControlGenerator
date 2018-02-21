@@ -1,0 +1,29 @@
+﻿<UserControl x:Class="LL.SCG.Controls.TemplateKeywordControl"
+			 xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+			 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+			 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+			 xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+			 xmlns:local="clr-namespace:LL.SCG.Controls"
+			 mc:Ignorable="d" 
+			 d:DesignHeight="300" d:DesignWidth="300"
+			 x:Name="TemplateKeywordMain"
+			 >
+	<Grid>
+		<Grid.ColumnDefinitions>
+			<ColumnDefinition Width="150"/>
+			<ColumnDefinition Width="*"/>
+		</Grid.ColumnDefinitions>
+		<Grid.Resources>
+			<Style TargetType="TextBox">
+				<Setter Property="Padding" Value="2" />
+				<Setter Property="BorderBrush">
+					<Setter.Value>
+						<SolidColorBrush Color="{x:Static SystemColors.ControlLightColor}" />
+					</Setter.Value>
+				</Setter>
+			</Style>
+		</Grid.Resources>
+		<TextBox Grid.Column="0" x:Name="KeywordNameBox" BorderThickness="1,0.5" Text="{Binding KeywordName, ElementName=TemplateKeywordMain}" IsReadOnly="{Binding KeywordNameReadOnly, ElementName=TemplateKeywordMain}" Foreground="#FF415AF9" FontFamily="Neuton" FontWeight="Bold" />
+		<TextBox Grid.Column="1" x:Name="KeywordValueBox" BorderThickness="0,0.5,1,0.5" Text="{Binding KeywordValue, ElementName=TemplateKeywordMain}" IsReadOnly="{Binding KeywordValueReadOnly, ElementName=TemplateKeywordMain}" FontFamily="Neuton" />
+	</Grid>
+</UserControl>

@@ -1,0 +1,124 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{7653F93F-78A9-4D82-9289-C40FBD3FF3F6}</ProjectGuid>
+    <OutputType>library</OutputType>
+    <RootNamespace>LL.SCG.DOS2</RootNamespace>
+    <AssemblyName>DOS2</AssemblyName>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xaml">
+      <RequiredTargetFramework>4.0</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="WindowsBase" />
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AddonModule.cs" />
+    <Compile Include="Controls\ProjectEntryControl.xaml.cs">
+      <DependentUpon>ProjectEntryControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\ProjectViewControl.xaml.cs">
+      <DependentUpon>ProjectViewControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Core\DOS2Commands.cs" />
+    <Compile Include="Core\DOS2DefaultPaths.cs" />
+    <Compile Include="Core\DOS2ProjectController.cs" />
+    <Compile Include="Data\App\DOS2SettingsData.cs" />
+    <Compile Include="Data\View\DOS2ModuleData.cs" />
+    <Compile Include="Data\View\ModProjectData.cs" />
+    <Compile Include="Data\Xml\DependencyInfo.cs" />
+    <Compile Include="Data\Xml\ModuleInfo.cs" />
+    <Compile Include="Data\Xml\ProjectInfo.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\SourceControlGenerator\SourceControlGenerator.csproj">
+      <Project>{e96f2eeb-e207-4ab6-9b85-f86b3f386117}</Project>
+      <Name>SourceControlGenerator</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup />
+  <ItemGroup>
+    <Resource Include="Resources\DirectoryLayout.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\DefaultAttributes.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\DefaultChangelog.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\DefaultGitIgnore.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\DefaultReadme.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Page Include="Controls\ProjectEntryControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Controls\ProjectViewControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>echo f | xcopy "$(TargetDir)$(TargetFileName)" "$(SolutionDir)Modules" /Y</PostBuildEvent>
+  </PropertyGroup>
+</Project>
