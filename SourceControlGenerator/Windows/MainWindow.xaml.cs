@@ -368,11 +368,18 @@ namespace LL.SCG.Windows
 
 		private void SettingsDataGrid_Selected(object sender, RoutedEventArgs e)
 		{
-			if(e.OriginalSource.GetType() == typeof(DataGridCell))
-			{
-				DataGrid grid = (DataGrid)sender;
-				grid.BeginEdit(e);
-			}
+			
+				
+		}
+
+		private void SettingsDataGrid_CurrentCellChanged(object sender, EventArgs e)
+		{
+			
+		}
+
+		private void SettingsDataGrid_GotFocus(object sender, RoutedEventArgs e)
+		{
+			
 		}
 	}
 }

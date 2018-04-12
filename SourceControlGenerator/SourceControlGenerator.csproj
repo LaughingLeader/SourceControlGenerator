@@ -92,6 +92,7 @@
     <Compile Include="Converters\EnumDescriptionTypeConverter.cs" />
     <Compile Include="Converters\EnumToCollectionConverter.cs" />
     <Compile Include="Converters\FooterOutputColorConverter.cs" />
+    <Compile Include="Converters\ListViewStarWidthConverter.cs" />
     <Compile Include="Converters\LogTypeColorConverter.cs" />
     <Compile Include="Controls\PaddedGridViewColumnHeader.cs" />
     <Compile Include="Controls\TemplateEditorControl.xaml.cs">
@@ -140,6 +141,13 @@
     <Compile Include="Data\View\MainAppData.cs" />
     <Compile Include="Data\App\ModuleSettingsData.cs" />
     <Compile Include="Interfaces\IProjectController.cs" />
+    <Compile Include="ListViewLayoutManager\ConverterGridViewColumn.cs" />
+    <Compile Include="ListViewLayoutManager\FixedColumn.cs" />
+    <Compile Include="ListViewLayoutManager\ImageGridViewColumn.cs" />
+    <Compile Include="ListViewLayoutManager\LayoutColumn.cs" />
+    <Compile Include="ListViewLayoutManager\ListViewLayoutManager.cs" />
+    <Compile Include="ListViewLayoutManager\ProportionalColumn.cs" />
+    <Compile Include="ListViewLayoutManager\RangeColumn.cs" />
     <Compile Include="Modules\Loader.cs" />
     <Compile Include="Util\EnumHelper.cs" />
     <Compile Include="Util\JunctionHelper.cs" />
@@ -266,6 +274,7 @@
   <ItemGroup>
     <None Include="Resources\Templates.xml" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PreBuildEvent>xcopy "$(SolutionDir)Modules\*.*" "$(TargetDir)Modules" /Y</PreBuildEvent>

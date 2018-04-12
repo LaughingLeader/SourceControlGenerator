@@ -6,8 +6,9 @@
 			 xmlns:local="clr-namespace:LL.SCG.Controls"
 			 mc:Ignorable="d" 
 			 d:DesignHeight="300" d:DesignWidth="700"
+			 Width="Auto"
 			 x:Name="FileBrowser">
-	<Grid MaxHeight="20" >
+	<Grid MaxHeight="20" Width="Auto" HorizontalAlignment="Stretch" >
 		<Grid.ColumnDefinitions>
 			<ColumnDefinition Width="*" />
 			<ColumnDefinition Width="Auto" />
