@@ -282,7 +282,7 @@ namespace LL.SCG.Core
 
 		public void LoadDataDirectory()
 		{
-			if (String.IsNullOrEmpty(Data.Settings.DataDirectory))
+			if (!FileCommands.IsValidPath(Data.Settings.DataDirectory))
 			{
 				Log.Here().Important("DOS2 data directory not found. Reverting to default.");
 				string dataDirectory = Helpers.DOS2.GetInstallPath();
@@ -312,7 +312,7 @@ namespace LL.SCG.Core
 			string layoutFile = "";
 			string layoutFileContents = "";
 
-			if (MainAppData.AppSettings != null && File.Exists(Data.Settings.DirectoryLayoutFile))
+			if (File.Exists(Data.Settings.DirectoryLayoutFile))
 			{
 				Log.Here().Activity("DirectoryLayout file found at {0}. Reading directory layout.", Data.Settings.DirectoryLayoutFile);
 
@@ -336,10 +336,7 @@ namespace LL.SCG.Core
 					FileCommands.WriteToFile(DOS2DefaultPaths.DirectoryLayout(Data), layoutFileContents);
 				}
 
-				if (MainAppData.AppSettings != null)
-				{
-					Data.Settings.DirectoryLayoutFile = DOS2DefaultPaths.DirectoryLayout(Data);
-				}
+				Data.Settings.DirectoryLayoutFile = DOS2DefaultPaths.DirectoryLayout(Data);
 			}
 
 			if (!String.IsNullOrEmpty(layoutFile) && File.Exists(layoutFile))
@@ -445,6 +442,7 @@ namespace LL.SCG.Core
 
 		public void TestView()
 		{
+			/*
 			Data.UserKeywords.RemoveEmpty();
 
 			for (int i = 0; i < 50; i++)
@@ -466,6 +464,7 @@ namespace LL.SCG.Core
 				};
 				Data.UserKeywords.Keywords.Add(kdata);
 			}
+			*/
 
 			Data.NewProjects.Add(new AvailableProjectViewData()
 			{
@@ -493,10 +492,13 @@ namespace LL.SCG.Core
 
 		public void Start()
 		{
+			LoadDataDirectory();
+			LoadDirectoryLayout();
 			InitModuleKeywords();
 
 			DOS2Commands.LoadAll(Data);
-			//TestView();
+
+			TestView();
 		}
 
 	}

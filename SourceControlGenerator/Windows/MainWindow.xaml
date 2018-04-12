@@ -17,6 +17,7 @@
 		<cv:EmptyListVisibilityConverter x:Key="EmptyListVisibilityConverter"/>
 		<cv:FooterOutputColorConverter x:Key="FooterOutputColorConverter"/>
 		<cv:SettingsAttributeConverter x:Key="SettingsAttributeConverter"/>
+		<cv:SettingsAttributeValueControlConverter x:Key="SettingsAttributeValueControlConverter"/>
 		<BooleanToVisibilityConverter  x:Key="BoolToVisibilityConverter"/>
 		<CollectionViewSource x:Key="ActiveProjectsViewSource" CollectionViewType="ListCollectionView"/>
 		<CollectionViewSource x:Key="ManagedProjectsViewSource" CollectionViewType="ListCollectionView"/>
@@ -540,16 +541,58 @@
 				</Grid>
 			</TabItem>
 			<TabItem x:Name="Tab_Settings" Header="Settings">
-				<ScrollViewer VerticalScrollBarVisibility="Auto">
-					<DataGrid x:Name="SettingsDataGrid" ItemsSource="{Binding ModuleSettings, Converter={StaticResource SettingsAttributeConverter}}" AutoGenerateColumns="False" BorderBrush="{x:Null}" BorderThickness="0" >
+				<ScrollViewer VerticalScrollBarVisibility="Auto" Padding="0">
+					<DataGrid x:Name="SettingsDataGrid" Padding="10,0,10,0" ItemsSource="{Binding ModuleSettings, Converter={StaticResource SettingsAttributeConverter}}" 
+							  AutoGenerateColumns="False" CanUserAddRows="False" CanUserResizeColumns="False" CanUserResizeRows="False"
+							  CanUserSortColumns="True" CanUserReorderColumns="True" 
+							  BorderBrush="{x:Null}" BorderThickness="0"
+							  DataGridCell.Selected="SettingsDataGrid_Selected"
+							  >
 						<DataGrid.Resources>
 							<Style x:Key="ColumnElementStyle" TargetType="TextBlock">
 								<Setter Property="Margin" Value="5,0,10,0" />
 							</Style>
+
+							<Style x:Key="SettingsCellStyle" TargetType="{x:Type DataGridCell}">
+								<!--<Setter Property="IsTabStop" Value="False" />-->
+								<Setter Property="Template">
+									<Setter.Value>
+										<ControlTemplate TargetType="{x:Type DataGridCell}">
+											<ContentControl Content="{Binding}">
+												<ContentControl.Resources>
+													<Style TargetType="ContentControl">
+														<Style.Triggers>
+															<DataTrigger Binding="{Binding Converter={StaticResource SettingsAttributeValueControlConverter}}" Value="{x:Type c:FileBrowseControl}">
+																<Setter Property="ContentTemplate">
+																	<Setter.Value>
+																		<DataTemplate>
+																			<c:FileBrowseControl OpenFileText="{Binding OpenFileText}" FileBrowseType="{Binding FileBrowseType}" FileLocationText="{Binding Path=Value, UpdateSourceTrigger=PropertyChanged}"
+																			OnOpen="{Binding OnOpened}"/>
+																		</DataTemplate>
+																	</Setter.Value>
+																</Setter>
+															</DataTrigger>
+															<DataTrigger Binding="{Binding Converter={StaticResource SettingsAttributeValueControlConverter}}" Value="{x:Type TextBox}">
+																<Setter Property="ContentTemplate">
+																	<Setter.Value>
+																		<DataTemplate>
+																			<TextBox Text="{Binding Path=Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+																		</DataTemplate>
+																	</Setter.Value>
+																</Setter>
+															</DataTrigger>
+														</Style.Triggers>
+													</Style>
+												</ContentControl.Resources>
+											</ContentControl>
+										</ControlTemplate>
+									</Setter.Value>
+								</Setter>
+							</Style>
 						</DataGrid.Resources>
 						<DataGrid.Columns>
 							<DataGridTextColumn Header="Setting Name" Binding="{Binding Name}" Width="Auto" ElementStyle="{StaticResource ColumnElementStyle}" />
-							<DataGridTextColumn Header="Value" Binding="{Binding ViewType}" Width="Auto" ElementStyle="{StaticResource ColumnElementStyle}" />
+							<DataGridTemplateColumn Header="Value" Width="*" CellStyle="{StaticResource SettingsCellStyle}" />
 						</DataGrid.Columns>
 					</DataGrid>
 				</ScrollViewer>

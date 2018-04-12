@@ -365,5 +365,14 @@ namespace LL.SCG.Windows
 		{
 			
 		}
+
+		private void SettingsDataGrid_Selected(object sender, RoutedEventArgs e)
+		{
+			if(e.OriginalSource.GetType() == typeof(DataGridCell))
+			{
+				DataGrid grid = (DataGrid)sender;
+				grid.BeginEdit(e);
+			}
+		}
 	}
 }

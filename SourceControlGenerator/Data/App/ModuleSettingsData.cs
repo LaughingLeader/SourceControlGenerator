@@ -53,6 +53,10 @@ namespace LL.SCG.Data
 		{
 			name = visibleName;
 			fileBrowseType = browseType;
+			if(fileBrowseType != FileBrowseType.Disabled)
+			{
+				viewType = SettingsViewPropertyType.Browser;
+			}
 			visible = fileBrowseType != FileBrowseType.Disabled;
 		}
 
@@ -62,6 +66,13 @@ namespace LL.SCG.Data
 			this.viewType = viewType;
 			visible = viewType != SettingsViewPropertyType.None;
 			fileBrowseType = browseType;
+		}
+
+		public VisibleToViewAttribute()
+		{
+			viewType = SettingsViewPropertyType.None;
+			fileBrowseType = FileBrowseType.Disabled;
+			visible = false;
 		}
 	}
 

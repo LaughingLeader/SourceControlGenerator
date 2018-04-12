@@ -13,6 +13,7 @@ using Ookii.Dialogs.Wpf;
 using LL.SCG.Enum;
 using System.Windows.Input;
 using LL.SCG.Core;
+using Microsoft.WindowsAPICodePack.Dialogs;
 
 namespace LL.SCG.Controls
 {
@@ -124,18 +125,7 @@ namespace LL.SCG.Controls
 
 			if (String.IsNullOrEmpty(LastFileLocation))
 			{
-				if (String.IsNullOrEmpty(FileLocationText))
-				{
-					if (FileBrowseType == FileBrowseType.Directory)
-					{
-						LastFileLocation = Path.GetFullPath(Assembly.GetExecutingAssembly().Location);
-					}
-					else
-					{
-						LastFileLocation = Directory.GetParent(Assembly.GetExecutingAssembly().Location).FullName;
-					}
-				}
-				else
+				if (!String.IsNullOrEmpty(FileLocationText))
 				{
 					if(FileBrowseType == FileBrowseType.File)
 					{
@@ -155,6 +145,40 @@ namespace LL.SCG.Controls
 					}
 				}
 			}
+			else
+			{
+				//Confirm to the browse type
+				if (FileBrowseType == FileBrowseType.File)
+				{
+					var parentDirectory = new DirectoryInfo(LastFileLocation);
+					if (parentDirectory != null)
+					{
+						LastFileLocation = parentDirectory.Parent.FullName;
+					}
+				}
+				else
+				{
+					var directory = new DirectoryInfo(LastFileLocation);
+					if (directory != null)
+					{
+						LastFileLocation = directory.FullName;
+					}
+				}
+			}
+
+			if(!FileCommands.IsValidPath(LastFileLocation))
+			{
+				if (FileBrowseType == FileBrowseType.Directory)
+				{
+					LastFileLocation = Path.GetFullPath(Assembly.GetExecutingAssembly().Location);
+				}
+				else
+				{
+					LastFileLocation = Directory.GetParent(Assembly.GetExecutingAssembly().Location).FullName;
+				}
+			}
+
+			Log.Here().Activity($"LastFileLocation is {LastFileLocation} FileLocationText: {FileLocationText}");
 
 			if (FileBrowseType == FileBrowseType.File)
 			{
@@ -192,6 +216,7 @@ namespace LL.SCG.Controls
 			}
 			else if (FileBrowseType == FileBrowseType.Directory)
 			{
+				/*
 				VistaFolderBrowserDialog folderDialog = new VistaFolderBrowserDialog();
 				folderDialog.SelectedPath = LastFileLocation;
 				folderDialog.Description = OpenFileText;
@@ -199,13 +224,25 @@ namespace LL.SCG.Controls
 				folderDialog.ShowNewFolderButton = true;		
 
 				Nullable<bool> result = folderDialog.ShowDialog(parentWindow);
+				*/
 
-				if(result == true)
+				var openFolder = new CommonOpenFileDialog();
+				openFolder.AllowNonFileSystemItems = true;
+				openFolder.Multiselect = false;
+				openFolder.IsFolderPicker = true;
+				openFolder.Title = OpenFileText;
+				openFolder.DefaultFileName = "";
+				openFolder.InitialDirectory = LastFileLocation;
+				openFolder.DefaultDirectory = Path.GetFullPath(Assembly.GetExecutingAssembly().Location);
+
+				var result = openFolder.ShowDialog(parentWindow);
+
+				if (result == CommonFileDialogResult.Ok)
 				{
-					string path = folderDialog.SelectedPath;
+					string path = openFolder.FileNames.First();
 					if (FileCommands.PathIsRelative(path))
 					{
-						path = folderDialog.SelectedPath.Replace(Directory.GetCurrentDirectory(), "");
+						path = path.Replace(Directory.GetCurrentDirectory(), "");
 					}
 
 					FileLocationText = path;

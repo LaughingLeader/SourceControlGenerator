@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
@@ -19,50 +20,57 @@ namespace LL.SCG.Converters
 		{
 			List<SettingsEntryData> settingsList = new List<SettingsEntryData>();
 
-			settingsList.Add(new SettingsEntryData()
-			{
-				Name = "Test",
-				FileBrowseType = FileBrowseType.Directory,
-				ViewType = SettingsViewPropertyType.Browser
-			});
-
 			if (value != null)
 			{
-				FieldInfo fi = value.GetType().GetField(value.ToString());
-				if (fi != null)
+				try
 				{
-					var attributes = (VisibleToViewAttribute[])fi.GetCustomAttributes(typeof(VisibleToViewAttribute), false);
-					if(attributes != null && attributes.Length > 0)
-					{
-						for(var i = 0; i < attributes.Length; i++)
-						{
-							var attribute = attributes[i];
-							if(attribute.Visible)
-							{
-								settingsList.Add(new SettingsEntryData()
-								{
-									Name = attribute.Name,
-									FileBrowseType = attribute.FileBrowseType,
-									ViewType = attribute.ViewType
-								});
-							}
+					Type valType = value.GetType();
+					var propInfo = valType.GetProperties();
 
-							Log.Here().Important("Adding attribute: {0} {1} {2}", attribute.Name, attribute.FileBrowseType, attribute.ViewType);
+					foreach(PropertyInfo prop in propInfo)
+					{
+						var attributes = Attribute.GetCustomAttributes(prop, typeof(VisibleToViewAttribute), false);
+
+						if (attributes != null && attributes.Count() > 0)
+						{
+							foreach (var attribute in attributes)
+							{
+								if (attribute != null && attribute is VisibleToViewAttribute viewAttribute)
+								{
+									if(viewAttribute.Visible)
+									{
+										settingsList.Add(new SettingsEntryData()
+										{
+											Name = viewAttribute.Name,
+											FileBrowseType = viewAttribute.FileBrowseType,
+											ViewType = viewAttribute.ViewType,
+											Source = value,
+											SourceProperty = prop
+										});
+										//Log.Here().Important("Adding attribute: {0} {1} {2}", viewAttribute.Name, viewAttribute.FileBrowseType, viewAttribute.ViewType);
+									}
+								}
+								else
+								{
+									Log.Here().Error("Problem adding attribute: Casting to VisibleToViewAttribute failed.");
+								}
+
+							}
+						}
+						else
+						{
+							//Log.Here().Error($"Problem reading attributes from settings class: {value.GetType()} | {attributes.Count()}");
 						}
 					}
-					else
-					{
-						Log.Here().Error("Problem reading attributes from settings class");
-					}
 				}
-				else
+				catch(Exception ex)
 				{
-					Log.Here().Error("Field info is null");
+					Log.Here().Error($"Error parsing attributes by reflection: {ex.ToString()}");
 				}
 			}
 			else
 			{
-				Log.Here().Error("Settings value is null");
+				Log.Here().Error("Converter value is null!");
 			}
 
 			return settingsList;
