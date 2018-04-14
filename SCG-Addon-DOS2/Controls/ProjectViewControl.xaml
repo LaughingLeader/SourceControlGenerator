@@ -4,11 +4,15 @@
 			 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
 			 xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
 			 xmlns:local="clr-namespace:LL.SCG.DOS2.Controls"
+			 xmlns:core="clr-namespace:LL.SCG.DOS2.Core"
+			 xmlns:c="clr-namespace:LL.SCG.Controls;assembly=SourceControlGenerator"
+			 xmlns:cb="clr-namespace:LL.SCG.Controls.Behavior;assembly=SourceControlGenerator"
 			 xmlns:cv="clr-namespace:LL.SCG.Converters;assembly=SourceControlGenerator"
 			 mc:Ignorable="d" 
 			 d:DesignHeight="500" d:DesignWidth="900">
 	<UserControl.Resources>
 		<cv:EmptyListVisibilityConverter x:Key="EmptyListVisibilityConverter"/>
+		<cv:NewlineStringConverter x:Key="NewlineStringConverter"/>
 	</UserControl.Resources>
 	<Grid x:Name="Projects_ParentGrid" Width="Auto" Height="Auto">
 		<Grid.ColumnDefinitions>
@@ -39,10 +43,12 @@
 						<RowDefinition Height="Auto"/>
 						<RowDefinition Height="Auto"/>
 					</Grid.RowDefinitions>
-					<Label Content="Available Projects" HorizontalAlignment="Center" VerticalAlignment="Center" Grid.Row="0" Margin="0" />
+					<Label Content="Available Projects" HorizontalAlignment="Center" VerticalAlignment="Center" Grid.Row="0" Margin="0" ToolTip="{Binding Source={x:Static core:DOS2Tooltips.AvailableProjects}, Converter={StaticResource NewlineStringConverter}}" />
 					<Grid Grid.Row="1"  MaxHeight="300" Width="200" MaxWidth="200">
 						<Grid>
-							<ListBox x:Name="AvailableProjectsList" ItemsSource="{Binding NewProjects}" HorizontalContentAlignment="Left" SelectionMode="Extended" SelectionChanged="AvailableProjectsList_SelectionChanged" ScrollViewer.HorizontalScrollBarVisibility="Auto" ScrollViewer.VerticalScrollBarVisibility="Auto">
+							<ListBox x:Name="AvailableProjectsList" ItemsSource="{Binding NewProjects}" HorizontalContentAlignment="Left" SelectionMode="Extended" SelectionChanged="AvailableProjectsList_SelectionChanged" MouseRightButtonUp="AvailableProjectsList_MouseRightButtonUp"
+									 ScrollViewer.HorizontalScrollBarVisibility="Auto" ScrollViewer.VerticalScrollBarVisibility="Auto" cb:ListBoxSelectionBehavior.ClickSelection="True"
+									 >
 								<ListBox.ItemContainerStyle>
 									<Style TargetType="ListBoxItem">
 										<Setter Property="Padding" Value="5" />
@@ -81,24 +87,35 @@
 				</Grid>
 				<Border Grid.Row="1" BorderThickness="1" BorderBrush="{DynamicResource {x:Static SystemColors.ControlLightBrushKey}}">
 					<ScrollViewer x:Name="ProjectsDataGridScrollViewer" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" >
-						<DataGrid x:Name="ManagedProjectsDataGrid" ItemsSource="{Binding ManagedProjects}" AutoGenerateColumns="False" IsReadOnly="True" SelectionChanged="ManagedProjectsDataGrid_SelectionChanged" BorderBrush="{x:Null}" BorderThickness="0" >
+						<DataGrid x:Name="ManagedProjectsDataGrid" ItemsSource="{Binding ManagedProjects}" AutoGenerateColumns="False" IsReadOnly="True" SelectionChanged="ManagedProjectsDataGrid_SelectionChanged" BorderBrush="{x:Null}" BorderThickness="0"  
+								  CanUserAddRows="False" EnableRowVirtualization="False" Loaded="ManagedProjectsDataGrid_Loaded" ColumnWidth="Auto"
+								  >
 							<DataGrid.Resources>
 								<Style x:Key="ColumnElementStyle" TargetType="TextBlock">
 									<Setter Property="Margin" Value="5,0,10,0" />
 								</Style>
+								<c:BindingProxy x:Key="Proxy" Data="{Binding}" />
+								<Style x:Key="ProjectsHeaderStyle" TargetType="DataGridColumnHeader">
+									<Setter Property="HorizontalContentAlignment" Value="Center" />
+								</Style>
 							</DataGrid.Resources>
 							<DataGrid.Columns>
-								<DataGridTemplateColumn>
+								<DataGridTemplateColumn MinWidth="25" CanUserResize="False"  HeaderStyle="{StaticResource ProjectsHeaderStyle}"  >
 									<DataGridTemplateColumn.Header>
 										<CheckBox Checked="ManagedProjects_SelectAll" Unchecked="ManagedProjects_SelectNone" ToolTip="Select/Deselect All" />
 									</DataGridTemplateColumn.Header>
-									<DataGridTemplateColumn.CellTemplate>
+									<DataGridTemplateColumn.CellStyle>
+										<Style TargetType="{x:Type DataGridCell}">
+											<Setter Property="Margin" Value="0" />
+										</Style>
+									</DataGridTemplateColumn.CellStyle>
+								<DataGridTemplateColumn.CellTemplate>
 										<DataTemplate>
-											<CheckBox IsChecked="{Binding Selected}" />
+											<CheckBox IsChecked="{Binding Selected}" HorizontalAlignment="Center" VerticalAlignment="Center" />
 										</DataTemplate>
 									</DataGridTemplateColumn.CellTemplate>
 								</DataGridTemplateColumn>
-								<DataGridTemplateColumn Width="Auto" >
+								<DataGridTemplateColumn MinWidth="60"  HeaderStyle="{StaticResource ProjectsHeaderStyle}" CanUserResize="False" CanUserSort="False" >
 									<DataGridTemplateColumn.HeaderTemplate>
 										<DataTemplate>
 											<TextBlock Text="Shortcuts" ToolTipService.ToolTip="Project Shortcuts" />
@@ -106,7 +123,7 @@
 									</DataGridTemplateColumn.HeaderTemplate>
 									<DataGridTemplateColumn.CellTemplate>
 										<DataTemplate>
-											<StackPanel Orientation="Horizontal">
+											<StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center" >
 												<StackPanel.Resources>
 													<Style TargetType="Button">
 														<Setter Property="MinHeight" Value="16" />
@@ -115,7 +132,7 @@
 														<Setter Property="MaxWidth" Value="16" />
 													</Style>
 												</StackPanel.Resources>
-												<Button x:Name="Btn_Backup" ToolTip="Open Backup Folder..." >
+												<Button x:Name="Btn_Backup" ToolTip="Open Backup Folder..." Command="{Binding OpenBackupFolder}" >
 													<Image Source="/SourceControlGenerator;component/Resources/Icons/7zipIcon.png" Stretch="UniformToFill"/>
 												</Button>
 												<Button x:Name="Btn_GenGit" IsEnabled="{Binding GitGenerated}" >
@@ -136,14 +153,14 @@
 														</Image.Style>
 													</Image>
 												</Button>
-												<Button x:Name="Btn_DataFolders" ToolTip="Open Data Folder..." >
+												<Button x:Name="Btn_DataFolders" ToolTip="Open Data Folder..." ContextMenuService.PlacementTarget="{Binding RelativeSource={RelativeSource Self}}" Click="SetDataFolderContextMenuTarget" >
 													<Image Source="/SourceControlGenerator;component/Resources/Icons/Folder.png" Stretch="UniformToFill"/>
 													<Button.ContextMenu>
-														<ContextMenu>
-															<MenuItem Header="Open Mods Folder..." />
-															<MenuItem Header="Open Public Folder..." />
-															<MenuItem Header="Open Editor Folder..." />
-															<MenuItem Header="Open Project Folder..." />
+														<ContextMenu DataContext="{Binding PlacementTarget.DataContext, RelativeSource={RelativeSource Self}}">
+															<MenuItem x:Name="Btn_EditorFolder" Header="Open Editor Folder..." Command="{Binding OpenEditorFolder}" />
+															<MenuItem x:Name="Btn_ModsFolder" Header="Open Mods Folder..." Command="{Binding OpenModsFolder}" />
+															<MenuItem x:Name="Btn_ProjectFolder" Header="Open Project Folder..." Command="{Binding OpenProjectFolder}" />
+															<MenuItem x:Name="Btn_PublicFolder" Header="Open Public Folder..." Command="{Binding OpenPublicFolder}" />
 														</ContextMenu>
 													</Button.ContextMenu>
 													<Button.Style>
@@ -176,12 +193,24 @@
 										</DataTemplate>
 									</DataGridTemplateColumn.CellTemplate>
 								</DataGridTemplateColumn>
-								<DataGridTextColumn Header="Name" Binding="{Binding ModuleInfo.Name}" Width="Auto" ElementStyle="{StaticResource ColumnElementStyle}" />
-								<DataGridTextColumn Header="Author" Binding="{Binding ModuleInfo.Author}" ElementStyle="{StaticResource ColumnElementStyle}" />
-								<DataGridTextColumn Header="Version" Binding="{Binding Version}" ElementStyle="{StaticResource ColumnElementStyle}" />
-								<DataGridTextColumn Header="Type" Binding="{Binding ModuleInfo.Type}"  ElementStyle="{StaticResource ColumnElementStyle}" />
-								<DataGridTextColumn Header="Description" Binding="{Binding ModuleInfo.Description}"  ElementStyle="{StaticResource ColumnElementStyle}" />
-								<DataGridTextColumn Header="Last Backup" Binding="{Binding LastBackupText}"  ElementStyle="{StaticResource ColumnElementStyle}" />
+								<DataGridTextColumn Header="Name" Binding="{Binding ModuleInfo.Name}" ElementStyle="{StaticResource ColumnElementStyle}" MinWidth="50" Width="Auto" HeaderStyle="{StaticResource ProjectsHeaderStyle}">
+									<DataGridTextColumn.CellStyle>
+										<Style TargetType="DataGridCell">
+											<Setter Property="ToolTip" Value="{Binding FolderName}" />
+										</Style>
+									</DataGridTextColumn.CellStyle>
+								</DataGridTextColumn>
+								<DataGridTextColumn Header="Author" Binding="{Binding ModuleInfo.Author}" ElementStyle="{StaticResource ColumnElementStyle}" MinWidth="50" HeaderStyle="{StaticResource ProjectsHeaderStyle}" />
+								<DataGridTextColumn Header="Version" Binding="{Binding Version}" ElementStyle="{StaticResource ColumnElementStyle}"  MinWidth="50" HeaderStyle="{StaticResource ProjectsHeaderStyle}" />
+								<DataGridTextColumn Header="Type" Binding="{Binding ModuleInfo.Type}"  ElementStyle="{StaticResource ColumnElementStyle}" MinWidth="40" HeaderStyle="{StaticResource ProjectsHeaderStyle}" />
+								<DataGridTextColumn Header="Description" x:Name="DescriptionColumn" Binding="{Binding ModuleInfo.Description}"  ElementStyle="{StaticResource ColumnElementStyle}" MinWidth="70" HeaderStyle="{StaticResource ProjectsHeaderStyle}">
+									<DataGridTextColumn.CellStyle>
+										<Style TargetType="DataGridCell">
+											<Setter Property="ToolTip" Value="{Binding ModuleInfo.Description}" />
+										</Style>
+									</DataGridTextColumn.CellStyle>
+								</DataGridTextColumn>
+								<DataGridTextColumn Header="Last Backup" Binding="{Binding LastBackupText}"  ElementStyle="{StaticResource ColumnElementStyle}" MinWidth="80" HeaderStyle="{StaticResource ProjectsHeaderStyle}" />
 							</DataGrid.Columns>
 							<DataGrid.CellStyle>
 								<!--Override Highlighting so that its easy to see what is selected even when the control is not focused-->
@@ -220,7 +249,7 @@
 							</Style>
 						</StackPanel.Resources>
 						<Button x:Name="BackupButton" Content="Backup Selected" Click="BackupButton_Click" />
-						<Button x:Name="BackupSeletedButton" Content="Backup Selected To..." Click="BackupSeletedButton_Click" />
+						<Button x:Name="BackupSeletedButton" Content="Backup Selected To..." Click="BackupSelectedButton_Click" />
 						<Button x:Name="GitGenerationButton" Content="Create Git Repos for Selected..." Click="GitGenerationButton_Click" />
 					</StackPanel>
 				</Grid>

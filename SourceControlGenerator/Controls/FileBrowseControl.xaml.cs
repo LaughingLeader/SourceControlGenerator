@@ -14,6 +14,7 @@ using LL.SCG.Enum;
 using System.Windows.Input;
 using LL.SCG.Core;
 using Microsoft.WindowsAPICodePack.Dialogs;
+using LL.SCG.Data.View;
 
 namespace LL.SCG.Controls
 {
@@ -67,7 +68,7 @@ namespace LL.SCG.Controls
 			}
 		}
 
-		public FileBrowseType FileBrowseType
+		public FileBrowseType BrowseType
 		{
 			get { return (FileBrowseType)GetValue(FileBrowseTypeProperty); }
 			set
@@ -82,7 +83,16 @@ namespace LL.SCG.Controls
 
 		public static readonly DependencyProperty FileLocationTextProperty =
 			DependencyProperty.Register("FileLocationText", typeof(string),
-			typeof(FileBrowseControl), new PropertyMetadata(""));
+			typeof(FileBrowseControl), new PropertyMetadata(OnFileLocationChangedCallback));
+
+		private static void OnFileLocationChangedCallback(DependencyObject sender, DependencyPropertyChangedEventArgs e)
+		{
+			FileBrowseControl fileBrowseControl = sender as FileBrowseControl;
+			if (fileBrowseControl != null)
+			{
+				fileBrowseControl.OnFileLocationChanged();
+			}
+		}
 
 		public static readonly DependencyProperty LastFileLocationProperty =
 			DependencyProperty.Register("LastFileLocation", typeof(string),
@@ -97,9 +107,27 @@ namespace LL.SCG.Controls
 			typeof(FileBrowseControl), new PropertyMetadata(""));
 
 		public static readonly DependencyProperty FileBrowseTypeProperty =
-			DependencyProperty.Register("FileBrowseType", typeof(FileBrowseType),
-			typeof(FileBrowseControl), new PropertyMetadata(FileBrowseType.File));
+			DependencyProperty.Register("BrowseType", typeof(FileBrowseType),
+			typeof(FileBrowseControl), new FrameworkPropertyMetadata(FileBrowseType.File, FrameworkPropertyMetadataOptions.AffectsRender, OnBrowseTypeChangedCallback));
 
+		public static void OnBrowseTypeChangedCallback(DependencyObject sender, DependencyPropertyChangedEventArgs e)
+		{
+			FileBrowseControl fileBrowseControl = sender as FileBrowseControl;
+			if (fileBrowseControl != null)
+			{
+				fileBrowseControl.BrowseType = (FileBrowseType)e.NewValue;
+				fileBrowseControl.OnFileLocationChanged();
+			}
+		}
+
+		public FileValidation FileValidation
+		{
+			get { return (FileValidation)GetValue(FileValidationProperty); }
+			set { SetValue(FileValidationProperty, value); }
+		}
+
+		public static readonly DependencyProperty FileValidationProperty =
+			DependencyProperty.Register("FileValidation", typeof(FileValidation), typeof(FileBrowseControl), new PropertyMetadata(FileValidation.None));
 
 		public ICommand OnOpen
 		{
@@ -107,7 +135,6 @@ namespace LL.SCG.Controls
 			set { SetValue(OnOpenProperty, value); }
 		}
 
-		// Using a DependencyProperty as the backing store for OnOpen.  This enables animation, styling, binding, etc...
 		public static readonly DependencyProperty OnOpenProperty =
 			DependencyProperty.Register("OnOpen", typeof(ICommand), typeof(FileBrowseControl), new PropertyMetadata(null));
 
@@ -127,7 +154,7 @@ namespace LL.SCG.Controls
 			{
 				if (!String.IsNullOrEmpty(FileLocationText))
 				{
-					if(FileBrowseType == FileBrowseType.File)
+					if(BrowseType == FileBrowseType.File)
 					{
 						var parentDirectory = new DirectoryInfo(FileLocationText);
 						if(parentDirectory != null)
@@ -148,7 +175,7 @@ namespace LL.SCG.Controls
 			else
 			{
 				//Confirm to the browse type
-				if (FileBrowseType == FileBrowseType.File)
+				if (BrowseType == FileBrowseType.File)
 				{
 					var parentDirectory = new DirectoryInfo(LastFileLocation);
 					if (parentDirectory != null)
@@ -168,7 +195,7 @@ namespace LL.SCG.Controls
 
 			if(!FileCommands.IsValidPath(LastFileLocation))
 			{
-				if (FileBrowseType == FileBrowseType.Directory)
+				if (BrowseType == FileBrowseType.Directory)
 				{
 					LastFileLocation = Path.GetFullPath(Assembly.GetExecutingAssembly().Location);
 				}
@@ -180,7 +207,7 @@ namespace LL.SCG.Controls
 
 			Log.Here().Activity($"LastFileLocation is {LastFileLocation} FileLocationText: {FileLocationText}");
 
-			if (FileBrowseType == FileBrowseType.File)
+			if (BrowseType == FileBrowseType.File)
 			{
 				OpenFileDialog fileDialog = new OpenFileDialog();
 				fileDialog.Title = OpenFileText;
@@ -214,7 +241,7 @@ namespace LL.SCG.Controls
 					}
 				}
 			}
-			else if (FileBrowseType == FileBrowseType.Directory)
+			else if (BrowseType == FileBrowseType.Directory)
 			{
 				/*
 				VistaFolderBrowserDialog folderDialog = new VistaFolderBrowserDialog();
@@ -249,6 +276,59 @@ namespace LL.SCG.Controls
 					LastFileLocation = FileLocationText;
 					OnOpen?.Execute(this);
 				}
+			}
+		}
+
+		public void OnFileLocationChanged()
+		{
+			TextBox textBox = (TextBox)this.FindName("FilePathDisplay");
+
+			FileValidation = FileValidation.None;
+
+			if (!FileCommands.IsValidPath(FileLocationText))
+			{
+				FileValidation = FileValidation.Error;
+			}
+			else
+			{
+				
+				if (BrowseType == FileBrowseType.Directory)
+				{
+					if (!Directory.Exists(FileLocationText))
+					{
+						FileValidation = FileValidation.Warning;
+					}
+				}
+				else if (BrowseType == FileBrowseType.File)
+				{
+					if (!File.Exists(FileLocationText))
+					{
+						FileValidation = FileValidation.Warning;
+					}
+				}
+			}
+
+			if(FileValidation == FileValidation.None)
+			{
+				if(textBox.ToolTip != null)
+				{
+					textBox.ClearValue(TextBox.ToolTipProperty);
+				}
+			}
+			else if (FileValidation == FileValidation.Warning)
+			{
+				if (BrowseType == FileBrowseType.Directory)
+				{
+					textBox.ToolTip = "Warning: Folder not found.";
+				}
+				else if (BrowseType == FileBrowseType.File)
+				{
+					textBox.ToolTip = "Warning: File not found.";
+				}
+			}
+			else if (FileValidation == FileValidation.Error)
+			{
+				textBox.ToolTip = "Error: Path is not valid.";
 			}
 		}
 	}

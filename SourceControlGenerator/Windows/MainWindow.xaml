@@ -10,6 +10,7 @@
 		xmlns:core="clr-namespace:LL.SCG.Core"
 		xmlns:vdata="clr-namespace:LL.SCG.Data.View"
 		xmlns:listview="clr-namespace:Itenso.Windows.Controls.ListViewLayout"
+		xmlns:cb="clr-namespace:LL.SCG.Controls.Behavior"
 		mc:Ignorable="d"
 		Title="DOS2 Source Control Helper" Height="600" Width="1024" Loaded="Window_Loaded" Closing="MainAppWindow_Closing"
 		WindowStartupLocation="CenterOwner"
@@ -541,6 +542,7 @@
 						</StackPanel>
 					</Grid>
 				</Grid>
+				
 			</TabItem>
 			<TabItem x:Name="Tab_Settings" Header="Settings" BorderThickness="0" >
 				<ScrollViewer VerticalScrollBarVisibility="Auto" Padding="0" BorderThickness="0" >
@@ -579,8 +581,9 @@
 																<Setter Property="ContentTemplate">
 																	<Setter.Value>
 																		<DataTemplate>
-																			<c:FileBrowseControl OpenFileText="{Binding OpenFileText}" FileBrowseType="{Binding FileBrowseType}" FileLocationText="{Binding Path=Value, UpdateSourceTrigger=PropertyChanged}"
-																				OnOpen="{Binding OnOpened}"/>
+																			<c:FileBrowseControl OpenFileText="{Binding OpenFileText}" BrowseType="{Binding BrowseType, Mode=TwoWay}" FileLocationText="{Binding Path=Value, UpdateSourceTrigger=PropertyChanged}"
+																				OnOpen="{Binding OnOpened}" Filter="{Binding Filter}"
+																								 />
 																		</DataTemplate>
 																	</Setter.Value>
 																</Setter>

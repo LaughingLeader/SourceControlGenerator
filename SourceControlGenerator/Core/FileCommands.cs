@@ -101,7 +101,7 @@ namespace LL.SCG
 
 			if (path.Length < 3) return false;
 
-						Regex driveCheck = new Regex(@"^[a-zA-Z]:\\$");
+			Regex driveCheck = new Regex(@"^[a-zA-Z]:\\$");
 
 			if (!driveCheck.IsMatch(path.Substring(0, 3)))
 			{
@@ -126,6 +126,37 @@ namespace LL.SCG
 			}
 
 			return true;
+		}
+
+		public static bool IsValidFilePath(string path)
+		{
+			if (String.IsNullOrWhiteSpace(path)) return false;
+
+			//check the path:
+			if (Path.GetInvalidPathChars().Any(x => path.Contains(x)))
+				return false;
+
+			//check the filename (if one can be isolated out):
+			string fileName = Path.GetFileName(path);
+			if (Path.GetInvalidFileNameChars().Any(x => fileName.Contains(x)))
+				return false;
+
+			return true;
+		}
+
+		//private static Regex directoryRegex = new Regex("^([a-zA-Z]:)?(\\\\[^<>:\"/\\\\|?*]+)+\\\\?$");
+
+		public static bool IsValidDirectoryPath(string path)
+		{
+			if (String.IsNullOrWhiteSpace(path)) return false;
+
+			//check the path:
+			if (Path.GetInvalidPathChars().Any(x => path.Contains(x)))
+				return false;
+
+			return true;
+
+			//return directoryRegex.IsMatch(path);
 		}
 
 		public static bool PathIsRelative(string path)

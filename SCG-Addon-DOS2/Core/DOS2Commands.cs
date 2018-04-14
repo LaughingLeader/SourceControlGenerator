@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -48,13 +49,14 @@ namespace LL.SCG.DOS2.Core
 
 			if (!String.IsNullOrEmpty(projectsAppDataPath) && File.Exists(projectsAppDataPath))
 			{
+				//projectsAppDataPath = Path.GetFullPath(projectsAppDataPath);
 				try
 				{
-					Data.ManagedProjectsData = JsonInterface.DeserializeObject<ManagedProjectsData>(File.ReadAllText(projectsAppDataPath));
+					Data.ManagedProjectsData = JsonInterface.DeserializeObject<ManagedProjectsData>(projectsAppDataPath);
 				}
 				catch (Exception ex)
 				{
-					Log.Here().Error("Error deserializing managaed projects data at {0}: {1}", projectsAppDataPath, ex.ToString());
+					Log.Here().Error("Error deserializing managed projects data at {0}: {1}", projectsAppDataPath, ex.ToString());
 				}
 			}
 
@@ -182,6 +184,132 @@ namespace LL.SCG.DOS2.Core
 			}
 
 			return false;
+		}
+
+		private static DOS2ModuleData MainData { get; set; }
+
+		public static void SetData(DOS2ModuleData moduleData)
+		{
+			MainData = moduleData;
+		}
+
+		public static void OpenBackupFolder(ModProjectData modProjectData)
+		{
+			if(MainData != null)
+			{
+				string directory = Path.Combine(Path.GetFullPath(MainData.Settings.BackupRootDirectory), modProjectData.Name);
+				if (!Directory.Exists(directory))
+				{
+					Directory.CreateDirectory(directory);
+				}
+
+				Process.Start(directory);
+			}
+			else
+			{
+				Log.Here().Error($"MainData is null!");
+			}
+		}
+
+		public static void OpenModsFolder(ModProjectData modProjectData)
+		{
+			Log.Here().Activity($"Attempting to open mods folder");
+
+			if (MainData != null)
+			{
+				string startPath = Path.Combine(MainData.Settings.DataDirectory, "Mods");
+				string directory = Path.Combine(Path.GetFullPath(startPath), modProjectData.FolderName);
+
+				Log.Here().Activity($"Attempting to open directory {directory}");
+
+				if (Directory.Exists(directory))
+				{
+					Process.Start(directory);
+				}
+				else
+				{
+					if(Directory.Exists(startPath))
+					{
+						Process.Start(startPath);
+					}
+					else
+					{
+						Log.Here().Error($"Mod directory for project {modProjectData.FolderName} does not exist!");
+					}
+				}
+			}
+		}
+
+		public static void OpenPublicFolder(ModProjectData modProjectData)
+		{
+			if (MainData != null)
+			{
+				string startPath = Path.Combine(MainData.Settings.DataDirectory, "Public");
+				string directory = Path.Combine(Path.GetFullPath(startPath), modProjectData.FolderName);
+				if (Directory.Exists(directory))
+				{
+					Process.Start(directory);
+				}
+				else
+				{
+					if (Directory.Exists(startPath))
+					{
+						Process.Start(startPath);
+					}
+					else
+					{
+						Log.Here().Error($"Public directory for project {modProjectData.FolderName} does not exist!");
+					}
+				}
+			}
+		}
+
+		public static void OpenEditorFolder(ModProjectData modProjectData)
+		{
+			if (MainData != null)
+			{
+				string startPath = Path.Combine(MainData.Settings.DataDirectory, "Editor/Mods");
+				string directory = Path.Combine(Path.GetFullPath(startPath), modProjectData.FolderName);
+				if (Directory.Exists(directory))
+				{
+					Process.Start(directory);
+				}
+				else
+				{
+					if (Directory.Exists(startPath))
+					{
+						Process.Start(startPath);
+					}
+					else
+					{
+						Log.Here().Error($"Editor directory for project {modProjectData.FolderName} does not exist!");
+					}
+				}
+			}
+		}
+
+		public static void OpenProjectFolder(ModProjectData modProjectData)
+		{
+			if (MainData != null)
+			{
+				string startPath = Path.Combine(MainData.Settings.DataDirectory, "Projects");
+				string directory = Path.Combine(Path.GetFullPath(startPath), modProjectData.FolderName);
+				if (Directory.Exists(directory))
+				{
+					Process.Start(directory);
+				}
+				else
+				{
+					if (Directory.Exists(startPath))
+					{
+						Process.Start(startPath);
+					}
+					else
+					{
+						Log.Here().Error($"Projects directory for project {modProjectData.FolderName} does not exist!");
+					}
+				}
+			}
 		}
 	}
 }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -14,6 +15,7 @@ using LL.SCG.Data.View;
 using LL.SCG.Interfaces;
 using LL.SCG.Windows;
 using Microsoft.Win32;
+using Microsoft.WindowsAPICodePack.Dialogs;
 using Newtonsoft.Json;
 using Ookii.Dialogs.Wpf;
 
@@ -46,10 +48,10 @@ namespace LL.SCG.Commands
 			}
 		}
 
-		public void OpenFolderDialog(Window ParentWindow, string Title, string FilePath, Action<string> OnFolderSelected)
+		public void OpenOokiiFolderDialog(Window ParentWindow, string Title, string FilePath, Action<string> OnFolderSelected)
 		{
 			VistaFolderBrowserDialog folderDialog = new VistaFolderBrowserDialog();
-			folderDialog.SelectedPath = FilePath;
+			folderDialog.SelectedPath = Path.GetFullPath(FilePath);
 			folderDialog.Description = Title;
 			folderDialog.UseDescriptionForTitle = true;
 			folderDialog.ShowNewFolderButton = true;
@@ -65,6 +67,61 @@ namespace LL.SCG.Commands
 				}
 
 				OnFolderSelected?.Invoke(path);
+			}
+
+		}
+
+		public void OpenFolderDialog(Window ParentWindow, string Title, string FilePath, Action<string> OnFolderSelected)
+		{
+			var openFolder = new CommonOpenFileDialog();
+			openFolder.AllowNonFileSystemItems = true;
+			openFolder.Multiselect = false;
+			openFolder.IsFolderPicker = true;
+			openFolder.Title = Title;
+			openFolder.DefaultFileName = "";
+			openFolder.InitialDirectory = Path.GetFullPath(FilePath);
+			openFolder.DefaultDirectory = Path.GetFullPath(Assembly.GetExecutingAssembly().Location);
+
+			var result = openFolder.ShowDialog(ParentWindow);
+
+			if (result == CommonFileDialogResult.Ok)
+			{
+				string path = openFolder.FileNames.First();
+				if (FileCommands.PathIsRelative(path))
+				{
+					path = path.Replace(Directory.GetCurrentDirectory(), "");
+				}
+
+				OnFolderSelected?.Invoke(path);
+			}
+		}
+
+		public void SelectFoldersDialog(Window ParentWindow, string Title, string FilePath, Action<List<string>> OnFoldersSelected)
+		{
+			var openFolder = new CommonOpenFileDialog();
+			openFolder.AllowNonFileSystemItems = true;
+			openFolder.Multiselect = true;
+			openFolder.IsFolderPicker = true;
+			openFolder.Title = Title;
+			openFolder.DefaultFileName = "";
+			openFolder.InitialDirectory = Path.GetFullPath(FilePath);
+			openFolder.DefaultDirectory = Path.GetFullPath(Assembly.GetExecutingAssembly().Location);
+
+			var result = openFolder.ShowDialog(ParentWindow);
+
+			if (result == CommonFileDialogResult.Ok)
+			{
+				var folders = openFolder.FileNames.ToList();
+				for (int i = 0; i < folders.Count; i++)
+				{
+					var path = folders[i];
+					if (FileCommands.PathIsRelative(path))
+					{
+						path = path.Replace(Directory.GetCurrentDirectory(), "");
+					}
+				}
+
+				OnFoldersSelected?.Invoke(folders);
 			}
 		}
 

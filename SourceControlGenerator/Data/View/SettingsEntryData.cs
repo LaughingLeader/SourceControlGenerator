@@ -9,24 +9,91 @@ using LL.SCG.Enum;
 
 namespace LL.SCG.Data.View
 {
-	public class SettingsEntryData
+	public class SettingsEntryData : PropertyChangedBase
 	{
-		public string Name { get; set; }
-		public FileBrowseType FileBrowseType { get; set; }
-		public SettingsViewPropertyType ViewType { get; set; }
+		private string name;
 
-		public object Source { get; set; }
-		public PropertyInfo SourceProperty { get; set; }
+		public string Name
+		{
+			get { return name; }
+			set
+			{
+				name = value;
+				RaisePropertyChanged("Name");
+			}
+		}
+
+		private string filter = "Test";
+
+		public string Filter
+		{
+			get { return filter; }
+			set
+			{
+				filter = value;
+				RaisePropertyChanged("Filter");
+			}
+		}
+
+
+		private FileBrowseType fileBrowseType;
+
+		public FileBrowseType BrowseType
+		{
+			get { return fileBrowseType; }
+			set
+			{
+				fileBrowseType = value;
+				RaisePropertyChanged("BrowseType");
+			}
+		}
+
+		private SettingsViewPropertyType viewPropertyType;
+
+		public SettingsViewPropertyType ViewType
+		{
+			get { return viewPropertyType; }
+			set
+			{
+				viewPropertyType = value;
+				RaisePropertyChanged("ViewType");
+			}
+		}
+
+		private object source;
+
+		public object Source
+		{
+			get { return source; }
+			set
+			{
+				source = value;
+				RaisePropertyChanged("Source");
+			}
+		}
+
+		private PropertyInfo sourcePropertyInfo;
+
+		public PropertyInfo SourceProperty
+		{
+			get { return sourcePropertyInfo; }
+			set
+			{
+				sourcePropertyInfo = value;
+				RaisePropertyChanged("SourceProperty");
+			}
+		}
+
 
 		public string OpenFileText
 		{
 			get
 			{
-				if(FileBrowseType == FileBrowseType.File)
+				if(BrowseType == FileBrowseType.File)
 				{
 					return "Select File...";
 				}
-				else if (FileBrowseType == FileBrowseType.Directory)
+				else if (BrowseType == FileBrowseType.Directory)
 				{
 					return "Select Folder...";
 				}
@@ -37,7 +104,17 @@ namespace LL.SCG.Data.View
 			}
 		}
 
-		public ActionCommand OnOpened { get; set; }
+		private ActionCommand onOpenedCommand;
+
+		public ActionCommand OnOpened
+		{
+			get { return onOpenedCommand; }
+			set
+			{
+				onOpenedCommand = value;
+				RaisePropertyChanged("OnOpened");
+			}
+		}
 
 		public object Value
 		{

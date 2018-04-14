@@ -24,6 +24,7 @@ using Ookii.Dialogs.Wpf;
 using LL.SCG.Interfaces;
 using Newtonsoft.Json;
 using LL.SCG.Modules;
+using LL.SCG.FileGen;
 
 namespace LL.SCG.Windows
 {
@@ -338,8 +339,12 @@ namespace LL.SCG.Windows
 			}
 		}
 
-		public void OpenGitGenerationWindow(GitGenerationSettings settings, List<IProjectData> selectedProjects)
+		private Action onGitGenerationConfirmed;
+
+		public void OpenGitGenerationWindow(GitGenerationSettings settings, List<IProjectData> selectedProjects, Action onConfirm)
 		{
+			onGitGenerationConfirmed = onConfirm;
+
 			if (gitGenerationWindow == null)
 			{
 				gitGenerationWindow = new GitGenerationWindow();
@@ -361,7 +366,12 @@ namespace LL.SCG.Windows
 			}
 		}
 
-		public void StartGitGeneration()
+		public void StartGitGeneration(GitGenerationSettings settings)
+		{
+			onGitGenerationConfirmed?.Invoke();
+		}
+
+		public void OnGitWindowCanceled()
 		{
 			
 		}

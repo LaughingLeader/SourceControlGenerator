@@ -17,6 +17,8 @@ using LL.SCG.Data;
 using LL.SCG.Data.View;
 using LL.SCG.Interfaces;
 using LL.SCG.Windows;
+using LL.SCG.Controls.Behavior;
+using LL.SCG.DOS2.Core;
 
 namespace LL.SCG.DOS2.Controls
 {
@@ -78,14 +80,73 @@ namespace LL.SCG.DOS2.Controls
 
 		private void AddSelectedProjectsButton_Click(object sender, RoutedEventArgs e)
 		{
+			Console.WriteLine("Adding projects...");
 			ListBox list = (ListBox)this.FindName("AvailableProjectsList");
 			if (list != null && list.SelectedItems.Count > 0)
 			{
+				
+
 				List<AvailableProjectViewData> selectedItems = list.SelectedItems.Cast<AvailableProjectViewData>().ToList();
 				if (selectedItems != null)
 				{
 					Controller.AddProjects(selectedItems);
 				}
+				else
+				{
+					Log.Here().Error("Error casting selected items to AvailableProjectViewData");
+				}
+			}
+			else
+			{
+				Log.Here().Activity("No projects selected!");
+			}
+		}
+
+		private void AvailableProjectsList_MouseRightButtonUp(object sender, MouseButtonEventArgs e)
+		{
+			/*
+			ListBox list = (ListBox)this.FindName("AvailableProjectsList");
+			if (list != null && list.SelectedItems.Count > 0)
+			{
+				foreach(ListBoxItem item in list.ItemContainerGenerator.Items.Cast<ListBoxItem>().ToList())
+				{
+					if(item.IsMouseOver)
+					{
+						
+					}
+				}
+			}
+			else
+			{
+				Log.Here().Activity("No projects selected!");
+			}
+			*/
+		}
+
+		private bool availableProjectsVisible = true;
+
+		private void Btn_AvailableProjects_Click(object sender, RoutedEventArgs e)
+		{
+			var grid = (Grid)this.FindName("AvailableProjectsView");
+			if (grid != null)
+			{
+				var viewRow = grid.ColumnDefinitions.ElementAtOrDefault(1);
+
+				if (availableProjectsVisible)
+				{
+					viewRow.Width = new GridLength(0);
+				}
+				else
+				{
+					viewRow.Width = new GridLength(1, GridUnitType.Star);
+				}
+
+				availableProjectsVisible = !availableProjectsVisible;
+
+				if (availableProjectsVisible)
+					Controller.Data.AvailableProjectsToggleText = "Hide Available Projects";
+				else
+					Controller.Data.AvailableProjectsToggleText = "Show Available Projects";
 			}
 		}
 
@@ -206,7 +267,7 @@ namespace LL.SCG.DOS2.Controls
 			BackupSelectedProjects();
 		}
 
-		private void BackupSeletedButton_Click(object sender, RoutedEventArgs e)
+		private void BackupSelectedButton_Click(object sender, RoutedEventArgs e)
 		{
 			if (String.IsNullOrWhiteSpace(Controller.Data.Settings.LastBackupPath))
 			{
@@ -223,7 +284,7 @@ namespace LL.SCG.DOS2.Controls
 		private void GitGenerationButton_Click(object sender, RoutedEventArgs e)
 		{
 			var selectedProjects = Controller.Data.ManagedProjects.Where(p => p.Selected).ToList<IProjectData>();
-			mainWindow.OpenGitGenerationWindow(Controller.Data.GitGenerationSettings, selectedProjects);
+			mainWindow.OpenGitGenerationWindow(Controller.Data.GitGenerationSettings, selectedProjects, StartGitGeneration);
 		}
 
 		public void StartGitGeneration()
@@ -232,6 +293,7 @@ namespace LL.SCG.DOS2.Controls
 			foreach (var project in Controller.Data.GitGenerationSettings.ExportProjects)
 			{
 				ModProjectData modProjectData = (ModProjectData)project;
+				Controller.SelectProject(modProjectData);
 				if (Controller.GenerateGitFiles(Controller.Data.GitGenerationSettings))
 				{
 					Log.Here().Important("Git repository successfully generated for {0}.", project.Name);
@@ -240,34 +302,6 @@ namespace LL.SCG.DOS2.Controls
 				{
 					Log.Here().Error("Error generating git repository for {0}.", project.Name);
 				}
-			}
-		}
-
-
-		private bool availableProjectsVisible = true;
-
-		private void Btn_AvailableProjects_Click(object sender, RoutedEventArgs e)
-		{
-			var grid = (Grid)this.FindName("AvailableProjectsView");
-			if (grid != null)
-			{
-				var viewRow = grid.ColumnDefinitions.ElementAtOrDefault(1);
-
-				if (availableProjectsVisible)
-				{
-					viewRow.Width = new GridLength(0);
-				}
-				else
-				{
-					viewRow.Width = new GridLength(1, GridUnitType.Star);
-				}
-
-				availableProjectsVisible = !availableProjectsVisible;
-
-				if (availableProjectsVisible)
-					Controller.Data.AvailableProjectsToggleText = "Hide Available Projects";
-				else
-					Controller.Data.AvailableProjectsToggleText = "Show Available Projects";
 			}
 		}
 
@@ -283,6 +317,36 @@ namespace LL.SCG.DOS2.Controls
 				oFocused = System.Windows.Media.VisualTreeHelper.GetParent(oFocused);
 			}
 			return false;
+		}
+
+		private void SetDataFolderContextMenuTarget(object sender, RoutedEventArgs e)
+		{
+			if(sender is Button btn)
+			{
+				btn.ContextMenu.PlacementTarget = btn;
+			}
+		}
+
+		private void ManagedProjectsDataGrid_Loaded(object sender, RoutedEventArgs e)
+		{
+			if(sender is DataGrid grid)
+			{
+				double availableSpace = this.ActualWidth;
+				double starSpace = 0.0;
+				double starFactor = 0.0;
+
+				foreach (DataGridColumn column in grid.Columns.AsParallel())
+				{
+					if(column.Header is string headerName)
+					{
+						if (headerName != "Description" && column.Visibility == Visibility.Visible && column.GetType() == typeof(DataGridTextColumn))
+						{
+							column.Width = DataGridLength.Auto;
+						}
+					}
+					
+				}
+			}
 		}
 	}
 }

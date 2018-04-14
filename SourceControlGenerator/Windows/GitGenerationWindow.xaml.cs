@@ -51,14 +51,15 @@ namespace LL.SCG.Windows
 
 		private void CancelButton_Click(object sender, RoutedEventArgs e)
 		{
+			this.Hide();
 			generationSettings.ExportProjects.Clear();
-			this.Close();
+			mainWindow.OnGitWindowCanceled();
 		}
 
 		private void ConfirmButton_Click(object sender, RoutedEventArgs e)
 		{
-			mainWindow.StartGitGeneration();
-			this.Close();
+			this.Hide();
+			mainWindow.StartGitGeneration(generationSettings);
 		}
 	}
 }

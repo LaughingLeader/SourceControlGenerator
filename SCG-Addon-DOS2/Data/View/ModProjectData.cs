@@ -4,11 +4,14 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Input;
 using System.Xml;
 using System.Xml.Linq;
 using System.Xml.Serialization;
 using System.Xml.XPath;
+using LL.SCG.Commands;
 using LL.SCG.Data.Xml;
+using LL.SCG.DOS2.Core;
 using LL.SCG.Interfaces;
 
 namespace LL.SCG.Data
@@ -73,6 +76,18 @@ namespace LL.SCG.Data
 			set
 			{
 				ModuleInfo.Name = value;
+			}
+		}
+
+		public string FolderName
+		{
+			get
+			{
+				if(this.ModuleInfo != null)
+				{
+					return ModuleInfo.Folder;
+				}
+				return "";
 			}
 		}
 
@@ -151,12 +166,63 @@ namespace LL.SCG.Data
 			}
 		}
 
+		public ICommand OpenBackupFolder { get; private set; }
 
-		public ModProjectData(FileInfo ModMetaFile, string ProjectsFolderPath)
+		public ICommand OpenModsFolder { get; private set; }
+
+		public ICommand OpenPublicFolder { get; private set; }
+
+		public ICommand OpenEditorFolder { get; private set; }
+
+		public ICommand OpenProjectFolder { get; private set; }
+
+		private void openBackupFolder()
+		{
+			Log.Here().Activity("Opening backup folder!");
+			DOS2Commands.OpenBackupFolder(this);
+		}
+
+		private void Init()
 		{
 			this.ModuleInfo = new ModuleInfo();
 			this.ProjectInfo = new ProjectInfo();
-			this.Dependencies = new List<DependencyInfo>();		
+			this.Dependencies = new List<DependencyInfo>();
+
+			//OpenBackupFolder = new CallbackCommand();
+			//OpenModsFolder = new CallbackCommand();
+			//OpenPublicFolder = new CallbackCommand();
+			//OpenEditorFolder = new CallbackCommand();
+			//OpenProjectFolder = new CallbackCommand();
+
+			OpenBackupFolder = new CallbackCommand(() => { DOS2Commands.OpenBackupFolder(this); });
+			OpenModsFolder = new CallbackCommand(() => { DOS2Commands.OpenModsFolder(this); });
+			OpenPublicFolder = new CallbackCommand(() => { DOS2Commands.OpenPublicFolder(this); });
+			OpenEditorFolder = new CallbackCommand(() => { DOS2Commands.OpenEditorFolder(this); });
+			OpenProjectFolder = new CallbackCommand(() => { DOS2Commands.OpenProjectFolder(this); });
+
+			//RaisePropertyChanged("OpenBackupFolder");
+			//RaisePropertyChanged("OpenModsFolder");
+			//RaisePropertyChanged("OpenPublicFolder");
+			//RaisePropertyChanged("OpenEditorFolder");
+			//RaisePropertyChanged("OpenProjectFolder");
+		}
+
+		private ModProjectData()
+		{
+			Init();
+		}
+
+		public static ModProjectData Test(string name)
+		{
+			var data = new ModProjectData();
+			data.moduleInfo.Name = name;
+
+			return data;
+		}
+
+		public ModProjectData(FileInfo ModMetaFile, string ProjectsFolderPath)
+		{
+			Init();
 
 			if (ModMetaFile != null)
 			{

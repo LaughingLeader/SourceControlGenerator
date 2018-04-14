@@ -19,7 +19,7 @@ namespace LL.SCG.Converters
 		{
 			if (value != null && value is SettingsEntryData entry)
 			{
-				Log.Here().Error($"entry.ViewType {entry.ViewType} | entry.FileBrowseType {entry.FileBrowseType}");
+				//Log.Here().Activity($"entry.ViewType {entry.ViewType} | entry.FileBrowseType {entry.FileBrowseType}");
 
 				if (entry.ViewType == SettingsViewPropertyType.Browser)
 				{
@@ -35,17 +35,6 @@ namespace LL.SCG.Converters
 					//return browser;
 
 					return typeof(FileBrowseControl);
-				}
-				else
-				{
-					//var text = new TextBox();
-					//Binding binding = new Binding("Text");
-					//binding.Source = entry.Value;
-					//binding.Mode = BindingMode.TwoWay;
-					//binding.UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged;
-					//text.SetBinding(TextBox.TextProperty, binding);
-
-					//return text;
 				}
 			}
 

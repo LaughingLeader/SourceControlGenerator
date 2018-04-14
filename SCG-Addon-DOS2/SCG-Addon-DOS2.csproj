@@ -21,6 +21,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <PlatformTarget>AnyCPU</PlatformTarget>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -29,6 +30,9 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup>
+    <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -48,15 +52,13 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AddonModule.cs" />
-    <Compile Include="Controls\ProjectEntryControl.xaml.cs">
-      <DependentUpon>ProjectEntryControl.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Controls\ProjectViewControl.xaml.cs">
       <DependentUpon>ProjectViewControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="Core\DOS2Commands.cs" />
     <Compile Include="Core\DOS2DefaultPaths.cs" />
     <Compile Include="Core\DOS2ProjectController.cs" />
+    <Compile Include="Core\DOS2Tooltips.cs" />
     <Compile Include="Data\App\DOS2SettingsData.cs" />
     <Compile Include="Data\View\DOS2ModuleData.cs" />
     <Compile Include="Data\View\ModProjectData.cs" />
@@ -108,10 +110,6 @@
     <Resource Include="Resources\DefaultReadme.txt" />
   </ItemGroup>
   <ItemGroup>
-    <Page Include="Controls\ProjectEntryControl.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
     <Page Include="Controls\ProjectViewControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

@@ -42,7 +42,7 @@ namespace LL.SCG.Converters
 										settingsList.Add(new SettingsEntryData()
 										{
 											Name = viewAttribute.Name,
-											FileBrowseType = viewAttribute.FileBrowseType,
+											BrowseType = viewAttribute.FileBrowseType,
 											ViewType = viewAttribute.ViewType,
 											Source = value,
 											SourceProperty = prop

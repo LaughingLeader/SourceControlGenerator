@@ -84,6 +84,9 @@
     <Compile Include="Controls\AddTemplateControl.xaml.cs">
       <DependentUpon>AddTemplateControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Controls\Behavior\ListBoxSelectionBehavior.cs" />
+    <Compile Include="Controls\Behavior\TextBoxEnterKeyBehavior.cs" />
+    <Compile Include="Controls\BindingProxy.cs" />
     <Compile Include="Controls\QuickDataGrid.cs" />
     <Compile Include="Converters\EmptyListVisibilityConverter.cs" />
     <Compile Include="Controls\FileBrowseControl.xaml.cs">
@@ -91,6 +94,7 @@
     </Compile>
     <Compile Include="Converters\EnumDescriptionTypeConverter.cs" />
     <Compile Include="Converters\EnumToCollectionConverter.cs" />
+    <Compile Include="Converters\FileValidationColorConverter.cs" />
     <Compile Include="Converters\FooterOutputColorConverter.cs" />
     <Compile Include="Converters\ListViewStarWidthConverter.cs" />
     <Compile Include="Converters\LogTypeColorConverter.cs" />
@@ -101,6 +105,7 @@
     <Compile Include="Controls\TemplateKeywordControl.xaml.cs">
       <DependentUpon>TemplateKeywordControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Converters\NewlineStringConverter.cs" />
     <Compile Include="Converters\SettingsAttributeConverter.cs" />
     <Compile Include="Converters\SettingsAttributeValueControlConverter.cs" />
     <Compile Include="Data\App\AppSettingsData.cs" />
@@ -108,6 +113,7 @@
     <Compile Include="Data\App\ManagedProjectsData.cs" />
     <Compile Include="Data\View\ModuleData.cs" />
     <Compile Include="Data\View\SettingsEntryData.cs" />
+    <Compile Include="Enum\FileValidation.cs" />
     <Compile Include="Extensions\AttributeExtensions.cs" />
     <Compile Include="Extensions\ObservableCollectionExtensions.cs" />
     <Compile Include="FileGen\JsonInterface.cs" />
@@ -141,13 +147,13 @@
     <Compile Include="Data\View\MainAppData.cs" />
     <Compile Include="Data\App\ModuleSettingsData.cs" />
     <Compile Include="Interfaces\IProjectController.cs" />
-    <Compile Include="ListViewLayoutManager\ConverterGridViewColumn.cs" />
-    <Compile Include="ListViewLayoutManager\FixedColumn.cs" />
-    <Compile Include="ListViewLayoutManager\ImageGridViewColumn.cs" />
-    <Compile Include="ListViewLayoutManager\LayoutColumn.cs" />
-    <Compile Include="ListViewLayoutManager\ListViewLayoutManager.cs" />
-    <Compile Include="ListViewLayoutManager\ProportionalColumn.cs" />
-    <Compile Include="ListViewLayoutManager\RangeColumn.cs" />
+    <Compile Include="Controls\ListViewLayoutManager\ConverterGridViewColumn.cs" />
+    <Compile Include="Controls\ListViewLayoutManager\FixedColumn.cs" />
+    <Compile Include="Controls\ListViewLayoutManager\ImageGridViewColumn.cs" />
+    <Compile Include="Controls\ListViewLayoutManager\LayoutColumn.cs" />
+    <Compile Include="Controls\ListViewLayoutManager\ListViewLayoutManager.cs" />
+    <Compile Include="Controls\ListViewLayoutManager\ProportionalColumn.cs" />
+    <Compile Include="Controls\ListViewLayoutManager\RangeColumn.cs" />
     <Compile Include="Modules\Loader.cs" />
     <Compile Include="Util\EnumHelper.cs" />
     <Compile Include="Util\JunctionHelper.cs" />

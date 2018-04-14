@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using LL.SCG.Data;
 using LL.SCG.Data.View;
+using LL.SCG.Enum;
 using LL.SCG.Interfaces;
 
 namespace LL.SCG.DOS2.Data.App
@@ -18,7 +19,7 @@ namespace LL.SCG.DOS2.Data.App
 
 		private string dataDirectory;
 
-		[VisibleToView("Data Directory", Enum.FileBrowseType.Directory)]
+		[VisibleToView("Data Directory", FileBrowseType.Directory)]
 		public string DataDirectory
 		{
 			get { return dataDirectory; }
@@ -31,7 +32,7 @@ namespace LL.SCG.DOS2.Data.App
 
 		private string directoryLayoutFile;
 
-		[VisibleToView("Directory Layout", Enum.FileBrowseType.File)]
+		[VisibleToView("Directory Layout", FileBrowseType.File)]
 		public string DirectoryLayoutFile
 		{
 			get { return directoryLayoutFile; }

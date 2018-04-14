@@ -18,6 +18,13 @@ namespace LL.SCG.Commands
 			this.callback = callback;
 		}
 
+		public CallbackCommand() { }
+
+		public void SetCallback(Action newCallback)
+		{
+			callback = newCallback;
+		}
+
 		public bool CanExecute(object parameter)
 		{
 			return true;

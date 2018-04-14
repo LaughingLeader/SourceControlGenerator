@@ -228,6 +228,7 @@ namespace LL.SCG.Core
 
 			foreach (AvailableProjectViewData project in selectedItems)
 			{
+				Log.Here().Activity($"Adding project {project.Name} data to managed projects.");
 				var modData = Data.ModProjects.Where(p => p.Name == project.Name).FirstOrDefault();
 				if (modData != null)
 				{
@@ -236,34 +237,43 @@ namespace LL.SCG.Core
 					var availableProject = Data.NewProjects.Where(p => p.Name == project.Name).FirstOrDefault();
 					if (availableProject != null) Data.NewProjects.Remove(availableProject);
 
-					if (MainAppData.AppProjects != null)
+					if (Data.ManagedProjectsData.Projects.Any(p => p.Name == modData.Name))
 					{
-						if (Data.ManagedProjectsData.Projects.Any(p => p.Name == modData.Name))
+						if (modData.ProjectAppData == null)
 						{
-							if (modData.ProjectAppData == null)
+							ProjectAppData data = Data.ManagedProjectsData.Projects.Where(p => p.Name == modData.Name && p.GUID == modData.ModuleInfo.UUID).FirstOrDefault();
+							if (data != null)
 							{
-								ProjectAppData data = Data.ManagedProjectsData.Projects.Where(p => p.Name == modData.Name && p.GUID == modData.ModuleInfo.UUID).FirstOrDefault();
-								if (data != null)
-								{
-									modData.ProjectAppData = data;
-								}
+								modData.ProjectAppData = data;
+
+								Log.Here().Activity($"Linked project {modData.Name} data to managed project data.");
 							}
 						}
-						else
-						{
-							ProjectAppData data = new ProjectAppData()
-							{
-								Name = modData.Name,
-								GUID = modData.ModuleInfo.UUID,
-								LastBackup = null
-							};
-							Data.ManagedProjectsData.Projects.Add(data);
-							modData.ProjectAppData = data;
-
-							bSaveData = true;
-						}
-
 					}
+					else
+					{
+						ProjectAppData data = new ProjectAppData()
+						{
+							Name = modData.Name,
+							GUID = modData.ModuleInfo.UUID,
+							LastBackup = null
+						};
+						Data.ManagedProjectsData.Projects.Add(data);
+						modData.ProjectAppData = data;
+
+						Log.Here().Activity($"Added project {modData.Name} to managed projects.");
+
+						bSaveData = true;
+					}
+				}
+				else
+				{
+#if DEBUG
+					Data.ManagedProjects.Add(ModProjectData.Test(project.Name));
+#else
+					MainWindow.FooterError($"Error adding project {project.Name} to managed projects: Mod data doesn't exist.");
+#endif
+
 				}
 			}
 
@@ -478,6 +488,9 @@ namespace LL.SCG.Core
 					Name = "Project_" + i
 				});
 			}
+
+			Data.ManagedProjects.Add(ModProjectData.Test("Test Project"));
+			Data.ManagedProjects.Add(ModProjectData.Test("Test Project 2"));
 		}
 
 		public void Initialize(MainAppData mainAppData)
@@ -492,13 +505,16 @@ namespace LL.SCG.Core
 
 		public void Start()
 		{
+			DOS2Commands.SetData(Data);
+
 			LoadDataDirectory();
 			LoadDirectoryLayout();
 			InitModuleKeywords();
 
 			DOS2Commands.LoadAll(Data);
-
-			TestView();
+#if DEBUG
+			//TestView();
+#endif
 		}
 
 	}
