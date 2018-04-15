@@ -7,7 +7,7 @@
     <ProjectGuid>{7653F93F-78A9-4D82-9289-C40FBD3FF3F6}</ProjectGuid>
     <OutputType>library</OutputType>
     <RootNamespace>LL.SCG.DOS2</RootNamespace>
-    <AssemblyName>DOS2Module</AssemblyName>
+    <AssemblyName>SCG_DOS2</AssemblyName>
     <TargetFrameworkVersion>v4.7.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
@@ -38,6 +38,7 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Core" />
@@ -52,7 +53,7 @@
     <Reference Include="PresentationFramework" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AddonModule.cs" />
+    <Compile Include="Module.cs" />
     <Compile Include="Controls\ProjectViewControl.xaml.cs">
       <DependentUpon>ProjectViewControl.xaml</DependentUpon>
     </Compile>
@@ -80,7 +81,7 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
     <EmbeddedResource Include="Properties\Resources.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
+      <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
     <None Include="Properties\Settings.settings">
@@ -89,7 +90,7 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\SourceControlGenerator\SourceControlGenerator.csproj">
+    <ProjectReference Include="..\..\SourceControlGenerator\SourceControlGenerator.csproj">
       <Project>{e96f2eeb-e207-4ab6-9b85-f86b3f386117}</Project>
       <Name>SourceControlGenerator</Name>
     </ProjectReference>
@@ -118,6 +119,6 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>echo f | xcopy "$(TargetDir)$(TargetFileName)" "$(SolutionDir)Modules" /Y</PostBuildEvent>
+    <PostBuildEvent>echo f | xcopy "$(TargetDir)$(TargetFileName)" "$(SolutionDir)Modules_Export\" /Y</PostBuildEvent>
   </PropertyGroup>
 </Project>

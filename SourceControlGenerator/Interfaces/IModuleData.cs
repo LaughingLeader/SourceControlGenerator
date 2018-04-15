@@ -12,6 +12,7 @@ namespace LL.SCG.Interfaces
 {
 	public interface IModuleData
 	{
+		string AssemblyName { get; set; }
 		string ModuleName { get; set; }
 		string ModuleFolderName { get; set; }
 

@@ -10,7 +10,7 @@ namespace LL.SCG
 {
 	public static class DefaultPaths
 	{
-		public static string MainAppSettings => @"Settings/Settings.json";
+		public static string MainAppSettings => @"Settings/MainSettings.json";
 
 		public static string SourceControlGeneratorDataFile => @"SourceControlGenerator.json";
 

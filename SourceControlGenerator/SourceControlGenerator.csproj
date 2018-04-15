@@ -87,12 +87,12 @@
     </Compile>
     <Compile Include="Controls\Behavior\ListBoxSelectionBehavior.cs" />
     <Compile Include="Controls\Behavior\TextBoxEnterKeyBehavior.cs" />
-    <Compile Include="Controls\BindingProxy.cs" />
     <Compile Include="Controls\QuickDataGrid.cs" />
     <Compile Include="Converters\EmptyListVisibilityConverter.cs" />
     <Compile Include="Controls\FileBrowseControl.xaml.cs">
       <DependentUpon>FileBrowseControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Converters\EmptyStringVisibilityConverter.cs" />
     <Compile Include="Converters\EnumDescriptionTypeConverter.cs" />
     <Compile Include="Converters\EnumToCollectionConverter.cs" />
     <Compile Include="Converters\FileValidationColorConverter.cs" />
@@ -112,7 +112,10 @@
     <Compile Include="Data\App\AppSettingsData.cs" />
     <Compile Include="Data\App\JunctionData.cs" />
     <Compile Include="Data\App\ManagedProjectsData.cs" />
+    <Compile Include="Data\Proxy\IconProxy.cs" />
+    <Compile Include="Data\View\IconPathData.cs" />
     <Compile Include="Data\View\ModuleData.cs" />
+    <Compile Include="Data\View\ModuleSelectionData.cs" />
     <Compile Include="Data\View\SettingsEntryData.cs" />
     <Compile Include="Enum\FileValidation.cs" />
     <Compile Include="Extensions\AttributeExtensions.cs" />
@@ -246,28 +249,30 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Resources\Icons\7zipIcon.png">
+    <Content Include="Resources\Icons\7zipIcon.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="Resources\Icons\GitLogo.png">
+    </Content>
+    <Content Include="Resources\Icons\GitLogo.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Resource>
+    </Content>
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Resources\Icons\Log_MouseOver.png">
+    <Content Include="Resources\Icons\Log_MouseOver.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="Resources\Icons\Log_Normal.png">
+    </Content>
+    <Content Include="Resources\Icons\Log_Normal.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Resource>
+    </Content>
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Resources\Icons\GitLogo_Disabled.png">
+    <Content Include="Resources\Icons\GitLogo_Disabled.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Resource>
+    </Content>
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Resources\Icons\Folder.png" />
+    <Content Include="Resources\Icons\Folder.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\License_Apache.txt" />
@@ -281,9 +286,17 @@
   <ItemGroup>
     <None Include="Resources\Templates.xml" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Content Include="Resources\Logos\DivinityOriginalSin2.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PreBuildEvent>xcopy "$(SolutionDir)Modules\*.*" "$(TargetDir)Modules\" /Y</PreBuildEvent>
+    <PreBuildEvent>
+    </PreBuildEvent>
+  </PropertyGroup>
+  <PropertyGroup>
+    <PostBuildEvent>xcopy "$(SolutionDir)Modules_Export\*.*" "$(TargetDir)Modules\" /Y</PostBuildEvent>
   </PropertyGroup>
 </Project>

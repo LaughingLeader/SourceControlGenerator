@@ -39,6 +39,33 @@ namespace LL.SCG.Data.View
 		
 		public ObservableCollection<KeywordData> DateKeyList { get; set; }
 		public ObservableCollection<KeywordData> ModuleKeyList { get; private set; }
+		public ObservableCollection<ModuleSelectionData> Modules { get; private set; }
+
+		public static IconPathData IconData { get; set; }
+
+		private IModuleData selectedModuleData = null;
+
+		/// <summary>
+		/// The selected module (on the selection screen)
+		/// </summary>
+		public IModuleData SelectedModuleData
+		{
+			get { return selectedModuleData; }
+			set
+			{
+				selectedModuleData = value;
+				RaisePropertyChanged("SelectedModuleData");
+				RaisePropertyChanged("CanLoadModule");
+			}
+		}
+
+		public bool CanLoadModule
+		{
+			get
+			{
+				return selectedModuleData != null;
+			}
+		}
 
 		private IModuleData currentModuleData;
 
@@ -116,6 +143,18 @@ namespace LL.SCG.Data.View
 
 		#endregion
 
+		private Visibility moduleSelectionVisibility = Visibility.Visible;
+
+		public Visibility ModuleSelectionVisibility
+		{
+			get { return moduleSelectionVisibility; }
+			set
+			{
+				moduleSelectionVisibility = value;
+				RaisePropertyChanged("ModuleSelectionVisibility");
+			}
+		}
+
 		public void SetModuleKeyList(ObservableCollection<KeywordData> keyList)
 		{
 			ModuleKeyList = keyList;
@@ -125,6 +164,9 @@ namespace LL.SCG.Data.View
 		{
 			ModuleIsLoaded = false;
 
+			IconData = new IconPathData();
+
+			Modules = new ObservableCollection<ModuleSelectionData>();
 			DateKeyList = new ObservableCollection<KeywordData>();
 
 			DateKeyList.Add(new KeywordData()

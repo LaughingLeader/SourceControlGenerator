@@ -8,6 +8,8 @@
 			 xmlns:c="clr-namespace:LL.SCG.Controls;assembly=SourceControlGenerator"
 			 xmlns:cb="clr-namespace:LL.SCG.Controls.Behavior;assembly=SourceControlGenerator"
 			 xmlns:cv="clr-namespace:LL.SCG.Converters;assembly=SourceControlGenerator"
+			 xmlns:data="clr-namespace:LL.SCG.Data.View;assembly=SourceControlGenerator"
+			 xmlns:proxy="clr-namespace:LL.SCG.Data.Proxy;assembly=SourceControlGenerator"
 			 mc:Ignorable="d" 
 			 d:DesignHeight="500" d:DesignWidth="900">
 	<UserControl.Resources>
@@ -23,6 +25,8 @@
 				</Trigger>
 			</Style.Triggers>
 		</Style>
+		
+		<proxy:IconProxy x:Key="Proxy" Data="{x:Static data:MainAppData.IconData}" />
 	</UserControl.Resources>
 	<Grid x:Name="Projects_ParentGrid" Width="Auto" Height="Auto">
 		<Grid.ColumnDefinitions>
@@ -104,7 +108,6 @@
 								<Style x:Key="ColumnElementStyle" TargetType="TextBlock">
 									<Setter Property="Margin" Value="5,0,10,0" />
 								</Style>
-								<c:BindingProxy x:Key="Proxy" Data="{Binding}" />
 								<Style x:Key="ProjectsHeaderStyle" TargetType="DataGridColumnHeader">
 									<Setter Property="HorizontalContentAlignment" Value="Center" />
 								</Style>
@@ -146,7 +149,7 @@
 													</Style>
 												</StackPanel.Resources>
 												<Button x:Name="Btn_Backup" ToolTip="Open Backup Folder..." Command="{Binding OpenBackupFolder}" >
-													<Image Source="/SourceControlGenerator;component/Resources/Icons/7zipIcon.png" Stretch="UniformToFill"/>
+													<Image Source="{Binding Source={StaticResource Proxy}, Path=Data.Archive, FallbackValue={x:Null}}" Stretch="UniformToFill"/>
 												</Button>
 												<Button x:Name="Btn_GenGit" IsEnabled="{Binding GitGenerated}" Command="{Binding OpenGitFolder}" >
 													<Image Stretch="UniformToFill" ToolTipService.ShowOnDisabled="True">
@@ -154,11 +157,11 @@
 															<Style TargetType="Image">
 																<Style.Triggers>
 																	<Trigger Property="IsEnabled" Value="False">
-																		<Setter Property="Source" Value="/SourceControlGenerator;component/Resources/Icons/GitLogo_Disabled.png" />
+																		<Setter Property="Source" Value="{Binding Source={StaticResource Proxy}, Path=Data.GitLogoDisabled, FallbackValue={x:Null}}" />
 																		<Setter Property="ToolTip" Value="Git Repo Not Detected" />
 																	</Trigger>
 																	<Trigger Property="IsEnabled" Value="True">
-																		<Setter Property="Source" Value="/SourceControlGenerator;component/Resources/Icons/GitLogo.png" />
+																		<Setter Property="Source" Value="{Binding Source={StaticResource Proxy}, Path=Data.GitLogoEnabled, FallbackValue={x:Null}}" />
 																		<Setter Property="ToolTip" Value="Open Git Repo..." />
 																	</Trigger>
 																</Style.Triggers>
@@ -167,7 +170,7 @@
 													</Image>
 												</Button>
 												<Button x:Name="Btn_DataFolders" ToolTip="Open Data Folder..." ContextMenuService.PlacementTarget="{Binding RelativeSource={RelativeSource Self}}" Click="SetDataFolderContextMenuTarget" >
-													<Image Source="/SourceControlGenerator;component/Resources/Icons/Folder.png" Stretch="UniformToFill"/>
+													<Image Source="{Binding Source={StaticResource Proxy}, Path=Data.Folder, FallbackValue={x:Null}}" Stretch="UniformToFill"/>
 													<Button.ContextMenu>
 														<ContextMenu DataContext="{Binding PlacementTarget.DataContext, RelativeSource={RelativeSource Self}}">
 															<MenuItem x:Name="Btn_EditorFolder" Header="Open Editor Folder..." Command="{Binding OpenEditorFolder}" />

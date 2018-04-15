@@ -12,11 +12,12 @@
 		xmlns:listview="clr-namespace:Itenso.Windows.Controls.ListViewLayout"
 		xmlns:cb="clr-namespace:LL.SCG.Controls.Behavior"
 		mc:Ignorable="d"
-		Title="DOS2 Source Control Helper" Height="600" Width="1024" Loaded="Window_Loaded" Closing="MainAppWindow_Closing"
+		Title="Source Control Generator" Height="600" Width="1024" Loaded="Window_Loaded" Closing="MainAppWindow_Closing"
 		WindowStartupLocation="CenterOwner"
 		>
 	<Window.Resources>
 		<cv:EmptyListVisibilityConverter x:Key="EmptyListVisibilityConverter"/>
+		<cv:EmptyStringVisibilityConverter x:Key="EmptyStringVisibilityConverter"/>
 		<cv:FooterOutputColorConverter x:Key="FooterOutputColorConverter"/>
 		<cv:SettingsAttributeConverter x:Key="SettingsAttributeConverter"/>
 		<cv:SettingsAttributeValueControlConverter x:Key="SettingsAttributeValueControlConverter"/>
@@ -621,6 +622,50 @@
 
 			<TextBox Grid.Column="0" x:Name="FooterOuputTextboxDate" Text="{Binding Path=FooterOutputDate, ElementName=MainAppWindow}" IsReadOnly="True" Margin="0" BorderThickness="0" TextAlignment="Center" Background="{x:Null}" />
 			<TextBox Grid.Column="1" x:Name="FooterOuputTextboxText" Text="{Binding Path=FooterOutputText, ElementName=MainAppWindow}" IsReadOnly="True" TextAlignment="Left" Foreground="{Binding Path=FooterOutputType, ElementName=MainAppWindow, Converter={StaticResource FooterOutputColorConverter}}" Margin="0" BorderThickness="0" Background="{x:Null}" Padding="4,0,0,0" />
+		</Grid>
+		<Grid Name="ModuleSelection" Grid.Row="0" Grid.RowSpan="3" Visibility="{Binding ModuleSelectionVisibility, FallbackValue=Visible}">
+			<Grid.Background>
+				<LinearGradientBrush EndPoint="0.5,1" MappingMode="RelativeToBoundingBox" StartPoint="0.5,0">
+					<GradientStop Color="Gainsboro" Offset="0.29"/>
+					<GradientStop Color="#FFCBCBCB" Offset="0.967"/>
+				</LinearGradientBrush>
+			</Grid.Background>
+			<Grid>
+				<Grid.RowDefinitions>
+					<RowDefinition />
+					<RowDefinition Height="Auto" />
+					<RowDefinition MaxHeight="256" Height="128"/>
+					<RowDefinition Height="Auto" />
+					<RowDefinition />
+				</Grid.RowDefinitions>
+				<TextBlock Text="Project Modules" FontSize="24" TextAlignment="Center" Padding="20" Grid.Row="1"/>
+				<ListView ItemsSource="{Binding Modules}" ScrollViewer.VerticalScrollBarVisibility="Auto" SelectionChanged="ModuleSelection_SelectionChanged" SelectionMode="Single" Grid.Row="2"
+						  HorizontalAlignment="Center" MinWidth="256"
+						  >
+					<ListView.ItemContainerStyle>
+						<Style TargetType="ListViewItem">
+							<Setter Property="HorizontalContentAlignment" Value="Center" />
+							<Style.Triggers>
+								<Trigger Property="IsKeyboardFocusWithin" Value="True">
+									<Setter Property="IsSelected" Value="True"/>
+								</Trigger>
+							</Style.Triggers>
+						</Style>
+					</ListView.ItemContainerStyle>
+					<ListView.ItemTemplate>
+						<DataTemplate>
+							<StackPanel Orientation="Vertical">
+								<!-- Click="ModuleSelection_ModuleButtonClick"-->
+								<Image MaxWidth="256" MaxHeight="256" Stretch="Uniform" Source="{Binding Logo, TargetNullValue={x:Null}}" Visibility="{Binding LogoExists, FallbackValue=Collapsed}" ToolTip="{Binding ModuleName}" />
+								<TextBlock Text="{Binding DisplayName}" TextAlignment="Center" Visibility="{Binding DisplayName, Converter={StaticResource EmptyStringVisibilityConverter}, FallbackValue=Collapsed}" />
+							</StackPanel>
+						</DataTemplate>
+					</ListView.ItemTemplate>
+				</ListView>
+				<Grid Grid.Row="3" HorizontalAlignment="Center" VerticalAlignment="Center">
+					<Button Content="Load Module" IsEnabled="{Binding CanLoadModule}" Click="ModuleSelection_LoadModuleClick" />
+				</Grid>
+			</Grid>
 		</Grid>
 		<Grid Name="LockProgressScreen" Grid.Row="0" Grid.RowSpan="3" Visibility="{Binding ProgressVisiblity, FallbackValue=Collapsed}">
 			<Grid.Background>

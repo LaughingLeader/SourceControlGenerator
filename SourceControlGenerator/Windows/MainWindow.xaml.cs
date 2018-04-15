@@ -61,16 +61,36 @@ namespace LL.SCG.Windows
 			Controller = new AppController(this);
 			DataContext = Controller.Data;
 
-			LoadModules();
-			Controller.SetModule();
-			LoadProjectModuleView(Controller.CurrentModule);
+
+			Controller.OnModuleSet += LoadProjectModuleView;
+
+			var totalLoaded = StartLoadingModules().GetAwaiter().GetResult();
+
+			Log.Here().Important($"Loaded {totalLoaded} project modules.");
+
+			if (!String.IsNullOrWhiteSpace(Controller.Data.AppSettings.LastModule) && Controller.SetModule(Controller.Data.AppSettings.LastModule))
+			{
+				Controller.Data.ModuleSelectionVisibility = Visibility.Collapsed;
+			}
+			else
+			{
+				Controller.Data.ModuleSelectionVisibility = Visibility.Visible;
+			}
 		}
 
-		public void LoadModules()
+		public Task<int> StartLoadingModules()
 		{
+			return LoadModules();
+		}
+
+		private async Task<int> LoadModules()
+		{
+			int totalModulesLoaded = 0;
+
 			DirectoryInfo modulesFolder = new DirectoryInfo("Modules");
 			modulesFolder.Create();
 			var modules = modulesFolder.GetFiles("*.dll", SearchOption.AllDirectories);
+
 			if (modules.Length > 0)
 			{
 				for (var i = 0; i < modules.Length; i++)
@@ -78,21 +98,37 @@ namespace LL.SCG.Windows
 					var module = modules[i];
 					Log.Here().Important("Module {0} found. Attempting to initialize.", module.Name);
 					//Assembly.LoadFrom(module.FullName);
-					try
+
+					var result = await LoadModule(module.FullName);
+					if(result)
 					{
-						Loader.Call(AppDomain.CurrentDomain, module.FullName, "LL.SCG.AddonModule", "Init");
-					}
-					catch(Exception ex)
-					{
-						Log.Here().Error("Error loading module file {0}: {1}", module.Name, ex.ToString());
+						totalModulesLoaded += 1;
 					}
 				}
 			}
+
+			return totalModulesLoaded;
 		}
 
-		public void LoadProjectModuleView(IProjectController projectController)
+		private async Task<bool> LoadModule(string fileName)
 		{
-			var view = projectController.GetProjectView(this);
+			try
+			{
+				Loader.Call(AppDomain.CurrentDomain, fileName, "LL.SCG.Module", "Init");
+				return true;
+			}
+			catch (Exception ex)
+			{
+				Log.Here().Error("Error loading module file {0}: {1}", fileName, ex.ToString());
+			}
+
+			return false;
+		}
+
+		public void LoadProjectModuleView(object sender, EventArgs e)
+		{
+			Task.Delay(10);
+			var view = Controller.CurrentModule.GetProjectView(this);
 			var viewGrid = (Grid)FindName("ProjectsViewGrid");
 
 			if (view != null && viewGrid != null)
@@ -113,6 +149,8 @@ namespace LL.SCG.Windows
 
 				DataContext = null;
 				DataContext = Controller.Data;
+
+				Controller.Data.ModuleSelectionVisibility = Visibility.Collapsed;
 			}
 		}
 
@@ -388,6 +426,26 @@ namespace LL.SCG.Windows
 		private void SettingsDataGrid_GotFocus(object sender, RoutedEventArgs e)
 		{
 			
+		}
+
+		private void ModuleSelection_LoadModuleClick(object sender, RoutedEventArgs e)
+		{
+			Controller.SetModuleToSelected();
+		}
+
+		private void ModuleSelection_SelectionChanged(object sender, SelectionChangedEventArgs e)
+		{
+			if (sender is ListView list)
+			{
+				if (list.SelectedItem is ModuleSelectionData module)
+				{
+					Controller.SetSelectedModule(module.ModuleName);
+				}
+				else if(list.IsFocused)
+				{
+					Controller.SetSelectedModule();
+				}
+			}
 		}
 	}
 }

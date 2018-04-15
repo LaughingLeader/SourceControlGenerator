@@ -7,7 +7,7 @@ using LL.SCG.Core;
 
 namespace LL.SCG
 {
-	public class AddonModule
+	public class Module
 	{
 		private DOS2ProjectController controller;
 
@@ -19,10 +19,10 @@ namespace LL.SCG
 
 		public void Init()
 		{
-			AppController.RegisterController("Divinity: Original Sin 2", Controller);
+			AppController.RegisterController("Divinity: Original Sin 2", controller, "Resources/Logos/DivinityOriginalSin2.png", "");
 		}
 
-		public AddonModule()
+		public Module()
 		{
 			Controller = new DOS2ProjectController();
 		}

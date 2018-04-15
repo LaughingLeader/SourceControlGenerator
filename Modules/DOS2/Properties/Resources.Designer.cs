@@ -22,7 +22,7 @@ namespace LL.SCG.DOS2.Properties {
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "15.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    internal class Resources {
+    public class Resources {
         
         private static global::System.Resources.ResourceManager resourceMan;
         
@@ -36,7 +36,7 @@ namespace LL.SCG.DOS2.Properties {
         ///   Returns the cached ResourceManager instance used by this class.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        internal static global::System.Resources.ResourceManager ResourceManager {
+        public static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
                     global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("LL.SCG.DOS2.Properties.Resources", typeof(Resources).Assembly);
@@ -51,7 +51,7 @@ namespace LL.SCG.DOS2.Properties {
         ///   resource lookups using this strongly typed resource class.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        internal static global::System.Globalization.CultureInfo Culture {
+        public static global::System.Globalization.CultureInfo Culture {
             get {
                 return resourceCulture;
             }
@@ -66,7 +66,7 @@ namespace LL.SCG.DOS2.Properties {
         ///README.md export-ignore
         ///CHANGELOG.md export-ignore.
         /// </summary>
-        internal static string DefaultAttributes {
+        public static string DefaultAttributes {
             get {
                 return ResourceManager.GetString("DefaultAttributes", resourceCulture);
             }
@@ -78,7 +78,7 @@ namespace LL.SCG.DOS2.Properties {
         ///# 1.0.0.0
         ///* Initial Release.
         /// </summary>
-        internal static string DefaultChangelog {
+        public static string DefaultChangelog {
             get {
                 return ResourceManager.GetString("DefaultChangelog", resourceCulture);
             }
@@ -114,7 +114,7 @@ namespace LL.SCG.DOS2.Properties {
         ///
         ///#Assets [rest of string was truncated]&quot;;.
         /// </summary>
-        internal static string DefaultGitIgnore {
+        public static string DefaultGitIgnore {
             get {
                 return ResourceManager.GetString("DefaultGitIgnore", resourceCulture);
             }
@@ -134,7 +134,7 @@ namespace LL.SCG.DOS2.Properties {
         ///### Attribution
         ///- [Divinity: Original Sin 2](http://store.steampowered.com/app/435150/Divinity_Original_Sin_2/), a game by [Larian Studios](http://larian.com/).
         /// </summary>
-        internal static string DefaultReadme {
+        public static string DefaultReadme {
             get {
                 return ResourceManager.GetString("DefaultReadme", resourceCulture);
             }
@@ -152,7 +152,7 @@ namespace LL.SCG.DOS2.Properties {
         ///Projects/ProjectName
         ///Public/ProjectName_ProjectGUID.
         /// </summary>
-        internal static string DirectoryLayout {
+        public static string DirectoryLayout {
             get {
                 return ResourceManager.GetString("DirectoryLayout", resourceCulture);
             }

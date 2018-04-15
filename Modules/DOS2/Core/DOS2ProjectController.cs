@@ -587,14 +587,14 @@ namespace LL.SCG.Core
 			Data.ManagedProjects.Add(ModProjectData.Test("Test Project 2"));
 		}
 
+		public DOS2ProjectController()
+		{
+			Data = new DOS2ModuleData();
+		}
+
 		public void Initialize(MainAppData mainAppData)
 		{
 			MainAppData = mainAppData;
-
-			if(Data == null)
-			{
-				Data = new DOS2ModuleData();
-			}
 		}
 
 		public void Start()

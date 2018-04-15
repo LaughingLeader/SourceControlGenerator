@@ -59,7 +59,7 @@ namespace LL.SCG.DOS2.Data.View
 			return Properties.Resources.ResourceManager.GetString(Name, Properties.Resources.Culture);
 		}
 
-		public DOS2ModuleData() : base("DOS2", "DivinityOriginalSin2")
+		public DOS2ModuleData() : base("Divinity: Original Sin 2", "DivinityOriginalSin2")
 		{
 			ManageButtonsText = "Select a Project";
 			AvailableProjectsToggleText = "Hide Available Projects";

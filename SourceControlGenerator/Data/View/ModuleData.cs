@@ -14,6 +14,8 @@ namespace LL.SCG.Data.View
 {
 	public class ModuleData<T> : PropertyChangedBase, IModuleData where T : IModuleSettingsData
 	{
+		public string AssemblyName { get; set; }
+
 		public string ModuleName { get; set; }
 
 		public string ModuleFolderName { get; set; }

@@ -4,16 +4,17 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using LL.SCG.Data.View;
 
-namespace LL.SCG.Controls
+namespace LL.SCG.Data.Proxy
 {
-	public class BindingProxy : Freezable
+	public class IconProxy : Freezable
 	{
 		#region Overrides of Freezable
 
 		protected override Freezable CreateInstanceCore()
 		{
-			return new BindingProxy();
+			return new IconProxy();
 		}
 
 		#endregion
@@ -28,8 +29,8 @@ namespace LL.SCG.Controls
 		// This enables animation, styling, binding, etc...
 		public static readonly DependencyProperty DataProperty =
 			DependencyProperty.Register("Data",
-										typeof(object),
-										typeof(BindingProxy),
+										typeof(IconPathData),
+										typeof(IconProxy),
 										new UIPropertyMetadata(null));
 	}
 }

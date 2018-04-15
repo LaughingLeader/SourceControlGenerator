@@ -172,7 +172,7 @@ namespace LL.SCG.Commands
 			{
 				foreach(var templateFile in Data.ModuleSettings.TemplateFiles)
 				{
-					var data = Data.Templates.Where(t => t.ID == templateFile.ID).FirstOrDefault();
+					var data = Data.Templates.FirstOrDefault(t => t.ID == templateFile.ID);
 					if (data != null)
 					{
 						data.FilePath = templateFile.FilePath;
@@ -289,7 +289,7 @@ namespace LL.SCG.Commands
 
 				if (previousSettings != null)
 				{
-					var previousData = previousSettings.Where(s => s.ID == template.ID).FirstOrDefault();
+					var previousData = previousSettings.FirstOrDefault(s => s.ID == template.ID);
 					if (previousData != null)
 					{
 						tdata.Enabled = previousData.Enabled;

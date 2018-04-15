@@ -5,7 +5,7 @@ VisualStudioVersion = 15.0.27130.2024
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SourceControlGenerator", "SourceControlGenerator\SourceControlGenerator.csproj", "{E96F2EEB-E207-4AB6-9B85-F86B3F386117}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SCG-Addon-DOS2", "SCG-Addon-DOS2\SCG-Addon-DOS2.csproj", "{7653F93F-78A9-4D82-9289-C40FBD3FF3F6}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SCG_DOS2", "Modules\DOS2\SCG_DOS2.csproj", "{7653F93F-78A9-4D82-9289-C40FBD3FF3F6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
