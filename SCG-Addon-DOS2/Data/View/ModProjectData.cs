@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Input;
 using System.Xml;
 using System.Xml.Linq;
@@ -79,6 +80,15 @@ namespace LL.SCG.Data
 			}
 		}
 
+		public string ID
+		{
+			get => ModuleInfo.UUID;
+			set
+			{
+				ModuleInfo.UUID = value;
+			}
+		}
+
 		public string FolderName
 		{
 			get
@@ -124,21 +134,19 @@ namespace LL.SCG.Data
 			}
 		}
 
-		public DateTime? LastBackup
+		private DateTime lastBackup;
+
+		public DateTime LastBackup
 		{
 			get
 			{
-				if (ProjectAppData != null) return ProjectAppData.LastBackup;
-				return null;
+				return lastBackup;
 			}
 			set
 			{
-				if (ProjectAppData != null)
-				{
-					ProjectAppData.LastBackup = value;
-					RaisePropertyChanged("LastBackup");
-					RaisePropertyChanged("LastBackupText");
-				}
+				lastBackup = value;
+				RaisePropertyChanged("LastBackup");
+				RaisePropertyChanged("LastBackupText");
 			}
 		}
 
@@ -148,9 +156,9 @@ namespace LL.SCG.Data
 			{
 				if(LastBackup != null)
 				{
-					return LastBackup?.ToShortDateString();
+					return LastBackup.ToString();
 				}
-				return "";
+				return "None";
 			}
 		}
 
@@ -164,9 +172,37 @@ namespace LL.SCG.Data
 				selected = value;
 				RaisePropertyChanged("Selected");
 			}
+
+		}
+
+		private string thumbnailPath;
+
+		public string ThumbnailPath
+		{
+			get { return thumbnailPath; }
+			set
+			{
+				thumbnailPath = value;
+				RaisePropertyChanged("ThumbnailPath");
+			}
+		}
+
+
+		private Visibility thumbnailExists = Visibility.Collapsed;
+
+		public Visibility ThumbnailExists
+		{
+			get { return thumbnailExists; }
+			set
+			{
+				thumbnailExists = value;
+				RaisePropertyChanged("ThumbnailExists");
+			}
 		}
 
 		public ICommand OpenBackupFolder { get; private set; }
+
+		public ICommand OpenGitFolder { get; private set; }
 
 		public ICommand OpenModsFolder { get; private set; }
 
@@ -195,6 +231,7 @@ namespace LL.SCG.Data
 			//OpenProjectFolder = new CallbackCommand();
 
 			OpenBackupFolder = new CallbackCommand(() => { DOS2Commands.OpenBackupFolder(this); });
+			OpenGitFolder = new CallbackCommand(() => { DOS2Commands.OpenGitFolder(this); });
 			OpenModsFolder = new CallbackCommand(() => { DOS2Commands.OpenModsFolder(this); });
 			OpenPublicFolder = new CallbackCommand(() => { DOS2Commands.OpenPublicFolder(this); });
 			OpenEditorFolder = new CallbackCommand(() => { DOS2Commands.OpenEditorFolder(this); });
@@ -280,7 +317,8 @@ namespace LL.SCG.Data
 
 			try
 			{
-				string projectMetaFilePath = Path.Combine(ProjectsFolderPath, ModuleInfo.Name, "meta.lsx");
+				string projectDirectory = Path.Combine(ProjectsFolderPath, ModuleInfo.Name);
+				string projectMetaFilePath = Path.Combine(projectDirectory, "meta.lsx");
 
 				Log.Here().Activity("Attempting to load project meta.lsx at {0}", projectMetaFilePath);
 
@@ -290,6 +328,25 @@ namespace LL.SCG.Data
 				{
 					var projectMetaXml = XDocument.Load(projectMetaFile.OpenRead());
 					this.ProjectInfo.LoadFromXml(projectMetaXml);
+
+					Log.Here().Activity($"Checking {projectDirectory} for thumnails.");
+
+					var thumbnail = Directory.GetFiles(projectDirectory, "thumbnail.*", SearchOption.TopDirectoryOnly);
+					if (thumbnail.Length > 0)
+					{
+						var thumbpath = thumbnail.FirstOrDefault();
+						if (FileCommands.IsValidImage(thumbpath))
+						{
+							ThumbnailPath = thumbpath;
+							ThumbnailExists = Visibility.Visible;
+
+							Log.Here().Activity($"Set thumbnail path to {thumbpath}");
+						}
+						else
+						{
+							Log.Here().Error($"{thumbpath} is not a valid image file.");
+						}
+					}
 				}
 			}
 			catch (Exception ex)

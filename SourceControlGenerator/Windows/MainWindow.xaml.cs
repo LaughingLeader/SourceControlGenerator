@@ -47,8 +47,6 @@ namespace LL.SCG.Windows
 		public static readonly DependencyProperty ControllerProperty =
 			DependencyProperty.Register("Controller", typeof(AppController), typeof(MainWindow), new PropertyMetadata(null));
 
-
-
 		private IModuleData Data => Controller.Data.CurrentModuleData;
 
 		public MainWindow()

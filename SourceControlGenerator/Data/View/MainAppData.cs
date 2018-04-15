@@ -17,6 +17,7 @@ using LL.SCG.Commands;
 using System.Windows.Input;
 using LL.SCG.Data.App;
 using LL.SCG.Interfaces;
+using System.Windows;
 
 namespace LL.SCG.Data.View
 {
@@ -63,6 +64,57 @@ namespace LL.SCG.Data.View
 			}
 		}
 
+		#region ProgressBar
+
+		private string progressTitle = "Processing...";
+
+		public string ProgressTitle
+		{
+			get { return progressTitle; }
+			set
+			{
+				progressTitle = value;
+				RaisePropertyChanged("ProgressTitle");
+			}
+		}
+
+		private string progressMessage = "";
+
+		public string ProgressMessage
+		{
+			get { return progressMessage; }
+			set
+			{
+				progressMessage = value;
+				RaisePropertyChanged("ProgressMessage");
+			}
+		}
+
+		private int progressValue = 75;
+
+		public int ProgressValue
+		{
+			get { return progressValue; }
+			set
+			{
+				progressValue = value;
+				RaisePropertyChanged("ProgressValue");
+			}
+		}
+
+		private Visibility progressVisiblity = Visibility.Collapsed;
+
+		public Visibility ProgressVisiblity
+		{
+			get { return progressVisiblity; }
+			set
+			{
+				progressVisiblity = value;
+				RaisePropertyChanged("ProgressVisiblity");
+			}
+		}
+
+		#endregion
 
 		public void SetModuleKeyList(ObservableCollection<KeywordData> keyList)
 		{

@@ -19,6 +19,7 @@ using LL.SCG.Interfaces;
 using LL.SCG.Windows;
 using LL.SCG.Controls.Behavior;
 using LL.SCG.DOS2.Core;
+using System.ComponentModel;
 
 namespace LL.SCG.DOS2.Controls
 {
@@ -165,7 +166,7 @@ namespace LL.SCG.DOS2.Controls
 					{
 						if (item is ModProjectData data)
 						{
-							data.Selected = true;
+							//data.Selected = true;
 							/*
 							if (!canArchive)
 							{
@@ -195,7 +196,7 @@ namespace LL.SCG.DOS2.Controls
 				{
 					if (row is ModProjectData data)
 					{
-						data.Selected = false;
+						//data.Selected = false;
 					}
 				}
 			}
@@ -242,29 +243,9 @@ namespace LL.SCG.DOS2.Controls
 			}
 		}
 
-		private void BackupSelectedProjects(string OutputDirectory = "")
-		{
-			var selectedProjects = Controller.Data.ManagedProjects.Where(p => p.Selected).ToList();
-			if (selectedProjects != null && selectedProjects.Count > 0)
-			{
-				foreach (var project in selectedProjects)
-				{
-					Controller.SelectProject(project);
-					if (Controller.BackupProject(OutputDirectory))
-					{
-						Log.Here().Activity("Successfully created archive for {0}.", project.Name);
-					}
-					else
-					{
-						Log.Here().Error("Failed to create archive for {0}.", project.Name);
-					}
-				}
-			}
-		}
-
 		private void BackupButton_Click(object sender, RoutedEventArgs e)
 		{
-			BackupSelectedProjects();
+			Controller.BackupSelectedProjects();
 		}
 
 		private void BackupSelectedButton_Click(object sender, RoutedEventArgs e)
@@ -277,32 +258,14 @@ namespace LL.SCG.DOS2.Controls
 			FileCommands.Load.OpenFolderDialog(mainWindow, "Select Archive Export Location", Controller.Data.Settings.LastBackupPath, (path) =>
 			{
 				Controller.Data.Settings.LastBackupPath = path;
-				BackupSelectedProjects(path);
-			});
+				Controller.BackupSelectedProjects(path);
+			}, false);
 		}
 
 		private void GitGenerationButton_Click(object sender, RoutedEventArgs e)
 		{
 			var selectedProjects = Controller.Data.ManagedProjects.Where(p => p.Selected).ToList<IProjectData>();
-			mainWindow.OpenGitGenerationWindow(Controller.Data.GitGenerationSettings, selectedProjects, StartGitGeneration);
-		}
-
-		public void StartGitGeneration()
-		{
-			Log.Here().Important("Generating git repositories for selected projects.");
-			foreach (var project in Controller.Data.GitGenerationSettings.ExportProjects)
-			{
-				ModProjectData modProjectData = (ModProjectData)project;
-				Controller.SelectProject(modProjectData);
-				if (Controller.GenerateGitFiles(Controller.Data.GitGenerationSettings))
-				{
-					Log.Here().Important("Git repository successfully generated for {0}.", project.Name);
-				}
-				else
-				{
-					Log.Here().Error("Error generating git repository for {0}.", project.Name);
-				}
-			}
+			mainWindow.OpenGitGenerationWindow(Controller.Data.GitGenerationSettings, selectedProjects, Controller.StartGitGenerationAsync);
 		}
 
 		public bool HasFocus(Control aControl, bool aCheckChildren)
@@ -346,6 +309,15 @@ namespace LL.SCG.DOS2.Controls
 					}
 					
 				}
+			}
+		}
+
+		private void DataGridRow_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+		{
+			DataGridRow row = sender as DataGridRow;
+			if(row.DataContext is ModProjectData data)
+			{
+				data.Selected = !data.Selected;
 			}
 		}
 	}

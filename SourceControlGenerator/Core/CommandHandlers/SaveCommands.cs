@@ -191,5 +191,34 @@ namespace LL.SCG.Commands
 				}
 			}
 		}
+
+		public bool SaveSourceControlData(IProjectData data, string folderPath)
+		{
+			SourceControlData sourceControlData = new SourceControlData()
+			{
+				ProjectName = data.Name,
+				ProjectUUID = data.ID
+			};
+			return SaveSourceControlData(sourceControlData, folderPath);
+		}
+
+		public bool SaveSourceControlData(SourceControlData data, string folderPath)
+		{
+			if (!String.IsNullOrEmpty(folderPath) && Directory.Exists(folderPath))
+			{
+				Log.Here().Important("Serializing and saving source control data.");
+				var filePath = Path.Combine(folderPath, DefaultPaths.SourceControlGeneratorDataFile);
+				try
+				{
+					string json = JsonConvert.SerializeObject(data, Newtonsoft.Json.Formatting.Indented);
+					return FileCommands.WriteToFile(filePath, json);
+				}
+				catch (Exception ex)
+				{
+					Log.Here().Error("Error serializing source control data at {0}: {1}", filePath, ex.ToString());
+				}
+			}
+			return false;
+		}
 	}
 }

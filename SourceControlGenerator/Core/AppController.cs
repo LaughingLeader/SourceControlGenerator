@@ -21,6 +21,9 @@ namespace LL.SCG.Core
    public class AppController : PropertyChangedBase
 	{
 		private static AppController _instance;
+
+		public static AppController Main => _instance;
+
 		private MainWindow mainWindow;
 
 		public MainAppData Data { get; set; }
@@ -78,6 +81,33 @@ namespace LL.SCG.Core
 			projectController.MainAppData = _instance.Data;
 
 			Log.Here().Important("Registered controller for module {0}.", Name);
+		}
+
+		public void StartProgress(string Title, int StartValue = 0)
+		{
+			mainWindow.IsEnabled = false;
+			Data.ProgressTitle = Title;
+			Data.ProgressValue = StartValue;
+			Data.ProgressVisiblity = System.Windows.Visibility.Visible;
+		}
+
+		public void UpdateProgress(int Value = 1, string Message = null)
+		{
+			Data.ProgressValue += Value;
+			if(Message != null) Data.ProgressMessage = Message;
+		}
+
+		public async void UpdateProgressMessage(string Message)
+		{
+			await Task.Delay(200);
+			Data.ProgressMessage = Message;
+		}
+
+		public async void FinishProgress()
+		{
+			mainWindow.IsEnabled = true;
+			await Task.Delay(500);
+			Data.ProgressVisiblity = System.Windows.Visibility.Collapsed;
 		}
 
 		public AppController(MainWindow MainAppWindow)

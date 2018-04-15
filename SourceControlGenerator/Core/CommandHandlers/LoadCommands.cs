@@ -71,7 +71,7 @@ namespace LL.SCG.Commands
 
 		}
 
-		public void OpenFolderDialog(Window ParentWindow, string Title, string FilePath, Action<string> OnFolderSelected)
+		public void OpenFolderDialog(Window ParentWindow, string Title, string FilePath, Action<string> OnFolderSelected, bool RetainRelativity = true)
 		{
 			var openFolder = new CommonOpenFileDialog();
 			openFolder.AllowNonFileSystemItems = true;
@@ -86,8 +86,8 @@ namespace LL.SCG.Commands
 
 			if (result == CommonFileDialogResult.Ok)
 			{
-				string path = openFolder.FileNames.First();
-				if (FileCommands.PathIsRelative(path))
+				string path = Path.GetFullPath(openFolder.FileNames.First());
+				if (RetainRelativity && FileCommands.PathIsRelative(path))
 				{
 					path = path.Replace(Directory.GetCurrentDirectory(), "");
 				}
@@ -159,14 +159,13 @@ namespace LL.SCG.Commands
 
 				foreach(var template in templateXml.Descendants("Template"))
 				{
-					TemplateEditorData templateData = TemplateEditorData.LoadFromXml(template);
+					TemplateEditorData templateData = TemplateEditorData.LoadFromXml(Data, template);
 					Data.Templates.Add(templateData);
 				}
 			}
 			catch (Exception ex)
 			{
-				Log.Here().Error("Error loading mod meta.lsx: {0}", ex.ToString());
-
+				Log.Here().Error(Message: $"Error loading template file {templateFilePath}: {ex.ToString()}");
 			}
 
 			if(Data.ModuleSettings.TemplateFiles != null && Data.ModuleSettings.TemplateFiles.Count > 0)
@@ -177,6 +176,8 @@ namespace LL.SCG.Commands
 					if (data != null)
 					{
 						data.FilePath = templateFile.FilePath;
+
+						
 					}
 				}
 			}
@@ -302,6 +303,26 @@ namespace LL.SCG.Commands
 			Data.GitGenerationSettings.TemplateSettings = templateSettings;
 
 			if (settingsNeedSaving) FileCommands.Save.SaveGitGenerationSettings(Data, DefaultPaths.GitGenSettings(Data));
+		}
+
+		public SourceControlData LoadSourceControlData(string filePath)
+		{
+			if (!String.IsNullOrEmpty(filePath) && File.Exists(filePath))
+			{
+				Log.Here().Important("Deserializing source control data.");
+
+				try
+				{
+					SourceControlData data = JsonConvert.DeserializeObject<SourceControlData>(File.ReadAllText(filePath));
+					data.RepositoryPath = Directory.GetDirectoryRoot(filePath);
+					return data;
+				}
+				catch (Exception ex)
+				{
+					Log.Here().Error("Error deserializing {0}: {1}", filePath, ex.ToString());
+				}
+			}
+			return null;
 		}
 
 		public void LoadAll(IModuleData Data)

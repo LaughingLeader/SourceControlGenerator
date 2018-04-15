@@ -11,6 +11,8 @@ namespace LL.SCG.Data
 	{
 		public string ProjectName { get; set; }
 
+		public string ProjectUUID { get; set; }
+
 		[JsonIgnore] public string RepositoryPath { get; set; }
 	}
 }

@@ -85,7 +85,11 @@ namespace LL.SCG.DOS2.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to #Levels
+        ///   Looks up a localized string similar to #SourceControlGenerator
+        ///######################
+        ///SourceControlGenerator.json
+        ///
+        ///#Levels
         ///######################
         ///Mods/$ModFolderName/Levels/*
         ///Mods/$ModFolderName/Globals/*
@@ -104,20 +108,11 @@ namespace LL.SCG.DOS2.Properties {
         ///#Editor files
         ///######################
         ///StatsEditorConfig.xml
+        ///EffectEditorConfig.xml
         ///DockPanel.config
         ///EditorBrowserMetadata.*
-        ///EffectEditorConfig.xml
         ///
-        ///#Assets
-        ///######################
-        ///*.gr2
-        ///*.dae
-        ///*.swf
-        ///*.bullet
-        ///*.dds
-        ///*.tga
-        ///*.png
-        ///*. [rest of string was truncated]&quot;;.
+        ///#Assets [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string DefaultGitIgnore {
             get {

@@ -14,11 +14,6 @@ namespace LL.SCG.Interfaces
 	{
 		MainAppData MainAppData { get; set; }
 
-		void SelectProject(IProjectData project);
-
-		bool GenerateGitFiles(GitGenerationSettings generationSettings);
-		bool GenerateBackupFolder();
-		bool BackupProject(string OutputDirectory = "");
 		void AddProjects(List<AvailableProjectViewData> selectedItems);
 		void Initialize(MainAppData mainAppData);
 		void Start();

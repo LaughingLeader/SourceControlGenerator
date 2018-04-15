@@ -283,7 +283,7 @@ namespace LL.SCG.Data.View
 			}
 		}
 
-		private static string GetPropetyValueFromXml(XElement xmlData, string propertyName, string defaultValue = "")
+		private static string GetPropertyValueFromXml(IModuleData moduleData, XElement xmlData, string propertyName, string defaultValue = "")
 		{
 			XElement element = XmlDataHelper.GetDescendantByAttributeValue(xmlData, "Property", "Name", propertyName);
 			string value = "";
@@ -297,7 +297,7 @@ namespace LL.SCG.Data.View
 				{
 					if(type == "Resource")
 					{
-						var resourceVal = Properties.Resources.ResourceManager.GetString(contents, Properties.Resources.Culture);
+						var resourceVal = moduleData.LoadStringResource(contents);
 						if (resourceVal != null) return resourceVal;
 					}
 					else if(type == "File")
@@ -330,7 +330,7 @@ namespace LL.SCG.Data.View
 			return str.Replace("\\n", Environment.NewLine).Replace("\\r", Environment.NewLine);
 		}
 
-		public static TemplateEditorData LoadFromXml(XElement xmlData)
+		public static TemplateEditorData LoadFromXml(IModuleData moduleData, XElement xmlData)
 		{
 			string ID = XmlDataHelper.GetAttributeAsString(xmlData, "ID", "");
 			if(!String.IsNullOrWhiteSpace(ID))
@@ -338,12 +338,12 @@ namespace LL.SCG.Data.View
 				TemplateEditorData data = new TemplateEditorData()
 				{
 					ID = ID,
-					Name = GetPropetyValueFromXml(xmlData, "TabName"),
-					LabelText = GetPropetyValueFromXml(xmlData, "LabelText"),
-					Filename = GetPropetyValueFromXml(xmlData, "DefaultTemplateFilename"),
-					ExportPath = GetPropetyValueFromXml(xmlData, "ExportPath"),
-					DefaultEditorText = GetPropetyValueFromXml(xmlData, "DefaultEditorText"),
-					ToolTipText = ReplaceNewlineSymbols(GetPropetyValueFromXml(xmlData, "ToolTip"))
+					Name = GetPropertyValueFromXml(moduleData, xmlData, "TabName"),
+					LabelText = GetPropertyValueFromXml(moduleData, xmlData, "LabelText"),
+					Filename = GetPropertyValueFromXml(moduleData, xmlData, "DefaultTemplateFilename"),
+					ExportPath = GetPropertyValueFromXml(moduleData, xmlData, "ExportPath"),
+					DefaultEditorText = GetPropertyValueFromXml(moduleData, xmlData, "DefaultEditorText"),
+					ToolTipText = ReplaceNewlineSymbols(GetPropertyValueFromXml(moduleData, xmlData, "ToolTip"))
 				};
 				return data;
 			}

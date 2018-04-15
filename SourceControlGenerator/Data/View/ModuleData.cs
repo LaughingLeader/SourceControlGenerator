@@ -169,6 +169,11 @@ namespace LL.SCG.Data.View
 			Settings = JsonConvert.DeserializeObject<T>(File.ReadAllText(DefaultPaths.AppSettings(this)));
 		}
 
+		public virtual string LoadStringResource(string Name)
+		{
+			return Properties.Resources.ResourceManager.GetString(Name, Properties.Resources.Culture);
+		}
+
 		public ModuleData(string moduleName, string moduleFolderName)
 		{
 			ModuleName = moduleName;

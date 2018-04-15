@@ -324,7 +324,7 @@
 			</TabControl.Resources>
 			<TabItem Header="Projects" x:Name="ProjectsTab" >
 				<Grid x:Name="ProjectsViewGrid">
-					
+
 				</Grid>
 			</TabItem>
 			<TabItem Header="Templates">
@@ -363,7 +363,7 @@
 								<Setter Property="Header" Value="{Binding Path=Name}" />
 							</Style>
 							<Style TargetType="{x:Type c:TemplateEditorControl}">
-							
+
 							</Style>
 						</TabControl.Resources>
 						<TabControl.ItemsSource>
@@ -542,7 +542,7 @@
 						</StackPanel>
 					</Grid>
 				</Grid>
-				
+
 			</TabItem>
 			<TabItem x:Name="Tab_Settings" Header="Settings" BorderThickness="0" >
 				<ScrollViewer VerticalScrollBarVisibility="Auto" Padding="0" BorderThickness="0" >
@@ -559,7 +559,7 @@
 									</Trigger>
 								</Style.Triggers>
 							</Style>
-							
+
 						</ListView.ItemContainerStyle>
 						<ListView.Resources>
 							<Style x:Key="Settings_ListViewHeaderStyle" TargetType="{x:Type GridViewColumnHeader}">
@@ -621,6 +621,26 @@
 
 			<TextBox Grid.Column="0" x:Name="FooterOuputTextboxDate" Text="{Binding Path=FooterOutputDate, ElementName=MainAppWindow}" IsReadOnly="True" Margin="0" BorderThickness="0" TextAlignment="Center" Background="{x:Null}" />
 			<TextBox Grid.Column="1" x:Name="FooterOuputTextboxText" Text="{Binding Path=FooterOutputText, ElementName=MainAppWindow}" IsReadOnly="True" TextAlignment="Left" Foreground="{Binding Path=FooterOutputType, ElementName=MainAppWindow, Converter={StaticResource FooterOutputColorConverter}}" Margin="0" BorderThickness="0" Background="{x:Null}" Padding="4,0,0,0" />
+		</Grid>
+		<Grid Name="LockProgressScreen" Grid.Row="0" Grid.RowSpan="3" Visibility="{Binding ProgressVisiblity, FallbackValue=Collapsed}">
+			<Grid.Background>
+				<SolidColorBrush Color="{DynamicResource {x:Static SystemColors.ActiveBorderColorKey}}"/>
+			</Grid.Background>
+			<Grid.RowDefinitions>
+				<RowDefinition />
+				<RowDefinition />
+				<RowDefinition />
+			</Grid.RowDefinitions>
+			<StackPanel Grid.Row="0" Orientation="Vertical" VerticalAlignment="Center">
+				<StackPanel.Background>
+					<SolidColorBrush Color="{DynamicResource {x:Static SystemColors.ControlLightColorKey}}"/>
+				</StackPanel.Background>
+				<TextBlock Text="{Binding ProgressTitle, FallbackValue=Processing...}" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="36" Padding="10" />
+				<TextBlock Text="{Binding ProgressMessage, FallbackValue=Running tasks...}" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="20" Padding="10" />
+			</StackPanel>
+			<Grid Grid.Row="1" >
+				<ProgressBar Minimum="0" Maximum="100" Value="{Binding ProgressValue, FallbackValue=75}" Margin="50" HorizontalAlignment="Stretch" VerticalAlignment="Center" MinHeight="40" />
+			</Grid>
 		</Grid>
 	</Grid>
 </Window>

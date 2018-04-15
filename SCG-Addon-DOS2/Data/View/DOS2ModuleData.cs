@@ -54,6 +54,11 @@ namespace LL.SCG.DOS2.Data.View
 
 		public ObservableCollection<AvailableProjectViewData> NewProjects { get; set; }
 
+		override public string LoadStringResource(string Name)
+		{
+			return Properties.Resources.ResourceManager.GetString(Name, Properties.Resources.Culture);
+		}
+
 		public DOS2ModuleData() : base("DOS2", "DivinityOriginalSin2")
 		{
 			ManageButtonsText = "Select a Project";

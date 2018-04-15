@@ -13,6 +13,16 @@
 	<UserControl.Resources>
 		<cv:EmptyListVisibilityConverter x:Key="EmptyListVisibilityConverter"/>
 		<cv:NewlineStringConverter x:Key="NewlineStringConverter"/>
+
+		<Style x:Key="DataGrid_NoHighlight" TargetType="DataGridCell" BasedOn="{StaticResource {x:Type DataGridCell}}">
+			<Style.Triggers>
+				<Trigger  Property="IsSelected" Value="true">
+					<Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}"/>
+					<Setter Property="Background" Value="{x:Null}" />
+					<Setter Property="BorderBrush" Value="{x:Null}" />
+				</Trigger>
+			</Style.Triggers>
+		</Style>
 	</UserControl.Resources>
 	<Grid x:Name="Projects_ParentGrid" Width="Auto" Height="Auto">
 		<Grid.ColumnDefinitions>
@@ -88,7 +98,7 @@
 				<Border Grid.Row="1" BorderThickness="1" BorderBrush="{DynamicResource {x:Static SystemColors.ControlLightBrushKey}}">
 					<ScrollViewer x:Name="ProjectsDataGridScrollViewer" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" >
 						<DataGrid x:Name="ManagedProjectsDataGrid" ItemsSource="{Binding ManagedProjects}" AutoGenerateColumns="False" IsReadOnly="True" SelectionChanged="ManagedProjectsDataGrid_SelectionChanged" BorderBrush="{x:Null}" BorderThickness="0"  
-								  CanUserAddRows="False" EnableRowVirtualization="False" Loaded="ManagedProjectsDataGrid_Loaded" ColumnWidth="Auto"
+								  CanUserAddRows="False" EnableRowVirtualization="False" Loaded="ManagedProjectsDataGrid_Loaded" ColumnWidth="Auto" CellStyle="{StaticResource DataGrid_NoHighlight}"
 								  >
 							<DataGrid.Resources>
 								<Style x:Key="ColumnElementStyle" TargetType="TextBlock">
@@ -98,6 +108,9 @@
 								<Style x:Key="ProjectsHeaderStyle" TargetType="DataGridColumnHeader">
 									<Setter Property="HorizontalContentAlignment" Value="Center" />
 								</Style>
+								<Style TargetType="DataGridRow">
+									<EventSetter Event="MouseDoubleClick" Handler="DataGridRow_MouseDoubleClick"/>
+								</Style>
 							</DataGrid.Resources>
 							<DataGrid.Columns>
 								<DataGridTemplateColumn MinWidth="25" CanUserResize="False"  HeaderStyle="{StaticResource ProjectsHeaderStyle}"  >
@@ -105,13 +118,13 @@
 										<CheckBox Checked="ManagedProjects_SelectAll" Unchecked="ManagedProjects_SelectNone" ToolTip="Select/Deselect All" />
 									</DataGridTemplateColumn.Header>
 									<DataGridTemplateColumn.CellStyle>
-										<Style TargetType="{x:Type DataGridCell}">
+										<Style TargetType="{x:Type DataGridCell}" BasedOn="{StaticResource DataGrid_NoHighlight}">
 											<Setter Property="Margin" Value="0" />
 										</Style>
 									</DataGridTemplateColumn.CellStyle>
-								<DataGridTemplateColumn.CellTemplate>
+									<DataGridTemplateColumn.CellTemplate>
 										<DataTemplate>
-											<CheckBox IsChecked="{Binding Selected}" HorizontalAlignment="Center" VerticalAlignment="Center" />
+											<CheckBox IsChecked="{Binding Selected, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Center" VerticalAlignment="Center" />
 										</DataTemplate>
 									</DataGridTemplateColumn.CellTemplate>
 								</DataGridTemplateColumn>
@@ -135,7 +148,7 @@
 												<Button x:Name="Btn_Backup" ToolTip="Open Backup Folder..." Command="{Binding OpenBackupFolder}" >
 													<Image Source="/SourceControlGenerator;component/Resources/Icons/7zipIcon.png" Stretch="UniformToFill"/>
 												</Button>
-												<Button x:Name="Btn_GenGit" IsEnabled="{Binding GitGenerated}" >
+												<Button x:Name="Btn_GenGit" IsEnabled="{Binding GitGenerated}" Command="{Binding OpenGitFolder}" >
 													<Image Stretch="UniformToFill" ToolTipService.ShowOnDisabled="True">
 														<Image.Style>
 															<Style TargetType="Image">
@@ -195,7 +208,7 @@
 								</DataGridTemplateColumn>
 								<DataGridTextColumn Header="Name" Binding="{Binding ModuleInfo.Name}" ElementStyle="{StaticResource ColumnElementStyle}" MinWidth="50" Width="Auto" HeaderStyle="{StaticResource ProjectsHeaderStyle}">
 									<DataGridTextColumn.CellStyle>
-										<Style TargetType="DataGridCell">
+										<Style TargetType="DataGridCell" BasedOn="{StaticResource DataGrid_NoHighlight}">
 											<Setter Property="ToolTip" Value="{Binding FolderName}" />
 										</Style>
 									</DataGridTextColumn.CellStyle>
@@ -205,36 +218,30 @@
 								<DataGridTextColumn Header="Type" Binding="{Binding ModuleInfo.Type}"  ElementStyle="{StaticResource ColumnElementStyle}" MinWidth="40" HeaderStyle="{StaticResource ProjectsHeaderStyle}" />
 								<DataGridTextColumn Header="Description" x:Name="DescriptionColumn" Binding="{Binding ModuleInfo.Description}"  ElementStyle="{StaticResource ColumnElementStyle}" MinWidth="70" HeaderStyle="{StaticResource ProjectsHeaderStyle}">
 									<DataGridTextColumn.CellStyle>
-										<Style TargetType="DataGridCell">
+										<Style TargetType="DataGridCell" BasedOn="{StaticResource DataGrid_NoHighlight}">
 											<Setter Property="ToolTip" Value="{Binding ModuleInfo.Description}" />
 										</Style>
 									</DataGridTextColumn.CellStyle>
 								</DataGridTextColumn>
 								<DataGridTextColumn Header="Last Backup" Binding="{Binding LastBackupText}"  ElementStyle="{StaticResource ColumnElementStyle}" MinWidth="80" HeaderStyle="{StaticResource ProjectsHeaderStyle}" />
+								<DataGridTemplateColumn Header="Icon"  HeaderStyle="{StaticResource ProjectsHeaderStyle}" >
+									<DataGridTemplateColumn.CellStyle>
+										<Style TargetType="DataGridCell" BasedOn="{StaticResource DataGrid_NoHighlight}">
+											<Setter Property="ToolTip">
+												<Setter.Value>
+													<Image MaxWidth="256" MaxHeight="256" Stretch="Uniform" Source="{Binding ThumbnailPath, TargetNullValue={x:Null}}" Visibility="{Binding ThumbnailExists, FallbackValue=Collapsed}" />
+												</Setter.Value>
+											</Setter>
+										</Style>
+										
+									</DataGridTemplateColumn.CellStyle>
+									<DataGridTemplateColumn.CellTemplate>
+										<DataTemplate>
+											<Image MaxWidth="16" MaxHeight="16" Stretch="Uniform" Source="{Binding ThumbnailPath, TargetNullValue={x:Null}}" Visibility="{Binding ThumbnailExists, FallbackValue=Collapsed}" />
+										</DataTemplate>
+									</DataGridTemplateColumn.CellTemplate>
+								</DataGridTemplateColumn>
 							</DataGrid.Columns>
-							<DataGrid.CellStyle>
-								<!--Override Highlighting so that its easy to see what is selected even when the control is not focused-->
-								<Style TargetType="{x:Type DataGridCell}">
-									<Style.Triggers>
-										<Trigger  Property="IsSelected" Value="true">
-											<Setter Property="Background" Value="{DynamicResource {x:Static SystemColors.HighlightBrushKey}}" />
-											<Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.HighlightTextBrushKey}}" />
-											<Setter Property="BorderBrush" Value="{DynamicResource {x:Static SystemColors.HighlightBrushKey}}" />
-										</Trigger>
-										<MultiDataTrigger>
-											<MultiDataTrigger.Conditions>
-												<Condition Binding="{Binding RelativeSource={RelativeSource Self}, Path=IsSelected}" Value="True" />
-												<Condition Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=DataGrid}, Path=IsKeyboardFocusWithin}" Value="False" />
-											</MultiDataTrigger.Conditions>
-											<MultiDataTrigger.Setters>
-												<Setter Property="Background" Value="{DynamicResource {x:Static SystemColors.HighlightBrushKey}}" />
-												<Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.HighlightTextBrushKey}}" />
-												<Setter Property="BorderBrush" Value="{DynamicResource {x:Static SystemColors.HighlightBrushKey}}" />
-											</MultiDataTrigger.Setters>
-										</MultiDataTrigger>
-									</Style.Triggers>
-								</Style>
-							</DataGrid.CellStyle>
 						</DataGrid>
 					</ScrollViewer>
 				</Border>

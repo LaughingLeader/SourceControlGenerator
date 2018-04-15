@@ -56,7 +56,7 @@ namespace LL.SCG.FileGen
 			}
 			catch(Exception ex)
 			{
-				Log.Here().Error("Error writing archive: {0}", ex.ToString());
+				Log.Here().Error($"Error writing archive {repoPath} to {archiveFilePath}: {ex.ToString()}");
 			}
 			return false;
 		}

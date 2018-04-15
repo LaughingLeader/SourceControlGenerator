@@ -26,6 +26,8 @@ namespace LL.SCG.Interfaces
 
 		IModuleSettingsData ModuleSettings { get; }
 
+		string LoadStringResource(string ResourceName);
+
 		void InitializeSettings();
 		void LoadSettings();
 

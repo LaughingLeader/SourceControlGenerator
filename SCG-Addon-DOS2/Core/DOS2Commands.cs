@@ -70,10 +70,22 @@ namespace LL.SCG.DOS2.Core
 				foreach (var project in Data.ManagedProjectsData.Projects)
 				{
 					//var modProject = Data.ModProjects.Where(x => x.Name == project.Name && x.ModuleInfo.UUID == project.GUID).FirstOrDefault();
-					var modProject = Data.ModProjects.Where(x => x.Name == project.Name).FirstOrDefault();
+					var modProject = Data.ModProjects.Where(x => x.Name == project.Name && x.ID == project.UUID).FirstOrDefault();
 					if (modProject != null)
 					{
 						Data.ManagedProjects.Add(modProject);
+
+						DateTime lastBackup;
+						var success = DateTime.TryParse(project.LastBackupUTC, out lastBackup);
+						if (success)
+						{
+							Log.Here().Activity($"Successully parsed {modProject.LastBackup} to DateTime.");
+							modProject.LastBackup = lastBackup.ToLocalTime();
+						}
+						else
+						{
+							Log.Here().Error($"Could not convert {project.LastBackupUTC} to DateTime.");
+						}
 					}
 				}
 			}
@@ -170,6 +182,33 @@ namespace LL.SCG.DOS2.Core
 					Log.Here().Error("Loading available projects failed. DOS2 data directory not found at {0}", Data.Settings.DataDirectory);
 				}
 			}
+
+			if(Directory.Exists(Data.Settings.GitRootDirectory))
+			{
+				foreach(var project in Data.ModProjects)
+				{
+					var filePath = Path.Combine(Data.Settings.GitRootDirectory, project.Name, DefaultPaths.SourceControlGeneratorDataFile);
+					var success = false;
+					if(File.Exists(filePath))
+					{
+						var sourceControlData = FileCommands.Load.LoadSourceControlData(filePath);
+						if(sourceControlData != null)
+						{
+							project.GitData = sourceControlData;
+							success = true;
+						}
+					}
+					
+					if(success)
+					{
+						Log.Here().Important($"Source control file found in git repo for project {project.Name}.");
+					}
+					else
+					{
+						Log.Here().Activity($"Source control file not found for project {project.Name}.");
+					}
+				}
+			}
 		}
 
 
@@ -204,6 +243,26 @@ namespace LL.SCG.DOS2.Core
 				}
 
 				Process.Start(directory);
+			}
+			else
+			{
+				Log.Here().Error($"MainData is null!");
+			}
+		}
+
+		public static void OpenGitFolder(ModProjectData modProjectData)
+		{
+			if (MainData != null)
+			{
+				string directory = Path.Combine(Path.GetFullPath(MainData.Settings.GitRootDirectory), modProjectData.Name);
+				if (Directory.Exists(directory))
+				{
+					Process.Start(directory);
+				}
+				else
+				{
+					Process.Start(Path.GetFullPath(MainData.Settings.GitRootDirectory));
+				}
 			}
 			else
 			{

@@ -10,5 +10,7 @@ namespace LL.SCG.Interfaces
 	public interface IProjectData : INotifyPropertyChanged
 	{
 		string Name { get; set; }
+
+		string ID { get; set; }
 	}
 }

@@ -19,7 +19,7 @@ namespace LL.SCG.Data
 	public class ProjectAppData
 	{
 		public string Name { get; set; }
-		public string GUID { get; set; }
-		public DateTime? LastBackup { get; set; }
+		public string UUID { get; set; }
+		public string LastBackupUTC { get; set; }
 	}
 }

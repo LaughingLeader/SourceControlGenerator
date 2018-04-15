@@ -12,6 +12,8 @@ namespace LL.SCG
 	{
 		public static string MainAppSettings => @"Settings/Settings.json";
 
+		public static string SourceControlGeneratorDataFile => @"SourceControlGenerator.json";
+
 		public static string AppSettings(IModuleData Data)
 		{
 			return @"Settings/" + Data.ModuleFolderName + @"/AppSettings.json";

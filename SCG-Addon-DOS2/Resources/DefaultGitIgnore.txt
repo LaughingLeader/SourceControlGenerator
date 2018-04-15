@@ -1,3 +1,7 @@
+#SourceControlGenerator
+######################
+SourceControlGenerator.json
+
 #Levels
 ######################
 Mods/$ModFolderName/Levels/*
@@ -17,9 +21,9 @@ Public/$ModFolderName/Assets/*
 #Editor files
 ######################
 StatsEditorConfig.xml
+EffectEditorConfig.xml
 DockPanel.config
 EditorBrowserMetadata.*
-EffectEditorConfig.xml
 
 #Assets
 ######################
