@@ -85,7 +85,7 @@ namespace LL.SCG.DOS2.Controls
 			ListBox list = (ListBox)this.FindName("AvailableProjectsList");
 			if (list != null && list.SelectedItems.Count > 0)
 			{
-				
+
 
 				List<AvailableProjectViewData> selectedItems = list.SelectedItems.Cast<AvailableProjectViewData>().ToList();
 				if (selectedItems != null)
@@ -153,6 +153,7 @@ namespace LL.SCG.DOS2.Controls
 
 		private void ManagedProjectsDataGrid_SelectionChanged(object sender, SelectionChangedEventArgs e)
 		{
+			/*
 			bool projectSelected = false;
 			DataGrid managedGrid = (DataGrid)this.FindName("ManagedProjectsDataGrid");
 
@@ -160,20 +161,14 @@ namespace LL.SCG.DOS2.Controls
 			{
 				if (managedGrid.SelectedItems.Count > 0)
 				{
-					projectSelected = true;
-
 					foreach (var item in managedGrid.SelectedItems)
 					{
 						if (item is ModProjectData data)
 						{
-							//data.Selected = true;
-							/*
-							if (!canArchive)
+							if(data.Selected)
 							{
-								string gitProjectDirectory = System.IO.Path.Combine(Controller.Data.AppSettings.GitRootDirectory, data.Name);
-								if (Directory.Exists(gitProjectDirectory)) canArchive = true;
+								projectSelected = true;
 							}
-							*/
 						}
 					}
 				}
@@ -182,6 +177,7 @@ namespace LL.SCG.DOS2.Controls
 			}
 
 			Controller.Data.ProjectSelected = projectSelected;
+			*/
 		}
 
 		private async void DeselectSelectedRows()
@@ -223,6 +219,8 @@ namespace LL.SCG.DOS2.Controls
 					managedGrid.SelectedItems.Add(row);
 				}
 			}
+
+			Controller.Data.ProjectSelected = true;
 		}
 
 		private void ManagedProjects_SelectNone(object sender, RoutedEventArgs e)
@@ -241,6 +239,8 @@ namespace LL.SCG.DOS2.Controls
 					if (managedGrid.SelectedItems.Contains(row)) managedGrid.SelectedItems.Remove(row);
 				}
 			}
+
+			Controller.Data.ProjectSelected = false;
 		}
 
 		private void BackupButton_Click(object sender, RoutedEventArgs e)
@@ -265,7 +265,7 @@ namespace LL.SCG.DOS2.Controls
 		private void GitGenerationButton_Click(object sender, RoutedEventArgs e)
 		{
 			var selectedProjects = Controller.Data.ManagedProjects.Where(p => p.Selected).ToList<IProjectData>();
-			mainWindow.OpenGitGenerationWindow(Controller.Data.GitGenerationSettings, selectedProjects, Controller.StartGitGenerationAsync);
+			mainWindow.OpenGitGenerationWindow(Controller.Data.GitGenerationSettings, selectedProjects, Controller.StartGitGeneration);
 		}
 
 		public bool HasFocus(Control aControl, bool aCheckChildren)
@@ -284,15 +284,16 @@ namespace LL.SCG.DOS2.Controls
 
 		private void SetDataFolderContextMenuTarget(object sender, RoutedEventArgs e)
 		{
-			if(sender is Button btn)
+			if (sender is Button btn && btn.ContextMenu != null && btn.ContextMenu.DataContext == null)
 			{
 				btn.ContextMenu.PlacementTarget = btn;
+				btn.ContextMenu.DataContext = btn.DataContext;
 			}
 		}
 
 		private void ManagedProjectsDataGrid_Loaded(object sender, RoutedEventArgs e)
 		{
-			if(sender is DataGrid grid)
+			if (sender is DataGrid grid)
 			{
 				double availableSpace = this.ActualWidth;
 				double starSpace = 0.0;
@@ -300,14 +301,14 @@ namespace LL.SCG.DOS2.Controls
 
 				foreach (DataGridColumn column in grid.Columns.AsParallel())
 				{
-					if(column.Header is string headerName)
+					if (column.Header is string headerName)
 					{
 						if (headerName != "Description" && column.Visibility == Visibility.Visible && column.GetType() == typeof(DataGridTextColumn))
 						{
 							column.Width = DataGridLength.Auto;
 						}
 					}
-					
+
 				}
 			}
 		}
@@ -315,10 +316,44 @@ namespace LL.SCG.DOS2.Controls
 		private void DataGridRow_MouseDoubleClick(object sender, MouseButtonEventArgs e)
 		{
 			DataGridRow row = sender as DataGridRow;
-			if(row.DataContext is ModProjectData data)
+			if (row.DataContext is ModProjectData data)
 			{
 				data.Selected = !data.Selected;
 			}
+		}
+
+		private void ProjectSelectedCheckbox_SelectionChanged(object sender, RoutedEventArgs e)
+		{
+			CheckBox checkBox = (CheckBox)sender;
+			if (checkBox.IsChecked == true)
+			{
+				Controller.Data.ProjectSelected = true;
+				return;
+			}
+			else
+			{
+				CheckSelectedProjects();
+			}
+		}
+
+		private async void CheckSelectedProjects()
+		{
+			await Task.Delay(50);
+			await CheckSelectedProjectsAsync();
+		}
+
+		private async Task CheckSelectedProjectsAsync()
+		{
+			foreach (var data in Controller.Data.ManagedProjects)
+			{
+				if (data.Selected)
+				{
+					Controller.Data.ProjectSelected = true;
+					return;
+				}
+			}
+
+			Controller.Data.ProjectSelected = false;
 		}
 	}
 }

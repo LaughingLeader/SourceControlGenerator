@@ -196,8 +196,8 @@ namespace LL.SCG.Commands
 		{
 			SourceControlData sourceControlData = new SourceControlData()
 			{
-				ProjectName = data.Name,
-				ProjectUUID = data.ID
+				ProjectName = data.ProjectName,
+				ProjectUUID = data.UUUID
 			};
 			return SaveSourceControlData(sourceControlData, folderPath);
 		}

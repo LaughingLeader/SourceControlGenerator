@@ -447,5 +447,10 @@ namespace LL.SCG.Windows
 				}
 			}
 		}
+
+		private void ProgressScreen_Loaded(object sender, EventArgs e)
+		{
+			Controller.OnProgressLoaded?.Invoke();
+		}
 	}
 }

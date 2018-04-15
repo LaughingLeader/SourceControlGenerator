@@ -71,7 +71,7 @@ namespace LL.SCG.Data
 
 		public List<DependencyInfo> Dependencies { get; set; }
 
-		public string Name
+		public string DisplayName
 		{
 			get => ModuleInfo.Name;
 			set
@@ -80,7 +80,7 @@ namespace LL.SCG.Data
 			}
 		}
 
-		public string ID
+		public string UUUID
 		{
 			get => ModuleInfo.UUID;
 			set
@@ -88,6 +88,11 @@ namespace LL.SCG.Data
 				ModuleInfo.UUID = value;
 			}
 		}
+
+		/// <summary>
+		/// The project folder name. Also used for the repo.
+		/// </summary>
+		public string ProjectName { get; set; }
 
 		public string FolderName
 		{
@@ -315,9 +320,11 @@ namespace LL.SCG.Data
 				}
 			}
 
+			ProjectName = ModuleInfo.Folder.Replace("_"+ModuleInfo.UUID, "");
+
 			try
 			{
-				string projectDirectory = Path.Combine(ProjectsFolderPath, ModuleInfo.Name);
+				string projectDirectory = Path.Combine(ProjectsFolderPath, ProjectName);
 				string projectMetaFilePath = Path.Combine(projectDirectory, "meta.lsx");
 
 				Log.Here().Activity("Attempting to load project meta.lsx at {0}", projectMetaFilePath);

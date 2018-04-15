@@ -1,4 +1,4 @@
-﻿<UserControl x:Class="LL.SCG.DOS2.Controls.ProjectViewControl"
+﻿<UserControl x:Name="ProjectViewControlMain" x:Class="LL.SCG.DOS2.Controls.ProjectViewControl"
 			 xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
 			 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 			 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
@@ -26,7 +26,7 @@
 			</Style.Triggers>
 		</Style>
 		
-		<proxy:IconProxy x:Key="Proxy" Data="{x:Static data:MainAppData.IconData}" />
+		<proxy:IconProxy x:Key="IconProxy" Data="{x:Static data:MainAppData.IconData}" />
 	</UserControl.Resources>
 	<Grid x:Name="Projects_ParentGrid" Width="Auto" Height="Auto">
 		<Grid.ColumnDefinitions>
@@ -127,7 +127,7 @@
 									</DataGridTemplateColumn.CellStyle>
 									<DataGridTemplateColumn.CellTemplate>
 										<DataTemplate>
-											<CheckBox IsChecked="{Binding Selected, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Center" VerticalAlignment="Center" />
+											<CheckBox x:Name="ProjectSelectedCheckbox" IsChecked="{Binding Selected, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Center" VerticalAlignment="Center" Checked="ProjectSelectedCheckbox_SelectionChanged" Unchecked="ProjectSelectedCheckbox_SelectionChanged" />
 										</DataTemplate>
 									</DataGridTemplateColumn.CellTemplate>
 								</DataGridTemplateColumn>
@@ -149,7 +149,7 @@
 													</Style>
 												</StackPanel.Resources>
 												<Button x:Name="Btn_Backup" ToolTip="Open Backup Folder..." Command="{Binding OpenBackupFolder}" >
-													<Image Source="{Binding Source={StaticResource Proxy}, Path=Data.Archive, FallbackValue={x:Null}}" Stretch="UniformToFill"/>
+													<Image Source="{Binding Source={StaticResource IconProxy}, Path=Data.Archive, FallbackValue={x:Null}}" Stretch="UniformToFill"/>
 												</Button>
 												<Button x:Name="Btn_GenGit" IsEnabled="{Binding GitGenerated}" Command="{Binding OpenGitFolder}" >
 													<Image Stretch="UniformToFill" ToolTipService.ShowOnDisabled="True">
@@ -157,11 +157,11 @@
 															<Style TargetType="Image">
 																<Style.Triggers>
 																	<Trigger Property="IsEnabled" Value="False">
-																		<Setter Property="Source" Value="{Binding Source={StaticResource Proxy}, Path=Data.GitLogoDisabled, FallbackValue={x:Null}}" />
+																		<Setter Property="Source" Value="{Binding Source={StaticResource IconProxy}, Path=Data.GitLogoDisabled, FallbackValue={x:Null}}" />
 																		<Setter Property="ToolTip" Value="Git Repo Not Detected" />
 																	</Trigger>
 																	<Trigger Property="IsEnabled" Value="True">
-																		<Setter Property="Source" Value="{Binding Source={StaticResource Proxy}, Path=Data.GitLogoEnabled, FallbackValue={x:Null}}" />
+																		<Setter Property="Source" Value="{Binding Source={StaticResource IconProxy}, Path=Data.GitLogoEnabled, FallbackValue={x:Null}}" />
 																		<Setter Property="ToolTip" Value="Open Git Repo..." />
 																	</Trigger>
 																</Style.Triggers>
@@ -169,10 +169,10 @@
 														</Image.Style>
 													</Image>
 												</Button>
-												<Button x:Name="Btn_DataFolders" ToolTip="Open Data Folder..." ContextMenuService.PlacementTarget="{Binding RelativeSource={RelativeSource Self}}" Click="SetDataFolderContextMenuTarget" >
-													<Image Source="{Binding Source={StaticResource Proxy}, Path=Data.Folder, FallbackValue={x:Null}}" Stretch="UniformToFill"/>
+												<Button x:Name="Btn_DataFolders" ToolTip="Open Data Folder..." Click="SetDataFolderContextMenuTarget" >
+													<Image Source="{Binding Source={StaticResource IconProxy}, Path=Data.Folder, FallbackValue={x:Null}}" Stretch="UniformToFill"/>
 													<Button.ContextMenu>
-														<ContextMenu DataContext="{Binding PlacementTarget.DataContext, RelativeSource={RelativeSource Self}}">
+														<ContextMenu>
 															<MenuItem x:Name="Btn_EditorFolder" Header="Open Editor Folder..." Command="{Binding OpenEditorFolder}" />
 															<MenuItem x:Name="Btn_ModsFolder" Header="Open Mods Folder..." Command="{Binding OpenModsFolder}" />
 															<MenuItem x:Name="Btn_ProjectFolder" Header="Open Project Folder..." Command="{Binding OpenProjectFolder}" />
@@ -212,7 +212,7 @@
 								<DataGridTextColumn Header="Name" Binding="{Binding ModuleInfo.Name}" ElementStyle="{StaticResource ColumnElementStyle}" MinWidth="50" Width="Auto" HeaderStyle="{StaticResource ProjectsHeaderStyle}">
 									<DataGridTextColumn.CellStyle>
 										<Style TargetType="DataGridCell" BasedOn="{StaticResource DataGrid_NoHighlight}">
-											<Setter Property="ToolTip" Value="{Binding FolderName}" />
+											<Setter Property="ToolTip" Value="{Binding ModuleInfo.Folder}" />
 										</Style>
 									</DataGridTextColumn.CellStyle>
 								</DataGridTextColumn>
@@ -263,6 +263,9 @@
 						<Button x:Name="GitGenerationButton" Content="Create Git Repos for Selected..." Click="GitGenerationButton_Click" />
 					</StackPanel>
 				</Grid>
+				<Canvas x:Name="DragSelectionCanvas" Visibility="Collapsed">
+					<Border x:Name="DragSelectionBorder" BorderBrush="Blue" BorderThickness="1" Background="LightBlue" CornerRadius="1" Opacity="0.5" />
+				</Canvas>
 			</Grid>
 		</Grid>
 	</Grid>

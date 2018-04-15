@@ -24,6 +24,8 @@ using LL.SCG.DOS2.Data.View;
 using System.Windows.Controls;
 using LL.SCG.DOS2.Controls;
 using System.Globalization;
+using System.Windows;
+using System.Windows.Threading;
 
 namespace LL.SCG.Core
 {
@@ -41,7 +43,7 @@ namespace LL.SCG.Core
 			var sourceFolders = new List<JunctionData>();
 			foreach (var directoryBaseName in DirectoryLayouts)
 			{
-				var projectSubdirectoryName = directoryBaseName.Replace("ProjectName", project.Name).Replace("ProjectGUID", project.ModuleInfo.UUID);
+				var projectSubdirectoryName = directoryBaseName.Replace("ProjectName", project.ProjectName).Replace("ProjectGUID", project.ModuleInfo.UUID);
 				var junctionSourceDirectory = Path.Combine(Data.Settings.DataDirectory, projectSubdirectoryName);
 				sourceFolders.Add(new JunctionData()
 				{
@@ -52,25 +54,74 @@ namespace LL.SCG.Core
 			return sourceFolders;
 		}
 
-		public bool GenerateGitFiles(ModProjectData modProject, GitGenerationSettings generationSettings)
+		public void StartGitGeneration()
+		{
+			AppController.Main.StartProgress($"Generating Git Files... 0/{Data.GitGenerationSettings.ExportProjects.Count}", RunGitGeneration);
+		}
+
+		public void RunGitGeneration(object sender, DoWorkEventArgs e)
+		{
+			Log.Here().Important("Generating git repositories for selected projects.");
+			int total = Data.GitGenerationSettings.ExportProjects.Count;
+			int amountPerTick = AppController.Main.Data.ProgressValueMax / total;
+
+			Log.Here().Activity($"[Progress] Amount per tick set to {amountPerTick}");
+
+			for (var i = 0; i < total; i++)
+			{
+				var project = Data.GitGenerationSettings.ExportProjects[i];
+				int targetPercentage = amountPerTick * (i + 1);
+				int totalPercentageAmount = targetPercentage - AppController.Main.Data.ProgressValue;
+
+				
+
+				Log.Here().Activity($"[Progress] Target percentage for this iteration is {targetPercentage}, work should increase it by {totalPercentageAmount}");
+
+				ModProjectData modProjectData = (ModProjectData)project;
+
+				if (GenerateGitFiles(modProjectData, Data.GitGenerationSettings, totalPercentageAmount))
+				{
+					Log.Here().Important("Git repository successfully generated for {0}.", project.DisplayName);
+				}
+				else
+				{
+					Log.Here().Error("Error generating git repository for {0}.", project.DisplayName);
+				}
+
+				AppController.Main.SetProgress(targetPercentage);
+
+				AppController.Main.UpdateProgressTitle($"Generating Git Files... {(i + 1)}/{total}");
+			}
+
+			AppController.Main.UpdateProgressTitle($"Generating Git Files... {total}/{total}");
+
+			AppController.Main.UpdateProgressMessage("Finishing up...");
+			AppController.Main.FinishProgress();
+		}
+
+		private bool GenerateGitFiles(ModProjectData modProject, GitGenerationSettings generationSettings, int endPercentage)
 		{
 			if (modProject == null) return false;
 
+			int percentageIncrement = endPercentage / 9;
+
+			Log.Here().Activity($"[Progress] percentageIncrement is {percentageIncrement} / {endPercentage}");
+
 			if (!string.IsNullOrEmpty(Data.Settings.GitRootDirectory))
 			{
-				string gitProjectRootDirectory = Path.Combine(Data.Settings.GitRootDirectory, modProject.Name);
+				string gitProjectRootDirectory = Path.Combine(Data.Settings.GitRootDirectory, modProject.ProjectName);
 
-				AppController.Main.UpdateProgressMessage("Creating git project directory...");
+				AppController.Main.UpdateProgress(percentageIncrement, "Creating git project directory...");
 
 				var rootRepoDirectory = Directory.CreateDirectory(gitProjectRootDirectory);
 
-				AppController.Main.UpdateProgressMessage("Initializing git repo...");
+				AppController.Main.UpdateProgress(percentageIncrement, "Initializing git repo...");
 
 				if (GitGenerator.InitRepository(gitProjectRootDirectory))
 				{
-					Log.Here().Activity("Created git repository for Project ({0}) at {1}", modProject.Name, gitProjectRootDirectory);
+					Log.Here().Activity("Created git repository for Project ({0}) at {1}", modProject.ProjectName, gitProjectRootDirectory);
 
-					AppController.Main.UpdateProgressMessage("Generating templates...");
+					AppController.Main.UpdateProgress(percentageIncrement, "Generating templates...");
 
 					Parallel.ForEach(generationSettings.TemplateSettings, templateSetting =>
 					{
@@ -83,19 +134,19 @@ namespace LL.SCG.Core
 								string outputText = GitGenerator.ReplaceKeywords(templateData.EditorText, modProject, MainAppData, Data);
 								if (!FileCommands.WriteToFile(outputFIlePath, outputText))
 								{
-									Log.Here().Error("[{0}] Failed to create template file at {1}", modProject.Name, templateData.ExportPath);
+									Log.Here().Error("[{0}] Failed to create template file at {1}", modProject.ProjectName, templateData.ExportPath);
 								}
 							}
 							else
 							{
-								Log.Here().Activity("[{0}] Skipping {1}", modProject.Name, templateSetting.TemplateName);
+								Log.Here().Activity("[{0}] Skipping {1}", modProject.ProjectName, templateSetting.TemplateName);
 							}
 						}
 					});
 
 					if (generationSettings.SelectedLicense != LicenseType.None)
 					{
-						AppController.Main.UpdateProgressMessage("Generating license...");
+						AppController.Main.UpdateProgress(percentageIncrement, "Generating license...");
 
 						string outputText = "";
 						if (generationSettings.SelectedLicense == LicenseType.Custom)
@@ -131,36 +182,36 @@ namespace LL.SCG.Core
 
 						if (!FileCommands.WriteToFile(licenseFile, outputText))
 						{
-							Log.Here().Error("[{0}] Failed to write license template file at {1}", modProject.Name, licenseFile);
+							Log.Here().Error("[{0}] Failed to write license template file at {1}", modProject.ProjectName, licenseFile);
 						}
 					}
 
-					AppController.Main.UpdateProgressMessage("Setting initial git commit...");
+					AppController.Main.UpdateProgress(percentageIncrement, "Setting initial git commit...");
 
 					GitGenerator.Commit(gitProjectRootDirectory, "Initial Commit");
 
-					AppController.Main.UpdateProgressMessage("Creating junctions...");
+					AppController.Main.UpdateProgress(percentageIncrement, "Creating junctions...");
 
 					var sourceFolders = PrepareDirectories(modProject, Data.Settings.DirectoryLayouts);
-					if (GitGenerator.CreateJunctions(modProject.Name, sourceFolders, Data))
+					if (GitGenerator.CreateJunctions(modProject.ProjectName, sourceFolders, Data))
 					{
-						Log.Here().Activity("[{0}] Successfully created junctions.", modProject.Name);
+						Log.Here().Activity("[{0}] Successfully created junctions.", modProject.ProjectName);
 					}
 					else
 					{
-						Log.Here().Error("[{0}] Problem creating junctions.", modProject.Name);
+						Log.Here().Error("[{0}] Problem creating junctions.", modProject.ProjectName);
 					}
 
-					AppController.Main.UpdateProgressMessage("Committing new files...");
+					AppController.Main.UpdateProgress(percentageIncrement, "Committing new files...");
 
 					GitGenerator.Commit(gitProjectRootDirectory, "Junctioned Project Folders");
 
-					AppController.Main.UpdateProgressMessage("Generating source control data file...");
+					AppController.Main.UpdateProgress(percentageIncrement, "Generating source control data file...");
 
 					SourceControlData sourceControlData = new SourceControlData()
 					{
-						ProjectName = modProject.Name,
-						ProjectUUID = modProject.ID
+						ProjectName = modProject.ProjectName,
+						ProjectUUID = modProject.UUUID
 					};
 
 					modProject.GitData = sourceControlData;
@@ -169,8 +220,10 @@ namespace LL.SCG.Core
 				}
 				else
 				{
-					Log.Here().Error("Error creating git repository for Project {0}.", modProject.Name);
+					Log.Here().Error("Error creating git repository for Project {0}.", modProject.ProjectName);
 				}
+
+				AppController.Main.UpdateProgress(percentageIncrement);
 
 				return true;
 			}
@@ -180,7 +233,7 @@ namespace LL.SCG.Core
 		public bool GenerateBackupFolder(ModProjectData modProject = null)
 		{
 			string projectBackupDirectory = Data.Settings.BackupRootDirectory;
-			if (modProject != null) projectBackupDirectory = Path.Combine(Data.Settings.BackupRootDirectory, modProject.Name);
+			if (modProject != null) projectBackupDirectory = Path.Combine(Data.Settings.BackupRootDirectory, modProject.ProjectName);
 
 			try
 			{
@@ -195,19 +248,20 @@ namespace LL.SCG.Core
 			return false;
 		}
 		#region Backup
-		public async void BackupSelectedProjects(string OutputDirectory = "")
+		private string targetBackupOutputDirectory = "";
+
+		public void BackupSelectedProjects(string OutputDirectory = "")
 		{
-			await BackupSelectedProjectsAsync(OutputDirectory);
+			targetBackupOutputDirectory = OutputDirectory;
+			AppController.Main.StartProgress("Backing up projects...", StartBackupSelectedProjects);
 		}
 
-		public async Task BackupSelectedProjectsAsync(string OutputDirectory = "")
+		public void StartBackupSelectedProjects(object sender, DoWorkEventArgs e)
 		{
 			var selectedProjects = Data.ManagedProjects.Where(p => p.Selected).ToList();
 			int amountPerTick = 100 / selectedProjects.Count;
 
 			bool success = false;
-
-			AppController.Main.StartProgress("Backing up projects...", 0);
 
 			if (selectedProjects != null && selectedProjects.Count > 0)
 			{
@@ -215,17 +269,17 @@ namespace LL.SCG.Core
 				{
 					AppController.Main.UpdateProgressMessage("Creating archive...");
 
-					if (BackupProject(project, OutputDirectory))
+					if (BackupProject(project, targetBackupOutputDirectory))
 					{
-						Log.Here().Activity("Successfully created archive for {0}.", project.Name);
+						Log.Here().Activity("Successfully created archive for {0}.", project.ProjectName);
 						project.LastBackup = DateTime.Now;
-						var d = Data.ManagedProjectsData.Projects.Where(p => p.Name == project.Name && p.UUID == project.ID).FirstOrDefault();
+						var d = Data.ManagedProjectsData.Projects.Where(p => p.Name == project.ProjectName && p.UUID == project.UUUID).FirstOrDefault();
 						if (d != null) d.LastBackupUTC = project.LastBackup.ToUniversalTime().ToString();
 						success = true;
 					}
 					else
 					{
-						Log.Here().Error("Failed to create archive for {0}.", project.Name);
+						Log.Here().Error("Failed to create archive for {0}.", project.ProjectName);
 					}
 
 					AppController.Main.UpdateProgress(amountPerTick);
@@ -242,7 +296,7 @@ namespace LL.SCG.Core
 		{
 			if (String.IsNullOrWhiteSpace(OutputDirectory))
 			{
-				OutputDirectory = Path.Combine(Path.GetFullPath(Data.Settings.BackupRootDirectory), modProject.Name);
+				OutputDirectory = Path.Combine(Path.GetFullPath(Data.Settings.BackupRootDirectory), modProject.ProjectName);
 				Directory.CreateDirectory(OutputDirectory);
 			}
 			else
@@ -254,7 +308,7 @@ namespace LL.SCG.Core
 
 			Log.Here().Important($"System date format: {sysFormat}");
 
-			string archiveName = modProject.Name + "_" + DateTime.Now.ToString(sysFormat + "_HH-mm-ss") + ".zip";
+			string archiveName = modProject.ProjectName + "_" + DateTime.Now.ToString(sysFormat + "_HH-mm-ss") + ".zip";
 			string archivePath = Path.Combine(OutputDirectory, archiveName);
 			string gitProjectDirectory = "";
 
@@ -262,17 +316,17 @@ namespace LL.SCG.Core
 
 			if (!String.IsNullOrEmpty(Data.Settings.GitRootDirectory))
 			{
-				gitProjectDirectory = Path.Combine(Data.Settings.GitRootDirectory, modProject.Name);
+				gitProjectDirectory = Path.Combine(Data.Settings.GitRootDirectory, modProject.ProjectName);
 				if (Directory.Exists(gitProjectDirectory))
 				{
-					gitProjectDirectory = Path.Combine(Data.Settings.GitRootDirectory, modProject.Name);
+					gitProjectDirectory = Path.Combine(Data.Settings.GitRootDirectory, modProject.ProjectName);
 					gitProjectDetected = true;
 				}
 			}
 
 			if (!gitProjectDetected)
 			{
-				Log.Here().Activity($"Git project not found. Archiving project {modProject.Name} from project folders directly.");
+				Log.Here().Activity($"Git project not found. Archiving project {modProject.ProjectName} from project folders directly.");
 				var sourceFolders = PrepareDirectories(modProject, Data.Settings.DirectoryLayouts);
 				return BackupGenerator.CreateArchiveFromRoot(Data.Settings.DataDirectory, sourceFolders, archivePath);
 			}
@@ -291,7 +345,7 @@ namespace LL.SCG.Core
 			foreach (AvailableProjectViewData project in selectedItems)
 			{
 				Log.Here().Activity($"Adding project {project.Name} data to managed projects.");
-				var modData = Data.ModProjects.Where(p => p.Name == project.Name).FirstOrDefault();
+				var modData = Data.ModProjects.Where(p => p.ProjectName == project.Name).FirstOrDefault();
 				if (modData != null)
 				{
 					//ManagedProjects.Add(new ProjectEntryData(modData.ProjectInfo, modData.ModInfo));
@@ -299,16 +353,16 @@ namespace LL.SCG.Core
 					var availableProject = Data.NewProjects.Where(p => p.Name == project.Name).FirstOrDefault();
 					if (availableProject != null) Data.NewProjects.Remove(availableProject);
 
-					if (Data.ManagedProjectsData.Projects.Any(p => p.Name == modData.Name))
+					if (Data.ManagedProjectsData.Projects.Any(p => p.Name == modData.ProjectName))
 					{
 						if (modData.ProjectAppData == null)
 						{
-							ProjectAppData data = Data.ManagedProjectsData.Projects.Where(p => p.Name == modData.Name && p.UUID == modData.ModuleInfo.UUID).FirstOrDefault();
+							ProjectAppData data = Data.ManagedProjectsData.Projects.Where(p => p.Name == modData.ProjectName && p.UUID == modData.ModuleInfo.UUID).FirstOrDefault();
 							if (data != null)
 							{
 								modData.ProjectAppData = data;
 
-								Log.Here().Activity($"Linked project {modData.Name} data to managed project data.");
+								Log.Here().Activity($"Linked project {modData.ProjectName} data to managed project data.");
 							}
 						}
 					}
@@ -316,14 +370,14 @@ namespace LL.SCG.Core
 					{
 						ProjectAppData data = new ProjectAppData()
 						{
-							Name = modData.Name,
+							Name = modData.ProjectName,
 							UUID = modData.ModuleInfo.UUID,
 							LastBackupUTC = null
 						};
 						Data.ManagedProjectsData.Projects.Add(data);
 						modData.ProjectAppData = data;
 
-						Log.Here().Activity($"Added project {modData.Name} to managed projects.");
+						Log.Here().Activity($"Added project {modData.DisplayName} to managed projects.");
 
 						bSaveData = true;
 					}
@@ -454,38 +508,6 @@ namespace LL.SCG.Core
 			return projectViewControl;
 		}
 
-		public async void StartGitGenerationAsync()
-		{
-			await RunGitGeneration();
-		}
-
-		public async Task RunGitGeneration()
-		{
-			Log.Here().Important("Generating git repositories for selected projects.");
-			int amountPerTick = 100 / Data.GitGenerationSettings.ExportProjects.Count;
-
-			AppController.Main.StartProgress("Generating Git Files...", 0);
-
-			foreach (var project in Data.GitGenerationSettings.ExportProjects)
-			{
-				AppController.Main.UpdateProgress(amountPerTick);
-
-				ModProjectData modProjectData = (ModProjectData)project;
-
-				if (GenerateGitFiles(modProjectData, Data.GitGenerationSettings))
-				{
-					Log.Here().Important("Git repository successfully generated for {0}.", project.Name);
-				}
-				else
-				{
-					Log.Here().Error("Error generating git repository for {0}.", project.Name);
-				}
-
-				AppController.Main.UpdateProgressMessage("Finishing up...");
-				AppController.Main.FinishProgress();
-			}
-		}
-
 		private void InitModuleKeywords()
 		{
 			Data.KeyList.Add(new KeywordData()
@@ -528,7 +550,7 @@ namespace LL.SCG.Core
 			{
 				KeywordName = "$ModFolderName",
 				KeywordValue = "Mod Data: Name_UUID",
-				Replace = (o) => { return ReplaceKeywordAction(o)?.Name + "_" + ReplaceKeywordAction(o)?.ModuleInfo.UUID; }
+				Replace = (o) => { return ReplaceKeywordAction(o)?.ProjectName + "_" + ReplaceKeywordAction(o)?.ModuleInfo.UUID; }
 			});
 			Data.KeyList.Add(new KeywordData()
 			{

@@ -17,6 +17,7 @@ using LL.SCG.Windows;
 using LL.SCG.Interfaces;
 using LL.SCG.Data.App;
 using System.Windows;
+using System.Windows.Controls;
 
 namespace LL.SCG.Core
 {
@@ -124,30 +125,92 @@ namespace LL.SCG.Core
 			return true;
 		}
 
-		public void StartProgress(string Title, int StartValue = 0)
+		public Action OnProgressLoaded { get; set; }
+
+		private BackgroundWorker progressWorker { get; set; }
+
+		public DoWorkEventHandler ProgressWorkvent { get; set; }
+		public RunWorkerCompletedEventHandler ProgressCompleteEvent { get; set; }
+
+		public void StartProgress(string Title, DoWorkEventHandler WorkEvent, RunWorkerCompletedEventHandler CompleteEvent = null, int StartValue = 0, Action OnStarted = null)
 		{
-			mainWindow.IsEnabled = false;
+			if (progressWorker == null)
+			{
+				progressWorker = new BackgroundWorker();
+				progressWorker.WorkerReportsProgress = true;
+				progressWorker.WorkerSupportsCancellation = true;
+				progressWorker.ProgressChanged += progressWorker_ProgressChanged;
+				progressWorker.RunWorkerCompleted += progressWorker_ProgressFinished;
+			}
+
+			OnProgressLoaded = OnStarted;
 			Data.ProgressTitle = Title;
 			Data.ProgressValue = StartValue;
 			Data.ProgressVisiblity = System.Windows.Visibility.Visible;
-		}
+			mainWindow.IsEnabled = false;
 
+			if (ProgressWorkvent != null) progressWorker.DoWork -= ProgressWorkvent;
+			if (ProgressCompleteEvent != null) progressWorker.RunWorkerCompleted -= ProgressCompleteEvent;
+			progressWorker.DoWork += WorkEvent;
+			if(CompleteEvent != null) progressWorker.RunWorkerCompleted += CompleteEvent;
+			
+			ProgressWorkvent = WorkEvent;
+			if (CompleteEvent != null) ProgressCompleteEvent = CompleteEvent;
+
+			progressWorker.RunWorkerAsync();
+		}
+		
 		public void UpdateProgress(int Value = 1, string Message = null)
 		{
+			if (Message != null) Data.ProgressMessage = Message;
 			Data.ProgressValue += Value;
-			if(Message != null) Data.ProgressMessage = Message;
+			progressWorker.ReportProgress(Data.ProgressValue);
 		}
 
-		public async void UpdateProgressMessage(string Message)
+		public void SetProgress(int Value = 1, string Message = null)
 		{
-			await Task.Delay(200);
-			Data.ProgressMessage = Message;
+			if (Message != null) Data.ProgressMessage = Message;
+			progressWorker.ReportProgress(Data.ProgressValue);
 		}
 
-		public async void FinishProgress()
+		public void UpdateProgressMessage(string Message)
+		{
+			Data.ProgressMessage = Message;
+			progressWorker.ReportProgress(Data.ProgressValue);
+		}
+
+		public void UpdateProgressTitle(string Title)
+		{
+			Data.ProgressTitle = Title;
+			progressWorker.ReportProgress(Data.ProgressValue);
+		}
+
+		public void FinishProgress()
+		{
+			progressWorker.ReportProgress(Data.ProgressValueMax);
+		}
+
+		private void progressWorker_ProgressChanged(object sender, ProgressChangedEventArgs e)
+		{
+			Data.ProgressValue = e.ProgressPercentage;
+			Log.Here().Activity($"#Progress set to {Data.ProgressValue}");
+		}
+
+		private void progressWorker_ProgressFinished(object sender, RunWorkerCompletedEventArgs e)
+		{
+			Data.ProgressValue = Data.ProgressValueMax;
+			OnProgressCompleteAsync();
+		}
+
+		private async void OnProgressCompleteAsync()
+		{
+			await Task.Delay(500);
+			await HideProgressBar();
+		}
+
+		private async Task HideProgressBar()
 		{
 			mainWindow.IsEnabled = true;
-			await Task.Delay(500);
 			Data.ProgressVisiblity = System.Windows.Visibility.Collapsed;
 		}
 

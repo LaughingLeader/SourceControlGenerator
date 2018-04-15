@@ -70,22 +70,27 @@ namespace LL.SCG.DOS2.Core
 				foreach (var project in Data.ManagedProjectsData.Projects)
 				{
 					//var modProject = Data.ModProjects.Where(x => x.Name == project.Name && x.ModuleInfo.UUID == project.GUID).FirstOrDefault();
-					var modProject = Data.ModProjects.Where(x => x.Name == project.Name && x.ID == project.UUID).FirstOrDefault();
+					var modProject = Data.ModProjects.Where(x => x.ProjectName == project.Name && x.UUUID == project.UUID).FirstOrDefault();
 					if (modProject != null)
 					{
 						Data.ManagedProjects.Add(modProject);
 
-						DateTime lastBackup;
-						var success = DateTime.TryParse(project.LastBackupUTC, out lastBackup);
-						if (success)
+						if (!String.IsNullOrWhiteSpace(project.LastBackupUTC))
 						{
-							Log.Here().Activity($"Successully parsed {modProject.LastBackup} to DateTime.");
-							modProject.LastBackup = lastBackup.ToLocalTime();
+							DateTime lastBackup;
+
+							var success = DateTime.TryParse(project.LastBackupUTC, out lastBackup);
+							if (success)
+							{
+								Log.Here().Activity($"Successully parsed {modProject.LastBackup} to DateTime.");
+								modProject.LastBackup = lastBackup.ToLocalTime();
+							}
+							else
+							{
+								Log.Here().Error($"Could not convert {project.LastBackupUTC} to DateTime.");
+							}
 						}
-						else
-						{
-							Log.Here().Error($"Could not convert {project.LastBackupUTC} to DateTime.");
-						}
+						
 					}
 				}
 			}
@@ -106,13 +111,13 @@ namespace LL.SCG.DOS2.Core
 			{
 				foreach (var project in Data.ModProjects)
 				{
-					if (!string.IsNullOrEmpty(project.Name))
+					if (!string.IsNullOrEmpty(project.ProjectName))
 					{
 						bool projectIsUnmanaged = true;
 
 						if (Data.ManagedProjects != null)
 						{
-							if (Data.ManagedProjects.Any(p => p.Name == project.Name))
+							if (Data.ManagedProjects.Any(p => p.ProjectName == project.ProjectName))
 							{
 								projectIsUnmanaged = false;
 							}
@@ -122,7 +127,7 @@ namespace LL.SCG.DOS2.Core
 						{
 							AvailableProjectViewData availableProject = new AvailableProjectViewData()
 							{
-								Name = project.Name,
+								Name = project.ProjectName,
 								Tooltip = project.Tooltip
 							};
 							Data.NewProjects.Add(availableProject);
@@ -187,7 +192,7 @@ namespace LL.SCG.DOS2.Core
 			{
 				foreach(var project in Data.ModProjects)
 				{
-					var filePath = Path.Combine(Data.Settings.GitRootDirectory, project.Name, DefaultPaths.SourceControlGeneratorDataFile);
+					var filePath = Path.Combine(Data.Settings.GitRootDirectory, project.ProjectName, DefaultPaths.SourceControlGeneratorDataFile);
 					var success = false;
 					if(File.Exists(filePath))
 					{
@@ -201,11 +206,11 @@ namespace LL.SCG.DOS2.Core
 					
 					if(success)
 					{
-						Log.Here().Important($"Source control file found in git repo for project {project.Name}.");
+						Log.Here().Important($"Source control file found in git repo for project {project.ProjectName}.");
 					}
 					else
 					{
-						Log.Here().Activity($"Source control file not found for project {project.Name}.");
+						Log.Here().Activity($"Source control file not found for project {project.ProjectName}.");
 					}
 				}
 			}
@@ -236,7 +241,7 @@ namespace LL.SCG.DOS2.Core
 		{
 			if(MainData != null)
 			{
-				string directory = Path.Combine(Path.GetFullPath(MainData.Settings.BackupRootDirectory), modProjectData.Name);
+				string directory = Path.Combine(Path.GetFullPath(MainData.Settings.BackupRootDirectory), modProjectData.ProjectName);
 				if (!Directory.Exists(directory))
 				{
 					Directory.CreateDirectory(directory);
@@ -254,7 +259,7 @@ namespace LL.SCG.DOS2.Core
 		{
 			if (MainData != null)
 			{
-				string directory = Path.Combine(Path.GetFullPath(MainData.Settings.GitRootDirectory), modProjectData.Name);
+				string directory = Path.Combine(Path.GetFullPath(MainData.Settings.GitRootDirectory), modProjectData.ProjectName);
 				if (Directory.Exists(directory))
 				{
 					Process.Start(directory);

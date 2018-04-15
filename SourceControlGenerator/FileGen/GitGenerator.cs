@@ -100,9 +100,11 @@ namespace LL.SCG.FileGen
 				stream.WriteLine("cd \"" + RepoPath + "\"");
 				stream.WriteLine("git init");
 				stream.WriteLine("git config core.longpaths true");
+				stream.WriteLine("git config core.autocrlf true");
+				stream.WriteLine("git config core.safecrlf false"); // Disable the warnings
 				stream.Close();
 
-				process.WaitForExit(5000);
+				process.WaitForExit(1000 * 60 * 5);
 				if (process.ExitCode == 0) return true;
 			}
 			catch(Exception ex)
@@ -132,7 +134,7 @@ namespace LL.SCG.FileGen
 				stream.WriteLine("git commit -m \"" + CommitMessage + "\"");
 				stream.Close();
 
-				process.WaitForExit(5000);
+				process.WaitForExit(1000 * 60 * 5);
 				if (process.ExitCode == 0) return true;
 			}
 			catch (Exception ex)
@@ -169,7 +171,7 @@ namespace LL.SCG.FileGen
 				stream.WriteLine(command);
 				stream.Close();
 
-				process.WaitForExit(5000);
+				process.WaitForExit(1000 * 60 * 5);
 				if (process.ExitCode == 0) return true;
 			}
 			catch (Exception ex)

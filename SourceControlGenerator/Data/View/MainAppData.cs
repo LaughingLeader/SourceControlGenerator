@@ -117,7 +117,7 @@ namespace LL.SCG.Data.View
 			}
 		}
 
-		private int progressValue = 75;
+		private int progressValue = 0;
 
 		public int ProgressValue
 		{
@@ -128,6 +128,19 @@ namespace LL.SCG.Data.View
 				RaisePropertyChanged("ProgressValue");
 			}
 		}
+
+		private int progressValueMax = 1000;
+
+		public int ProgressValueMax
+		{
+			get { return progressValueMax; }
+			set
+			{
+				progressValueMax = value;
+				RaisePropertyChanged("ProgressValueMax");
+			}
+		}
+
 
 		private Visibility progressVisiblity = Visibility.Collapsed;
 

@@ -667,10 +667,24 @@
 				</Grid>
 			</Grid>
 		</Grid>
-		<Grid Name="LockProgressScreen" Grid.Row="0" Grid.RowSpan="3" Visibility="{Binding ProgressVisiblity, FallbackValue=Collapsed}">
+		<Grid Name="LockProgressScreen" Grid.Row="0" Grid.RowSpan="3" Visibility="{Binding ProgressVisiblity, FallbackValue=Visible}">
 			<Grid.Background>
 				<SolidColorBrush Color="{DynamicResource {x:Static SystemColors.ActiveBorderColorKey}}"/>
 			</Grid.Background>
+			<Grid.Resources>
+				<Storyboard x:Key="ProgressVisibleStoryboard" Duration="0:0:0.5" Completed="ProgressScreen_Loaded" />
+			</Grid.Resources>
+			<Grid.Style>
+				<Style TargetType="{x:Type Grid}">
+					<Style.Triggers>
+						<DataTrigger Binding="{Binding ProgressVisiblity}" Value="Visible">
+							<DataTrigger.EnterActions>
+								<BeginStoryboard Storyboard="{StaticResource ProgressVisibleStoryboard}" />
+							</DataTrigger.EnterActions>
+						</DataTrigger>
+					</Style.Triggers>
+				</Style>
+			</Grid.Style>
 			<Grid.RowDefinitions>
 				<RowDefinition />
 				<RowDefinition />
@@ -684,7 +698,7 @@
 				<TextBlock Text="{Binding ProgressMessage, FallbackValue=Running tasks...}" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="20" Padding="10" />
 			</StackPanel>
 			<Grid Grid.Row="1" >
-				<ProgressBar Minimum="0" Maximum="100" Value="{Binding ProgressValue, FallbackValue=75}" Margin="50" HorizontalAlignment="Stretch" VerticalAlignment="Center" MinHeight="40" />
+				<ProgressBar Minimum="0" Maximum="{Binding ProgressValueMax, FallbackValue=100}" Value="{Binding ProgressValue, FallbackValue=75}" Margin="50" HorizontalAlignment="Stretch" VerticalAlignment="Center" MinHeight="40" />
 			</Grid>
 		</Grid>
 	</Grid>
