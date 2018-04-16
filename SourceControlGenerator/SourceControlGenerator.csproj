@@ -88,6 +88,7 @@
     <Compile Include="Controls\Behavior\ListBoxSelectionBehavior.cs" />
     <Compile Include="Controls\Behavior\TextBoxEnterKeyBehavior.cs" />
     <Compile Include="Controls\QuickDataGrid.cs" />
+    <Compile Include="Converters\ModifyBrushColorConverter.cs" />
     <Compile Include="Converters\DateTimeToStringConverter.cs" />
     <Compile Include="Converters\EmptyListVisibilityConverter.cs" />
     <Compile Include="Controls\FileBrowseControl.xaml.cs">
@@ -114,11 +115,13 @@
     <Compile Include="Data\App\AppSettingsData.cs" />
     <Compile Include="Data\App\JunctionData.cs" />
     <Compile Include="Data\App\ManagedProjectsData.cs" />
+    <Compile Include="Data\Proxy\ThemeColorProxy.cs" />
     <Compile Include="Data\Proxy\IconProxy.cs" />
     <Compile Include="Data\View\IconPathData.cs" />
     <Compile Include="Data\View\ModuleData.cs" />
     <Compile Include="Data\View\ModuleSelectionData.cs" />
     <Compile Include="Data\View\SettingsEntryData.cs" />
+    <Compile Include="Data\View\ThemeColorData.cs" />
     <Compile Include="Enum\FileValidation.cs" />
     <Compile Include="Extensions\AttributeExtensions.cs" />
     <Compile Include="Extensions\ObservableCollectionExtensions.cs" />
@@ -161,6 +164,7 @@
     <Compile Include="Controls\ListViewLayoutManager\ProportionalColumn.cs" />
     <Compile Include="Controls\ListViewLayoutManager\RangeColumn.cs" />
     <Compile Include="Modules\Loader.cs" />
+    <Compile Include="Theme\ThemeController.cs" />
     <Compile Include="Util\EnumHelper.cs" />
     <Compile Include="Util\JunctionHelper.cs" />
     <Compile Include="Util\Log.cs" />
@@ -189,6 +193,18 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Controls\TemplateKeywordControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Theme\ResourceDictionary\ExpanderDictionary.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <DesignData Include="Theme\ResourceDictionary\ThemeDesignTest.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </DesignData>
+    <Page Include="Theme\ResourceDictionary\ThemeDictionary.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

@@ -1,6 +1,7 @@
 ﻿<UserControl x:Name="ProjectViewControlMain" x:Class="LL.SCG.DOS2.Controls.ProjectViewControl"
 			 xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
 			 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+			 xmlns:PresentationOptions="http://schemas.microsoft.com/winfx/2006/xaml/presentation/options" 
 			 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
 			 xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
 			 xmlns:local="clr-namespace:LL.SCG.DOS2.Controls"
@@ -12,26 +13,32 @@
 			 xmlns:proxy="clr-namespace:LL.SCG.Data.Proxy;assembly=SourceControlGenerator"
 			 mc:Ignorable="d" 
 			 d:DesignHeight="500" d:DesignWidth="900"
-			 KeyDown="ProjectViewControlMain_KeyDown" KeyUp="ProjectViewControlMain_KeyUp"
+			 KeyDown="ProjectViewControlMain_KeyDown" KeyUp="ProjectViewControlMain_KeyUp" Foreground="{x:Null}"
 			 >
 	<UserControl.Resources>
-		<cv:EmptyListVisibilityConverter x:Key="EmptyListVisibilityConverter"/>
-		<cv:EmptyStringVisibilityConverter x:Key="EmptyStringVisibilityConverter"/>
-		<cv:NewlineStringConverter x:Key="NewlineStringConverter"/>
-		<cv:DateTimeToStringConverter x:Key="DateTimeToStringConverter"/>
-		<cv:EmptyValueVisibilityConverter x:Key="EmptyValueVisibilityConverter"/>
-		
-		<Style x:Key="DataGrid_NoHighlight" TargetType="DataGridCell" BasedOn="{StaticResource {x:Type DataGridCell}}">
-			<Style.Triggers>
-				<Trigger  Property="IsSelected" Value="true">
-					<Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}"/>
-					<Setter Property="Background" Value="{x:Null}" />
-					<Setter Property="BorderBrush" Value="{x:Null}" />
-				</Trigger>
-			</Style.Triggers>
-		</Style>
-		
-		<proxy:IconProxy x:Key="IconProxy" Data="{x:Static data:MainAppData.IconData}" />
+		<ResourceDictionary>
+			<ResourceDictionary.MergedDictionaries>
+				<ResourceDictionary Source="pack://application:,,,/SourceControlGenerator;component/Theme/ResourceDictionary/ThemeDictionary.xaml" />
+			</ResourceDictionary.MergedDictionaries>
+
+			<cv:EmptyListVisibilityConverter x:Key="EmptyListVisibilityConverter"/>
+			<cv:EmptyStringVisibilityConverter x:Key="EmptyStringVisibilityConverter"/>
+			<cv:NewlineStringConverter x:Key="NewlineStringConverter"/>
+			<cv:DateTimeToStringConverter x:Key="DateTimeToStringConverter"/>
+			<cv:EmptyValueVisibilityConverter x:Key="EmptyValueVisibilityConverter"/>
+
+			<Style x:Key="DataGrid_NoHighlight" TargetType="DataGridCell" BasedOn="{StaticResource {x:Type DataGridCell}}">
+				<Style.Triggers>
+					<Trigger  Property="IsSelected" Value="true">
+						<Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}"/>
+						<Setter Property="Background" Value="{x:Null}" />
+						<Setter Property="BorderBrush" Value="{x:Null}" />
+					</Trigger>
+				</Style.Triggers>
+			</Style>
+
+			<proxy:IconProxy x:Key="IconProxy" Data="{x:Static data:MainAppData.IconData}" PresentationOptions:Freeze="True" />
+		</ResourceDictionary>
 	</UserControl.Resources>
 	<Grid x:Name="Projects_ParentGrid" Width="Auto" Height="Auto">
 		<Grid.ColumnDefinitions>
@@ -49,7 +56,7 @@
 			</Grid.ColumnDefinitions>
 			<StackPanel x:Name="SideWindowButtons" Grid.Column="0" Orientation="Vertical" Background="Transparent" >
 				<StackPanel.Resources>
-					<Style TargetType="Button">
+					<Style TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
 						<Setter Property="LayoutTransform">
 							<Setter.Value>
 								<RotateTransform Angle="-90" />
@@ -59,7 +66,7 @@
 				</StackPanel.Resources>
 				<Button x:Name="Btn_AvailableProjects" Content="Available" ToolTip="{Binding AvailableProjectsToggleText}" Click="Btn_AvailableProjects_Click" HorizontalAlignment="Right" BorderThickness="1,0.5,0,1" />
 			</StackPanel>
-			<Grid Grid.Column="1" Background="{DynamicResource {x:Static SystemColors.ControlLightLightBrushKey}}" >
+			<Grid Grid.Column="1" Background="White" >
 				<Grid x:Name="NewProjects" >
 					<Grid.RowDefinitions>
 						<RowDefinition Height="Auto"/>
@@ -73,7 +80,7 @@
 									 ScrollViewer.HorizontalScrollBarVisibility="Auto" ScrollViewer.VerticalScrollBarVisibility="Auto" cb:ListBoxSelectionBehavior.ClickSelection="True" TargetUpdated="AvailableProjectsList_TargetUpdated"
 									 >
 								<ListBox.ItemContainerStyle>
-									<Style TargetType="ListBoxItem">
+									<Style TargetType="ListBoxItem" BasedOn="{StaticResource {x:Type ListBoxItem}}">
 										<Setter Property="Padding" Value="5" />
 										<Setter Property="HorizontalAlignment" Value="Stretch"/>
 									</Style>
@@ -117,23 +124,23 @@
 								  
 								  >
 							<DataGrid.Resources>
-								<Style x:Key="ColumnElementStyle" TargetType="TextBlock">
+								<Style x:Key="ColumnElementStyle" TargetType="TextBlock" BasedOn="{StaticResource {x:Type TextBlock}}">
 									<Setter Property="Margin" Value="5,0,10,0" />
 								</Style>
-								<Style x:Key="ProjectsHeaderStyle" TargetType="DataGridColumnHeader">
+								<Style x:Key="ProjectsHeaderStyle" TargetType="DataGridColumnHeader" BasedOn="{StaticResource {x:Type DataGridColumnHeader}}">
 									<Setter Property="HorizontalContentAlignment" Value="Center" />
 								</Style>
-								<Style TargetType="DataGridRow">
+								<Style TargetType="DataGridRow" BasedOn="{StaticResource {x:Type DataGridRow}}">
 									<EventSetter Event="MouseDoubleClick" Handler="DataGridRow_MouseDoubleClick"/>
 								</Style>
 							</DataGrid.Resources>
 							<DataGrid.RowStyle>
-								<Style TargetType="{x:Type DataGridRow}">
+								<Style TargetType="{x:Type DataGridRow}" BasedOn="{StaticResource {x:Type DataGridRow}}">
 									<Setter Property="IsSelected" Value="{Binding Selected}" />
 								</Style>
 							</DataGrid.RowStyle>
 							<DataGrid.Columns>
-								<DataGridTemplateColumn MinWidth="25" CanUserResize="False"  HeaderStyle="{StaticResource ProjectsHeaderStyle}"  >
+								<DataGridTemplateColumn MinWidth="25" CanUserResize="False" HeaderStyle="{StaticResource ProjectsHeaderStyle}"  >
 									<DataGridTemplateColumn.Header>
 										<CheckBox Checked="ManagedProjects_SelectAll" Unchecked="ManagedProjects_SelectNone" ToolTip="Select/Deselect All" />
 									</DataGridTemplateColumn.Header>
@@ -160,7 +167,7 @@
 										<DataTemplate>
 											<StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center" >
 												<StackPanel.Resources>
-													<Style TargetType="Button">
+													<Style TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
 														<Setter Property="MinHeight" Value="16" />
 														<Setter Property="MinWidth" Value="16" />
 														<Setter Property="MaxHeight" Value="16" />
@@ -316,7 +323,7 @@
 				<Grid x:Name="ProjectActions" Grid.Row="3" MaxHeight="30" VerticalAlignment="Top" Margin="0,5,0,0">
 					<StackPanel Orientation="Horizontal" HorizontalAlignment="Center" >
 						<StackPanel.Resources>
-							<Style TargetType="Button">
+							<Style TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
 								<Setter Property="Margin" Value="2,0" />
 								<Setter Property="Padding" Value="4,2,4,2" />
 							</Style>

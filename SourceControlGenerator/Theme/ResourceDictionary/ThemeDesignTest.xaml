@@ -1,0 +1,22 @@
+﻿<theme:DebugThemeColors 
+	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:theme="clr-namespace:LL.SCG.Theme"
+	xmlns:data="clr-namespace:LL.SCG.Data.View"
+						>
+	<theme:DebugThemeColorData>
+		<theme:DebugThemeColorData.Button>
+			<data:ControlColors>
+				<data:ControlColors.Background>
+					<SolidColorBrush Color="AliceBlue" />
+				</data:ControlColors.Background>
+				<data:ControlColors.Foreground>
+					<SolidColorBrush Color="Wheat" />
+				</data:ControlColors.Foreground>
+				<data:ControlColors.Border>
+					<SolidColorBrush Color="Yellow" />
+				</data:ControlColors.Border>
+			</data:ControlColors>
+		</theme:DebugThemeColorData.Button>
+	</theme:DebugThemeColorData>
+</theme:DebugThemeColors>

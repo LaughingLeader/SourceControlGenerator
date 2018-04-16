@@ -43,6 +43,8 @@ namespace LL.SCG.Data.View
 
 		public static IconPathData IconData { get; set; }
 
+		//public static ThemeColorData ThemeColorData { get; set; }
+
 		private IModuleData selectedModuleData = null;
 
 		/// <summary>
@@ -178,6 +180,9 @@ namespace LL.SCG.Data.View
 			ModuleIsLoaded = false;
 
 			IconData = new IconPathData();
+
+			//ThemeColorData = ThemeColorData.Default();
+			//ThemeColorData.RefreshTheme();
 
 			Modules = new ObservableCollection<ModuleSelectionData>();
 			DateKeyList = new ObservableCollection<KeywordData>();

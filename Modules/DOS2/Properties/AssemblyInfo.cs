@@ -7,12 +7,12 @@ using System.Windows;
 // General Information about an assembly is controlled through the following
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("SCG-Addon-DOS2")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyTitle("SCG-DOS2")]
+[assembly: AssemblyDescription("A Divinity: Original Sin 2 addon for Source Control Generator.")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("SCG-Addon-DOS2")]
-[assembly: AssemblyCopyright("Copyright ©  2018")]
+[assembly: AssemblyCompany("LaughingLeader")]
+[assembly: AssemblyProduct("SCG-DOS2")]
+[assembly: AssemblyCopyright("Copyright © LaughingLeader 2018")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace LL.SCG.Data.View
 {
-	public class IconPathData : PropertyChangedBase
+	public class IconPathData
 	{
 		public string Archive => @"pack://application:,,,/SourceControlGenerator;component/Resources/Icons/7zipIcon.png";
 		public string Folder => @"pack://application:,,,/SourceControlGenerator;component/Resources/Icons/Folder.png";

@@ -13,6 +13,7 @@ using LL.SCG.Core;
 using LL.SCG.Data;
 using LL.SCG.Data.View;
 using LL.SCG.Modules;
+using LL.SCG.Theme;
 using LL.SCG.Util;
 
 namespace LL.SCG
@@ -45,11 +46,17 @@ namespace LL.SCG
 
 		public App()
 		{
+			ThemeController.Init();
 			LL.SCG.Helpers.Init();
 			FileCommands.Init();
 
 			LogEntries = new ObservableCollection<LogData>();
 			Log.AllCallback = AddLogMessage;
+		}
+
+		private void Application_Startup(object sender, StartupEventArgs e)
+		{
+			
 		}
 
 		/*
