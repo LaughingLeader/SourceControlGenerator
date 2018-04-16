@@ -73,9 +73,7 @@ namespace LL.SCG.Core
 				int targetPercentage = amountPerTick * (i + 1);
 				int totalPercentageAmount = targetPercentage - AppController.Main.Data.ProgressValue;
 
-				
-
-				Log.Here().Activity($"[Progress] Target percentage for this iteration is {targetPercentage}, work should increase it by {totalPercentageAmount}");
+				//Log.Here().Activity($"[Progress] Target percentage for this iteration is {targetPercentage}, work should increase it by {totalPercentageAmount}");
 
 				ModProjectData modProjectData = (ModProjectData)project;
 
@@ -253,20 +251,27 @@ namespace LL.SCG.Core
 		public void BackupSelectedProjects(string OutputDirectory = "")
 		{
 			targetBackupOutputDirectory = OutputDirectory;
-			AppController.Main.StartProgress("Backing up projects...", StartBackupSelectedProjects);
+			AppController.Main.StartProgress($"Backing up projects...", StartBackupSelectedProjects);
 		}
 
 		public void StartBackupSelectedProjects(object sender, DoWorkEventArgs e)
 		{
 			var selectedProjects = Data.ManagedProjects.Where(p => p.Selected).ToList();
-			int amountPerTick = 100 / selectedProjects.Count;
+			var total = selectedProjects.Count;
+			int amountPerTick = AppController.Main.Data.ProgressValueMax / total;
 
 			bool success = false;
 
 			if (selectedProjects != null && selectedProjects.Count > 0)
 			{
-				foreach (var project in selectedProjects)
+				for (var i = 0; i < total; i++)
 				{
+					var project = selectedProjects[i];
+					int targetPercentage = amountPerTick * (i + 1);
+					//int totalPercentageAmount = targetPercentage - AppController.Main.Data.ProgressValue;
+
+					//Log.Here().Activity($"[Progress-Backup] Target percentage for this backup iteration is {targetPercentage}. Amount per tick is {amountPerTick}.");
+
 					AppController.Main.UpdateProgressMessage("Creating archive...");
 
 					if (BackupProject(project, targetBackupOutputDirectory))
@@ -274,18 +279,23 @@ namespace LL.SCG.Core
 						Log.Here().Activity("Successfully created archive for {0}.", project.ProjectName);
 						project.LastBackup = DateTime.Now;
 						var d = Data.ManagedProjectsData.Projects.Where(p => p.Name == project.ProjectName && p.UUID == project.UUUID).FirstOrDefault();
-						if (d != null) d.LastBackupUTC = project.LastBackup.ToUniversalTime().ToString();
+						if (d != null) d.LastBackupUTC = project.LastBackup?.ToUniversalTime().ToString();
 						success = true;
+
+						AppController.Main.UpdateProgressMessage("Archive created.");
 					}
 					else
 					{
 						Log.Here().Error("Failed to create archive for {0}.", project.ProjectName);
+						AppController.Main.UpdateProgressMessage("Archive creation failed.");
 					}
 
-					AppController.Main.UpdateProgress(amountPerTick);
+					AppController.Main.SetProgress(targetPercentage);
+					AppController.Main.UpdateProgressTitle($"Backing up projects... {i}/{total}");
 				}
 			}
 
+			AppController.Main.UpdateProgressTitle($"Backing up projects... {total}/{total}");
 			AppController.Main.UpdateProgressMessage("Finishing up...");
 			AppController.Main.FinishProgress();
 
@@ -306,7 +316,7 @@ namespace LL.SCG.Core
 
 			string sysFormat = CultureInfo.CurrentCulture.DateTimeFormat.ShortDatePattern.Replace("/", "-");
 
-			Log.Here().Important($"System date format: {sysFormat}");
+			//Log.Here().Important($"System date format: {sysFormat}");
 
 			string archiveName = modProject.ProjectName + "_" + DateTime.Now.ToString(sysFormat + "_HH-mm-ss") + ".zip";
 			string archivePath = Path.Combine(OutputDirectory, archiveName);
@@ -314,6 +324,7 @@ namespace LL.SCG.Core
 
 			bool gitProjectDetected = false;
 
+			/*
 			if (!String.IsNullOrEmpty(Data.Settings.GitRootDirectory))
 			{
 				gitProjectDirectory = Path.Combine(Data.Settings.GitRootDirectory, modProject.ProjectName);
@@ -323,15 +334,17 @@ namespace LL.SCG.Core
 					gitProjectDetected = true;
 				}
 			}
+			*/
 
 			if (!gitProjectDetected)
 			{
-				Log.Here().Activity($"Git project not found. Archiving project {modProject.ProjectName} from project folders directly.");
+				//Log.Here().Activity($"Git project not found. Archiving project {modProject.ProjectName} from project folders directly.");
 				var sourceFolders = PrepareDirectories(modProject, Data.Settings.DirectoryLayouts);
 				return BackupGenerator.CreateArchiveFromRoot(Data.Settings.DataDirectory, sourceFolders, archivePath);
 			}
 			else
 			{
+				//Seems to have a problem with junctions and long paths
 				return BackupGenerator.CreateArchiveFromRepo(gitProjectDirectory, archivePath);
 			}
 		}

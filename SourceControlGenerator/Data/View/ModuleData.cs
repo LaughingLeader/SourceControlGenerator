@@ -94,6 +94,19 @@ namespace LL.SCG.Data.View
 			}
 		}
 
+		private bool canGenerateGit;
+
+		public bool CanGenerateGit
+		{
+			get { return canGenerateGit; }
+			set
+			{
+				canGenerateGit = value;
+				RaisePropertyChanged("CanGenerateGit");
+			}
+		}
+
+
 		private CallbackCommand loadKeywords;
 
 		public CallbackCommand LoadKeywords

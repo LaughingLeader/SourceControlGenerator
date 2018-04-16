@@ -169,7 +169,9 @@ namespace LL.SCG.Core
 
 		public void SetProgress(int Value = 1, string Message = null)
 		{
+			//Log.Here().Activity($"Setting progress to {Value} with message {Message}.");
 			if (Message != null) Data.ProgressMessage = Message;
+			Data.ProgressValue = Value;
 			progressWorker.ReportProgress(Data.ProgressValue);
 		}
 
@@ -192,8 +194,8 @@ namespace LL.SCG.Core
 
 		private void progressWorker_ProgressChanged(object sender, ProgressChangedEventArgs e)
 		{
-			Data.ProgressValue = e.ProgressPercentage;
-			Log.Here().Activity($"#Progress set to {Data.ProgressValue}");
+			//Data.ProgressValue = e.ProgressPercentage;
+			//Log.Here().Activity($"#Progress set to {Data.ProgressValue}");
 		}
 
 		private void progressWorker_ProgressFinished(object sender, RunWorkerCompletedEventArgs e)

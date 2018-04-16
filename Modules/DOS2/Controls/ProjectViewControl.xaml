@@ -11,11 +11,16 @@
 			 xmlns:data="clr-namespace:LL.SCG.Data.View;assembly=SourceControlGenerator"
 			 xmlns:proxy="clr-namespace:LL.SCG.Data.Proxy;assembly=SourceControlGenerator"
 			 mc:Ignorable="d" 
-			 d:DesignHeight="500" d:DesignWidth="900">
+			 d:DesignHeight="500" d:DesignWidth="900"
+			 KeyDown="ProjectViewControlMain_KeyDown" KeyUp="ProjectViewControlMain_KeyUp"
+			 >
 	<UserControl.Resources>
 		<cv:EmptyListVisibilityConverter x:Key="EmptyListVisibilityConverter"/>
+		<cv:EmptyStringVisibilityConverter x:Key="EmptyStringVisibilityConverter"/>
 		<cv:NewlineStringConverter x:Key="NewlineStringConverter"/>
-
+		<cv:DateTimeToStringConverter x:Key="DateTimeToStringConverter"/>
+		<cv:EmptyValueVisibilityConverter x:Key="EmptyValueVisibilityConverter"/>
+		
 		<Style x:Key="DataGrid_NoHighlight" TargetType="DataGridCell" BasedOn="{StaticResource {x:Type DataGridCell}}">
 			<Style.Triggers>
 				<Trigger  Property="IsSelected" Value="true">
@@ -33,12 +38,16 @@
 			<ColumnDefinition Width="*" Name="ManagedProjectsRow" />
 			<ColumnDefinition Width="Auto" />
 		</Grid.ColumnDefinitions>
-		<Grid x:Name="AvailableProjectsView" Grid.Column="1" >
+		<Grid.RowDefinitions>
+			<RowDefinition />
+			<RowDefinition />
+		</Grid.RowDefinitions>
+		<Grid x:Name="AvailableProjectsView" Grid.Column="1" Grid.Row="0" >
 			<Grid.ColumnDefinitions>
 				<ColumnDefinition Width="Auto" />
 				<ColumnDefinition Width="*" Name="AvailableProjectsRow" />
 			</Grid.ColumnDefinitions>
-			<StackPanel x:Name="SideWindowButtons" Grid.Column="0" Orientation="Vertical" Background="{DynamicResource {x:Static SystemColors.ControlBrushKey}}" >
+			<StackPanel x:Name="SideWindowButtons" Grid.Column="0" Orientation="Vertical" Background="Transparent" >
 				<StackPanel.Resources>
 					<Style TargetType="Button">
 						<Setter Property="LayoutTransform">
@@ -50,18 +59,18 @@
 				</StackPanel.Resources>
 				<Button x:Name="Btn_AvailableProjects" Content="Available" ToolTip="{Binding AvailableProjectsToggleText}" Click="Btn_AvailableProjects_Click" HorizontalAlignment="Right" BorderThickness="1,0.5,0,1" />
 			</StackPanel>
-			<ScrollViewer Grid.Column="1" Padding="10,0,10,0" Background="{DynamicResource {x:Static SystemColors.ControlLightLightBrushKey}}" VerticalScrollBarVisibility="Disabled" HorizontalScrollBarVisibility="Disabled" >
+			<Grid Grid.Column="1" Background="{DynamicResource {x:Static SystemColors.ControlLightLightBrushKey}}" >
 				<Grid x:Name="NewProjects" >
 					<Grid.RowDefinitions>
 						<RowDefinition Height="Auto"/>
-						<RowDefinition Height="Auto"/>
+						<RowDefinition Height="*"/>
 						<RowDefinition Height="Auto"/>
 					</Grid.RowDefinitions>
 					<Label Content="Available Projects" HorizontalAlignment="Center" VerticalAlignment="Center" Grid.Row="0" Margin="0" ToolTip="{Binding Source={x:Static core:DOS2Tooltips.AvailableProjects}, Converter={StaticResource NewlineStringConverter}}" />
-					<Grid Grid.Row="1"  MaxHeight="300" Width="200" MaxWidth="200">
+					<Grid Grid.Row="1" Width="200" MaxWidth="200">
 						<Grid>
-							<ListBox x:Name="AvailableProjectsList" ItemsSource="{Binding NewProjects}" HorizontalContentAlignment="Left" SelectionMode="Extended" SelectionChanged="AvailableProjectsList_SelectionChanged" MouseRightButtonUp="AvailableProjectsList_MouseRightButtonUp"
-									 ScrollViewer.HorizontalScrollBarVisibility="Auto" ScrollViewer.VerticalScrollBarVisibility="Auto" cb:ListBoxSelectionBehavior.ClickSelection="True"
+							<ListBox x:Name="AvailableProjectsList" ItemsSource="{Binding NewProjects, NotifyOnTargetUpdated=True}" HorizontalContentAlignment="Left" SelectionMode="Extended" SelectionChanged="AvailableProjectsList_SelectionChanged" MouseRightButtonUp="AvailableProjectsList_MouseRightButtonUp"
+									 ScrollViewer.HorizontalScrollBarVisibility="Auto" ScrollViewer.VerticalScrollBarVisibility="Auto" cb:ListBoxSelectionBehavior.ClickSelection="True" TargetUpdated="AvailableProjectsList_TargetUpdated"
 									 >
 								<ListBox.ItemContainerStyle>
 									<Style TargetType="ListBoxItem">
@@ -75,22 +84,24 @@
 									</DataTemplate>
 								</ListBox.ItemTemplate>
 							</ListBox>
-							<TextBlock Text="No New Mod Projects Found" Visibility="{Binding NewProjects, Converter={StaticResource EmptyListVisibilityConverter}}" FontStyle="Italic" Foreground="#FF4D4D4D" Margin="5,5,0,5" Padding="0,0,10,0" HorizontalAlignment="Center" />
+							<TextBlock Text="No Unmanaged Projects Found" Visibility="{Binding NewProjects, Converter={StaticResource EmptyListVisibilityConverter}}" FontStyle="Italic" Foreground="#FF4D4D4D" Margin="5,5,0,5" Padding="0,0,10,0" HorizontalAlignment="Center" />
 						</Grid>
 					</Grid>
-					<Grid Grid.Row="2" Margin="0,5,0,0">
-						<Button x:Name="AddSelectedProjectsButton" Click="AddSelectedProjectsButton_Click" Content="{Binding ManageButtonsText}" HorizontalAlignment="Center" Padding="10,5" FontFamily="Roboto" MinWidth="129" MinHeight="20" />
+					<Grid Grid.Row="2">
+						<Button x:Name="AddSelectedProjectsButton" Click="AddSelectedProjectsButton_Click" Content="{Binding ManageButtonsText}" HorizontalAlignment="Center" Margin="0,5" FontFamily="Roboto" MinWidth="129" MinHeight="20" />
 					</Grid>
 				</Grid>
-			</ScrollViewer>
+			</Grid>
 		</Grid>
-		<Grid x:Name="ManagedProjectsBorder" Grid.Column="0" >
+		<Grid x:Name="ManagedProjectsBorder" Grid.Column="0" Grid.RowSpan="2" >
 			<Grid x:Name="ManagedProjectsGrid" Margin="0">
+				<Grid.Resources>
+				</Grid.Resources>
 				<Grid.RowDefinitions>
 					<RowDefinition Height="Auto"/>
 					<RowDefinition Height="*" MinHeight="100"/>
 					<RowDefinition Height="5" Name="ProjectsGridSplit"/>
-					<RowDefinition Height="*" MinHeight="30"/>
+					<RowDefinition Height="Auto" MinHeight="45"/>
 				</Grid.RowDefinitions>
 				<Grid Grid.Row="0">
 					<Grid.ColumnDefinitions>
@@ -100,9 +111,10 @@
 					<Label Content="Managed Projects" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Row="0" />
 				</Grid>
 				<Border Grid.Row="1" BorderThickness="1" BorderBrush="{DynamicResource {x:Static SystemColors.ControlLightBrushKey}}">
-					<ScrollViewer x:Name="ProjectsDataGridScrollViewer" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" >
+					<Grid x:Name="ProjectsDataGridScrollViewer" >
 						<DataGrid x:Name="ManagedProjectsDataGrid" ItemsSource="{Binding ManagedProjects}" AutoGenerateColumns="False" IsReadOnly="True" SelectionChanged="ManagedProjectsDataGrid_SelectionChanged" BorderBrush="{x:Null}" BorderThickness="0"  
-								  CanUserAddRows="False" EnableRowVirtualization="False" Loaded="ManagedProjectsDataGrid_Loaded" ColumnWidth="Auto" CellStyle="{StaticResource DataGrid_NoHighlight}"
+								  CanUserAddRows="False" EnableRowVirtualization="False" FrameworkElement.Loaded="ManagedProjectsDataGrid_Loaded" ColumnWidth="Auto" CellStyle="{StaticResource DataGrid_NoHighlight}"
+								  
 								  >
 							<DataGrid.Resources>
 								<Style x:Key="ColumnElementStyle" TargetType="TextBlock">
@@ -115,6 +127,11 @@
 									<EventSetter Event="MouseDoubleClick" Handler="DataGridRow_MouseDoubleClick"/>
 								</Style>
 							</DataGrid.Resources>
+							<DataGrid.RowStyle>
+								<Style TargetType="{x:Type DataGridRow}">
+									<Setter Property="IsSelected" Value="{Binding Selected}" />
+								</Style>
+							</DataGrid.RowStyle>
 							<DataGrid.Columns>
 								<DataGridTemplateColumn MinWidth="25" CanUserResize="False"  HeaderStyle="{StaticResource ProjectsHeaderStyle}"  >
 									<DataGridTemplateColumn.Header>
@@ -127,7 +144,9 @@
 									</DataGridTemplateColumn.CellStyle>
 									<DataGridTemplateColumn.CellTemplate>
 										<DataTemplate>
-											<CheckBox x:Name="ProjectSelectedCheckbox" IsChecked="{Binding Selected, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Center" VerticalAlignment="Center" Checked="ProjectSelectedCheckbox_SelectionChanged" Unchecked="ProjectSelectedCheckbox_SelectionChanged" />
+											<CheckBox x:Name="ProjectSelectedCheckbox" IsChecked="{Binding Selected, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Center" VerticalAlignment="Center"
+													  IsEnabled="{Binding RelativeSource={RelativeSource AncestorType={x:Type DataGridRow}},Path=IsSelected,Mode=OneWay}"
+													  />
 										</DataTemplate>
 									</DataGridTemplateColumn.CellTemplate>
 								</DataGridTemplateColumn>
@@ -219,14 +238,24 @@
 								<DataGridTextColumn Header="Author" Binding="{Binding ModuleInfo.Author}" ElementStyle="{StaticResource ColumnElementStyle}" MinWidth="50" HeaderStyle="{StaticResource ProjectsHeaderStyle}" />
 								<DataGridTextColumn Header="Version" Binding="{Binding Version}" ElementStyle="{StaticResource ColumnElementStyle}"  MinWidth="50" HeaderStyle="{StaticResource ProjectsHeaderStyle}" />
 								<DataGridTextColumn Header="Type" Binding="{Binding ModuleInfo.Type}"  ElementStyle="{StaticResource ColumnElementStyle}" MinWidth="40" HeaderStyle="{StaticResource ProjectsHeaderStyle}" />
-								<DataGridTextColumn Header="Description" x:Name="DescriptionColumn" Binding="{Binding ModuleInfo.Description}"  ElementStyle="{StaticResource ColumnElementStyle}" MinWidth="70" HeaderStyle="{StaticResource ProjectsHeaderStyle}">
+								<DataGridTextColumn Header="Description" x:Name="DescriptionColumn" Binding="{Binding ModuleInfo.Description}"  ElementStyle="{StaticResource ColumnElementStyle}" Width="70" HeaderStyle="{StaticResource ProjectsHeaderStyle}">
 									<DataGridTextColumn.CellStyle>
 										<Style TargetType="DataGridCell" BasedOn="{StaticResource DataGrid_NoHighlight}">
-											<Setter Property="ToolTip" Value="{Binding ModuleInfo.Description}" />
+											<Style.Triggers>
+												<DataTrigger Binding="{Binding ModuleInfo.Description, Converter={StaticResource EmptyStringVisibilityConverter}}" Value="Visible">
+													<Setter Property="ToolTip">
+														<Setter.Value>
+															<TextBlock Text="{Binding ModuleInfo.Description}" TextWrapping="Wrap" MaxWidth="200" />
+														</Setter.Value>
+													</Setter>
+												</DataTrigger>
+												<DataTrigger Binding="{Binding ModuleInfo.Description, Converter={StaticResource EmptyStringVisibilityConverter}}" Value="Collapsed">
+													<Setter Property="ToolTip" Value="{x:Null}" />
+												</DataTrigger>
+											</Style.Triggers>
 										</Style>
 									</DataGridTextColumn.CellStyle>
 								</DataGridTextColumn>
-								<DataGridTextColumn Header="Last Backup" Binding="{Binding LastBackupText}"  ElementStyle="{StaticResource ColumnElementStyle}" MinWidth="80" HeaderStyle="{StaticResource ProjectsHeaderStyle}" />
 								<DataGridTemplateColumn Header="Icon"  HeaderStyle="{StaticResource ProjectsHeaderStyle}" >
 									<DataGridTemplateColumn.CellStyle>
 										<Style TargetType="DataGridCell" BasedOn="{StaticResource DataGrid_NoHighlight}">
@@ -236,7 +265,6 @@
 												</Setter.Value>
 											</Setter>
 										</Style>
-										
 									</DataGridTemplateColumn.CellStyle>
 									<DataGridTemplateColumn.CellTemplate>
 										<DataTemplate>
@@ -244,9 +272,45 @@
 										</DataTemplate>
 									</DataGridTemplateColumn.CellTemplate>
 								</DataGridTemplateColumn>
+								<DataGridTextColumn Header="Created" Binding="{Binding ProjectInfo.CreationDate, Converter={StaticResource DateTimeToStringConverter}, ConverterParameter='d', FallbackValue=''}"  ElementStyle="{StaticResource ColumnElementStyle}" MinWidth="80" HeaderStyle="{StaticResource ProjectsHeaderStyle}" >
+									<DataGridTextColumn.CellStyle>
+										<Style TargetType="DataGridCell" BasedOn="{StaticResource DataGrid_NoHighlight}">
+											<Style.Triggers>
+												<DataTrigger Binding="{Binding ProjectInfo.CreationDate, Converter={StaticResource EmptyValueVisibilityConverter}}" Value="Visible">
+													<Setter Property="ToolTip">
+														<Setter.Value>
+															<TextBlock Text="{Binding ProjectInfo.CreationDate, Converter={StaticResource DateTimeToStringConverter}, ConverterParameter='f'}" />
+														</Setter.Value>
+													</Setter>
+												</DataTrigger>
+												<DataTrigger Binding="{Binding ProjectInfo.CreationDate, Converter={StaticResource EmptyValueVisibilityConverter}}" Value="Collapsed">
+													<Setter Property="ToolTip" Value="{x:Null}" />
+												</DataTrigger>
+											</Style.Triggers>
+										</Style>
+									</DataGridTextColumn.CellStyle>
+								</DataGridTextColumn>
+								<DataGridTextColumn Header="Last Backup" Binding="{Binding LastBackup, Converter={StaticResource DateTimeToStringConverter}, ConverterParameter='d', FallbackValue=''}"  ElementStyle="{StaticResource ColumnElementStyle}" MinWidth="80" HeaderStyle="{StaticResource ProjectsHeaderStyle}">
+									<DataGridTextColumn.CellStyle>
+										<Style TargetType="DataGridCell" BasedOn="{StaticResource DataGrid_NoHighlight}">
+											<Style.Triggers>
+												<DataTrigger Binding="{Binding LastBackup, Converter={StaticResource EmptyValueVisibilityConverter}}" Value="Visible">
+													<Setter Property="ToolTip">
+														<Setter.Value>
+															<TextBlock Text="{Binding LastBackup, Converter={StaticResource DateTimeToStringConverter}, ConverterParameter='f'}" />
+														</Setter.Value>
+													</Setter>
+												</DataTrigger>
+												<DataTrigger Binding="{Binding LastBackup, Converter={StaticResource EmptyValueVisibilityConverter}}" Value="Collapsed">
+													<Setter Property="ToolTip" Value="{x:Null}" />
+												</DataTrigger>
+											</Style.Triggers>
+										</Style>
+									</DataGridTextColumn.CellStyle>
+								</DataGridTextColumn>
 							</DataGrid.Columns>
 						</DataGrid>
-					</ScrollViewer>
+					</Grid>
 				</Border>
 				<GridSplitter x:Name="ProjectsDataGridSplitter" Grid.Row="2" Height="2" HorizontalAlignment="Stretch" Foreground="{x:Null}" Background="{DynamicResource {x:Static SystemColors.ControlDarkBrushKey}}"/>
 				<Grid x:Name="ProjectActions" Grid.Row="3" MaxHeight="30" VerticalAlignment="Top" Margin="0,5,0,0">
@@ -255,12 +319,11 @@
 							<Style TargetType="Button">
 								<Setter Property="Margin" Value="2,0" />
 								<Setter Property="Padding" Value="4,2,4,2" />
-								<Setter Property="IsEnabled" Value="{Binding ProjectSelected}" />
 							</Style>
 						</StackPanel.Resources>
-						<Button x:Name="BackupButton" Content="Backup Selected" Click="BackupButton_Click" />
-						<Button x:Name="BackupSeletedButton" Content="Backup Selected To..." Click="BackupSelectedButton_Click" />
-						<Button x:Name="GitGenerationButton" Content="Create Git Repos for Selected..." Click="GitGenerationButton_Click" />
+						<Button x:Name="BackupButton" Content="Backup Selected" Click="BackupButton_Click" IsEnabled="{Binding ProjectSelected}" />
+						<Button x:Name="BackupSeletedButton" Content="Backup Selected To..." Click="BackupSelectedButton_Click" IsEnabled="{Binding ProjectSelected}" />
+						<Button x:Name="GitGenerationButton" Content="Create Git Repos for Selected..." Click="GitGenerationButton_Click" IsEnabled="{Binding CanGenerateGit}" />
 					</StackPanel>
 				</Grid>
 				<Canvas x:Name="DragSelectionCanvas" Visibility="Collapsed">

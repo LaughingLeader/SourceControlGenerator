@@ -148,7 +148,7 @@ namespace LL.SCG.FileGen
 		{
 			try
 			{
-				Directory.CreateDirectory(Path.GetDirectoryName(OutputFileName));
+				//Directory.CreateDirectory(Path.GetDirectoryName(OutputFileName));
 
 				string command = "git archive HEAD --output=\"" + OutputFileName + "\"";
 				if(UseAttributesFile)

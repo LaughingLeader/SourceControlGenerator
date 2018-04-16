@@ -17,5 +17,17 @@ namespace LL.SCG
 		{
 			return String.Join(delimiter, source.Select(func).ToArray());
 		}
+
+		public static string Truncate(this string value, int maxLength)
+		{
+			if (string.IsNullOrEmpty(value)) return value;
+			return value.Length <= maxLength ? value : value.Substring(0, maxLength);
+		}
+
+		public static string Truncate(this string value, int maxLength, string Append)
+		{
+			if (string.IsNullOrEmpty(value)) return value;
+			return value.Length <= maxLength ? value : value.Substring(0, maxLength) + Append;
+		}
 	}
 }

@@ -106,6 +106,22 @@ namespace LL.SCG.Data
 			}
 		}
 
+		private string shortDescription;
+
+		public string ShortDescription
+		{
+			get
+			{
+				if(shortDescription == null)
+				{
+					shortDescription = ModuleInfo.Description.Truncate(30, "...");
+					RaisePropertyChanged("ShortDescription");
+				}
+				return shortDescription;
+			}
+		}
+
+
 		private string tooltip;
 
 		public string Tooltip
@@ -139,9 +155,9 @@ namespace LL.SCG.Data
 			}
 		}
 
-		private DateTime lastBackup;
+		private DateTime? lastBackup = null;
 
-		public DateTime LastBackup
+		public DateTime? LastBackup
 		{
 			get
 			{
@@ -163,7 +179,7 @@ namespace LL.SCG.Data
 				{
 					return LastBackup.ToString();
 				}
-				return "None";
+				return "";
 			}
 		}
 

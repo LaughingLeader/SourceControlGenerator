@@ -33,7 +33,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup>
-    <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
+    <RunPostBuildEvent>Always</RunPostBuildEvent>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -119,6 +119,7 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>echo f | xcopy "$(TargetDir)$(TargetFileName)" "$(SolutionDir)Modules_Export\" /Y</PostBuildEvent>
+    <PostBuildEvent>xcopy "$(TargetDir)$(TargetFileName)" "$(SolutionDir)Modules_Export\" /Y
+xcopy "$(TargetDir)$(TargetFileName)" "D:\Projects\_Visual_Studio\SourceControlGenerator\SourceControlGenerator\bin\Debug\Modules\" /Y</PostBuildEvent>
   </PropertyGroup>
 </Project>

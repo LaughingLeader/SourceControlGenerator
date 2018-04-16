@@ -28,6 +28,17 @@ namespace LL.SCG.Data.Xml
 		/// </summary>
 		public string UUID { get; set; }
 
+		private long timestamp;
+
+		public long Timestamp
+		{
+			get { return timestamp; }
+			set { timestamp = value; }
+		}
+
+
+		public DateTime CreationDate { get; set; }
+
 		public void LoadFromXml(XDocument projectMetaXml)
 		{
 			var rootXml = projectMetaXml.XPathSelectElement("save/region/node[@id='root']");
@@ -42,6 +53,21 @@ namespace LL.SCG.Data.Xml
 			else
 			{
 				Log.Here().Error("Error selecting path (\"{0}\") from project meta.lsx file.", @"save/region/node[@id='root']");
+			}
+
+			//<header version="2" time="1523634729" />
+			var timeStampXml = projectMetaXml.XPathSelectElement("save/header");
+			if(timeStampXml != null && timeStampXml.HasAttributes)
+			{
+				var timeAtt = timeStampXml.Attribute("time");
+				if(timeAtt != null)
+				{
+					var success = long.TryParse(timeAtt.Value, out timestamp);
+					if(success)
+					{
+						CreationDate = DateTimeOffset.FromUnixTimeSeconds(timestamp).Date;
+					}
+				}
 			}
 		}
 	}

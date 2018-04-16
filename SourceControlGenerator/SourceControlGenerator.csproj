@@ -88,6 +88,7 @@
     <Compile Include="Controls\Behavior\ListBoxSelectionBehavior.cs" />
     <Compile Include="Controls\Behavior\TextBoxEnterKeyBehavior.cs" />
     <Compile Include="Controls\QuickDataGrid.cs" />
+    <Compile Include="Converters\DateTimeToStringConverter.cs" />
     <Compile Include="Converters\EmptyListVisibilityConverter.cs" />
     <Compile Include="Controls\FileBrowseControl.xaml.cs">
       <DependentUpon>FileBrowseControl.xaml</DependentUpon>
@@ -109,6 +110,7 @@
     <Compile Include="Converters\NewlineStringConverter.cs" />
     <Compile Include="Converters\SettingsAttributeConverter.cs" />
     <Compile Include="Converters\SettingsAttributeValueControlConverter.cs" />
+    <Compile Include="Converters\EmptyValueVisibilityConverter.cs" />
     <Compile Include="Data\App\AppSettingsData.cs" />
     <Compile Include="Data\App\JunctionData.cs" />
     <Compile Include="Data\App\ManagedProjectsData.cs" />
@@ -293,7 +295,8 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PreBuildEvent>xcopy "$(SolutionDir)Modules_Export\*.*" "$(TargetDir)Modules\" /Y</PreBuildEvent>
+    <PreBuildEvent>
+    </PreBuildEvent>
   </PropertyGroup>
   <PropertyGroup>
     <PostBuildEvent>
