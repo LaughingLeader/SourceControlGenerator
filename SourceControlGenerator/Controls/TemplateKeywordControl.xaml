@@ -14,7 +14,7 @@
 			<ColumnDefinition Width="*"/>
 		</Grid.ColumnDefinitions>
 		<Grid.Resources>
-			<Style TargetType="TextBox">
+			<Style TargetType="TextBox" BasedOn="{StaticResource {x:Type TextBox}}">
 				<Setter Property="Padding" Value="2" />
 				<Setter Property="BorderBrush">
 					<Setter.Value>

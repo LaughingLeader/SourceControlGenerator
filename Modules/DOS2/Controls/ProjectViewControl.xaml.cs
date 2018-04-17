@@ -31,7 +31,7 @@ namespace LL.SCG.DOS2.Controls
 		private DOS2ProjectController Controller { get; set; }
 		private MainWindow mainWindow;
 
-		private bool gridSplitterMoving = false;
+		//private bool gridSplitterMoving = false;
 
 		public ProjectViewControl(MainWindow mainAppWindow, DOS2ProjectController controller)
 		{
@@ -42,12 +42,14 @@ namespace LL.SCG.DOS2.Controls
 
 			DataContext = Controller.Data;
 
+			/*
 			var gridSplitter = (GridSplitter)this.FindName("ProjectsDataGridSplitter");
 			if (gridSplitter != null)
 			{
 				gridSplitter.DragStarted += (s, e) => { gridSplitterMoving = true; };
 				gridSplitter.DragCompleted += (s, e) => { gridSplitterMoving = false; };
 			}
+			*/
 		}
 
 		private void AvailableProjectsList_SelectionChanged(object sender, SelectionChangedEventArgs e)

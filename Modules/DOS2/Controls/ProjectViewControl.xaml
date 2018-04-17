@@ -11,6 +11,7 @@
 			 xmlns:cv="clr-namespace:LL.SCG.Converters;assembly=SourceControlGenerator"
 			 xmlns:data="clr-namespace:LL.SCG.Data.View;assembly=SourceControlGenerator"
 			 xmlns:proxy="clr-namespace:LL.SCG.Data.Proxy;assembly=SourceControlGenerator"
+			 xmlns:Controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
 			 mc:Ignorable="d" 
 			 d:DesignHeight="500" d:DesignWidth="900"
 			 KeyDown="ProjectViewControlMain_KeyDown" KeyUp="ProjectViewControlMain_KeyUp" Foreground="{x:Null}"
@@ -18,14 +19,8 @@
 	<UserControl.Resources>
 		<ResourceDictionary>
 			<ResourceDictionary.MergedDictionaries>
-				<ResourceDictionary Source="pack://application:,,,/SourceControlGenerator;component/Theme/ResourceDictionary/ThemeDictionary.xaml" />
+				<ResourceDictionary Source="pack://application:,,,/SourceControlGenerator;component/ThemeSystem/ResourceDictionary/MainAppDictionary.xaml" />
 			</ResourceDictionary.MergedDictionaries>
-
-			<cv:EmptyListVisibilityConverter x:Key="EmptyListVisibilityConverter"/>
-			<cv:EmptyStringVisibilityConverter x:Key="EmptyStringVisibilityConverter"/>
-			<cv:NewlineStringConverter x:Key="NewlineStringConverter"/>
-			<cv:DateTimeToStringConverter x:Key="DateTimeToStringConverter"/>
-			<cv:EmptyValueVisibilityConverter x:Key="EmptyValueVisibilityConverter"/>
 
 			<Style x:Key="DataGrid_NoHighlight" TargetType="DataGridCell" BasedOn="{StaticResource {x:Type DataGridCell}}">
 				<Style.Triggers>
@@ -37,7 +32,7 @@
 				</Style.Triggers>
 			</Style>
 
-			<proxy:IconProxy x:Key="IconProxy" Data="{x:Static data:MainAppData.IconData}" PresentationOptions:Freeze="True" />
+			
 		</ResourceDictionary>
 	</UserControl.Resources>
 	<Grid x:Name="Projects_ParentGrid" Width="Auto" Height="Auto">
@@ -49,12 +44,12 @@
 			<RowDefinition />
 			<RowDefinition />
 		</Grid.RowDefinitions>
-		<Grid x:Name="AvailableProjectsView" Grid.Column="1" Grid.Row="0" >
+		<Grid x:Name="AvailableProjectsView" Grid.Column="1" Grid.Row="0" Background="{x:Null}" >
 			<Grid.ColumnDefinitions>
 				<ColumnDefinition Width="Auto" />
 				<ColumnDefinition Width="*" Name="AvailableProjectsRow" />
 			</Grid.ColumnDefinitions>
-			<StackPanel x:Name="SideWindowButtons" Grid.Column="0" Orientation="Vertical" Background="Transparent" >
+			<StackPanel x:Name="SideWindowButtons" Grid.Column="0" Orientation="Vertical">
 				<StackPanel.Resources>
 					<Style TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
 						<Setter Property="LayoutTransform">
@@ -66,7 +61,7 @@
 				</StackPanel.Resources>
 				<Button x:Name="Btn_AvailableProjects" Content="Available" ToolTip="{Binding AvailableProjectsToggleText}" Click="Btn_AvailableProjects_Click" HorizontalAlignment="Right" BorderThickness="1,0.5,0,1" />
 			</StackPanel>
-			<Grid Grid.Column="1" Background="White" >
+			<Grid Grid.Column="1">
 				<Grid x:Name="NewProjects" >
 					<Grid.RowDefinitions>
 						<RowDefinition Height="Auto"/>
@@ -76,13 +71,20 @@
 					<Label Content="Available Projects" HorizontalAlignment="Center" VerticalAlignment="Center" Grid.Row="0" Margin="0" ToolTip="{Binding Source={x:Static core:DOS2Tooltips.AvailableProjects}, Converter={StaticResource NewlineStringConverter}}" />
 					<Grid Grid.Row="1" Width="200" MaxWidth="200">
 						<Grid>
+
 							<ListBox x:Name="AvailableProjectsList" ItemsSource="{Binding NewProjects, NotifyOnTargetUpdated=True}" HorizontalContentAlignment="Left" SelectionMode="Extended" SelectionChanged="AvailableProjectsList_SelectionChanged" MouseRightButtonUp="AvailableProjectsList_MouseRightButtonUp"
 									 ScrollViewer.HorizontalScrollBarVisibility="Auto" ScrollViewer.VerticalScrollBarVisibility="Auto" cb:ListBoxSelectionBehavior.ClickSelection="True" TargetUpdated="AvailableProjectsList_TargetUpdated"
 									 >
 								<ListBox.ItemContainerStyle>
-									<Style TargetType="ListBoxItem" BasedOn="{StaticResource {x:Type ListBoxItem}}">
+									<Style TargetType="ListBoxItem" BasedOn="{StaticResource MetroListBoxItem}">
 										<Setter Property="Padding" Value="5" />
 										<Setter Property="HorizontalAlignment" Value="Stretch"/>
+										<Setter Property="Background" >
+											<Setter.Value>
+												<SolidColorBrush Color="{Binding RelativeSource={RelativeSource Self}, Converter={StaticResource ObjectColorConverter}, ConverterParameter='background;1.2'}" />
+
+											</Setter.Value>
+										</Setter>
 									</Style>
 								</ListBox.ItemContainerStyle>
 								<ListBox.ItemTemplate>
@@ -127,7 +129,7 @@
 								<Style x:Key="ColumnElementStyle" TargetType="TextBlock" BasedOn="{StaticResource {x:Type TextBlock}}">
 									<Setter Property="Margin" Value="5,0,10,0" />
 								</Style>
-								<Style x:Key="ProjectsHeaderStyle" TargetType="DataGridColumnHeader" BasedOn="{StaticResource {x:Type DataGridColumnHeader}}">
+								<Style x:Key="ProjectsHeaderStyle" TargetType="DataGridColumnHeader" BasedOn="{StaticResource MetroDataGridColumnHeader}">
 									<Setter Property="HorizontalContentAlignment" Value="Center" />
 								</Style>
 								<Style TargetType="DataGridRow" BasedOn="{StaticResource {x:Type DataGridRow}}">
@@ -135,7 +137,7 @@
 								</Style>
 							</DataGrid.Resources>
 							<DataGrid.RowStyle>
-								<Style TargetType="{x:Type DataGridRow}" BasedOn="{StaticResource {x:Type DataGridRow}}">
+								<Style TargetType="{x:Type DataGridRow}" BasedOn="{StaticResource MetroDataGridRow}">
 									<Setter Property="IsSelected" Value="{Binding Selected}" />
 								</Style>
 							</DataGrid.RowStyle>
@@ -167,7 +169,7 @@
 										<DataTemplate>
 											<StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center" >
 												<StackPanel.Resources>
-													<Style TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+													<Style TargetType="Button">
 														<Setter Property="MinHeight" Value="16" />
 														<Setter Property="MinWidth" Value="16" />
 														<Setter Property="MaxHeight" Value="16" />
@@ -319,13 +321,13 @@
 						</DataGrid>
 					</Grid>
 				</Border>
-				<GridSplitter x:Name="ProjectsDataGridSplitter" Grid.Row="2" Height="2" HorizontalAlignment="Stretch" Foreground="{x:Null}" Background="{DynamicResource {x:Static SystemColors.ControlDarkBrushKey}}"/>
+				<GridSplitter x:Name="ProjectsDataGridSplitter" Grid.Row="2" Height="2" HorizontalAlignment="Stretch" Foreground="{x:Null}"/>
 				<Grid x:Name="ProjectActions" Grid.Row="3" MaxHeight="30" VerticalAlignment="Top" Margin="0,5,0,0">
 					<StackPanel Orientation="Horizontal" HorizontalAlignment="Center" >
 						<StackPanel.Resources>
-							<Style TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
-								<Setter Property="Margin" Value="2,0" />
-								<Setter Property="Padding" Value="4,2,4,2" />
+							<Style TargetType="{x:Type Button}" BasedOn="{StaticResource {x:Type Button}}">
+								<Setter Property="Margin" Value="4,2" />
+								<Setter Property="Padding" Value="4,2" />
 							</Style>
 						</StackPanel.Resources>
 						<Button x:Name="BackupButton" Content="Backup Selected" Click="BackupButton_Click" IsEnabled="{Binding ProjectSelected}" />
@@ -333,9 +335,6 @@
 						<Button x:Name="GitGenerationButton" Content="Create Git Repos for Selected..." Click="GitGenerationButton_Click" IsEnabled="{Binding CanGenerateGit}" />
 					</StackPanel>
 				</Grid>
-				<Canvas x:Name="DragSelectionCanvas" Visibility="Collapsed">
-					<Border x:Name="DragSelectionBorder" BorderBrush="Blue" BorderThickness="1" Background="LightBlue" CornerRadius="1" Opacity="0.5" />
-				</Canvas>
 			</Grid>
 		</Grid>
 	</Grid>

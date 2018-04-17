@@ -22,20 +22,20 @@
 			<RowDefinition Height="*" />
 		</Grid.RowDefinitions>
 		<Grid.Resources>
-			<Style x:Key="OpenBrowseButton" TargetType="{x:Type Button}">
+			<Style x:Key="OpenBrowseButton" TargetType="{x:Type Button}" BasedOn="{StaticResource {x:Type Button}}">
 				<Setter Property="Content" Value="..." />
 				<Setter Property="VerticalContentAlignment" Value="Center"/>
 				<Setter Property="HorizontalContentAlignment" Value="Center"/>
 				<Setter Property="Padding" Value="10,-4,10,0" />
 			</Style>
-			<Style TargetType="{x:Type TextBlock}">
+			<Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource {x:Type TextBlock}}">
 				<Setter Property="Padding" Value="2,0" />
 				<Setter Property="TextAlignment" Value="Left" />
 				<Setter Property="HorizontalAlignment" Value="Left" />
 				<Setter Property="VerticalAlignment" Value="Center" />
 			</Style>
 		</Grid.Resources>
-		<TextBox x:Name="FilePathDisplay" Grid.Column="0" behavior:TextBoxEnterKeyBehavior.EnterLosesFocus="True" Text="{Binding Path=FileLocationText, ElementName=FileBrowser, Mode=TwoWay}" Background="{Binding Path=FileValidation, ElementName=FileBrowser, Converter={StaticResource FileValidationColorConverter}}" Width="Auto" MinHeight="20" Height="20" BorderThickness="1" IsReadOnly="False" />
+		<TextBox x:Name="FilePathDisplay" Grid.Column="0" behavior:TextBoxEnterKeyBehavior.EnterLosesFocus="True" Text="{Binding Path=FileLocationText, ElementName=FileBrowser, Mode=TwoWay}" Background="{Binding Path=FileValidation, ElementName=FileBrowser, Converter={StaticResource FileValidationColorConverter}}" Width="Auto" MinHeight="40" BorderThickness="1" IsReadOnly="False" />
 		<Button x:Name="FileBrowseButton" Grid.Column="1" Style="{StaticResource OpenBrowseButton}" BorderThickness="0,1,1,1" Margin="-1,0,0,0" ToolTip="Browse..." BorderBrush="#FFABADB3" FontSize="16" TextOptions.TextFormattingMode="Display" FontFamily="Bitter" Click="FileBrowseButton_Click"/>
 	</Grid>
 </UserControl>

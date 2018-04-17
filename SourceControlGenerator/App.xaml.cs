@@ -13,7 +13,7 @@ using LL.SCG.Core;
 using LL.SCG.Data;
 using LL.SCG.Data.View;
 using LL.SCG.Modules;
-using LL.SCG.Theme;
+using LL.SCG.ThemeSystem;
 using LL.SCG.Util;
 
 namespace LL.SCG
@@ -46,7 +46,7 @@ namespace LL.SCG
 
 		public App()
 		{
-			ThemeController.Init();
+			ThemeController.Init(this);
 			LL.SCG.Helpers.Init();
 			FileCommands.Init();
 

@@ -38,6 +38,12 @@
     <Reference Include="Common.Functions.GetRelativePath, Version=1.0.1.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\CDorst.Common.Functions.GetRelativePath.1.0.1\lib\netstandard2.0\Common.Functions.GetRelativePath.dll</HintPath>
     </Reference>
+    <Reference Include="ControlzEx, Version=3.0.2.4, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\ControlzEx.3.0.2.4\lib\net462\ControlzEx.dll</HintPath>
+    </Reference>
+    <Reference Include="MahApps.Metro, Version=1.6.1.4, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\MahApps.Metro.1.6.1\lib\net45\MahApps.Metro.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.WindowsAPICodePack, Version=1.1.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.WindowsAPICodePack-Core.1.1.0.2\lib\Microsoft.WindowsAPICodePack.dll</HintPath>
     </Reference>
@@ -64,6 +70,9 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Windows.Interactivity, Version=4.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\ControlzEx.3.0.2.4\lib\net462\System.Windows.Interactivity.dll</HintPath>
+    </Reference>
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Core" />
@@ -87,8 +96,6 @@
     </Compile>
     <Compile Include="Controls\Behavior\ListBoxSelectionBehavior.cs" />
     <Compile Include="Controls\Behavior\TextBoxEnterKeyBehavior.cs" />
-    <Compile Include="Controls\QuickDataGrid.cs" />
-    <Compile Include="Converters\ModifyBrushColorConverter.cs" />
     <Compile Include="Converters\DateTimeToStringConverter.cs" />
     <Compile Include="Converters\EmptyListVisibilityConverter.cs" />
     <Compile Include="Controls\FileBrowseControl.xaml.cs">
@@ -109,19 +116,18 @@
       <DependentUpon>TemplateKeywordControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="Converters\NewlineStringConverter.cs" />
+    <Compile Include="Converters\ObjectColorConverter.cs" />
     <Compile Include="Converters\SettingsAttributeConverter.cs" />
     <Compile Include="Converters\SettingsAttributeValueControlConverter.cs" />
     <Compile Include="Converters\EmptyValueVisibilityConverter.cs" />
     <Compile Include="Data\App\AppSettingsData.cs" />
     <Compile Include="Data\App\JunctionData.cs" />
     <Compile Include="Data\App\ManagedProjectsData.cs" />
-    <Compile Include="Data\Proxy\ThemeColorProxy.cs" />
     <Compile Include="Data\Proxy\IconProxy.cs" />
     <Compile Include="Data\View\IconPathData.cs" />
     <Compile Include="Data\View\ModuleData.cs" />
     <Compile Include="Data\View\ModuleSelectionData.cs" />
     <Compile Include="Data\View\SettingsEntryData.cs" />
-    <Compile Include="Data\View\ThemeColorData.cs" />
     <Compile Include="Enum\FileValidation.cs" />
     <Compile Include="Extensions\AttributeExtensions.cs" />
     <Compile Include="Extensions\ObservableCollectionExtensions.cs" />
@@ -164,7 +170,7 @@
     <Compile Include="Controls\ListViewLayoutManager\ProportionalColumn.cs" />
     <Compile Include="Controls\ListViewLayoutManager\RangeColumn.cs" />
     <Compile Include="Modules\Loader.cs" />
-    <Compile Include="Theme\ThemeController.cs" />
+    <Compile Include="ThemeSystem\ThemeController.cs" />
     <Compile Include="Util\EnumHelper.cs" />
     <Compile Include="Util\JunctionHelper.cs" />
     <Compile Include="Util\Log.cs" />
@@ -196,15 +202,15 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Theme\ResourceDictionary\ExpanderDictionary.xaml">
+    <Page Include="ThemeSystem\ResourceDictionary\ExpanderDictionary.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <DesignData Include="Theme\ResourceDictionary\ThemeDesignTest.xaml">
+    <Page Include="ThemeSystem\ResourceDictionary\MainAppDictionary.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
-    </DesignData>
-    <Page Include="Theme\ResourceDictionary\ThemeDictionary.xaml">
+    </Page>
+    <Page Include="ThemeSystem\ResourceDictionary\MetroOverrides.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -309,6 +315,7 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PreBuildEvent>

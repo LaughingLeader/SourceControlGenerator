@@ -1,4 +1,4 @@
-﻿<Window x:Name="MainAppWindow" x:Class="LL.SCG.Windows.MainWindow"
+﻿<Controls:MetroWindow x:Name="MainAppWindow" x:Class="LL.SCG.Windows.MainWindow"
 		xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
 		xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 		xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -10,29 +10,22 @@
 		xmlns:core="clr-namespace:LL.SCG.Core"
 		xmlns:vdata="clr-namespace:LL.SCG.Data.View"
 		xmlns:proxy="clr-namespace:LL.SCG.Data.Proxy"
-		xmlns:theme="clr-namespace:LL.SCG.Theme"
+		xmlns:theme="clr-namespace:LL.SCG.ThemeSystem"
 		xmlns:listview="clr-namespace:Itenso.Windows.Controls.ListViewLayout"
 		xmlns:cb="clr-namespace:LL.SCG.Controls.Behavior"
+		xmlns:Controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
 		mc:Ignorable="d"
 		Title="Source Control Generator" Height="600" Width="1024" Loaded="Window_Loaded" Closing="MainAppWindow_Closing"
 		WindowStartupLocation="CenterOwner"
 		>
-	<Window.Resources>
-		<cv:EmptyListVisibilityConverter x:Key="EmptyListVisibilityConverter"/>
-		<cv:EmptyStringVisibilityConverter x:Key="EmptyStringVisibilityConverter"/>
-		<cv:FooterOutputColorConverter x:Key="FooterOutputColorConverter"/>
-		<cv:SettingsAttributeConverter x:Key="SettingsAttributeConverter"/>
-		<cv:SettingsAttributeValueControlConverter x:Key="SettingsAttributeValueControlConverter"/>
-		<cv:ListViewStarWidthConverter x:Key="ListViewStarWidthConverter"/>
-		<cv:ModifyBrushColorConverter x:Key="ModifyBrushColorConverter"/>
-		<BooleanToVisibilityConverter  x:Key="BoolToVisibilityConverter"/>
+	<Controls:MetroWindow.Resources>
 		<CollectionViewSource x:Key="ActiveProjectsViewSource" CollectionViewType="ListCollectionView"/>
 		<CollectionViewSource x:Key="ManagedProjectsViewSource" CollectionViewType="ListCollectionView"/>
 		<DataTemplate x:Key="AlternatingKeywordsTemplate" DataType="c:TemplateKeywordControl">
 			<c:TemplateKeywordControl DataContext="{Binding}" KeywordName="{Binding KeywordName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
 									  KeywordValue="{Binding KeywordValue, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
 		</DataTemplate>
-	</Window.Resources>
+	</Controls:MetroWindow.Resources>
 	<Grid Width="Auto" Height="Auto">
 		<Grid.RowDefinitions>
 			<RowDefinition Height="Auto" />
@@ -58,7 +51,7 @@
 				</MenuItem>
 			</Menu>
 		</DockPanel>
-		<TabControl x:Name="MainTabsControl" Grid.Row="1" SelectionChanged="PreventInitialTextboxFocus" BorderThickness="0,1,0,0" BorderBrush="{DynamicResource {x:Static SystemColors.ControlDarkDarkBrushKey}}" Background="{DynamicResource {x:Static SystemColors.ControlBrushKey}}" Padding="0"
+		<TabControl x:Name="MainTabsControl" Grid.Row="1" SelectionChanged="PreventInitialTextboxFocus" BorderThickness="0,1,0,0" Padding="0"
 			Visibility="{Binding ModuleIsLoaded, Converter={StaticResource BoolToVisibilityConverter}}" 
 
 			>
@@ -118,38 +111,39 @@
 			</TabItem>
 			<TabItem x:Name="KeywordsTab" Header="Keywords">
 				<TabItem.Resources>
-					<Style x:Key="KeywordBorderStyle" TargetType="Border" BasedOn="{StaticResource {x:Type Border}}">
+					<Style x:Key="KeywordBorderStyle" TargetType="Border" >
 						<!-- <Border BorderThickness="1" Grid.Row="0" BorderBrush="{DynamicResource }" Background="{DynamicResource {x:Static SystemColors.MenuBrushKey}}" >-->
 						<Setter Property="BorderThickness" Value="1"/>
 						<Setter Property="BorderBrush">
 							<Setter.Value>
-								<SolidColorBrush Color="{Binding Source={x:Static theme:ThemeController.CurrentTheme}, Path=Border.Border}" />
+								<SolidColorBrush Color="{Binding RelativeSource={RelativeSource Self}, Converter={StaticResource ObjectColorConverter}, ConverterParameter='border;1.3'}" />
 							</Setter.Value>
 						</Setter>
 						<Setter Property="Background">
 							<Setter.Value>
-								<SolidColorBrush Color="{Binding Source={x:Static theme:ThemeController.CurrentTheme}, Path=Border.Background}" />
+								<SolidColorBrush Color="{Binding RelativeSource={RelativeSource Self}, Converter={StaticResource ObjectColorConverter}, ConverterParameter='background;1.3'}" />
 							</Setter.Value>
 						</Setter>
 					</Style>
-					<Style x:Key="KeywordBorderStyleMouseOver" TargetType="Border" BasedOn="{StaticResource {x:Type Border}}">
+					<Style x:Key="KeywordBorderStyleMouseOver" TargetType="Border">
 						<!-- <Border BorderThickness="1" Grid.Row="0" BorderBrush="{DynamicResource }" Background="{DynamicResource {x:Static SystemColors.MenuBrushKey}}" >-->
 						<Setter Property="BorderThickness" Value="1"/>
 						<Setter Property="BorderBrush">
 							<Setter.Value>
-								<SolidColorBrush Color="{Binding Source={x:Static theme:ThemeController.CurrentTheme}, Path=Border.Border, Converter={StaticResource ModifyBrushColorConverter}, ConverterParameter=1.2}" />
+								<!--<SolidColorBrush Color="{Binding Source={x:Static theme:ThemeController.TestBrush}, Converter={StaticResource ModifyBrushColorConverter}, ConverterParameter='1.2'}" />!-->
+								<SolidColorBrush Color="{Binding RelativeSource={RelativeSource Self}, Converter={StaticResource ObjectColorConverter}, ConverterParameter='border;1.3'}" />
 							</Setter.Value>
 						</Setter>
 						<Setter Property="Background">
 							<Setter.Value>
-								<SolidColorBrush Color="{Binding Source={x:Static theme:ThemeController.CurrentTheme}, Path=Border.Background, Converter={StaticResource ModifyBrushColorConverter}, ConverterParameter=1.2}" />
+								<SolidColorBrush Color="{Binding RelativeSource={RelativeSource Self}, Converter={StaticResource ObjectColorConverter}, ConverterParameter='background;1.3'}" />
 							</Setter.Value>
 						</Setter>
 						<Style.Triggers>
 							<Trigger Property="IsMouseOver" Value="true">
 								<Setter Property="Background">
 									<Setter.Value>
-										<SolidColorBrush Color="{Binding Source={x:Static theme:ThemeController.CurrentTheme}, Path=Border.Background, Converter={StaticResource ModifyBrushColorConverter}, ConverterParameter=1.2}" />
+										<SolidColorBrush Color="{Binding RelativeSource={RelativeSource Self}, Converter={StaticResource ObjectColorConverter}, ConverterParameter='background;1.3'}" />
 									</Setter.Value>
 								</Setter>
 							</Trigger>
@@ -170,7 +164,6 @@
 						<Label x:Name="TemplateLabel" Content="Template Keywords" Grid.Column="0" Width="Auto" HorizontalAlignment="Left" VerticalAlignment="Center" ToolTip="{x:Static vdata:TooltipText.TemplateKeywords}" Padding="2,0,50,0">
 							<Label.Style>
 								<Style TargetType="Label" BasedOn="{StaticResource {x:Type Label}}">
-									<Setter Property="Foreground" Value="Black" />
 									<Style.Triggers>
 										<Trigger Property="IsMouseOver" Value="True">
 											<Setter Property="Foreground" Value="#FF3A6FFF" />
@@ -317,7 +310,7 @@
 											<!-- Width="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ListView}}, Path=ActualWidth}"-->
 											<ContentControl Content="{Binding}" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch" >
 												<ContentControl.Style>
-													<Style TargetType="ContentControl" BasedOn="{StaticResource {x:Type ContentControl}}">
+													<Style TargetType="ContentControl" >
 														<Style.Triggers>
 															<DataTrigger Binding="{Binding Converter={StaticResource SettingsAttributeValueControlConverter}}" Value="{x:Type c:FileBrowseControl}">
 																<Setter Property="ContentTemplate">
@@ -416,7 +409,7 @@
 				<Storyboard x:Key="ProgressVisibleStoryboard" Duration="0:0:0.5" Completed="ProgressScreen_Loaded" />
 			</Grid.Resources>
 			<Grid.Style>
-				<Style TargetType="{x:Type Grid}" BasedOn="{StaticResource {x:Type Grid}}">
+				<Style TargetType="{x:Type Grid}">
 					<Style.Triggers>
 						<DataTrigger Binding="{Binding ProgressVisiblity}" Value="Visible">
 							<DataTrigger.EnterActions>
@@ -440,4 +433,4 @@
 			</Grid>
 		</Grid>
 	</Grid>
-</Window>
+</Controls:MetroWindow>

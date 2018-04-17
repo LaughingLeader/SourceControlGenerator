@@ -8,6 +8,7 @@
 			 xmlns:enum="clr-namespace:LL.SCG.Enum"
 			 xmlns:ext="clr-namespace:LL.SCG.Extensions"
 			 xmlns:cv="clr-namespace:LL.SCG.Converters"
+			 xmlns:theme="clr-namespace:LL.SCG.ThemeSystem"
 			 xmlns:Themes="clr-namespace:Microsoft.Windows.Themes;assembly=PresentationFramework.Aero2" x:Name="AddTemplateMain" x:Class="LL.SCG.Controls.AddTemplateControl"
 			 mc:Ignorable="d" 
 			 d:DesignHeight="300" d:DesignWidth="500" IsVisibleChanged="AddTemplateMain_IsVisibleChanged"
@@ -20,7 +21,6 @@
 	<Grid DataContext="{Binding NewTemplateData}">
 		<Border HorizontalAlignment="Stretch"
 				VerticalAlignment="Stretch"
-				Background="DarkGray"
 				Opacity="1" />
 		<Grid>
 			<Grid.RowDefinitions>
@@ -28,11 +28,11 @@
 				<RowDefinition Height="*" />
 				<RowDefinition Height="Auto" />
 			</Grid.RowDefinitions>
-			<Grid Background="White">
+			<Grid>
 				<Label Content="Create New Template" />
 			</Grid>
 			<Border Grid.Row="1"
-					Background="White"
+					Background="{Binding Source={x:Static theme:ThemeController.CurrentTheme}, Path=Global.Background}"
 					Margin="10,0,10,0"
 					Padding="5"
 					BorderBrush="#4CFFFFFF"
@@ -41,20 +41,18 @@
 					<Grid >
 
 						<Grid.Resources>
-							<Style TargetType="{x:Type Label}">
+							<Style TargetType="{x:Type Label}" BasedOn="{StaticResource {x:Type Label}}">
 								<Setter Property="VerticalAlignment" Value="Center" />
 							</Style>
-							<Style TargetType="{x:Type TextBox}" >
+							<Style TargetType="{x:Type TextBox}" BasedOn="{StaticResource {x:Type TextBox}}">
 								<Setter Property="HorizontalScrollBarVisibility" Value="Auto" />
 								<Setter Property="Margin" Value="5" />
 							</Style>
 							<Style TargetType="{x:Type Border}" x:Key="LeftGridLines" >
 								<Setter Property="BorderThickness" Value="1,1,0,0" />
-								<Setter Property="BorderBrush" Value="#FF2B2B76"/>
 							</Style>
 							<Style TargetType="{x:Type Border}" x:Key="RightGridLines" >
 								<Setter Property="BorderThickness" Value="1,1,1,0" />
-								<Setter Property="BorderBrush" Value="#FF2B2B76"/>
 							</Style>
 						</Grid.Resources>
 
@@ -105,16 +103,17 @@
 						<TextBox Grid.Column="1" Grid.Row="4" Text="{Binding ExportPath, Mode=TwoWay}" />
 						<TextBox Grid.Column="1" Grid.Row="5" Text="{Binding ToolTipText, Mode=TwoWay}" />
 
-						<Grid Grid.Column="1" Grid.Row="6" Background="#FFF0F0F0">
+						<Grid Grid.Column="1" Grid.Row="6" Background="{Binding Source={x:Static theme:ThemeController.CurrentTheme}, Path=Global.Background}">
 							<Grid.Resources>
-								<Style TargetType="{x:Type TextBox}">
+								<Style TargetType="{x:Type TextBox}" BasedOn="{StaticResource {x:Type TextBox}}">
 									<Setter Property="Background" Value="{x:Null}" />
 									<Style.Triggers>
 										<DataTrigger Binding="{Binding IsKeyboardFocused, RelativeSource={RelativeSource Self}}" Value="true">
 											<Setter Property="Template">
 												<Setter.Value>
 													<ControlTemplate TargetType="{x:Type TextBox}">
-														<TextBlock Text="{TemplateBinding Text}" TextTrimming="CharacterEllipsis" Background="White" />
+														<!--<TextBlock Text="{TemplateBinding Text}" TextTrimming="CharacterEllipsis" Background="{Binding Source={x:Static theme:ThemeController.CurrentTheme}, Path=Global.Background, Converter={DynamicResource ModifyColorConverter}, ConverterParameter=1.2}" />-->
+														<TextBlock Text="{TemplateBinding Text}" TextTrimming="CharacterEllipsis" Background="{Binding Source={x:Static theme:ThemeController.CurrentTheme}, Path=Global.Background}" />
 													</ControlTemplate>
 												</Setter.Value>
 											</Setter>
@@ -153,7 +152,7 @@
 											</Popup>
 											<ToggleButton x:Name="toggleButton" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{TemplateBinding Background}" Grid.ColumnSpan="2" IsChecked="{Binding IsDropDownOpen, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}">
 												<ToggleButton.Style>
-													<Style TargetType="{x:Type ToggleButton}">
+													<Style TargetType="{x:Type ToggleButton}" BasedOn="{StaticResource {x:Type ToggleButton}}">
 														<Setter Property="OverridesDefaultStyle" Value="True"/>
 														<Setter Property="IsTabStop" Value="False"/>
 														<Setter Property="Focusable" Value="False"/>

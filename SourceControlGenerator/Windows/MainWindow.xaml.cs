@@ -25,13 +25,15 @@ using LL.SCG.Interfaces;
 using Newtonsoft.Json;
 using LL.SCG.Modules;
 using LL.SCG.FileGen;
+using MahApps.Metro;
+using MahApps.Metro.Controls;
 
 namespace LL.SCG.Windows
 {
 	/// <summary>
 	/// Interaction logic for MainWindow.xaml
 	/// </summary>
-	public partial class MainWindow : Window, INotifyPropertyChanged
+	public partial class MainWindow : MetroWindow, INotifyPropertyChanged
 	{
 		private LogWindow logWindow;
 		private GitGenerationWindow gitGenerationWindow;
