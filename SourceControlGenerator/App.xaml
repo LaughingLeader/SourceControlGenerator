@@ -5,18 +5,21 @@
 			 xmlns:w="clr-namespace:LL.SCG.Windows"
 			 StartupUri="Windows/MainWindow.xaml"
 			 Startup="Application_Startup"
+			 ShutdownMode="OnMainWindowClose"
 			 >
 	<Application.Resources>
 		<ResourceDictionary>
 			<ResourceDictionary.MergedDictionaries>
 				<ResourceDictionary Source="ThemeSystem/ResourceDictionary/MainAppDictionary.xaml" />
 				<ResourceDictionary Source="ThemeSystem/ResourceDictionary/ExpanderDictionary.xaml" />
+				<!--
 				<ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Controls.xaml" />
 				<ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Fonts.xaml" />
 				<ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Colors.xaml" />
 				<ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Accents/Blue.xaml" />
-				<ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Accents/BaseDark.xaml" />
+				<ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Accents/BaseLight.xaml" />
 				<ResourceDictionary Source="ThemeSystem/ResourceDictionary/MetroOverrides.xaml" />
+				-->
 			</ResourceDictionary.MergedDictionaries>
 		</ResourceDictionary>
 	</Application.Resources>

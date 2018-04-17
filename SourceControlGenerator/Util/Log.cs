@@ -12,6 +12,7 @@ namespace LL.SCG.Util
 	{
 		Activity,
 		Important,
+		Warning,
 		Error
 	}
 }
@@ -104,6 +105,15 @@ namespace LL.SCG
 		public void Important(String Message, params object[] Vars)
 		{
 			_logHere(LogType.Important, Message, Vars);
+		}
+
+		/// <summary>
+		/// Writes an warning message to the console, if traceActivity or traceErrors is true.
+		/// </summary>
+		/// <param name="Message">The message to log.</param>
+		public void Warning(String Message, params object[] Vars)
+		{
+			if (Log.traceActivity || Log.traceErrors) _logHere(LogType.Warning, Message, Vars);
 		}
 
 		/// <summary>

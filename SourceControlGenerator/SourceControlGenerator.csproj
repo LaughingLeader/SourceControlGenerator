@@ -172,10 +172,10 @@
     <Compile Include="Modules\Loader.cs" />
     <Compile Include="ThemeSystem\ThemeController.cs" />
     <Compile Include="Util\EnumHelper.cs" />
+    <Compile Include="Util\HelperUtil\ImageHelper.cs" />
     <Compile Include="Util\JunctionHelper.cs" />
     <Compile Include="Util\Log.cs" />
     <Compile Include="Core\AppController.cs" />
-    <Compile Include="Util\HelperUtil\DOS2Helper.cs" />
     <Compile Include="Util\HelperUtil\RegisteryHelper.cs" />
     <Compile Include="Windows\EditTextWindow.xaml.cs">
       <DependentUpon>EditTextWindow.xaml</DependentUpon>

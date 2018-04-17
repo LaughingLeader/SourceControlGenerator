@@ -423,8 +423,8 @@ namespace LL.SCG.Core
 		{
 			if (!FileCommands.IsValidPath(Data.Settings.DataDirectory))
 			{
-				Log.Here().Important("DOS2 data directory not found. Reverting to default.");
-				string dataDirectory = Helpers.DOS2.GetInstallPath();
+				Log.Here().Warning("DOS2 data directory not found. Reverting to default.");
+				string dataDirectory = Helpers.Registry.GetAppInstallPath("Divinity: Original Sin 2");
 				if (!String.IsNullOrEmpty(dataDirectory))
 				{
 					dataDirectory = dataDirectory + @"\Data";
@@ -459,7 +459,7 @@ namespace LL.SCG.Core
 			}
 			else
 			{
-				Log.Here().Important("DirectoryLayout.txt file not found. Using default settings.");
+				Log.Here().Warning("DirectoryLayout.txt file not found. Using default settings.");
 
 				if (File.Exists(DOS2DefaultPaths.DirectoryLayout(Data)))
 				{
@@ -469,7 +469,7 @@ namespace LL.SCG.Core
 				}
 				else
 				{
-					Log.Here().Important("Default DirectoryLayout.default.txt file not found. Using default settings stored in app.");
+					Log.Here().Warning("Default DirectoryLayout.default.txt file not found. Using default settings stored in app.");
 
 					layoutFileContents = LL.SCG.DOS2.Properties.Resources.DirectoryLayout;
 					FileCommands.WriteToFile(DOS2DefaultPaths.DirectoryLayout(Data), layoutFileContents);

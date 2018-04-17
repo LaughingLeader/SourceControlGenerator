@@ -8,7 +8,9 @@
 		xmlns:convert="clr-namespace:LL.SCG.Converters"
 		xmlns:local="clr-namespace:LL.SCG.Windows"
 		mc:Ignorable="d"
-		Title="Git Generation Settings" Height="200" Width="400">
+		Title="Git Generation Settings" Height="200" Width="400"
+		WindowStartupLocation="CenterOwner"
+		>
 	<Grid>
 		<Grid.RowDefinitions>
 			<RowDefinition Height="*" />

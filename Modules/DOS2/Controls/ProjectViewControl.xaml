@@ -44,7 +44,7 @@
 			<RowDefinition />
 			<RowDefinition />
 		</Grid.RowDefinitions>
-		<Grid x:Name="AvailableProjectsView" Grid.Column="1" Grid.Row="0" Background="{x:Null}" >
+		<Grid x:Name="AvailableProjectsView" Grid.Column="1" Grid.Row="0" Background="{x:Null}" Margin="0" >
 			<Grid.ColumnDefinitions>
 				<ColumnDefinition Width="Auto" />
 				<ColumnDefinition Width="*" Name="AvailableProjectsRow" />
@@ -59,9 +59,9 @@
 						</Setter>
 					</Style>
 				</StackPanel.Resources>
-				<Button x:Name="Btn_AvailableProjects" Content="Available" ToolTip="{Binding AvailableProjectsToggleText}" Click="Btn_AvailableProjects_Click" HorizontalAlignment="Right" BorderThickness="1,0.5,0,1" />
+				<Button x:Name="Btn_AvailableProjects" Content="Available Projects" ToolTip="{Binding AvailableProjectsToggleText}" Click="Btn_AvailableProjects_Click" HorizontalAlignment="Right" BorderThickness="1,0,1,1" Margin="0,26,0,0" />
 			</StackPanel>
-			<Grid Grid.Column="1">
+			<Grid Grid.Column="1" Margin="10,0">
 				<Grid x:Name="NewProjects" >
 					<Grid.RowDefinitions>
 						<RowDefinition Height="Auto"/>
@@ -76,15 +76,17 @@
 									 ScrollViewer.HorizontalScrollBarVisibility="Auto" ScrollViewer.VerticalScrollBarVisibility="Auto" cb:ListBoxSelectionBehavior.ClickSelection="True" TargetUpdated="AvailableProjectsList_TargetUpdated"
 									 >
 								<ListBox.ItemContainerStyle>
-									<Style TargetType="ListBoxItem" BasedOn="{StaticResource MetroListBoxItem}">
+									<Style TargetType="ListBoxItem" BasedOn="{StaticResource {x:Type ListBoxItem}}">
 										<Setter Property="Padding" Value="5" />
 										<Setter Property="HorizontalAlignment" Value="Stretch"/>
+										<!--
 										<Setter Property="Background" >
 											<Setter.Value>
-												<SolidColorBrush Color="{Binding RelativeSource={RelativeSource Self}, Converter={StaticResource ObjectColorConverter}, ConverterParameter='background;1.2'}" />
+												<SolidColorBrush Color="{Binding RelativeSource={RelativeSource Self}, Converter={StaticResource ObjectColorConverter}, ConverterParameter='background;1'}" />
 
 											</Setter.Value>
 										</Setter>
+										!-->
 									</Style>
 								</ListBox.ItemContainerStyle>
 								<ListBox.ItemTemplate>
@@ -119,8 +121,12 @@
 					</Grid.ColumnDefinitions>
 					<Label Content="Managed Projects" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Row="0" />
 				</Grid>
-				<Border Grid.Row="1" BorderThickness="1" BorderBrush="{DynamicResource {x:Static SystemColors.ControlLightBrushKey}}">
+				<Border Grid.Row="1" BorderThickness="1,1,1,0" BorderBrush="{DynamicResource {x:Static SystemColors.ControlLightBrushKey}}">
 					<Grid x:Name="ProjectsDataGridScrollViewer" >
+						<Grid.RowDefinitions>
+							<RowDefinition Height="*" />
+							<RowDefinition Height="2" />
+						</Grid.RowDefinitions>
 						<DataGrid x:Name="ManagedProjectsDataGrid" ItemsSource="{Binding ManagedProjects}" AutoGenerateColumns="False" IsReadOnly="True" SelectionChanged="ManagedProjectsDataGrid_SelectionChanged" BorderBrush="{x:Null}" BorderThickness="0"  
 								  CanUserAddRows="False" EnableRowVirtualization="False" FrameworkElement.Loaded="ManagedProjectsDataGrid_Loaded" ColumnWidth="Auto" CellStyle="{StaticResource DataGrid_NoHighlight}"
 								  
@@ -129,7 +135,7 @@
 								<Style x:Key="ColumnElementStyle" TargetType="TextBlock" BasedOn="{StaticResource {x:Type TextBlock}}">
 									<Setter Property="Margin" Value="5,0,10,0" />
 								</Style>
-								<Style x:Key="ProjectsHeaderStyle" TargetType="DataGridColumnHeader" BasedOn="{StaticResource MetroDataGridColumnHeader}">
+								<Style x:Key="ProjectsHeaderStyle" TargetType="DataGridColumnHeader" BasedOn="{StaticResource {x:Type DataGridColumnHeader}}">
 									<Setter Property="HorizontalContentAlignment" Value="Center" />
 								</Style>
 								<Style TargetType="DataGridRow" BasedOn="{StaticResource {x:Type DataGridRow}}">
@@ -137,7 +143,7 @@
 								</Style>
 							</DataGrid.Resources>
 							<DataGrid.RowStyle>
-								<Style TargetType="{x:Type DataGridRow}" BasedOn="{StaticResource MetroDataGridRow}">
+								<Style TargetType="{x:Type DataGridRow}" BasedOn="{StaticResource {x:Type DataGridRow}}">
 									<Setter Property="IsSelected" Value="{Binding Selected}" />
 								</Style>
 							</DataGrid.RowStyle>
@@ -321,7 +327,7 @@
 						</DataGrid>
 					</Grid>
 				</Border>
-				<GridSplitter x:Name="ProjectsDataGridSplitter" Grid.Row="2" Height="2" HorizontalAlignment="Stretch" Foreground="{x:Null}"/>
+				<GridSplitter x:Name="ProjectsDataGridSplitter" Grid.Row="2" Height="4" HorizontalAlignment="Stretch" Foreground="{x:Null}" Margin="0,-4,0,0"/>
 				<Grid x:Name="ProjectActions" Grid.Row="3" MaxHeight="30" VerticalAlignment="Top" Margin="0,5,0,0">
 					<StackPanel Orientation="Horizontal" HorizontalAlignment="Center" >
 						<StackPanel.Resources>

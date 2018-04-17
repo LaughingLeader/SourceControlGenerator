@@ -75,7 +75,7 @@ namespace LL.SCG.ThemeSystem
 			Themes = new Dictionary<string, ResourceDictionary>(StringComparer.OrdinalIgnoreCase);
 
 			//AddTheme("DarkMetro", @"pack://application:,,,/SourceControlGenerator;component/ThemeSystem/Themes/DarkMetro/DarkMetroStyle.xaml");
-			AddTheme("DarkMetro", @"\ThemeSystem/Themes/DarkMetro/DarkMetroStyle.xaml");
+			//AddTheme("DarkMetro", @"\ThemeSystem/Themes/DarkMetro/DarkMetroStyle.xaml");
 
 			//SetTheme("DarkMetro");
 		}

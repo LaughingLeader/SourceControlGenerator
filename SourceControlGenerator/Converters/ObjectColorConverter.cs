@@ -18,7 +18,7 @@ namespace LL.SCG.Converters
 			SolidColorBrush brush = null;
 			string[] parameters = null;
 
-			Log.Here().Activity($"Attempting to parse {value.GetType()} and param {parameter.ToString()}");
+			//Log.Here().Activity($"Attempting to parse {value.GetType()} and param {parameter.ToString()}");
 
 			if (parameter is string strParam)
 			{
@@ -62,7 +62,7 @@ namespace LL.SCG.Converters
 					if (parsed)
 					{
 						var finalColor = Color.FromRgb((byte)(color.Value.R * colorModVal), (byte)(color.Value.G * colorModVal), (byte)(color.Value.B * colorModVal));
-						Log.Here().Activity($"Final color is {finalColor} | colorModVal is {colorModVal}");
+						//Log.Here().Activity($"Final color is {finalColor} | colorModVal is {colorModVal}");
 						return finalColor;
 					}
 				}

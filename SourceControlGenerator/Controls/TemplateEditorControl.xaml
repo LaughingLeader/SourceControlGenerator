@@ -41,7 +41,7 @@
 						<Setter Property="Padding" Value="4,2" />
 					</Style>
 				</StackPanel.Resources>
-				<local:FileBrowseControl x:Name="TemplateFileBrowser" OpenFileText="{Binding OpenFileText}" FileLocationText="{Binding FilePath}" OnOpen="{Binding OpenCommand}" />
+				<local:FileBrowseControl x:Name="TemplateFileBrowser" OpenFileText="{Binding OpenFileText}" FileLocationText="{Binding FilePath}" OnOpen="{Binding OpenCommand}" Width="400" MaxWidth="400" />
 				<Button x:Name="SaveButton" Content="Save" Command="{Binding SaveCommand}" Height="20" BorderThickness="1" BorderBrush="#FFABADB3" Margin="4,2,0,2" >
 					<Button.CommandParameter>
 						<MultiBinding Converter="{StaticResource SaveFileAsCommandDataConverter}">

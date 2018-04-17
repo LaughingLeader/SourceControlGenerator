@@ -134,7 +134,7 @@ namespace LL.SCG.Commands
 			}
 			else
 			{
-				Log.Here().Activity("settings file at {0} not found. Creating new file.", DefaultPaths.AppSettings(Data));
+				Log.Here().Warning("settings file at {0} not found. Creating new file.", DefaultPaths.AppSettings(Data));
 				Data.InitializeSettings();
 				SaveAppSettings = true;
 			}

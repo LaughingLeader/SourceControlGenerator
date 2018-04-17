@@ -19,11 +19,13 @@ namespace LL.SCG.Converters
 			switch (logType)
 			{
 				case LogType.Activity:
-					return SystemColors.WindowBrush.Color;
+					return Colors.Gainsboro;
 				case LogType.Important:
 					return Colors.Azure;
 				case LogType.Error:
 					return Colors.Salmon;
+				case LogType.Warning:
+					return Colors.Khaki;
 				default:
 					return SystemColors.WindowBrush.Color;
 			}

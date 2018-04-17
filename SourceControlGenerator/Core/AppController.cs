@@ -232,7 +232,7 @@ namespace LL.SCG.Core
 			}
 			else
 			{
-				Log.Here().Important($"Main app settings file at {DefaultPaths.MainAppSettings} not found. Creating new file.");
+				Log.Here().Warning($"Main app settings file at {DefaultPaths.MainAppSettings} not found. Creating new file.");
 				Data.AppSettings = new AppSettingsData();
 			}
 		}

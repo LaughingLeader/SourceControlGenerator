@@ -319,11 +319,11 @@ namespace LL.SCG.Controls
 			{
 				if (BrowseType == FileBrowseType.Directory)
 				{
-					textBox.ToolTip = "Warning: Folder not found.";
+					textBox.ToolTip = "Folder not found.";
 				}
 				else if (BrowseType == FileBrowseType.File)
 				{
-					textBox.ToolTip = "Warning: File not found.";
+					textBox.ToolTip = "File not found.";
 				}
 			}
 			else if (FileValidation == FileValidation.Error)

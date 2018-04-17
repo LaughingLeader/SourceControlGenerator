@@ -12,13 +12,13 @@ namespace LL.SCG
 		private static RegisteryHelper _registeryHelper;
 		public static RegisteryHelper Registry => _registeryHelper;
 
-		private static DOS2Helper _dos2Helper;
-		public static DOS2Helper DOS2 => _dos2Helper;
+		private static ImageHelper _imageHelper;
+		public static ImageHelper Image => _imageHelper;
 
 		public static void Init()
 		{
 			_registeryHelper = new RegisteryHelper();
-			_dos2Helper = new DOS2Helper();
+			_imageHelper = new ImageHelper();
 		}
 	}
 }

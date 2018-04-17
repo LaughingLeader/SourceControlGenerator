@@ -210,7 +210,7 @@ namespace LL.SCG.DOS2.Core
 					}
 					else
 					{
-						Log.Here().Activity($"Source control file not found for project {project.ProjectName}.");
+						Log.Here().Warning($"Source control file not found for project {project.ProjectName}.");
 					}
 				}
 			}

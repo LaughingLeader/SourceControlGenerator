@@ -143,6 +143,10 @@ namespace LL.SCG.DOS2.Controls
 		private void Btn_AvailableProjects_Click(object sender, RoutedEventArgs e)
 		{
 			ToggleAvailableProjectsView();
+			if(sender is Button btn)
+			{
+				btn.BorderThickness = new Thickness(1, 0, 1, 1);
+			}
 		}
 
 		private void ToggleAvailableProjectsView()

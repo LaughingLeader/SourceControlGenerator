@@ -1,4 +1,4 @@
-﻿<Controls:MetroWindow x:Name="MainAppWindow" x:Class="LL.SCG.Windows.MainWindow"
+﻿<Window x:Name="MainAppWindow" x:Class="LL.SCG.Windows.MainWindow"
 		xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
 		xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 		xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -13,19 +13,18 @@
 		xmlns:theme="clr-namespace:LL.SCG.ThemeSystem"
 		xmlns:listview="clr-namespace:Itenso.Windows.Controls.ListViewLayout"
 		xmlns:cb="clr-namespace:LL.SCG.Controls.Behavior"
-		xmlns:Controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
 		mc:Ignorable="d"
 		Title="Source Control Generator" Height="600" Width="1024" Loaded="Window_Loaded" Closing="MainAppWindow_Closing"
 		WindowStartupLocation="CenterOwner"
 		>
-	<Controls:MetroWindow.Resources>
+	<Window.Resources>
 		<CollectionViewSource x:Key="ActiveProjectsViewSource" CollectionViewType="ListCollectionView"/>
 		<CollectionViewSource x:Key="ManagedProjectsViewSource" CollectionViewType="ListCollectionView"/>
 		<DataTemplate x:Key="AlternatingKeywordsTemplate" DataType="c:TemplateKeywordControl">
 			<c:TemplateKeywordControl DataContext="{Binding}" KeywordName="{Binding KeywordName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
 									  KeywordValue="{Binding KeywordValue, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
 		</DataTemplate>
-	</Controls:MetroWindow.Resources>
+	</Window.Resources>
 	<Grid Width="Auto" Height="Auto">
 		<Grid.RowDefinitions>
 			<RowDefinition Height="Auto" />
@@ -116,12 +115,12 @@
 						<Setter Property="BorderThickness" Value="1"/>
 						<Setter Property="BorderBrush">
 							<Setter.Value>
-								<SolidColorBrush Color="{Binding RelativeSource={RelativeSource Self}, Converter={StaticResource ObjectColorConverter}, ConverterParameter='border;1.3'}" />
+								<SolidColorBrush Color="{Binding RelativeSource={RelativeSource Self}, Converter={StaticResource ObjectColorConverter}, ConverterParameter='border;75'}" />
 							</Setter.Value>
 						</Setter>
 						<Setter Property="Background">
 							<Setter.Value>
-								<SolidColorBrush Color="{Binding RelativeSource={RelativeSource Self}, Converter={StaticResource ObjectColorConverter}, ConverterParameter='background;1.3'}" />
+								<SolidColorBrush Color="{Binding RelativeSource={RelativeSource Self}, Converter={StaticResource ObjectColorConverter}, ConverterParameter='background;10'}" />
 							</Setter.Value>
 						</Setter>
 					</Style>
@@ -131,19 +130,19 @@
 						<Setter Property="BorderBrush">
 							<Setter.Value>
 								<!--<SolidColorBrush Color="{Binding Source={x:Static theme:ThemeController.TestBrush}, Converter={StaticResource ModifyBrushColorConverter}, ConverterParameter='1.2'}" />!-->
-								<SolidColorBrush Color="{Binding RelativeSource={RelativeSource Self}, Converter={StaticResource ObjectColorConverter}, ConverterParameter='border;1.3'}" />
+								<SolidColorBrush Color="{Binding RelativeSource={RelativeSource Self}, Converter={StaticResource ObjectColorConverter}, ConverterParameter='border;1'}" />
 							</Setter.Value>
 						</Setter>
 						<Setter Property="Background">
 							<Setter.Value>
-								<SolidColorBrush Color="{Binding RelativeSource={RelativeSource Self}, Converter={StaticResource ObjectColorConverter}, ConverterParameter='background;1.3'}" />
+								<SolidColorBrush Color="{Binding RelativeSource={RelativeSource Self}, Converter={StaticResource ObjectColorConverter}, ConverterParameter='background;10'}" />
 							</Setter.Value>
 						</Setter>
 						<Style.Triggers>
 							<Trigger Property="IsMouseOver" Value="true">
 								<Setter Property="Background">
 									<Setter.Value>
-										<SolidColorBrush Color="{Binding RelativeSource={RelativeSource Self}, Converter={StaticResource ObjectColorConverter}, ConverterParameter='background;1.3'}" />
+										<SolidColorBrush Color="{Binding RelativeSource={RelativeSource Self}, Converter={StaticResource ObjectColorConverter}, ConverterParameter='background;25'}" />
 									</Setter.Value>
 								</Setter>
 							</Trigger>
@@ -175,12 +174,16 @@
 						<StackPanel Grid.Column="1" HorizontalAlignment="Right" x:Name="KeywordCommandsGrid" Orientation="Horizontal" >
 							<StackPanel.Resources>
 								<Style TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
-									<Setter Property="Margin" Value="1,0" />
+									<Setter Property="Margin" Value="2,0" />
 									<Setter Property="Padding" Value="4,2" />
+									<Setter Property="MaxHeight" Value="{Binding Path=MaxHeight, ElementName=KeywordFileBrowser}" />
+									<Setter Property="MinHeight" Value="{Binding Path=MinHeight, ElementName=KeywordFileBrowser}" />
+									<Setter Property="BorderBrush" Value="{Binding Path=BorderBrush, ElementName=KeywordFileBrowser, FallbackValue='#FFABADB3'}" />
 								</Style>
 							</StackPanel.Resources>
-							<c:FileBrowseControl OpenFileText="Select Keywords File" FileLocationText="{Binding Settings.UserKeywordsFile, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-												OnOpen="{Binding LoadKeywords}"/>
+							<c:FileBrowseControl x:Name="KeywordFileBrowser" OpenFileText="Select Keywords File" FileLocationText="{Binding Settings.UserKeywordsFile, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+												OnOpen="{Binding LoadKeywords}" Width="400" MaxWidth="400" Margin="0,0,2,0" />
+
 							<Button x:Name="SaveKeywordsButton" Content="Save" Click="SaveKeywordsButton_Click" />
 							<Button x:Name="SaveAsKeywordsButton" Content="Save As..." Click="SaveAsKeywordsButton_Click" />
 							<Button Content="Default..." Click="KeywordsList_Default_Click" ToolTip="Reset Keywords to Default" />
@@ -433,4 +436,4 @@
 			</Grid>
 		</Grid>
 	</Grid>
-</Controls:MetroWindow>
+</Window>

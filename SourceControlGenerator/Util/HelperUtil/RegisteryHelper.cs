@@ -73,5 +73,18 @@ namespace LL.SCG.Util.HelperUtil
 		{
 			return GetRegistryKeyValue(registryView, "DisplayName", AppDisplayName, "InstallLocation", @"SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall");
 		}
+
+		public string GetAppInstallPath(string AppDisplayName)
+		{
+			var firstCheck = GetRegistryKeyValue(RegistryView.Registry32, "DisplayName", AppDisplayName, "InstallLocation", @"SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall");
+			if (!String.IsNullOrEmpty(firstCheck))
+			{
+				return firstCheck;
+			}
+			else
+			{
+				return GetRegistryKeyValue(RegistryView.Registry64, "DisplayName", AppDisplayName, "InstallLocation", @"SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall");
+			}
+		}
 	}
 }

@@ -387,7 +387,7 @@ namespace LL.SCG.Data.View
 			else
 			{
 				EditorText = DefaultEditorText;
-				Log.Here().Error("Template file {0} not found at {1}. Using default template.", Name, FilePath);
+				Log.Here().Warning("Template file {0} not found at {1}. Using default template.", Name, FilePath);
 			}
 
 

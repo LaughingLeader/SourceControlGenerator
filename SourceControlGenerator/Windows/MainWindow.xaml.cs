@@ -33,7 +33,7 @@ namespace LL.SCG.Windows
 	/// <summary>
 	/// Interaction logic for MainWindow.xaml
 	/// </summary>
-	public partial class MainWindow : MetroWindow, INotifyPropertyChanged
+	public partial class MainWindow : Window, INotifyPropertyChanged
 	{
 		private LogWindow logWindow;
 		private GitGenerationWindow gitGenerationWindow;
@@ -57,7 +57,7 @@ namespace LL.SCG.Windows
 
 			_instance = this;
 
-			logWindow = new LogWindow();
+			logWindow = new LogWindow(this);
 			logWindow.Hide();
 
 			Controller = new AppController(this);
@@ -294,6 +294,7 @@ namespace LL.SCG.Windows
 			}
 			else
 			{
+				logWindow.Owner = this;
 				logWindow.Show();
 			}
 
@@ -391,6 +392,7 @@ namespace LL.SCG.Windows
 			if (selectedProjects != null && selectedProjects.Count > 0)
 			{
 				gitGenerationWindow.Init(this, settings, selectedProjects);
+				gitGenerationWindow.Owner = this;
 				gitGenerationWindow.Show();
 			}
 			else
