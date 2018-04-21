@@ -14,5 +14,6 @@ namespace LL.SCG.Data.View
 		public string GitLogoDisabled => @"pack://application:,,,/SourceControlGenerator;component/Resources/Icons/GitLogo_Disabled.png";
 		public string LogMouseOver => @"pack://application:,,,/SourceControlGenerator;component/Resources/Icons/Log_MouseOver.png";
 		public string LogNormal => @"pack://application:,,,/SourceControlGenerator;component/Resources/Icons/Log_Normal.png";
+		public string RefreshSmall => @"pack://application:,,,/SourceControlGenerator;component/Resources/Icons/Refresh_16x.png";
 	}
 }

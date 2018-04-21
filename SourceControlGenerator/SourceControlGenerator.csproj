@@ -69,6 +69,9 @@
       <HintPath>..\packages\SharpCompress.0.20.0\lib\net45\SharpCompress.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Collections.Immutable, Version=1.2.2.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Collections.Immutable.1.4.0\lib\netstandard2.0\System.Collections.Immutable.dll</HintPath>
+    </Reference>
     <Reference Include="System.Data" />
     <Reference Include="System.Windows.Interactivity, Version=4.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\ControlzEx.3.0.2.4\lib\net462\System.Windows.Interactivity.dll</HintPath>
@@ -91,6 +94,9 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Collections\ObservableCollectionObject.cs" />
+    <Compile Include="Collections\ObservableImmutableDictionary.cs" />
+    <Compile Include="Collections\ObservableImmutableList.cs" />
     <Compile Include="Controls\AddTemplateControl.xaml.cs">
       <DependentUpon>AddTemplateControl.xaml</DependentUpon>
     </Compile>
@@ -177,6 +183,7 @@
     <Compile Include="Util\Log.cs" />
     <Compile Include="Core\AppController.cs" />
     <Compile Include="Util\HelperUtil\RegisteryHelper.cs" />
+    <Compile Include="Util\PropertyCopier.cs" />
     <Compile Include="Windows\EditTextWindow.xaml.cs">
       <DependentUpon>EditTextWindow.xaml</DependentUpon>
     </Compile>
@@ -311,6 +318,9 @@
     <None Include="Resources\Templates.xml" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Resources\Icons\Refresh_16x.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Resources\Logos\DivinityOriginalSin2.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

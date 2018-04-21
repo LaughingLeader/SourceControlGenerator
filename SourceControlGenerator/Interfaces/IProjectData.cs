@@ -11,6 +11,6 @@ namespace LL.SCG.Interfaces
 	{
 		string ProjectName { get; set; }
 		string DisplayName { get; set; }
-		string UUUID { get; set; }
+		string UUID { get; set; }
 	}
 }

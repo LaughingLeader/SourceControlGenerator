@@ -8,10 +8,11 @@ using System.Threading.Tasks;
 using System.Xml.Linq;
 using System.Xml.Serialization;
 using System.Xml.XPath;
+using LL.SCG.Util;
 
 namespace LL.SCG.Data.Xml
 {
-	public class ModuleInfo
+	public class ModuleInfo : PropertyChangedBase
 	{
 		public string Author { get; set; }
 		public string CharacterCreationLevelName { get; set; }
@@ -32,6 +33,19 @@ namespace LL.SCG.Data.Xml
 
 		public List<String> TargetModes { get; set; }
 
+		private long timestamp;
+
+		public long Timestamp
+		{
+			get { return timestamp; }
+			set { timestamp = value; }
+		}
+
+		public void Set(ModuleInfo moduleInfo)
+		{
+			PropertyCopier<ModuleInfo, ModuleInfo>.Copy(moduleInfo, this);
+		}
+
 		public void LoadFromXml(XDocument modMetaXml)
 		{
 			bool moduleInfoLoaded = false;
@@ -47,6 +61,8 @@ namespace LL.SCG.Data.Xml
 					foreach (PropertyInfo property in propInfo)
 					{
 						if (property.Name == "TargetModes") continue;
+						if (property.Name == "Timestamp") continue;
+
 						var value = XmlDataHelper.GetDOS2AttributeValue(moduleInfoXml, property.Name);
 
 						if(property.Name == "Version")
@@ -81,6 +97,23 @@ namespace LL.SCG.Data.Xml
 			catch (Exception ex)
 			{
 				Log.Here().Error("Error parsing mod meta.lsx: {0}", ex.ToString());
+			}
+
+			try
+			{
+				var timeStampXml = modMetaXml.XPathSelectElement("save/header");
+				if (timeStampXml != null && timeStampXml.HasAttributes)
+				{
+					var timeAtt = timeStampXml.Attribute("time");
+					if (timeAtt != null)
+					{
+						var success = long.TryParse(timeAtt.Value, out timestamp);
+					}
+				}
+			}
+			catch (Exception ex)
+			{
+				Log.Here().Error("Error getting timestamp from meta.lsx: {0}", ex.ToString());
 			}
 
 			if (moduleInfoLoaded)

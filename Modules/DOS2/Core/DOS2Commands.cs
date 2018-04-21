@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 using System.Xml.Linq;
+using LL.SCG.Collections;
 using LL.SCG.Controls;
 using LL.SCG.Data;
 using LL.SCG.Data.View;
@@ -26,6 +27,7 @@ namespace LL.SCG.DOS2.Core
 		{
 			LoadModProjects(Data);
 			LoadManagedProjects(Data);
+			LoadSourceControlData(Data);
 			LoadAvailableProjects(Data);
 		}
 
@@ -33,7 +35,7 @@ namespace LL.SCG.DOS2.Core
 		{
 			if (Data.ManagedProjects == null)
 			{
-				Data.ManagedProjects = new ObservableCollection<ModProjectData>();
+				Data.ManagedProjects = new ObservableImmutableList<ModProjectData>();
 			}
 			else
 			{
@@ -70,7 +72,7 @@ namespace LL.SCG.DOS2.Core
 				foreach (var project in Data.ManagedProjectsData.Projects)
 				{
 					//var modProject = Data.ModProjects.Where(x => x.Name == project.Name && x.ModuleInfo.UUID == project.GUID).FirstOrDefault();
-					var modProject = Data.ModProjects.Where(x => x.ProjectName == project.Name && x.UUUID == project.UUID).FirstOrDefault();
+					var modProject = Data.ModProjects.Where(x => x.ProjectName == project.Name && x.UUID == project.UUID).FirstOrDefault();
 					if (modProject != null)
 					{
 						Data.ManagedProjects.Add(modProject);
@@ -96,15 +98,15 @@ namespace LL.SCG.DOS2.Core
 			}
 		}
 
-		public static void LoadAvailableProjects(DOS2ModuleData Data)
+		public static void LoadAvailableProjects(DOS2ModuleData Data, bool ClearExisting = true)
 		{
 			if (Data.NewProjects == null)
 			{
-				Data.NewProjects = new ObservableCollection<AvailableProjectViewData>();
+				Data.NewProjects = new ObservableImmutableList<AvailableProjectViewData>();
 			}
 			else
 			{
-				Data.NewProjects.Clear();
+				if (ClearExisting) Data.NewProjects.DoOperation(data => data.Clear());
 			}
 
 			if (Data.ModProjects != null && Data.ModProjects.Count > 0)
@@ -125,12 +127,15 @@ namespace LL.SCG.DOS2.Core
 
 						if (projectIsUnmanaged)
 						{
-							AvailableProjectViewData availableProject = new AvailableProjectViewData()
+							if(ClearExisting || Data.NewProjects.Where(p => p.Name == project.ProjectName).FirstOrDefault() == null)
 							{
-								Name = project.ProjectName,
-								Tooltip = project.Tooltip
-							};
-							Data.NewProjects.Add(availableProject);
+								AvailableProjectViewData availableProject = new AvailableProjectViewData()
+								{
+									Name = project.ProjectName,
+									Tooltip = project.Tooltip
+								};
+								Data.NewProjects.DoOperation(data => data.Add(availableProject));
+							}
 						}
 					}
 				}
@@ -138,15 +143,15 @@ namespace LL.SCG.DOS2.Core
 
 		}
 
-		public static void LoadModProjects(DOS2ModuleData Data)
+		public static void LoadModProjects(DOS2ModuleData Data, bool ClearPrevious = true)
 		{
 			if (Data.ModProjects == null)
 			{
-				Data.ModProjects = new ObservableCollection<ModProjectData>();
+				Data.ModProjects = new ObservableImmutableList<ModProjectData>();
 			}
 			else
 			{
-				Data.ModProjects.Clear();
+				if (ClearPrevious) Data.ModProjects.DoOperation(data => data.Clear());
 			}
 
 			if (Data.Settings != null && !String.IsNullOrEmpty(Data.Settings.DataDirectory))
@@ -176,7 +181,26 @@ namespace LL.SCG.DOS2.Core
 									Log.Here().Activity("Meta file found for project {0}. Reading file.", modFolderName);
 									ModProjectData modProjectData = new ModProjectData(metaFile, projectsPath);
 									Log.Here().Activity("Finished reading meta files for mod: {0}", modProjectData.ModuleInfo.Name);
-									Data.ModProjects.Add(modProjectData);
+
+									if(!ClearPrevious)
+									{
+										var previous = Data.ModProjects.Where(p => p.FolderName == modProjectData.FolderName).FirstOrDefault();
+										if(previous != null)
+										{
+											if(previous.DataIsNewer(modProjectData))
+											{
+												previous.UpdateData(modProjectData);
+											}
+										}
+										else
+										{
+											Data.ModProjects.DoOperation(data => data.Add(modProjectData));
+										}
+									}
+									else
+									{
+										Data.ModProjects.DoOperation(data => data.Add(modProjectData));
+									}
 								}
 							}
 						}
@@ -187,24 +211,63 @@ namespace LL.SCG.DOS2.Core
 					Log.Here().Error("Loading available projects failed. DOS2 data directory not found at {0}", Data.Settings.DataDirectory);
 				}
 			}
+		}
 
-			if(Directory.Exists(Data.Settings.GitRootDirectory))
+		public static void RefreshManagedProjects(DOS2ModuleData Data)
+		{
+			if(Data.ManagedProjects != null && Data.ManagedProjects.Count > 0)
 			{
-				foreach(var project in Data.ModProjects)
+				if (Data.Settings != null && !String.IsNullOrEmpty(Data.Settings.DataDirectory))
+				{
+					if (Directory.Exists(Data.Settings.DataDirectory))
+					{
+						string projectsPath = Path.Combine(Data.Settings.DataDirectory, "Projects");
+						string modsPath = Path.Combine(Data.Settings.DataDirectory, "Mods");
+
+						if (Directory.Exists(modsPath))
+						{
+							Log.Here().Activity("Reloading DOS2 project data from mods directory at: {0}", modsPath);
+
+							foreach (var project in Data.ManagedProjects)
+							{
+								var modData = Data.ModProjects.Where(p => p.ProjectName == project.ProjectName && p.UUID == project.UUID).FirstOrDefault();
+								if(modData != null)
+								{
+									Log.Here().Activity($"Reloading data for project {project.ProjectName}.");
+									modData.ReloadData();
+								}
+							}
+						}
+					}
+					else
+					{
+						Log.Here().Error("Loading available projects failed. DOS2 data directory not found at {0}", Data.Settings.DataDirectory);
+					}
+				}
+			}
+		}
+
+		public static bool LoadSourceControlData(DOS2ModuleData Data)
+		{
+			if (Directory.Exists(Data.Settings.GitRootDirectory))
+			{
+				bool overallSuccess = false;
+				foreach (var project in Data.ModProjects)
 				{
 					var filePath = Path.Combine(Data.Settings.GitRootDirectory, project.ProjectName, DefaultPaths.SourceControlGeneratorDataFile);
 					var success = false;
-					if(File.Exists(filePath))
+					if (File.Exists(filePath))
 					{
 						var sourceControlData = FileCommands.Load.LoadSourceControlData(filePath);
-						if(sourceControlData != null)
+						if (sourceControlData != null)
 						{
 							project.GitData = sourceControlData;
 							success = true;
+							overallSuccess = true;
 						}
 					}
-					
-					if(success)
+
+					if (success)
 					{
 						Log.Here().Important($"Source control file found in git repo for project {project.ProjectName}.");
 					}
@@ -213,7 +276,10 @@ namespace LL.SCG.DOS2.Core
 						Log.Here().Warning($"Source control file not found for project {project.ProjectName}.");
 					}
 				}
+
+				return overallSuccess;
 			}
+			return false;
 		}
 
 

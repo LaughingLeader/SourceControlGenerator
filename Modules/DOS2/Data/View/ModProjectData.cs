@@ -80,7 +80,7 @@ namespace LL.SCG.Data
 			}
 		}
 
-		public string UUUID
+		public string UUID
 		{
 			get => ModuleInfo.UUID;
 			set
@@ -221,6 +221,31 @@ namespace LL.SCG.Data
 			}
 		}
 
+		private string modMetaFilePath;
+
+		public string ModMetaFilePath
+		{
+			get { return modMetaFilePath; }
+			set
+			{
+				modMetaFilePath = value;
+				RaisePropertyChanged("ModMetaFilePath");
+			}
+		}
+
+		private string projectMetaFilePath;
+
+		public string ProjectMetaFilePath
+		{
+			get { return projectMetaFilePath; }
+			set
+			{
+				projectMetaFilePath = value;
+				RaisePropertyChanged("ProjectMetaFilePath");
+			}
+		}
+
+
 		public ICommand OpenBackupFolder { get; private set; }
 
 		public ICommand OpenGitFolder { get; private set; }
@@ -237,6 +262,20 @@ namespace LL.SCG.Data
 		{
 			Log.Here().Activity("Opening backup folder!");
 			DOS2Commands.OpenBackupFolder(this);
+		}
+
+		public bool DataIsNewer(ModProjectData OtherData)
+		{
+			if (OtherData.ModuleInfo.Timestamp > this.ModuleInfo.Timestamp || OtherData.ProjectInfo.Timestamp > this.ProjectInfo.Timestamp) return true;
+			return false;
+		}
+
+		public void UpdateData(ModProjectData OtherData)
+		{
+			this.ModuleInfo.Set(OtherData.ModuleInfo);
+			this.ProjectInfo.Set(OtherData.ProjectInfo);
+			CreateTooltip();
+			SetVersion();
 		}
 
 		private void Init()
@@ -278,12 +317,125 @@ namespace LL.SCG.Data
 			return data;
 		}
 
+		public void CreateTooltip()
+		{
+			var tooltipText = "";
+			if (!String.IsNullOrEmpty(ModuleInfo.Author))
+			{
+				tooltipText = "created by " + ModuleInfo.Author;
+				if (ModuleInfo.TargetModes != null && ModuleInfo.TargetModes.Count > 0)
+				{
+					tooltipText = tooltipText + " [" + String.Join(", ", ModuleInfo.TargetModes.ToArray()) + "]";
+				}
+			}
+
+			if (ProjectInfo != null && !String.IsNullOrEmpty(ProjectInfo.Type))
+			{
+				tooltipText = ProjectInfo.Type + " mod " + tooltipText;
+			}
+			else
+			{
+				tooltipText = "Mod " + tooltipText;
+			}
+
+			Tooltip = tooltipText;
+		}
+
+		public void SetVersion()
+		{
+			//(major version << 28) | (minor version << 24) | (revision << 16) | (build << 0)
+			var major = (ModuleInfo.Version >> 28);
+			var minor = (ModuleInfo.Version >> 24) & 0x0F;
+			var revision = (ModuleInfo.Version >> 16) & 0xFF;
+			var build = (ModuleInfo.Version & 0xFFFF);
+			//var version = ((ModuleInfo.Version << 28) | (ModuleInfo.Version << 24) | (ModuleInfo.Version << 16) | (ModuleInfo.Version << 0)).ToString("X");
+			//Log.Here().Important("[{5}] Bitshift test: {6} = {4} = {0}.{1}.{2}.{3}", major, minor, revision, build, version, ModuleInfo.Name, ModuleInfo.Version);
+			Version = String.Format("{0}.{1}.{2}.{3}", major, minor, revision, build);
+		}
+
+		public void ReloadData()
+		{
+			if(File.Exists(ModMetaFilePath))
+			{
+				var modMetaXml = XDocument.Load(ModMetaFilePath);
+				this.ModuleInfo.LoadFromXml(modMetaXml);
+				LoadDependencies(modMetaXml);
+				ModuleInfo.RaisePropertyChanged(String.Empty);
+			}
+
+			if (File.Exists(ProjectMetaFilePath))
+			{
+				FileInfo projectMetaFile = new FileInfo(ProjectMetaFilePath);
+				var projectMetaXml = XDocument.Load(projectMetaFile.OpenRead());
+
+				this.ProjectInfo.LoadFromXml(projectMetaXml);
+				LoadThumbnail(projectMetaFile.Directory.FullName);
+				ProjectInfo.RaisePropertyChanged(String.Empty);
+			}
+		}
+
+		private void LoadDependencies(XDocument modMetaXml)
+		{
+			try
+			{
+				var dependencyInfoXml = modMetaXml.XPathSelectElement("save/region/node/children/node[@id='Dependencies']");
+				if (dependencyInfoXml.HasElements)
+				{
+					foreach (var node in dependencyInfoXml.Element("children").Elements())
+					{
+						DependencyInfo dependencyInfo = new DependencyInfo()
+						{
+							Folder = XmlDataHelper.GetDOS2AttributeValue(node, "Folder"),
+							MD5 = XmlDataHelper.GetDOS2AttributeValue(node, "MD5"),
+							Name = XmlDataHelper.GetDOS2AttributeValue(node, "Name"),
+							Version = XmlDataHelper.GetDOS2AttributeValue(node, "Version")
+						};
+						Dependencies.Add(dependencyInfo);
+						Log.Here().Activity("[{0}] Dependency ({1}) added.", this.ModuleInfo.Name, dependencyInfo.Name);
+					}
+				}
+				else
+				{
+					Log.Here().Activity("[{0}] No dependencies found.", this.ModuleInfo.Name);
+				}
+
+			}
+			catch (Exception ex)
+			{
+				Log.Here().Error("Error parsing mod dependencies: {0}", ex.ToString());
+			}
+		}
+
+		private void LoadThumbnail(string projectDirectory)
+		{
+			Log.Here().Activity($"Checking {projectDirectory} for thumnails.");
+
+			var thumbnail = Directory.GetFiles(projectDirectory, "thumbnail.*", SearchOption.TopDirectoryOnly);
+			if (thumbnail.Length > 0)
+			{
+				var thumbpath = thumbnail.FirstOrDefault();
+				if (FileCommands.IsValidImage(thumbpath))
+				{
+					ThumbnailPath = thumbpath;
+					ThumbnailExists = Visibility.Visible;
+
+					Log.Here().Activity($"Set thumbnail path to {thumbpath}");
+				}
+				else
+				{
+					Log.Here().Error($"{thumbpath} is not a valid image file.");
+				}
+			}
+		}
+
 		public ModProjectData(FileInfo ModMetaFile, string ProjectsFolderPath)
 		{
 			Init();
 
 			if (ModMetaFile != null)
 			{
+				ModMetaFilePath = ModMetaFile.FullName;
+
 				XDocument modMetaXml = null;
 				try
 				{
@@ -299,34 +451,7 @@ namespace LL.SCG.Data
 				{
 					this.ModuleInfo.LoadFromXml(modMetaXml);
 
-					try
-					{
-						var dependencyInfoXml = modMetaXml.XPathSelectElement("save/region/node/children/node[@id='Dependencies']");
-						if(dependencyInfoXml.HasElements)
-						{
-							foreach (var node in dependencyInfoXml.Element("children").Elements())
-							{
-								DependencyInfo dependencyInfo = new DependencyInfo()
-								{
-									Folder = XmlDataHelper.GetDOS2AttributeValue(node, "Folder"),
-									MD5 = XmlDataHelper.GetDOS2AttributeValue(node, "MD5"),
-									Name = XmlDataHelper.GetDOS2AttributeValue(node, "Name"),
-									Version = XmlDataHelper.GetDOS2AttributeValue(node, "Version")
-								};
-								Dependencies.Add(dependencyInfo);
-								Log.Here().Activity("[{0}] Dependency ({1}) added.", this.ModuleInfo.Name, dependencyInfo.Name);
-							}
-						}
-						else
-						{
-							Log.Here().Activity("[{0}] No dependencies found.", this.ModuleInfo.Name);
-						}
-						
-					}
-					catch (Exception ex)
-					{
-						Log.Here().Error("Error parsing mod dependencies: {0}", ex.ToString());
-					}
+					LoadDependencies(modMetaXml);
 
 					Log.Here().Important("[{0}] All mod data loaded.", this.ModuleInfo.Name);
 				}
@@ -347,29 +472,14 @@ namespace LL.SCG.Data
 
 				FileInfo projectMetaFile = new FileInfo(projectMetaFilePath);
 
+				ProjectMetaFilePath = projectMetaFile.FullName;
+
 				if (projectMetaFile != null)
 				{
 					var projectMetaXml = XDocument.Load(projectMetaFile.OpenRead());
 					this.ProjectInfo.LoadFromXml(projectMetaXml);
 
-					Log.Here().Activity($"Checking {projectDirectory} for thumnails.");
-
-					var thumbnail = Directory.GetFiles(projectDirectory, "thumbnail.*", SearchOption.TopDirectoryOnly);
-					if (thumbnail.Length > 0)
-					{
-						var thumbpath = thumbnail.FirstOrDefault();
-						if (FileCommands.IsValidImage(thumbpath))
-						{
-							ThumbnailPath = thumbpath;
-							ThumbnailExists = Visibility.Visible;
-
-							Log.Here().Activity($"Set thumbnail path to {thumbpath}");
-						}
-						else
-						{
-							Log.Here().Error($"{thumbpath} is not a valid image file.");
-						}
-					}
+					LoadThumbnail(projectDirectory);
 				}
 			}
 			catch (Exception ex)
@@ -379,35 +489,8 @@ namespace LL.SCG.Data
 
 			if(ModuleInfo != null)
 			{
-				var tooltipText = "";
-				if(!String.IsNullOrEmpty(ModuleInfo.Author))
-				{
-					tooltipText = "created by " + ModuleInfo.Author;
-					if (ModuleInfo.TargetModes != null && ModuleInfo.TargetModes.Count > 0)
-					{
-						tooltipText = tooltipText+ " [" + String.Join(", ", ModuleInfo.TargetModes.ToArray()) + "]";
-					}
-				}
-
-				if (ProjectInfo != null && !String.IsNullOrEmpty(ProjectInfo.Type))
-				{
-					tooltipText = ProjectInfo.Type + " mod " + tooltipText;
-				}
-				else
-				{
-					tooltipText = "Mod " + tooltipText;
-				}
-
-				Tooltip = tooltipText;
-
-				//(major version << 28) | (minor version << 24) | (revision << 16) | (build << 0)
-				var major = (ModuleInfo.Version >> 28);
-				var minor = (ModuleInfo.Version >> 24) & 0x0F;
-				var revision = (ModuleInfo.Version >> 16) & 0xFF;
-				var build = (ModuleInfo.Version & 0xFFFF);
-				//var version = ((ModuleInfo.Version << 28) | (ModuleInfo.Version << 24) | (ModuleInfo.Version << 16) | (ModuleInfo.Version << 0)).ToString("X");
-				//Log.Here().Important("[{5}] Bitshift test: {6} = {4} = {0}.{1}.{2}.{3}", major, minor, revision, build, version, ModuleInfo.Name, ModuleInfo.Version);
-				Version = String.Format("{0}.{1}.{2}.{3}", major, minor, revision, build);
+				CreateTooltip();
+				SetVersion();
 			}
 		}
 	}

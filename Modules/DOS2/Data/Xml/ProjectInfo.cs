@@ -6,10 +6,11 @@ using System.Threading.Tasks;
 using System.Xml.Linq;
 using System.Xml.Serialization;
 using System.Xml.XPath;
+using LL.SCG.Util;
 
 namespace LL.SCG.Data.Xml
 {
-	public class ProjectInfo
+	public class ProjectInfo : PropertyChangedBase
 	{
 		public string Name { get; set; }
 
@@ -36,8 +37,12 @@ namespace LL.SCG.Data.Xml
 			set { timestamp = value; }
 		}
 
-
 		public DateTime CreationDate { get; set; }
+
+		public void Set(ProjectInfo projectInfo)
+		{
+			PropertyCopier<ProjectInfo, ProjectInfo>.Copy(projectInfo, this);
+		}
 
 		public void LoadFromXml(XDocument projectMetaXml)
 		{

@@ -209,7 +209,7 @@ namespace LL.SCG.Core
 					SourceControlData sourceControlData = new SourceControlData()
 					{
 						ProjectName = modProject.ProjectName,
-						ProjectUUID = modProject.UUUID
+						ProjectUUID = modProject.UUID
 					};
 
 					modProject.GitData = sourceControlData;
@@ -278,7 +278,7 @@ namespace LL.SCG.Core
 					{
 						Log.Here().Activity("Successfully created archive for {0}.", project.ProjectName);
 						project.LastBackup = DateTime.Now;
-						var d = Data.ManagedProjectsData.Projects.Where(p => p.Name == project.ProjectName && p.UUID == project.UUUID).FirstOrDefault();
+						var d = Data.ManagedProjectsData.Projects.Where(p => p.Name == project.ProjectName && p.UUID == project.UUID).FirstOrDefault();
 						if (d != null) d.LastBackupUTC = project.LastBackup?.ToUniversalTime().ToString();
 						success = true;
 
@@ -503,6 +503,48 @@ namespace LL.SCG.Core
 						}
 					}
 				}
+			}
+		}
+
+		public void RefreshAllProjects()
+		{
+			DOS2Commands.LoadAvailableProjects(Data);
+			DOS2Commands.LoadModProjects(Data, false);
+		}
+
+		private bool refreshingAvailable = false;
+
+		public async void RefreshAvailableProjects()
+		{
+			if(!refreshingAvailable)
+			{
+				refreshingAvailable = true;
+
+
+				await Task.Run(() => {
+					DOS2Commands.LoadAvailableProjects(Data);
+					refreshingAvailable = false;
+				});
+			}
+			else
+			{
+				Log.Here().Activity("Currently refreshing.");
+			}
+		}
+
+		private bool refreshingModData = false;
+
+		public async void RefreshModProjects()
+		{
+			if(!refreshingModData)
+			{
+				refreshingModData = true;
+
+				await Task.Run(() => {
+					DOS2Commands.RefreshManagedProjects(Data);
+					refreshingModData = false;
+				});
+				
 			}
 		}
 

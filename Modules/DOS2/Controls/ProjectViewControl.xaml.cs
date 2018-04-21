@@ -372,6 +372,14 @@ namespace LL.SCG.DOS2.Controls
 			}
 		}
 
+		private void Btn_ModProjects_Refresh_Click(object sender, RoutedEventArgs e)
+		{
+			Controller.RefreshModProjects();
+		}
 
+		private void Btn_AvailableProjects_Refresh_Click(object sender, RoutedEventArgs e)
+		{
+			Controller.RefreshAvailableProjects();
+		}
 	}
 }

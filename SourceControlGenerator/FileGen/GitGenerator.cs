@@ -44,6 +44,10 @@ namespace LL.SCG.FileGen
 					var junctionTargetDirectory = Path.Combine(repositoryProjectDirectory, junctionData.BasePath);
 
 					Log.Here().Activity("Looking for directory at {0}", junctionData.SourcePath);
+
+					//Create the directory for future file adding (this is better than adding it later).
+					Directory.CreateDirectory(junctionData.SourcePath);
+
 					if(Directory.Exists(junctionData.SourcePath))
 					{
 						Log.Here().Important("Directory \"{0}\" found. Creating junction.", junctionData.BasePath);

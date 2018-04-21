@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using LL.SCG.Collections;
 using LL.SCG.Data;
 using LL.SCG.Data.View;
 using LL.SCG.DOS2.Data.App;
@@ -48,11 +49,11 @@ namespace LL.SCG.DOS2.Data.View
 			}
 		}
 
-		public ObservableCollection<ModProjectData> ManagedProjects { get; set; }
+		public ObservableImmutableList<ModProjectData> ManagedProjects { get; set; }
 
-		public ObservableCollection<ModProjectData> ModProjects { get; set; }
+		public ObservableImmutableList<ModProjectData> ModProjects { get; set; }
 
-		public ObservableCollection<AvailableProjectViewData> NewProjects { get; set; }
+		public ObservableImmutableList<AvailableProjectViewData> NewProjects { get; set; }
 
 		override public string LoadStringResource(string Name)
 		{
@@ -64,9 +65,9 @@ namespace LL.SCG.DOS2.Data.View
 			ManageButtonsText = "Select a Project";
 			AvailableProjectsToggleText = "Hide Available Projects";
 
-			ManagedProjects = new ObservableCollection<ModProjectData>();
-			ModProjects = new ObservableCollection<ModProjectData>();
-			NewProjects = new ObservableCollection<AvailableProjectViewData>();
+			ManagedProjects = new ObservableImmutableList<ModProjectData>();
+			ModProjects = new ObservableImmutableList<ModProjectData>();
+			NewProjects = new ObservableImmutableList<AvailableProjectViewData>();
 		}
 	}
 }
