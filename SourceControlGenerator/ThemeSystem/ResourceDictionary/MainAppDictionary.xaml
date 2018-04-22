@@ -12,7 +12,7 @@
 					x:Name="MainAppDictionary"
 					>
 	<proxy:IconProxy x:Key="IconProxy" Data="{x:Static data:MainAppData.IconData}"/>
-	
+
 	<BooleanToVisibilityConverter  x:Key="BoolToVisibilityConverter"/>
 	<cv:DateTimeToStringConverter x:Key="DateTimeToStringConverter"/>
 	<cv:EmptyListVisibilityConverter x:Key="EmptyListVisibilityConverter"/>

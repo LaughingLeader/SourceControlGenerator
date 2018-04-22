@@ -131,6 +131,8 @@
     <Compile Include="Data\App\ManagedProjectsData.cs" />
     <Compile Include="Data\Proxy\IconProxy.cs" />
     <Compile Include="Data\View\IconPathData.cs" />
+    <Compile Include="Data\View\MenuBarData.cs" />
+    <Compile Include="Data\View\MenuData.cs" />
     <Compile Include="Data\View\ModuleData.cs" />
     <Compile Include="Data\View\ModuleSelectionData.cs" />
     <Compile Include="Data\View\SettingsEntryData.cs" />

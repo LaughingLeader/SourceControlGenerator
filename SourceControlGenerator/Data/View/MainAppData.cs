@@ -43,6 +43,19 @@ namespace LL.SCG.Data.View
 
 		public static IconPathData IconData { get; set; }
 
+		private MenuBarData menuBarData;
+
+		public MenuBarData MenuBarData
+		{
+			get { return menuBarData; }
+			set
+			{
+				menuBarData = value;
+				RaisePropertyChanged("MenuBarData");
+			}
+		}
+
+		public ObservableCollection<MenuData> TopMenus { get; set; }
 		//public static ThemeColorData ThemeColorData { get; set; }
 
 		private IModuleData selectedModuleData = null;
@@ -180,6 +193,8 @@ namespace LL.SCG.Data.View
 			ModuleIsLoaded = false;
 
 			IconData = new IconPathData();
+			MenuBarData = new MenuBarData();
+			TopMenus = MenuBarData.Menus;
 
 			//ThemeColorData = ThemeColorData.Default();
 			//ThemeColorData.RefreshTheme();

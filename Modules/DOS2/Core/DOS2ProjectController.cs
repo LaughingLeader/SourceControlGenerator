@@ -26,6 +26,8 @@ using LL.SCG.DOS2.Controls;
 using System.Globalization;
 using System.Windows;
 using System.Windows.Threading;
+using LL.SCG.Collections;
+using LL.SCG.Commands;
 
 namespace LL.SCG.Core
 {
@@ -508,8 +510,10 @@ namespace LL.SCG.Core
 
 		public void RefreshAllProjects()
 		{
-			DOS2Commands.LoadAvailableProjects(Data);
-			DOS2Commands.LoadModProjects(Data, false);
+			//DOS2Commands.LoadAvailableProjects(Data);
+			//DOS2Commands.LoadModProjects(Data, false);
+			RefreshAvailableProjects();
+			RefreshModProjects();
 		}
 
 		private bool refreshingAvailable = false;
@@ -672,6 +676,19 @@ namespace LL.SCG.Core
 		public void Initialize(MainAppData mainAppData)
 		{
 			MainAppData = mainAppData;
+
+			MainAppData.MenuBarData.File.Add(
+				new MenuData()
+				{
+					Header = "Refresh All Projects",
+					ClickCommand = new CallbackCommand(RefreshAllProjects),
+					MenuItems = new ObservableCollection<MenuData>()
+					{
+						new MenuData("Refresh Managed"),
+						new MenuData("Refresh Available")
+					}
+				}
+			);
 		}
 
 		public void Start()
@@ -686,6 +703,15 @@ namespace LL.SCG.Core
 #if DEBUG
 			//TestView();
 #endif
+		}
+
+		public void Unload()
+		{
+			if(projectViewControl != null)
+			{
+				var refreshItem = MainAppData.MenuBarData.File.MenuItems.Where(m => m.Header == "Refresh All Projects").First();
+				MainAppData.MenuBarData.File.MenuItems.Remove(refreshItem);
+			}
 		}
 
 	}

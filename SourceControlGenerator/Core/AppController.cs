@@ -18,6 +18,7 @@ using LL.SCG.Interfaces;
 using LL.SCG.Data.App;
 using System.Windows;
 using System.Windows.Controls;
+using LL.SCG.Commands;
 
 namespace LL.SCG.Core
 {
@@ -60,6 +61,7 @@ namespace LL.SCG.Core
 			else
 			{
 				Data.SelectedModuleData = null;
+				CurrentModule = null;
 			}
 		}
 
@@ -123,6 +125,20 @@ namespace LL.SCG.Core
 			OnModuleSet?.Invoke(this, EventArgs.Empty);
 
 			return true;
+		}
+
+		public void UnloadCurrentModule()
+		{
+			if(CurrentModule != null)
+			{
+				Log.Here().Activity("Unloading module {0}.", CurrentModule.ModuleData.ModuleName);
+				Data.AppSettings.LastModule = CurrentModule.ModuleData.ModuleName;
+				CurrentModule.Unload();
+				SetSelectedModule();
+			}
+
+			Data.ModuleIsLoaded = false;
+			Data.ModuleSelectionVisibility = Visibility.Visible;
 		}
 
 		public Action OnProgressLoaded { get; set; }
@@ -283,6 +299,60 @@ namespace LL.SCG.Core
 			Log.Here().Important("Registered controller for module {0}.", Name);
 		}
 
+		#region  Menu Commands
+
+		public void AddNewTemplate()
+		{
+			if (CurrentModule != null)
+			{
+				var data = CurrentModule.ModuleData;
+				if (!data.AddTemplateControlVisible)
+				{
+					TabControl mainTabs = (TabControl)mainWindow.FindName("MainTabsControl");
+
+					data.CreateNewTemplateData();
+
+					mainWindow.Dispatcher.BeginInvoke((Action)(() =>
+					{
+						data.AddTemplateControlVisible = true;
+						if (mainTabs != null) mainTabs.SelectedIndex = 1;
+					}));
+				}
+			}
+		}
+
+		public void OpenModuleSelectScreen()
+		{
+			UnloadCurrentModule();
+			var projectsGrid = (Grid)mainWindow.FindName("ProjectsViewGrid");
+			if (projectsGrid != null)
+			{
+				projectsGrid.Children.Clear();
+			}
+		}
+
+		public void ToggleLogWindow()
+		{
+			if (mainWindow.LogWindowShown)
+			{
+				mainWindow.LogWindow.Hide();
+			}
+			else
+			{
+				mainWindow.LogWindow.Owner = mainWindow;
+				mainWindow.LogWindow.Show();
+			}
+
+			mainWindow.RaisePropertyChanged("LogVisibleText");
+		}
+
+		public void MenuAction_UnImplemented()
+		{
+			
+		}
+
+		#endregion
+
 		public AppController(MainWindow MainAppWindow)
 		{
 			_instance = this;
@@ -293,6 +363,52 @@ namespace LL.SCG.Core
 			mainWindow = MainAppWindow;
 
 			LoadAppSettings();
+
+			Data.MenuBarData.File.Add(
+				new MenuData()
+				{
+					Header = "Create Template...",
+					ClickCommand = new CallbackCommand(AddNewTemplate)
+				},
+				new MenuData()
+				{
+					Header = "Select Module...",
+					ClickCommand = new CallbackCommand(OpenModuleSelectScreen)
+				}
+			);
+
+			Data.MenuBarData.Options.Add(
+				new MenuData()
+				{
+					GetHeader = () => { return mainWindow.LogVisibleText;},
+					ClickCommand = new CallbackCommand(ToggleLogWindow)
+				},
+				new MenuData()
+				{
+					Header = "Save Log...",
+					ClickCommand = new CallbackCommand(MenuAction_UnImplemented)
+				}
+			);
+
+			Data.MenuBarData.Help.Add(
+				new MenuData()
+				{
+					Header = "About",
+					ClickCommand = new CallbackCommand(MenuAction_UnImplemented)
+				},
+				new MenuData()
+				{
+					Header = "Report Bug / Give Feedback...",
+					ClickCommand = new CallbackCommand(MenuAction_UnImplemented)
+				},
+				new MenuData()
+				{
+					Header = "Go to Github Repo...",
+					ClickCommand = new CallbackCommand(MenuAction_UnImplemented)
+				}
+			);
+
+			Data.MenuBarData.RaisePropertyChanged(String.Empty);
 		}
 	}
 }

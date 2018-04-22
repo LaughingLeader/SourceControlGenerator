@@ -36,6 +36,13 @@ namespace LL.SCG.Windows
 	public partial class MainWindow : Window, INotifyPropertyChanged
 	{
 		private LogWindow logWindow;
+
+		public LogWindow LogWindow
+		{
+			get { return logWindow; }
+			set { logWindow = value; }
+		}
+
 		private GitGenerationWindow gitGenerationWindow;
 		private UserControl lastModuleView;
 
@@ -286,21 +293,6 @@ namespace LL.SCG.Windows
 			}
 		}
 
-		private void LogWindowToggle_Click(object sender, RoutedEventArgs e)
-		{
-			if (LogWindowShown)
-			{
-				logWindow.Hide();
-			}
-			else
-			{
-				logWindow.Owner = this;
-				logWindow.Show();
-			}
-
-			RaisePropertyChanged("LogVisibleText");
-		}
-
 		private void SaveKeywordsButton_Click(object sender, RoutedEventArgs e)
 		{
 			if (Data != null && Data.ModuleSettings != null)
@@ -360,22 +352,6 @@ namespace LL.SCG.Windows
 			{
 				Data.UserKeywords.ResetToDefault();
 			});
-		}
-
-		private void Button_NewTemplate_Click(object sender, RoutedEventArgs e)
-		{
-			if(!Data.AddTemplateControlVisible)
-			{
-				TabControl mainTabs = (TabControl)FindName("MainTabsControl");
-
-				Data.CreateNewTemplateData();
-
-				Dispatcher.BeginInvoke((Action)(() =>
-				{
-					Data.AddTemplateControlVisible = true;
-					if (mainTabs != null) mainTabs.SelectedIndex = 1;
-				}));
-			}
 		}
 
 		private Action onGitGenerationConfirmed;

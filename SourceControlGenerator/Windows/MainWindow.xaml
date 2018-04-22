@@ -32,22 +32,26 @@
 			<RowDefinition Height="Auto" />
 		</Grid.RowDefinitions>
 		<DockPanel Grid.Row="0">
-			<Menu DockPanel.Dock="Top">
-				<MenuItem Header="File">
-					<MenuItem Header="Refresh Available Projects" />
-					<MenuItem Header="Backup All Projects" />
-					<MenuItem Header="Backup All Projects To..." />
-					<MenuItem Header="Create Template..." Click="Button_NewTemplate_Click" />
-				</MenuItem>
-				<MenuItem Header="Options">
-					<MenuItem x:Name="LogWindowToggle" Header="{Binding LogVisibleText, ElementName=MainAppWindow}" Click="LogWindowToggle_Click" />
-					<MenuItem Header="Save Log..." />
-				</MenuItem>
-				<MenuItem Header="Help">
-					<MenuItem Header="About" />
-					<MenuItem Header="Report Bug / Feedback..." />
-					<MenuItem Header="Github Source..." />
-				</MenuItem>
+			<DockPanel.Resources>
+				<ControlTemplate x:Key="MenuItem">
+					<MenuItem Header="{Binding Label}" Command="{Binding ClickCommand}" />
+				</ControlTemplate>
+				<ControlTemplate x:Key="MenuSeperator">
+					<Separator />
+				</ControlTemplate>
+			</DockPanel.Resources>
+			<Menu DockPanel.Dock="Top" ItemsSource="{Binding TopMenus}">
+				<Menu.Resources>
+					<Style TargetType="MenuItem">
+						<Setter Property="Command" Value="{Binding ClickCommand}" />
+						<Setter Property="InputGestureText" Value="{Binding ShortcutText}" />
+					</Style>
+				</Menu.Resources>
+				<Menu.ItemTemplate>
+					<HierarchicalDataTemplate DataType="{x:Type vdata:MenuData}" ItemsSource="{Binding MenuItems}">
+						<TextBlock Text="{Binding Header, FallbackValue='Null'}"/>
+					</HierarchicalDataTemplate>
+				</Menu.ItemTemplate>
 			</Menu>
 		</DockPanel>
 		<TabControl x:Name="MainTabsControl" Grid.Row="1" SelectionChanged="PreventInitialTextboxFocus" BorderThickness="0,1,0,0" Padding="0"
@@ -55,7 +59,7 @@
 
 			>
 			<TabControl.Resources>
-				<Style TargetType="TabItem" BasedOn="{StaticResource {x:Type TabItem}}">
+				<Style x:Key="MainTabStyle" TargetType="TabItem" BasedOn="{StaticResource {x:Type TabItem}}">
 					<Setter Property="DataContext" Value="{Binding CurrentModuleData}" />
 				</Style>
 			</TabControl.Resources>
@@ -64,7 +68,7 @@
 
 				</Grid>
 			</TabItem>
-			<TabItem Header="Templates">
+			<TabItem Header="Templates" Style="{StaticResource MainTabStyle}">
 				<Grid>
 					<c:AddTemplateControl x:Name="NewTemplateControl" Grid.ZIndex="1" DataContext="{Binding}" Visibility="{Binding AddTemplateControlVisible, Converter={StaticResource BoolToVisibilityConverter}, FallbackValue=Collapsed}" TemplateData="{Binding NewTemplateData}" ConfirmCommand="{Binding AddTemplateCommand}" CancelCommand="{Binding CancelTemplateCommand}" />
 					<TabControl  Grid.ZIndex="0" TabStripPlacement="Left" Padding="0,5,0,0" >
@@ -108,7 +112,7 @@
 					</TabControl>
 				</Grid>
 			</TabItem>
-			<TabItem x:Name="KeywordsTab" Header="Keywords">
+			<TabItem x:Name="KeywordsTab" Header="Keywords" Style="{StaticResource MainTabStyle}">
 				<TabItem.Resources>
 					<Style x:Key="KeywordBorderStyle" TargetType="Border" >
 						<!-- <Border BorderThickness="1" Grid.Row="0" BorderBrush="{DynamicResource }" Background="{DynamicResource {x:Static SystemColors.MenuBrushKey}}" >-->
@@ -282,7 +286,7 @@
 				</Grid>
 
 			</TabItem>
-			<TabItem x:Name="Tab_Settings" Header="Settings" BorderThickness="0" >
+			<TabItem x:Name="Tab_Settings" Header="Settings" BorderThickness="0" Style="{StaticResource MainTabStyle}">
 				<ScrollViewer VerticalScrollBarVisibility="Auto" Padding="0" BorderThickness="0" >
 					<ListView x:Name="SettingsDataGrid" Padding="10,0,10,0" ItemsSource="{Binding ModuleSettings, Converter={StaticResource SettingsAttributeConverter}}" AllowDrop="False"
 						 listview:ListViewLayoutManager.Enabled="True"
