@@ -47,6 +47,15 @@ namespace LL.SCG.Data.View
 
 		public ObservableCollection<MenuData> Menus { get; set; }
 
+		public void RemoveAllModuleMenus(string ModuleName)
+		{
+			foreach(var menu in Menus)
+			{
+				menu.MenuItems.RemoveAll(m => m.Module == ModuleName);
+			}
+			Log.Here().Activity($"Removed menus for module {ModuleName}.");
+		}
+
 		public MenuBarData()
 		{
 			File = new MenuData("File");

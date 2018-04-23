@@ -677,15 +677,16 @@ namespace LL.SCG.Core
 		{
 			MainAppData = mainAppData;
 
-			MainAppData.MenuBarData.File.Add(
+			MainAppData.MenuBarData.File.Register(Data.ModuleName,
+				new SeparatorData(),
 				new MenuData()
 				{
-					Header = "Refresh All Projects",
-					ClickCommand = new CallbackCommand(RefreshAllProjects),
-					MenuItems = new ObservableCollection<MenuData>()
+					Header = "Refresh Projects",
+					MenuItems = new ObservableCollection<IMenuData>()
 					{
-						new MenuData("Refresh Managed"),
-						new MenuData("Refresh Available")
+						new MenuData("Refresh All", new CallbackCommand(RefreshAllProjects)),
+						new MenuData("Refresh Managed", new CallbackCommand(RefreshModProjects)),
+						new MenuData("Refresh Available", new CallbackCommand(RefreshAvailableProjects))
 					}
 				}
 			);
@@ -707,11 +708,7 @@ namespace LL.SCG.Core
 
 		public void Unload()
 		{
-			if(projectViewControl != null)
-			{
-				var refreshItem = MainAppData.MenuBarData.File.MenuItems.Where(m => m.Header == "Refresh All Projects").First();
-				MainAppData.MenuBarData.File.MenuItems.Remove(refreshItem);
-			}
+			MainAppData.MenuBarData.RemoveAllModuleMenus(Data.ModuleName);
 		}
 
 	}

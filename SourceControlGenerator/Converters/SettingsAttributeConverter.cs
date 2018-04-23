@@ -10,7 +10,6 @@ using System.Windows.Data;
 using LL.SCG.Data;
 using LL.SCG.Data.View;
 using LL.SCG.Enum;
-using LL.SCG.Extensions;
 
 namespace LL.SCG.Converters
 {

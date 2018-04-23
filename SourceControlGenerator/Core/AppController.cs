@@ -19,6 +19,7 @@ using LL.SCG.Data.App;
 using System.Windows;
 using System.Windows.Controls;
 using LL.SCG.Commands;
+using System.Globalization;
 
 namespace LL.SCG.Core
 {
@@ -346,6 +347,23 @@ namespace LL.SCG.Core
 			mainWindow.RaisePropertyChanged("LogVisibleText");
 		}
 
+		public void SaveLog()
+		{
+			string logContent = "";
+			foreach(var data in App.LogEntries)
+			{
+				logContent += data.Output + Environment.NewLine;
+			}
+
+			string sysFormat = CultureInfo.CurrentCulture.DateTimeFormat.ShortDatePattern.Replace("/", "-");
+			string fileName = "SourceControlGenerator_Log_" + DateTime.Now.ToString(sysFormat + "_HH-mm") + ".txt";
+
+			FileCommands.Save.OpenDialog(mainWindow, "Save Log File...", Data.AppSettings.LastLogPath, logContent, (string logPath) => {
+				Log.Here().Activity($"Saved log file to {logPath}.");
+				Data.AppSettings.LastLogPath = logPath;
+			}, fileName);
+		}
+
 		public void MenuAction_UnImplemented()
 		{
 			
@@ -364,7 +382,7 @@ namespace LL.SCG.Core
 
 			LoadAppSettings();
 
-			Data.MenuBarData.File.Add(
+			Data.MenuBarData.File.Register("Base",
 				new MenuData()
 				{
 					Header = "Create Template...",
@@ -377,7 +395,7 @@ namespace LL.SCG.Core
 				}
 			);
 
-			Data.MenuBarData.Options.Add(
+			Data.MenuBarData.Options.Register("Base",
 				new MenuData()
 				{
 					GetHeader = () => { return mainWindow.LogVisibleText;},
@@ -386,11 +404,11 @@ namespace LL.SCG.Core
 				new MenuData()
 				{
 					Header = "Save Log...",
-					ClickCommand = new CallbackCommand(MenuAction_UnImplemented)
+					ClickCommand = new CallbackCommand(SaveLog)
 				}
 			);
 
-			Data.MenuBarData.Help.Add(
+			Data.MenuBarData.Help.Register("Base",
 				new MenuData()
 				{
 					Header = "About",

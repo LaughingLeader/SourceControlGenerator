@@ -8,6 +8,7 @@ namespace LL.SCG.Data.App
 {
 	public class AppSettingsData : PropertyChangedBase
 	{
-		public string LastModule { get; set; }
+		public string LastModule { get; set; } = "";
+		public string LastLogPath { get; set; } = "";
 	}
 }

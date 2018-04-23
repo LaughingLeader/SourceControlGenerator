@@ -74,12 +74,24 @@ namespace LL.SCG.Commands
 			}
 		}
 
-		public void OpenDialog(Window ParentWindow, string Title, string FilePath, string FileContent, Action<string> SaveAction)
+		public void OpenDialog(Window ParentWindow, string Title, string FilePath, string FileContent, Action<string> SaveAction, string FileName = "")
 		{
+			string filePath = FilePath;
+			string fileName = FileName;
+			if (String.IsNullOrWhiteSpace(filePath))
+			{
+				filePath = AppDomain.CurrentDomain.BaseDirectory;
+			}
+
+			if (String.IsNullOrWhiteSpace(fileName) && !String.IsNullOrWhiteSpace(FilePath))
+			{
+				filePath = Path.GetFileName(filePath);
+			}
+
 			SaveFileDialog fileDialog = new SaveFileDialog();
 			fileDialog.Title = Title;
-			fileDialog.InitialDirectory = Directory.GetParent(FilePath).FullName;
-			fileDialog.FileName = Path.GetFileName(FilePath);
+			fileDialog.InitialDirectory = Directory.GetParent(filePath).FullName;
+			fileDialog.FileName = fileName;
 			fileDialog.OverwritePrompt = true;
 
 			Nullable<bool> result = fileDialog.ShowDialog(ParentWindow);

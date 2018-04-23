@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -8,7 +9,13 @@ using System.Windows.Input;
 
 namespace LL.SCG.Data.View
 {
-	public class MenuData : PropertyChangedBase
+	public interface IMenuData
+	{
+		string Module { get; set; }
+	}
+
+	[DebuggerDisplay("{Header}, Children={MenuItems.Count}")]
+	public class MenuData : PropertyChangedBase, IMenuData
 	{
 		private string header;
 
@@ -55,26 +62,48 @@ namespace LL.SCG.Data.View
 			}
 		}
 
-		public ObservableCollection<MenuData> MenuItems { get; set; }
+		private string module;
 
-		public void Add(params MenuData[] menuItems)
+		public string Module
 		{
-			for(int i = 0; i < menuItems.Length; i++)
+			get { return module; }
+			set
 			{
-				MenuItems.Add(menuItems[i]);
+				module = value;
+				RaisePropertyChanged("Module");
+			}
+		}
+
+		public ObservableCollection<IMenuData> MenuItems { get; set; }
+
+		public void Register(string ModuleName, params IMenuData[] newMenuItems)
+		{
+			for(int i = 0; i < newMenuItems.Length; i++)
+			{
+				var menuItem = newMenuItems[i];
+				menuItem.Module = ModuleName;
+				MenuItems.Add(menuItem);
 			}
 		}
 
 		public MenuData()
 		{
-			MenuItems = new ObservableCollection<MenuData>();
+			MenuItems = new ObservableCollection<IMenuData>();
 		}
 
-		public MenuData(string menuName)
+		public MenuData(string menuName, ICommand command = null)
 		{
-			MenuItems = new ObservableCollection<MenuData>();
+			MenuItems = new ObservableCollection<IMenuData>();
 
 			Header = menuName;
+
+			if (command != null) ClickCommand = command;
 		}
+	}
+
+	[DebuggerDisplay("---")]
+	public class SeparatorData : IMenuData
+	{
+		public string Module { get; set; }
 	}
 }

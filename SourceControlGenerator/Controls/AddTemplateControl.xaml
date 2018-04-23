@@ -4,9 +4,9 @@
 			 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
 			 xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
 			 xmlns:local="clr-namespace:LL.SCG.Controls"
+			 xmlns:scg="clr-namespace:LL.SCG"
 			 xmlns:data="clr-namespace:LL.SCG.Data.View"
 			 xmlns:enum="clr-namespace:LL.SCG.Enum"
-			 xmlns:ext="clr-namespace:LL.SCG.Extensions"
 			 xmlns:cv="clr-namespace:LL.SCG.Converters"
 			 xmlns:theme="clr-namespace:LL.SCG.ThemeSystem"
 			 xmlns:Themes="clr-namespace:Microsoft.Windows.Themes;assembly=PresentationFramework.Aero2" x:Name="AddTemplateMain" x:Class="LL.SCG.Controls.AddTemplateControl"
@@ -127,7 +127,7 @@
 								<ColumnDefinition Width="Auto"  />
 							</Grid.ColumnDefinitions>
 							<ComboBox Text="Type" Padding="5,0,0,0" IsEditable="False"
-								ItemsSource="{Binding Source={ext:EnumBindingSource {x:Type enum:EditorTextPropertyType}}}"
+								ItemsSource="{Binding Source={scg:EnumBindingSource {x:Type enum:EditorTextPropertyType}}}"
 								SelectedValue="{Binding EditorTextProperty}" >
 								<ComboBox.Template>
 									<ControlTemplate TargetType="{x:Type ComboBox}">

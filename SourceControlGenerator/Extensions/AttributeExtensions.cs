@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace LL.SCG.Extensions
+namespace LL.SCG
 {
 	public static class AttributeExtensions
 	{
