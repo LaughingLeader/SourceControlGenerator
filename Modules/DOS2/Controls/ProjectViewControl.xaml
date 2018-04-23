@@ -70,7 +70,7 @@
 					</Grid.RowDefinitions>
 					<StackPanel Orientation="Horizontal">
 						<Label Content="Available Projects" HorizontalAlignment="Center" VerticalAlignment="Center" Grid.Row="0" Margin="0" ToolTip="{Binding Source={x:Static core:DOS2Tooltips.AvailableProjects}, Converter={StaticResource NewlineStringConverter}}" />
-						<Button x:Name="Btn_AvailableProjects_Refresh" ToolTip="Refresh Available Projects" Click="Btn_AvailableProjects_Refresh_Click" Margin="10,4,0,4" >
+						<Button x:Name="Btn_AvailableProjects_Refresh" ToolTip="Refresh Available Projects" Click="Btn_AvailableProjects_Refresh_Click" Margin="10,4,0,4" IsEnabled="{Binding CanClickRefresh}" >
 							<Image Source="{Binding Source={StaticResource IconProxy}, Path=Data.RefreshSmall, FallbackValue={x:Null}}" Stretch="UniformToFill" MaxHeight="16" MaxWidth="16" Width="16" Height="16"/>
 						</Button>
 					</StackPanel>
@@ -126,7 +126,7 @@
 					</Grid.ColumnDefinitions>
 					<StackPanel Orientation="Horizontal">
 						<Label Content="Managed Projects" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Row="0" />
-						<Button x:Name="Btn_ModProjects_Refresh" ToolTip="Refresh Project Data" Click="Btn_ModProjects_Refresh_Click" Margin="10,4,0,4" >
+						<Button x:Name="Btn_ModProjects_Refresh" ToolTip="Refresh Project Data" Click="Btn_ModProjects_Refresh_Click" Margin="10,4,0,4" IsEnabled="{Binding CanClickRefresh}" >
 							<Image Source="{Binding Source={StaticResource IconProxy}, Path=Data.RefreshSmall, FallbackValue={x:Null}}" Stretch="UniformToFill" MaxHeight="16" MaxWidth="16" Width="16" Height="16"/>
 						</Button>
 					</StackPanel>

@@ -379,7 +379,7 @@ namespace LL.SCG.DOS2.Controls
 
 		private void Btn_AvailableProjects_Refresh_Click(object sender, RoutedEventArgs e)
 		{
-			Controller.RefreshAvailableProjects();
+			Controller.RefreshAllProjects();
 		}
 	}
 }

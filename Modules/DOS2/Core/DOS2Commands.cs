@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Data;
 using System.Windows.Input;
 using System.Xml.Linq;
 using LL.SCG.Collections;
@@ -31,15 +32,20 @@ namespace LL.SCG.DOS2.Core
 			LoadAvailableProjects(Data);
 		}
 
-		public static void LoadManagedProjects(DOS2ModuleData Data)
+		public static void LoadManagedProjects(DOS2ModuleData Data, bool ClearExisting = true)
 		{
 			if (Data.ManagedProjects == null)
 			{
 				Data.ManagedProjects = new ObservableImmutableList<ModProjectData>();
+				BindingOperations.EnableCollectionSynchronization(Data.ManagedProjects, Data.ManagedProjectsLock);
 			}
 			else
 			{
-				Data.ManagedProjects.Clear();
+				if(ClearExisting)
+				{
+					Data.ManagedProjects.DoOperation(data => data.Clear());
+					BindingOperations.EnableCollectionSynchronization(Data.ManagedProjects, Data.ManagedProjectsLock);
+				}
 			}
 
 			string projectsAppDataPath = DefaultPaths.ProjectsAppData(Data);
@@ -75,38 +81,56 @@ namespace LL.SCG.DOS2.Core
 					var modProject = Data.ModProjects.Where(x => x.ProjectName == project.Name && x.UUID == project.UUID).FirstOrDefault();
 					if (modProject != null)
 					{
-						Data.ManagedProjects.Add(modProject);
+						ModProjectData existingData = null;
 
-						if (!String.IsNullOrWhiteSpace(project.LastBackupUTC))
+						if(!ClearExisting)
 						{
-							DateTime lastBackup;
+							existingData = Data.ManagedProjects.Where(p => p.ProjectName == project.Name && p.UUID == project.UUID).FirstOrDefault();
+						}
 
-							var success = DateTime.TryParse(project.LastBackupUTC, out lastBackup);
-							if (success)
+						if (ClearExisting || existingData == null)
+						{
+							Data.ManagedProjects.Add(modProject);
+
+							if (!String.IsNullOrWhiteSpace(project.LastBackupUTC))
 							{
-								Log.Here().Activity($"Successully parsed {modProject.LastBackup} to DateTime.");
-								modProject.LastBackup = lastBackup.ToLocalTime();
-							}
-							else
-							{
-								Log.Here().Error($"Could not convert {project.LastBackupUTC} to DateTime.");
+								DateTime lastBackup;
+
+								var success = DateTime.TryParse(project.LastBackupUTC, out lastBackup);
+								if (success)
+								{
+									Log.Here().Activity($"Successully parsed {modProject.LastBackup} to DateTime.");
+									modProject.LastBackup = lastBackup.ToLocalTime();
+								}
+								else
+								{
+									Log.Here().Error($"Could not convert {project.LastBackupUTC} to DateTime.");
+								}
 							}
 						}
-						
+						else if(existingData != null)
+						{
+							existingData.ReloadData();
+						}
 					}
 				}
 			}
 		}
 
-		public static void LoadAvailableProjects(DOS2ModuleData Data, bool ClearExisting = true)
+		public static void LoadAvailableProjects(DOS2ModuleData Data, bool ClearExisting = false)
 		{
 			if (Data.NewProjects == null)
 			{
 				Data.NewProjects = new ObservableImmutableList<AvailableProjectViewData>();
+				BindingOperations.EnableCollectionSynchronization(Data.NewProjects, Data.NewProjectsLock);
 			}
 			else
 			{
-				if (ClearExisting) Data.NewProjects.DoOperation(data => data.Clear());
+				if (ClearExisting)
+				{
+					Data.NewProjects.DoOperation(data => data.Clear());
+					BindingOperations.EnableCollectionSynchronization(Data.NewProjects, Data.NewProjectsLock);
+				}
 			}
 
 			if (Data.ModProjects != null && Data.ModProjects.Count > 0)
@@ -148,10 +172,15 @@ namespace LL.SCG.DOS2.Core
 			if (Data.ModProjects == null)
 			{
 				Data.ModProjects = new ObservableImmutableList<ModProjectData>();
+				BindingOperations.EnableCollectionSynchronization(Data.ModProjects, Data.ModProjectsLock);
 			}
 			else
 			{
-				if (ClearPrevious) Data.ModProjects.DoOperation(data => data.Clear());
+				if (ClearPrevious)
+				{
+					Data.ModProjects.DoOperation(data => data.Clear());
+					BindingOperations.EnableCollectionSynchronization(Data.ModProjects, Data.ModProjectsLock);
+				}
 			}
 
 			if (Data.Settings != null && !String.IsNullOrEmpty(Data.Settings.DataDirectory))
@@ -213,40 +242,6 @@ namespace LL.SCG.DOS2.Core
 			}
 		}
 
-		public static void RefreshManagedProjects(DOS2ModuleData Data)
-		{
-			if(Data.ManagedProjects != null && Data.ManagedProjects.Count > 0)
-			{
-				if (Data.Settings != null && !String.IsNullOrEmpty(Data.Settings.DataDirectory))
-				{
-					if (Directory.Exists(Data.Settings.DataDirectory))
-					{
-						string projectsPath = Path.Combine(Data.Settings.DataDirectory, "Projects");
-						string modsPath = Path.Combine(Data.Settings.DataDirectory, "Mods");
-
-						if (Directory.Exists(modsPath))
-						{
-							Log.Here().Activity("Reloading DOS2 project data from mods directory at: {0}", modsPath);
-
-							foreach (var project in Data.ManagedProjects)
-							{
-								var modData = Data.ModProjects.Where(p => p.ProjectName == project.ProjectName && p.UUID == project.UUID).FirstOrDefault();
-								if(modData != null)
-								{
-									Log.Here().Activity($"Reloading data for project {project.ProjectName}.");
-									modData.ReloadData();
-								}
-							}
-						}
-					}
-					else
-					{
-						Log.Here().Error("Loading available projects failed. DOS2 data directory not found at {0}", Data.Settings.DataDirectory);
-					}
-				}
-			}
-		}
-
 		public static bool LoadSourceControlData(DOS2ModuleData Data)
 		{
 			if (Directory.Exists(Data.Settings.GitRootDirectory))
@@ -281,6 +276,51 @@ namespace LL.SCG.DOS2.Core
 			}
 			return false;
 		}
+
+		#region Refresh
+
+		public static void RefreshAvailableProjects(DOS2ModuleData Data)
+		{
+			LoadModProjects(Data, true);
+			LoadAvailableProjects(Data, true);
+			LoadManagedProjects(Data, true);
+		}
+
+		public static void RefreshManagedProjects(DOS2ModuleData Data)
+		{
+			if (Data.ManagedProjects != null && Data.ManagedProjects.Count > 0)
+			{
+				if (Data.Settings != null && !String.IsNullOrEmpty(Data.Settings.DataDirectory))
+				{
+					if (Directory.Exists(Data.Settings.DataDirectory))
+					{
+						string projectsPath = Path.Combine(Data.Settings.DataDirectory, "Projects");
+						string modsPath = Path.Combine(Data.Settings.DataDirectory, "Mods");
+
+						if (Directory.Exists(modsPath))
+						{
+							Log.Here().Activity("Reloading DOS2 project data from mods directory at: {0}.", modsPath);
+
+							foreach (var project in Data.ManagedProjects)
+							{
+								var modData = Data.ModProjects.Where(p => p.ProjectName == project.ProjectName && p.UUID == project.UUID).FirstOrDefault();
+								if (modData != null)
+								{
+									Log.Here().Activity($"Reloading data for project {project.ProjectName}.");
+									modData.ReloadData();
+								}
+							}
+						}
+					}
+					else
+					{
+						Log.Here().Error("Loading available projects failed. DOS2 data directory not found at {0}", Data.Settings.DataDirectory);
+					}
+				}
+			}
+		}
+
+		#endregion
 
 
 		public static bool SaveManagedProjects(DOS2ModuleData Data)

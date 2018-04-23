@@ -28,6 +28,7 @@ using System.Windows;
 using System.Windows.Threading;
 using LL.SCG.Collections;
 using LL.SCG.Commands;
+using System.Windows.Data;
 
 namespace LL.SCG.Core
 {
@@ -508,47 +509,34 @@ namespace LL.SCG.Core
 			}
 		}
 
-		public void RefreshAllProjects()
+		public async void RefreshAllProjects()
 		{
-			//DOS2Commands.LoadAvailableProjects(Data);
-			//DOS2Commands.LoadModProjects(Data, false);
-			RefreshAvailableProjects();
-			RefreshModProjects();
-		}
-
-		private bool refreshingAvailable = false;
-
-		public async void RefreshAvailableProjects()
-		{
-			if(!refreshingAvailable)
+			if(Data.CanClickRefresh)
 			{
-				refreshingAvailable = true;
-
-
+				Data.CanClickRefresh = false;
+				
 				await Task.Run(() => {
-					DOS2Commands.LoadAvailableProjects(Data);
-					refreshingAvailable = false;
+					DOS2Commands.LoadAll(Data);
+					Data.CanClickRefresh = true;
+					
 				});
 			}
 			else
 			{
-				Log.Here().Activity("Currently refreshing.");
+				//Log.Here().Activity("Currently refreshing.");
 			}
 		}
 
-		private bool refreshingModData = false;
-
 		public async void RefreshModProjects()
 		{
-			if(!refreshingModData)
+			if(Data.CanClickRefresh)
 			{
-				refreshingModData = true;
+				Data.CanClickRefresh = false;
 
 				await Task.Run(() => {
 					DOS2Commands.RefreshManagedProjects(Data);
-					refreshingModData = false;
+					Data.CanClickRefresh = true;
 				});
-				
 			}
 		}
 
@@ -684,9 +672,8 @@ namespace LL.SCG.Core
 					Header = "Refresh Projects",
 					MenuItems = new ObservableCollection<IMenuData>()
 					{
-						new MenuData("Refresh All", new CallbackCommand(RefreshAllProjects)),
-						new MenuData("Refresh Managed", new CallbackCommand(RefreshModProjects)),
-						new MenuData("Refresh Available", new CallbackCommand(RefreshAvailableProjects))
+						new MenuData("Refresh All", new CallbackCommand(RefreshAllProjects)) { ShortcutKey = System.Windows.Input.Key.F5 },
+						new MenuData("Refresh Managed Data", new CallbackCommand(RefreshModProjects)),
 					}
 				}
 			);

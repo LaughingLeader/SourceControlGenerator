@@ -1,4 +1,4 @@
-﻿<Window x:Name="LogWindow1" x:Class="LL.SCG.Windows.LogWindow"
+﻿<local:CustomWindow x:Name="LogWindow1" x:Class="LL.SCG.Windows.LogWindow"
 		xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
 		xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 		xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -10,7 +10,7 @@
 		Title="Source Control Generator - Logs" Height="400" Width="800"
 		WindowStartupLocation="CenterOwner"
 		>
-	<Window.Resources>
+	<local:CustomWindow.Resources>
 		<Style TargetType="ItemsControl" x:Key="LogViewerStyle">
 			<Setter Property="Template">
 				<Setter.Value>
@@ -36,7 +36,7 @@
 				<TextBox Text="{Binding Output}" IsReadOnly="True"  Background="{Binding BackgroundColor}"/>
 			</Grid>
 		</DataTemplate>
-	</Window.Resources>
+	</local:CustomWindow.Resources>
 
 	<DockPanel Margin="2,0,0,0">
 		<Grid DockPanel.Dock="Top" Margin="0,2">
@@ -69,4 +69,4 @@
 			</ItemsControl.ItemsPanel>
 		</ItemsControl>
 	</DockPanel>
-</Window>
+</local:CustomWindow>

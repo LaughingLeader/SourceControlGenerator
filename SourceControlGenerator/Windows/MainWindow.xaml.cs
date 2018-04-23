@@ -43,6 +43,15 @@ namespace LL.SCG.Windows
 			set { logWindow = value; }
 		}
 
+		private AboutWindow aboutWindow;
+
+		public AboutWindow AboutWindow
+		{
+			get { return aboutWindow; }
+			set { aboutWindow = value; }
+		}
+
+
 		private GitGenerationWindow gitGenerationWindow;
 		private UserControl lastModuleView;
 
@@ -66,6 +75,9 @@ namespace LL.SCG.Windows
 
 			logWindow = new LogWindow(this);
 			logWindow.Hide();
+
+			aboutWindow = new AboutWindow(this);
+			aboutWindow.Hide();
 
 			Controller = new AppController(this);
 			DataContext = Controller.Data;

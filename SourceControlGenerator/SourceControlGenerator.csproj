@@ -182,11 +182,16 @@
     <Compile Include="ThemeSystem\ThemeController.cs" />
     <Compile Include="Util\EnumHelper.cs" />
     <Compile Include="Util\HelperUtil\ImageHelper.cs" />
+    <Compile Include="Util\HelperUtil\WebHelper.cs" />
     <Compile Include="Util\JunctionHelper.cs" />
     <Compile Include="Util\Log.cs" />
     <Compile Include="Core\AppController.cs" />
     <Compile Include="Util\HelperUtil\RegisteryHelper.cs" />
     <Compile Include="Util\PropertyCopier.cs" />
+    <Compile Include="Windows\AboutWindow.xaml.cs">
+      <DependentUpon>AboutWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Windows\CustomWindow.cs" />
     <Compile Include="Windows\EditTextWindow.xaml.cs">
       <DependentUpon>EditTextWindow.xaml</DependentUpon>
     </Compile>
@@ -221,6 +226,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="ThemeSystem\ResourceDictionary\MetroOverrides.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Windows\AboutWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

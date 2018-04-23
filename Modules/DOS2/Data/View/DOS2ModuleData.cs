@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Data;
 using LL.SCG.Collections;
 using LL.SCG.Data;
 using LL.SCG.Data.View;
@@ -37,6 +38,19 @@ namespace LL.SCG.DOS2.Data.View
 			}
 		}
 
+		private bool canClickRefresh = true;
+
+		public bool CanClickRefresh
+		{
+			get { return canClickRefresh; }
+			set
+			{
+				canClickRefresh = value;
+				RaisePropertyChanged("CanClickRefresh");
+			}
+		}
+
+
 		private ManagedProjectsData managedProjectsData;
 
 		public ManagedProjectsData ManagedProjectsData
@@ -55,6 +69,12 @@ namespace LL.SCG.DOS2.Data.View
 
 		public ObservableImmutableList<AvailableProjectViewData> NewProjects { get; set; }
 
+		public object ModProjectsLock { get; private set; } = new object();
+
+		public object ManagedProjectsLock { get; private set; } = new object();
+
+		public object NewProjectsLock { get; private set; } = new object();
+
 		override public string LoadStringResource(string Name)
 		{
 			return Properties.Resources.ResourceManager.GetString(Name, Properties.Resources.Culture);
@@ -65,9 +85,13 @@ namespace LL.SCG.DOS2.Data.View
 			ManageButtonsText = "Select a Project";
 			AvailableProjectsToggleText = "Hide Available Projects";
 
-			ManagedProjects = new ObservableImmutableList<ModProjectData>();
 			ModProjects = new ObservableImmutableList<ModProjectData>();
+			ManagedProjects = new ObservableImmutableList<ModProjectData>();
 			NewProjects = new ObservableImmutableList<AvailableProjectViewData>();
+
+			BindingOperations.EnableCollectionSynchronization(ModProjects, ModProjectsLock);
+			BindingOperations.EnableCollectionSynchronization(ManagedProjects, ManagedProjectsLock);
+			BindingOperations.EnableCollectionSynchronization(NewProjects, NewProjectsLock);
 		}
 	}
 }

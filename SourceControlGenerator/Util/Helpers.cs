@@ -15,10 +15,14 @@ namespace LL.SCG
 		private static ImageHelper _imageHelper;
 		public static ImageHelper Image => _imageHelper;
 
+		private static WebHelper _webHelper;
+		public static WebHelper Web => _webHelper;
+
 		public static void Init()
 		{
 			_registeryHelper = new RegisteryHelper();
 			_imageHelper = new ImageHelper();
+			_webHelper = new WebHelper();
 		}
 	}
 }

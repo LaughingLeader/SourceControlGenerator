@@ -20,6 +20,7 @@ using System.Windows;
 using System.Windows.Controls;
 using LL.SCG.Commands;
 using System.Globalization;
+using System.Windows.Input;
 
 namespace LL.SCG.Core
 {
@@ -125,6 +126,8 @@ namespace LL.SCG.Core
 
 			OnModuleSet?.Invoke(this, EventArgs.Empty);
 
+			RegisterMenuShortcuts();
+
 			return true;
 		}
 
@@ -134,6 +137,7 @@ namespace LL.SCG.Core
 			{
 				Log.Here().Activity("Unloading module {0}.", CurrentModule.ModuleData.ModuleName);
 				Data.AppSettings.LastModule = CurrentModule.ModuleData.ModuleName;
+				UnregisterMenuShortcuts(CurrentModule.ModuleData.ModuleName);
 				CurrentModule.Unload();
 				SetSelectedModule();
 			}
@@ -141,6 +145,7 @@ namespace LL.SCG.Core
 			Data.ModuleIsLoaded = false;
 			Data.ModuleSelectionVisibility = Visibility.Visible;
 		}
+		#region Progress
 
 		public Action OnProgressLoaded { get; set; }
 
@@ -232,6 +237,7 @@ namespace LL.SCG.Core
 			mainWindow.IsEnabled = true;
 			Data.ProgressVisiblity = System.Windows.Visibility.Collapsed;
 		}
+		#endregion
 
 		public void LoadAppSettings()
 		{
@@ -302,7 +308,7 @@ namespace LL.SCG.Core
 
 		#region  Menu Commands
 
-		public void AddNewTemplate()
+		public void MenuAction_AddNewTemplate()
 		{
 			if (CurrentModule != null)
 			{
@@ -322,7 +328,7 @@ namespace LL.SCG.Core
 			}
 		}
 
-		public void OpenModuleSelectScreen()
+		public void MenuAction_OpenModuleSelectScreen()
 		{
 			UnloadCurrentModule();
 			var projectsGrid = (Grid)mainWindow.FindName("ProjectsViewGrid");
@@ -332,7 +338,7 @@ namespace LL.SCG.Core
 			}
 		}
 
-		public void ToggleLogWindow()
+		public void MenuAction_ToggleLogWindow()
 		{
 			if (mainWindow.LogWindowShown)
 			{
@@ -347,7 +353,7 @@ namespace LL.SCG.Core
 			mainWindow.RaisePropertyChanged("LogVisibleText");
 		}
 
-		public void SaveLog()
+		public void MenuAction_SaveLog()
 		{
 			string logContent = "";
 			foreach(var data in App.LogEntries)
@@ -364,12 +370,54 @@ namespace LL.SCG.Core
 			}, fileName);
 		}
 
-		public void MenuAction_UnImplemented()
+		public void MenuAction_OpenAbout()
 		{
-			
+			if(!mainWindow.AboutWindow.IsVisible)
+			{
+				mainWindow.AboutWindow.Owner = mainWindow;
+				mainWindow.AboutWindow.Show();
+			}
+			else
+			{
+				mainWindow.AboutWindow.Hide();
+			}
 		}
 
+		public void MenuAction_OpenIssuesLink()
+		{
+			Helpers.Web.OpenUri("https://github.com/LaughingLeader-DOS2-Mods/LeaderLib/issues/new");
+		}
+
+		public void MenuAction_OpenRepoLink()
+		{
+			Helpers.Web.OpenUri("https://github.com/LaughingLeader-DOS2-Mods/LeaderLib");
+		}
+
+		public void MenuAction_NotImplemented() { }
+
 		#endregion
+
+		public void RegisterMenuShortcuts()
+		{
+			if(Data.MenuBarData != null)
+			{
+				foreach(var menu in Data.MenuBarData.Menus)
+				{
+					menu.RegisterInputBinding(mainWindow);
+				}
+			}
+		}
+
+		public void UnregisterMenuShortcuts(string ModuleName)
+		{
+			if (Data.MenuBarData != null)
+			{
+				foreach (var menu in Data.MenuBarData.Menus.Where(m => m.Module == ModuleName))
+				{
+					menu.UnregisterInputBinding(mainWindow);
+				}
+			}
+		}
 
 		public AppController(MainWindow MainAppWindow)
 		{
@@ -386,47 +434,50 @@ namespace LL.SCG.Core
 				new MenuData()
 				{
 					Header = "Create Template...",
-					ClickCommand = new CallbackCommand(AddNewTemplate)
+					ClickCommand = new CallbackCommand(MenuAction_AddNewTemplate)
 				},
 				new MenuData()
 				{
 					Header = "Select Module...",
-					ClickCommand = new CallbackCommand(OpenModuleSelectScreen)
+					ClickCommand = new CallbackCommand(MenuAction_OpenModuleSelectScreen)
 				}
 			);
 
 			Data.MenuBarData.Options.Register("Base",
 				new MenuData()
 				{
-					GetHeader = () => { return mainWindow.LogVisibleText;},
-					ClickCommand = new CallbackCommand(ToggleLogWindow)
+					GetHeader = () => { return mainWindow.LogVisibleText; },
+					ClickCommand = new CallbackCommand(MenuAction_ToggleLogWindow)
 				},
 				new MenuData()
 				{
 					Header = "Save Log...",
-					ClickCommand = new CallbackCommand(SaveLog)
+					ClickCommand = new CallbackCommand(MenuAction_SaveLog)
 				}
 			);
 
 			Data.MenuBarData.Help.Register("Base",
 				new MenuData()
 				{
-					Header = "About",
-					ClickCommand = new CallbackCommand(MenuAction_UnImplemented)
+					Header = "Report Bug / Give Feedback (Github)...",
+					ClickCommand = new CallbackCommand(MenuAction_OpenIssuesLink)
 				},
 				new MenuData()
 				{
-					Header = "Report Bug / Give Feedback...",
-					ClickCommand = new CallbackCommand(MenuAction_UnImplemented)
+					Header = "Source Code (Github)...",
+					ClickCommand = new CallbackCommand(MenuAction_OpenRepoLink)
 				},
 				new MenuData()
 				{
-					Header = "Go to Github Repo...",
-					ClickCommand = new CallbackCommand(MenuAction_UnImplemented)
+					Header = "About Source Control Generator",
+					ClickCommand = new CallbackCommand(MenuAction_OpenAbout),
+					ShortcutKey = Key.F1
 				}
 			);
 
 			Data.MenuBarData.RaisePropertyChanged(String.Empty);
+
+			RegisterMenuShortcuts();
 		}
 	}
 }
