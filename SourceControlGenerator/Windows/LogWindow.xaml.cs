@@ -13,33 +13,16 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using LL.SCG.Core;
 using LL.SCG.Data;
 using LL.SCG.Data.View;
 
 namespace LL.SCG.Windows
 {
-	public class LogWindowViewData : PropertyChangedBase
-	{
-		public ObservableCollection<LogData> Logs { get; set; }
-
-		public ObservableCollection<LogData> LastLogs { get; set; }
-
-		public bool CanRestore => LastLogs != null;
-
-		public bool CanClear
-		{
-			get
-			{
-				return Logs != null ? Logs.Count > 0 : false;
-			}
-		}
-
-	}
-
 	/// <summary>
 	/// Interaction logic for LogWindow.xaml
 	/// </summary>
-	public partial class LogWindow : CustomWindow
+	public partial class LogWindow : HideWindowBase
 	{
 		public LogWindowViewData Data { get; set; }
 
@@ -52,41 +35,36 @@ namespace LL.SCG.Windows
 			this.mainWindow = mainWindow;
 
 			Data = new LogWindowViewData();
-			Data.Logs = App.LogEntries;
 			this.DataContext = Data;
+
+			this.IsVisibleChanged += LogWindow_IsVisibleChanged;
+
+			
 		}
 
-		
-		private void CloseButton_Click(object sender, RoutedEventArgs e)
+		public void Init(AppController controller)
 		{
-			this.Hide();
-			mainWindow.RaisePropertyChanged("LogVisibleText");
+			InputBindings.Add(controller.LogMenuData.InputBinding);
+			controller.LogMenuData.Header = Data.LogVisibleText;
+		}
+
+		private void LogWindow_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
+		{
+			Data.IsVisible = this.IsVisible;
+			if (mainWindow.Controller != null && mainWindow.Controller.LogMenuData != null)
+			{
+				mainWindow.Controller.LogMenuData.Header = Data.LogVisibleText;
+			}
 		}
 
 		private void ClearButton_Click(object sender, RoutedEventArgs e)
 		{
-			if(Data.Logs.Count > 0)
-			{
-				Data.LastLogs = new ObservableCollection<LogData>(Data.Logs);
-				Data.Logs.Clear();
-
-				Data.RaisePropertyChanged("Logs");
-				Data.RaisePropertyChanged("CanClear");
-				Data.RaisePropertyChanged("CanRestore");
-			}
+			Data.Clear();
 		}
 
 		private void RestoreButton_Click(object sender, RoutedEventArgs e)
 		{
-			if(Data.LastLogs != null)
-			{
-				Data.Logs = new ObservableCollection<LogData>(Data.LastLogs);
-				Data.LastLogs = null;
-
-				Data.RaisePropertyChanged("Logs");
-				Data.RaisePropertyChanged("CanClear");
-				Data.RaisePropertyChanged("CanRestore");
-			}
+			Data.Restore();
 		}
 	}
 }

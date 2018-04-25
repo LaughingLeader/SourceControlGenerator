@@ -23,22 +23,6 @@ namespace LL.SCG
 	/// </summary>
 	public partial class App : Application
 	{
-		public static ObservableCollection<LogData> LogEntries { get; set; }
-		private int logIndex = 0;
-
-		public void AddLogMessage(string LogMessage, LogType logType)
-		{
-			var log = new LogData()
-			{
-				Index = logIndex++,
-				DateTime = DateTime.Now,
-				Message = LogMessage,
-				MessageType = logType
-			};
-			log.FormatOutput();
-			Dispatcher.BeginInvoke((Action)(() => LogEntries.Add(log)));
-		}
-
 		protected override void OnStartup(StartupEventArgs e)
 		{
 			base.OnStartup(e);
@@ -49,9 +33,6 @@ namespace LL.SCG
 			ThemeController.Init(this);
 			LL.SCG.Helpers.Init();
 			FileCommands.Init();
-
-			LogEntries = new ObservableCollection<LogData>();
-			Log.AllCallback = AddLogMessage;
 		}
 
 		private void Application_Startup(object sender, StartupEventArgs e)

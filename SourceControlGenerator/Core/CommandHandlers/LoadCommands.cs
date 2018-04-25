@@ -17,7 +17,7 @@ using LL.SCG.Windows;
 using Microsoft.Win32;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using Newtonsoft.Json;
-using Ookii.Dialogs.Wpf;
+
 
 namespace LL.SCG.Commands
 {
@@ -48,6 +48,7 @@ namespace LL.SCG.Commands
 			}
 		}
 
+		/*
 		public void OpenOokiiFolderDialog(Window ParentWindow, string Title, string FilePath, Action<string> OnFolderSelected)
 		{
 			VistaFolderBrowserDialog folderDialog = new VistaFolderBrowserDialog();
@@ -70,6 +71,7 @@ namespace LL.SCG.Commands
 			}
 
 		}
+		*/
 
 		public void OpenFolderDialog(Window ParentWindow, string Title, string FilePath, Action<string> OnFolderSelected, bool RetainRelativity = true)
 		{

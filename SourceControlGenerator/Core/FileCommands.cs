@@ -4,7 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Ookii.Dialogs.Wpf;
+
 using LL.SCG.Data;
 using LL.SCG.Commands;
 using System.Windows;
@@ -12,6 +12,7 @@ using System.Windows.Input;
 using System.Text.RegularExpressions;
 using LL.SCG.Data.View;
 using System.Windows.Media.Imaging;
+using Ookii.Dialogs.Wpf;
 
 namespace LL.SCG
 {
@@ -66,6 +67,7 @@ namespace LL.SCG
 			{
 				using (TaskDialog dialog = new TaskDialog())
 				{
+					dialog.CenterParent = true;
 					dialog.WindowTitle = WindowTitle;
 					dialog.MainInstruction = MainInstruction;
 					dialog.Content = Content;

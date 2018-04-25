@@ -11,7 +11,6 @@
 			 xmlns:cv="clr-namespace:LL.SCG.Converters;assembly=SourceControlGenerator"
 			 xmlns:data="clr-namespace:LL.SCG.Data.View;assembly=SourceControlGenerator"
 			 xmlns:proxy="clr-namespace:LL.SCG.Data.Proxy;assembly=SourceControlGenerator"
-			 xmlns:Controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
 			 mc:Ignorable="d" 
 			 d:DesignHeight="500" d:DesignWidth="900"
 			 KeyDown="ProjectViewControlMain_KeyDown" KeyUp="ProjectViewControlMain_KeyUp" Foreground="{x:Null}"

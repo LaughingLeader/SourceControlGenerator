@@ -12,11 +12,12 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using Ookii.Dialogs.Wpf;
+
 using LL.SCG.Core;
 using LL.SCG.Data.View;
 using LL.SCG.Util;
 using LL.SCG.Windows;
+using Ookii.Dialogs.Wpf;
 
 namespace LL.SCG.Controls
 {
@@ -79,6 +80,7 @@ namespace LL.SCG.Controls
 				{
 					using (TaskDialog dialog = new TaskDialog())
 					{
+						dialog.CenterParent = true;
 						dialog.WindowTitle = "Reset " + TemplateData.Name +" to Default?";
 						dialog.Content = "Current changes will be lost.";
 						//dialog.ExpandedInformation = "";

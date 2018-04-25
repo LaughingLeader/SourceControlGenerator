@@ -315,7 +315,6 @@ namespace LL.SCG.DOS2.Controls
 
 		private void ManagedProjectsDataGrid_Loaded(object sender, RoutedEventArgs e)
 		{
-			Log.Here().Activity("[DataGrid] Loaded?");
 			if (sender is DataGrid grid)
 			{
 				double availableSpace = this.ActualWidth;
@@ -324,7 +323,6 @@ namespace LL.SCG.DOS2.Controls
 				{
 					if (column.Header is string headerName)
 					{
-						Log.Here().Activity("[DataGrid] Header: " + column.Header.ToString());
 						if (headerName != "Description" && column.Visibility == Visibility.Visible && column.GetType() == typeof(DataGridTextColumn))
 						{
 							column.Width = DataGridLength.Auto;

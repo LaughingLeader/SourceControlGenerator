@@ -21,6 +21,8 @@ using System.Windows.Controls;
 using LL.SCG.Commands;
 using System.Globalization;
 using System.Windows.Input;
+using LL.SCG.Util;
+using System.Windows.Threading;
 
 namespace LL.SCG.Core
 {
@@ -356,7 +358,7 @@ namespace LL.SCG.Core
 		public void MenuAction_SaveLog()
 		{
 			string logContent = "";
-			foreach(var data in App.LogEntries)
+			foreach(var data in mainWindow.LogWindow.Data.Logs)
 			{
 				logContent += data.Output + Environment.NewLine;
 			}
@@ -365,7 +367,14 @@ namespace LL.SCG.Core
 			string fileName = "SourceControlGenerator_Log_" + DateTime.Now.ToString(sysFormat + "_HH-mm") + ".txt";
 
 			FileCommands.Save.OpenDialog(mainWindow, "Save Log File...", Data.AppSettings.LastLogPath, logContent, (string logPath) => {
-				Log.Here().Activity($"Saved log file to {logPath}.");
+				if (FileCommands.WriteToFile(logPath, logContent))
+				{
+					Log.Here().Activity($"Saved log file to {logPath}.");
+				}
+				else
+				{
+					Log.Here().Error($"Error saving log file to {logPath}.");
+				}
 				Data.AppSettings.LastLogPath = logPath;
 			}, fileName);
 		}
@@ -419,9 +428,32 @@ namespace LL.SCG.Core
 			}
 		}
 
+		private int logIndex = 0;
+
+		public void AddLogMessage(string LogMessage, LogType logType)
+		{
+			var log = new LogData()
+			{
+				Index = logIndex++,
+				DateTime = DateTime.Now,
+				Message = LogMessage,
+				MessageType = logType
+			};
+			log.FormatOutput();
+
+			mainWindow.LogWindow.Data.Add(log);
+			//Dispatcher.CurrentDispatcher.BeginInvoke(DispatcherPriority.Background, (Action)(() =>
+			//{
+			//	mainWindow.LogWindow.Data.Add(log);
+			//}));
+		}
+
+		public MenuData LogMenuData { get; set; }
+
 		public AppController(MainWindow MainAppWindow)
 		{
 			_instance = this;
+			Log.AllCallback = AddLogMessage;
 
 			Data = new MainAppData();
 			ProjectControllers = new Dictionary<string, IProjectController>();
@@ -443,12 +475,17 @@ namespace LL.SCG.Core
 				}
 			);
 
+			LogMenuData = new MenuData()
+			{
+				Header = "Open Log Window",
+				ClickCommand = new CallbackCommand(MenuAction_ToggleLogWindow),
+				ShortcutKey = Key.F8
+			};
+
+			//LogMenuData.SetHeaderBinding(mainWindow.LogWindow.Data, "LogVisibleText");
+
 			Data.MenuBarData.Options.Register("Base",
-				new MenuData()
-				{
-					GetHeader = () => { return mainWindow.LogVisibleText; },
-					ClickCommand = new CallbackCommand(MenuAction_ToggleLogWindow)
-				},
+				LogMenuData,
 				new MenuData()
 				{
 					Header = "Save Log...",

@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Data;
 using System.Windows.Input;
 
 namespace LL.SCG.Data.View
@@ -24,10 +25,6 @@ namespace LL.SCG.Data.View
 		{
 			get
 			{
-				if (GetHeader != null)
-				{
-					return GetHeader.Invoke();
-				}
 				return header;
 			}
 			set
@@ -91,7 +88,19 @@ namespace LL.SCG.Data.View
 			}
 		}
 
-		public Func<string> GetHeader { get; set; }
+		//public Func<string> GetHeader { get; set; }
+
+		private Binding headerBinding;
+
+		public Binding HeaderBinding
+		{
+			get { return headerBinding; }
+			set
+			{
+				headerBinding = value;
+				RaisePropertyChanged("HeaderBinding");
+			}
+		}
 
 		private ICommand clickCommand;
 
@@ -118,6 +127,16 @@ namespace LL.SCG.Data.View
 		}
 
 		public ObservableCollection<IMenuData> MenuItems { get; set; }
+
+		public void SetHeaderBinding(object Source, string Path, BindingMode bindingMode = BindingMode.Default, UpdateSourceTrigger updateSourceTrigger = UpdateSourceTrigger.PropertyChanged)
+		{
+			Binding binding = new Binding();
+			binding.Source = Source;
+			binding.Path = new PropertyPath(Path);
+			binding.Mode = bindingMode;
+			binding.UpdateSourceTrigger = updateSourceTrigger;
+			HeaderBinding = binding;
+		}
 
 		public void Register(string ModuleName, params IMenuData[] newMenuItems)
 		{

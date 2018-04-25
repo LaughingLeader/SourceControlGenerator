@@ -26,7 +26,8 @@ namespace LL.SCG.Data.View
 
 		public void FormatOutput()
 		{
-			Output = String.Format("[{0}][{1}]: {2}", DateTime.ToShortTimeString(), Index, Message);
+			//Output = String.Format("[{0}][{1}]: {2}", DateTime.ToLongTimeString(), Index.ToString().PadLeft(4, '0'), Message);
+			Output = String.Format("[{0}]: {1}", Index.ToString().PadLeft(4, '0'), Message);
 
 			switch (MessageType)
 			{

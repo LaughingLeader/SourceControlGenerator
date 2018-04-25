@@ -14,7 +14,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using LL.SCG.Data.View;
 using LL.SCG.Windows;
-using Ookii.Dialogs.Wpf;
+
 
 namespace LL.SCG.Controls
 {

@@ -16,6 +16,7 @@
 		mc:Ignorable="d"
 		Title="Source Control Generator" Height="600" Width="1024" Loaded="Window_Loaded" Closing="MainAppWindow_Closing"
 		WindowStartupLocation="CenterOwner"
+		
 		>
 	<Window.Resources>
 		<CollectionViewSource x:Key="ActiveProjectsViewSource" CollectionViewType="ListCollectionView"/>

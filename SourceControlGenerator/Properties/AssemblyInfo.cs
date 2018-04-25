@@ -7,12 +7,12 @@ using System.Windows;
 // General Information about an assembly is controlled through the following
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("DOS2-SourceControl")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyTitle("Source Control Generator")]
+[assembly: AssemblyDescription("Create git projects and backup multiple projects with a centralized interface.")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("DOS2-SourceControl")]
-[assembly: AssemblyCopyright("Copyright ©  2018")]
+[assembly: AssemblyProduct("Source Control Generator")]
+[assembly: AssemblyCopyright("Copyright © LaughingLeader 2018")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

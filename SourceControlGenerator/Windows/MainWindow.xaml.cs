@@ -20,13 +20,10 @@ using LL.SCG.Data;
 using LL.SCG.Data.View;
 using LL.SCG.Util;
 using LL.SCG.Windows;
-using Ookii.Dialogs.Wpf;
 using LL.SCG.Interfaces;
 using Newtonsoft.Json;
 using LL.SCG.Modules;
 using LL.SCG.FileGen;
-using MahApps.Metro;
-using MahApps.Metro.Controls;
 
 namespace LL.SCG.Windows
 {
@@ -81,6 +78,8 @@ namespace LL.SCG.Windows
 
 			Controller = new AppController(this);
 			DataContext = Controller.Data;
+
+			logWindow.Init(Controller);
 
 
 			Controller.OnModuleSet += LoadProjectModuleView;
@@ -165,9 +164,6 @@ namespace LL.SCG.Windows
 
 				Log.Here().Activity("Loaded project view for module.");
 
-
-				if (Data != null) Log.Here().Important("Test: {0}", Data.KeyList.Count);
-
 				DataContext = null;
 				DataContext = Controller.Data;
 
@@ -184,10 +180,7 @@ namespace LL.SCG.Windows
 			}
 		}
 
-		public string LogVisibleText
-		{
-			get => LogWindowShown ? "Close Log Window" : "Open Log Window";
-		}
+		
 
 		private string footerOutputDate;
 
