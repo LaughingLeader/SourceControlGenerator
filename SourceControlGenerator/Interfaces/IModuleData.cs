@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -35,9 +36,13 @@ namespace LL.SCG.Interfaces
 		void CreateNewTemplateData();
 		void HideAddTemplateControl();
 		void AddTemplate();
+
+		//Events
+
+		event EventHandler OnSettingsReverted;
 	}
 
-	public interface IModuleSettingsData
+	public interface IModuleSettingsData : INotifyPropertyChanged
 	{
 		ObservableCollection<TemplateFileData> TemplateFiles { get; set; }
 
@@ -54,5 +59,8 @@ namespace LL.SCG.Interfaces
 		//Methods
 
 		void Init(IModuleData Data);
+		void SetToDefault(IModuleData Data);
+
+		void RaisePropertyChanged(string propertyName);
 	}
 }

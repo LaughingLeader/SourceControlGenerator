@@ -127,16 +127,16 @@ namespace LL.SCG.Commands
 			}
 		}
 
-		public void LoadAppSettings(IModuleData Data)
+		public void LoadModuleSettings(IModuleData Data)
 		{
-			if (File.Exists(DefaultPaths.AppSettings(Data)))
+			if (File.Exists(DefaultPaths.ModuleSettings(Data)))
 			{
-				Log.Here().Activity("Loading settings from {0}", DefaultPaths.AppSettings(Data));
+				Log.Here().Activity("Loading settings from {0}", DefaultPaths.ModuleSettings(Data));
 				Data.LoadSettings();
 			}
 			else
 			{
-				Log.Here().Warning("settings file at {0} not found. Creating new file.", DefaultPaths.AppSettings(Data));
+				Log.Here().Warning("settings file at {0} not found. Creating new file.", DefaultPaths.ModuleSettings(Data));
 				Data.InitializeSettings();
 				SaveAppSettings = true;
 			}
@@ -329,14 +329,14 @@ namespace LL.SCG.Commands
 
 		public void LoadAll(IModuleData Data)
 		{
-			LoadAppSettings(Data);
+			LoadModuleSettings(Data);
 			LoadTemplates(Data);
 			LoadUserKeywords(Data);
 			LoadGitGenerationSettings(Data);
 
 			if(SaveAppSettings)
 			{
-				FileCommands.Save.SaveAppSettings(Data);
+				FileCommands.Save.SaveModuleSettings(Data);
 				SaveAppSettings = false;
 			}
 		}

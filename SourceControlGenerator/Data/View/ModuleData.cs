@@ -107,9 +107,9 @@ namespace LL.SCG.Data.View
 		}
 
 
-		private CallbackCommand loadKeywords;
+		private ActionCommand loadKeywords;
 
-		public CallbackCommand LoadKeywords
+		public ActionCommand LoadKeywords
 		{
 			get { return loadKeywords; }
 			set
@@ -153,6 +153,30 @@ namespace LL.SCG.Data.View
 			}
 		}
 
+		private ICommand saveSettingsCommand;
+
+		public ICommand SaveSettingsCommand
+		{
+			get { return saveSettingsCommand; }
+			set
+			{
+				saveSettingsCommand = value;
+				RaisePropertyChanged("SaveSettingsCommand");
+			}
+		}
+
+		private ICommand defaultSettingsCommand;
+
+		public ICommand DefaultSettingsCommand
+		{
+			get { return defaultSettingsCommand; }
+			set
+			{
+				defaultSettingsCommand = value;
+				RaisePropertyChanged("DefaultSettingsCommand");
+			}
+		}
+
 		public void AddTemplate()
 		{
 			if (NewTemplateData != null)
@@ -181,12 +205,25 @@ namespace LL.SCG.Data.View
 
 		public virtual void LoadSettings()
 		{
-			Settings = JsonConvert.DeserializeObject<T>(File.ReadAllText(DefaultPaths.AppSettings(this)));
+			Settings = JsonConvert.DeserializeObject<T>(File.ReadAllText(DefaultPaths.ModuleSettings(this)));
 		}
 
 		public virtual string LoadStringResource(string Name)
 		{
 			return Properties.Resources.ResourceManager.GetString(Name, Properties.Resources.Culture);
+		}
+
+		public event EventHandler OnSettingsReverted;
+
+		public virtual void RevertSettingsToDefault(bool confirmed)
+		{
+			if (confirmed)
+			{
+				Settings.SetToDefault(this);
+				Settings.RaisePropertyChanged(String.Empty);
+
+				OnSettingsReverted?.Invoke(this, EventArgs.Empty);
+			}
 		}
 
 		public ModuleData(string moduleName, string moduleFolderName)
@@ -198,7 +235,10 @@ namespace LL.SCG.Data.View
 			Templates = new ObservableCollection<TemplateEditorData>();
 			KeyList = new ObservableCollection<KeywordData>();
 
-			LoadKeywords = new CallbackCommand(() => { FileCommands.Load.LoadUserKeywords(this); });
+			LoadKeywords = new ActionCommand(() => { FileCommands.Load.LoadUserKeywords(this); });
+
+			SaveSettingsCommand = new ActionCommand(() => FileCommands.Save.SaveModuleSettings(this));
+			DefaultSettingsCommand = new TaskCommand(RevertSettingsToDefault, null, "Reset Settings?", "Revert settings to default?", "Changes will be lost.");
 		}
 	}
 }

@@ -6,8 +6,10 @@ using System.Text;
 using System.Threading.Tasks;
 using LL.SCG.Data;
 using LL.SCG.Data.View;
+using LL.SCG.DOS2.Core;
 using LL.SCG.Enum;
 using LL.SCG.Interfaces;
+using Newtonsoft.Json;
 
 namespace LL.SCG.DOS2.Data.App
 {
@@ -15,18 +17,19 @@ namespace LL.SCG.DOS2.Data.App
 	{
 		public static string SteamAppID => "435150";
 
+		[JsonIgnore]
 		public List<string> DirectoryLayouts { get; set; }
 
 		private string dataDirectory;
 
-		[VisibleToView("Data Directory", FileBrowseType.Directory)]
-		public string DataDirectory
+		[VisibleToView("DOS2 Data Directory", FileBrowseType.Directory)]
+		public string DOS2DataDirectory
 		{
 			get { return dataDirectory; }
 			set
 			{
 				dataDirectory = value;
-				RaisePropertyChanged("DataDirectory");
+				RaisePropertyChanged("DOS2DataDirectory");
 			}
 		}
 
@@ -41,6 +44,27 @@ namespace LL.SCG.DOS2.Data.App
 				directoryLayoutFile = value;
 				RaisePropertyChanged("DirectoryLayoutFile");
 			}
+		}
+
+		public bool FindDOS2DataDirectory()
+		{
+			string dataDirectory = Helpers.Registry.GetAppInstallPath("Divinity: Original Sin 2");
+			if (!String.IsNullOrEmpty(dataDirectory))
+			{
+				dataDirectory = dataDirectory + @"\Data";
+				DOS2DataDirectory = dataDirectory;
+				return true;
+			}
+			return false;
+		}
+
+		public override void SetToDefault(IModuleData Data)
+		{
+			base.SetToDefault(Data);
+
+			FindDOS2DataDirectory();
+
+			DirectoryLayoutFile = DOS2DefaultPaths.DirectoryLayout(Data);
 		}
 	}
 }

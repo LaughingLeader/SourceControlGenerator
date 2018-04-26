@@ -130,6 +130,11 @@ namespace LL.SCG.Core
 
 			RegisterMenuShortcuts();
 
+			if(CurrentModule.ModuleData != null)
+			{
+				CurrentModule.ModuleData.OnSettingsReverted += OnSettingsReverted;
+			}
+
 			return true;
 		}
 
@@ -137,6 +142,11 @@ namespace LL.SCG.Core
 		{
 			if(CurrentModule != null)
 			{
+				if (CurrentModule.ModuleData != null)
+				{
+					CurrentModule.ModuleData.OnSettingsReverted -= OnSettingsReverted;
+				}
+
 				Log.Here().Activity("Unloading module {0}.", CurrentModule.ModuleData.ModuleName);
 				Data.AppSettings.LastModule = CurrentModule.ModuleData.ModuleName;
 				UnregisterMenuShortcuts(CurrentModule.ModuleData.ModuleName);
@@ -428,6 +438,17 @@ namespace LL.SCG.Core
 			}
 		}
 
+		//Workaround for converted settings data (used for the file browsers) not updating when reverting to default.
+		private void OnSettingsReverted(object settingsData, EventArgs e)
+		{
+			ListView listView = (ListView)mainWindow.FindName("SettingsDataGrid");
+			if(listView != null)
+			{
+				listView.GetBindingExpression(ListView.ItemsSourceProperty).UpdateTarget();
+			}
+		}
+
+		#region Log
 		private int logIndex = 0;
 
 		public void AddLogMessage(string LogMessage, LogType logType)
@@ -450,6 +471,8 @@ namespace LL.SCG.Core
 
 		public MenuData LogMenuData { get; set; }
 
+		#endregion
+
 		public AppController(MainWindow MainAppWindow)
 		{
 			_instance = this;
@@ -466,19 +489,19 @@ namespace LL.SCG.Core
 				new MenuData()
 				{
 					Header = "Create Template...",
-					ClickCommand = new CallbackCommand(MenuAction_AddNewTemplate)
+					ClickCommand = new ActionCommand(MenuAction_AddNewTemplate)
 				},
 				new MenuData()
 				{
 					Header = "Select Module...",
-					ClickCommand = new CallbackCommand(MenuAction_OpenModuleSelectScreen)
+					ClickCommand = new ActionCommand(MenuAction_OpenModuleSelectScreen)
 				}
 			);
 
 			LogMenuData = new MenuData()
 			{
 				Header = "Open Log Window",
-				ClickCommand = new CallbackCommand(MenuAction_ToggleLogWindow),
+				ClickCommand = new ActionCommand(MenuAction_ToggleLogWindow),
 				ShortcutKey = Key.F8
 			};
 
@@ -489,7 +512,7 @@ namespace LL.SCG.Core
 				new MenuData()
 				{
 					Header = "Save Log...",
-					ClickCommand = new CallbackCommand(MenuAction_SaveLog)
+					ClickCommand = new ActionCommand(MenuAction_SaveLog)
 				}
 			);
 
@@ -497,17 +520,17 @@ namespace LL.SCG.Core
 				new MenuData()
 				{
 					Header = "Report Bug / Give Feedback (Github)...",
-					ClickCommand = new CallbackCommand(MenuAction_OpenIssuesLink)
+					ClickCommand = new ActionCommand(MenuAction_OpenIssuesLink)
 				},
 				new MenuData()
 				{
 					Header = "Source Code (Github)...",
-					ClickCommand = new CallbackCommand(MenuAction_OpenRepoLink)
+					ClickCommand = new ActionCommand(MenuAction_OpenRepoLink)
 				},
 				new MenuData()
 				{
 					Header = "About Source Control Generator",
-					ClickCommand = new CallbackCommand(MenuAction_OpenAbout),
+					ClickCommand = new ActionCommand(MenuAction_OpenAbout),
 					ShortcutKey = Key.F1
 				}
 			);

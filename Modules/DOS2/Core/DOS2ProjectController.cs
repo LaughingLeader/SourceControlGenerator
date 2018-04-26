@@ -41,13 +41,15 @@ namespace LL.SCG.Core
 
 		public IModuleData ModuleData => Data;
 
+		private bool saveModuleSettings = false;
+
 		private List<JunctionData> PrepareDirectories(ModProjectData project, List<string> DirectoryLayouts)
 		{
 			var sourceFolders = new List<JunctionData>();
 			foreach (var directoryBaseName in DirectoryLayouts)
 			{
 				var projectSubdirectoryName = directoryBaseName.Replace("ProjectName", project.ProjectName).Replace("ProjectGUID", project.ModuleInfo.UUID);
-				var junctionSourceDirectory = Path.Combine(Data.Settings.DataDirectory, projectSubdirectoryName);
+				var junctionSourceDirectory = Path.Combine(Data.Settings.DOS2DataDirectory, projectSubdirectoryName);
 				sourceFolders.Add(new JunctionData()
 				{
 					SourcePath = junctionSourceDirectory,
@@ -59,6 +61,7 @@ namespace LL.SCG.Core
 
 		public void StartGitGeneration()
 		{
+			Data.CanGenerateGit = false;
 			AppController.Main.StartProgress($"Generating Git Files... 0/{Data.GitGenerationSettings.ExportProjects.Count}", RunGitGeneration);
 		}
 
@@ -343,7 +346,7 @@ namespace LL.SCG.Core
 			{
 				//Log.Here().Activity($"Git project not found. Archiving project {modProject.ProjectName} from project folders directly.");
 				var sourceFolders = PrepareDirectories(modProject, Data.Settings.DirectoryLayouts);
-				return BackupGenerator.CreateArchiveFromRoot(Data.Settings.DataDirectory, sourceFolders, archivePath);
+				return BackupGenerator.CreateArchiveFromRoot(Data.Settings.DOS2DataDirectory, sourceFolders, archivePath);
 			}
 			else
 			{
@@ -409,6 +412,8 @@ namespace LL.SCG.Core
 				}
 			}
 
+			Data.RaisePropertyChanged("NewProjects");
+
 			if (bSaveData)
 			{
 				if (DOS2Commands.SaveManagedProjects(Data))
@@ -424,19 +429,17 @@ namespace LL.SCG.Core
 
 		public void LoadDataDirectory()
 		{
-			if (!FileCommands.IsValidPath(Data.Settings.DataDirectory))
+			if (!FileCommands.IsValidPath(Data.Settings.DOS2DataDirectory))
 			{
 				Log.Here().Warning("DOS2 data directory not found. Reverting to default.");
-				string dataDirectory = Helpers.Registry.GetAppInstallPath("Divinity: Original Sin 2");
-				if (!String.IsNullOrEmpty(dataDirectory))
+				if (Data.Settings.FindDOS2DataDirectory())
 				{
-					dataDirectory = dataDirectory + @"\Data";
-					Data.Settings.DataDirectory = dataDirectory;
+					saveModuleSettings = true;
 				}
 			}
 			else
 			{
-				Log.Here().Activity("DOS2 data directory set to {0}", Data.Settings.DataDirectory);
+				Log.Here().Activity("DOS2 data directory set to {0}", Data.Settings.DOS2DataDirectory);
 			}
 		}
 
@@ -479,6 +482,8 @@ namespace LL.SCG.Core
 				}
 
 				Data.Settings.DirectoryLayoutFile = DOS2DefaultPaths.DirectoryLayout(Data);
+
+				saveModuleSettings = true;
 			}
 
 			if (!String.IsNullOrEmpty(layoutFile) && File.Exists(layoutFile))
@@ -552,6 +557,7 @@ namespace LL.SCG.Core
 		public UserControl GetProjectView(MainWindow mainWindow)
 		{
 			if (projectViewControl == null) projectViewControl = new ProjectViewControl(mainWindow, this);
+
 			return projectViewControl;
 		}
 
@@ -672,8 +678,8 @@ namespace LL.SCG.Core
 					Header = "Refresh Projects",
 					MenuItems = new ObservableCollection<IMenuData>()
 					{
-						new MenuData("Refresh All", new CallbackCommand(RefreshAllProjects)) { ShortcutKey = System.Windows.Input.Key.F5 },
-						new MenuData("Refresh Managed Data", new CallbackCommand(RefreshModProjects)),
+						new MenuData("Refresh All", new ActionCommand(RefreshAllProjects)) { ShortcutKey = System.Windows.Input.Key.F5 },
+						new MenuData("Refresh Managed Data", new ActionCommand(RefreshModProjects)),
 					}
 				}
 			);
@@ -688,6 +694,14 @@ namespace LL.SCG.Core
 			InitModuleKeywords();
 
 			DOS2Commands.LoadAll(Data);
+
+			Data.UpdateManageButtonsText();
+
+			if(saveModuleSettings)
+			{
+				FileCommands.Save.SaveModuleSettings(Data);
+				saveModuleSettings = false;
+			}
 #if DEBUG
 			//TestView();
 #endif

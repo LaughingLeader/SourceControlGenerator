@@ -175,7 +175,7 @@ namespace LL.SCG.Data
 		[Bindable(BindableSupport.No)]
 		public ObservableCollection<TemplateFileData> TemplateFiles { get; set; }
 
-		public void Init(IModuleData Data)
+		public virtual void SetToDefault(IModuleData Data)
 		{
 			BackupRootDirectory = DefaultPaths.Backups(Data);
 			GitRootDirectory = DefaultPaths.GitRoot(Data);
@@ -183,7 +183,11 @@ namespace LL.SCG.Data
 			TemplateSettingsFile = DefaultPaths.TemplateSettings(Data);
 			UserKeywordsFile = DefaultPaths.Keywords(Data);
 			GitGenSettingsFile = DefaultPaths.GitGenSettings(Data);
+		}
 
+		public void Init(IModuleData Data)
+		{
+			SetToDefault(Data);
 			TemplateFiles = new ObservableCollection<TemplateFileData>();
 		}
 	}

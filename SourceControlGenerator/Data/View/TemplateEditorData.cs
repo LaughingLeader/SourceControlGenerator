@@ -199,9 +199,9 @@ namespace LL.SCG.Data.View
 			}
 		}
 
-		private ActionCommand openCommand;
+		private ParameterCommand openCommand;
 
-		public ActionCommand OpenCommand
+		public ParameterCommand OpenCommand
 		{
 			get { return openCommand; }
 			set
@@ -275,7 +275,7 @@ namespace LL.SCG.Data.View
 
 				MainWindow.FooterLog("Saved {0} to {1}", Name, FilePath);
 
-				if (saveAppSettings) FileCommands.Save.SaveAppSettings(parentData);
+				if (saveAppSettings) FileCommands.Save.SaveModuleSettings(parentData);
 			}
 			else
 			{
@@ -398,14 +398,14 @@ namespace LL.SCG.Data.View
 
 			SaveAsText = "Save " + Name + " As...";
 
-			OpenCommand = new ActionCommand((object param) =>
+			OpenCommand = new ParameterCommand((object param) =>
 			{
 				FileBrowseControl fileBrowseControl = (FileBrowseControl)param;
 				if (fileBrowseControl != null)
 				{
 					FilePath = fileBrowseControl.FileLocationText;
 					EditorText = File.ReadAllText(FilePath);
-					FileCommands.Save.SaveAppSettings(parentData);
+					FileCommands.Save.SaveModuleSettings(parentData);
 				}
 			});
 

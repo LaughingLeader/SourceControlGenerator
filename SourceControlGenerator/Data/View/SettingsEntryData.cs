@@ -104,9 +104,9 @@ namespace LL.SCG.Data.View
 			}
 		}
 
-		private ActionCommand onOpenedCommand;
+		private ParameterCommand onOpenedCommand;
 
-		public ActionCommand OnOpened
+		public ParameterCommand OnOpened
 		{
 			get { return onOpenedCommand; }
 			set
@@ -146,7 +146,7 @@ namespace LL.SCG.Data.View
 
 		public SettingsEntryData()
 		{
-			OnOpened = new ActionCommand(OnFileOpened);
+			OnOpened = new ParameterCommand(OnFileOpened);
 		}
 	}
 }

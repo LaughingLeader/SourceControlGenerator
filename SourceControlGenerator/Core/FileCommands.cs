@@ -61,7 +61,7 @@ namespace LL.SCG
 			}
 		}
 
-		public static void OpenConfirmationDialog(Window ParentWindow, string WindowTitle, string MainInstruction, string Content, Action OnConfirmed)
+		public static void OpenConfirmationDialog(Window ParentWindow, string WindowTitle, string MainInstruction, string Content, Action<bool> TaskAction)
 		{
 			if(TaskDialog.OSSupportsTaskDialogs)
 			{
@@ -82,7 +82,13 @@ namespace LL.SCG
 					//dialog.HyperlinkClicked += new EventHandler<HyperlinkClickedEventArgs>(TaskDialog_HyperLinkClicked);
 					TaskDialogButton button = dialog.ShowDialog(ParentWindow);
 					if (button == okButton)
-						OnConfirmed?.Invoke();
+					{
+						TaskAction?.Invoke(true);
+					}
+					else
+					{
+						TaskAction?.Invoke(false);
+					}
 				}
 			}
 		}

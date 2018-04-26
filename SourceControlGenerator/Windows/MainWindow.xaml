@@ -278,10 +278,14 @@
 
 			</TabItem>
 			<TabItem x:Name="Tab_Settings" Header="Settings" BorderThickness="0" Style="{StaticResource MainTabStyle}">
-				<ScrollViewer VerticalScrollBarVisibility="Auto" Padding="0" BorderThickness="0" >
-					<ListView x:Name="SettingsDataGrid" Padding="10,0,10,0" ItemsSource="{Binding ModuleSettings, Converter={StaticResource SettingsAttributeConverter}}" AllowDrop="False"
-						 listview:ListViewLayoutManager.Enabled="True"
-					>
+				<Grid>
+					<Grid.RowDefinitions>
+						<RowDefinition Height="*"/>
+						<RowDefinition Height="Auto" />
+					</Grid.RowDefinitions>
+					<ListView x:Name="SettingsDataGrid" Padding="10,0,10,0" ItemsSource="{Binding ModuleSettings, Converter={StaticResource SettingsAttributeConverter}, UpdateSourceTrigger=PropertyChanged}" AllowDrop="False"
+							 listview:ListViewLayoutManager.Enabled="True" ScrollViewer.VerticalScrollBarVisibility="Auto"
+						>
 						<ListView.ItemContainerStyle>
 							<Style TargetType="ListViewItem" BasedOn="{StaticResource {x:Type ListViewItem}}">
 								<Setter Property="HorizontalContentAlignment" Value="Stretch" />
@@ -314,9 +318,9 @@
 																<Setter Property="ContentTemplate">
 																	<Setter.Value>
 																		<DataTemplate>
-																			<c:FileBrowseControl OpenFileText="{Binding OpenFileText}" BrowseType="{Binding BrowseType, Mode=TwoWay}" FileLocationText="{Binding Path=Value, UpdateSourceTrigger=PropertyChanged}"
-																				OnOpen="{Binding OnOpened}" Filter="{Binding Filter}"
-																								 />
+																			<c:FileBrowseControl OpenFileText="{Binding OpenFileText}" BrowseType="{Binding BrowseType, Mode=TwoWay}" FileLocationText="{Binding Path=Value, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+																					OnOpen="{Binding OnOpened}" Filter="{Binding Filter}"
+																									 />
 																		</DataTemplate>
 																	</Setter.Value>
 																</Setter>
@@ -340,7 +344,11 @@
 							</GridView>
 						</ListView.View>
 					</ListView>
-				</ScrollViewer>
+					<StackPanel Grid.Row="1" Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="2" cb:MarginSetter.Margin="2">
+						<Button Content="Save" Command="{Binding SaveSettingsCommand}" />
+						<Button Content="Default" Command="{Binding DefaultSettingsCommand}" />
+					</StackPanel>
+				</Grid>
 			</TabItem>
 		</TabControl>
 		<Grid x:Name="FooterGrid" Grid.Row="2">

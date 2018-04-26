@@ -57,14 +57,12 @@
 						</Setter>
 					</Style>
 				</StackPanel.Resources>
-				<Button x:Name="Btn_AvailableProjects" Content="Available Projects" ToolTip="{Binding AvailableProjectsToggleText}" Click="Btn_AvailableProjects_Click" HorizontalAlignment="Right" BorderThickness="1,0,1,1" Margin="0,26,0,0" />
-				
 			</StackPanel>
-			<Grid Grid.Column="1" Margin="10,0">
+			<Grid Grid.Column="1" Margin="10,0" Visibility="{Binding AvailableProjectsVisible, Converter={StaticResource BoolToVisibilityConverter}, FallbackValue=Collapsed}">
 				<Grid x:Name="NewProjects" >
 					<Grid.RowDefinitions>
 						<RowDefinition Height="Auto"/>
-						<RowDefinition Height="*"/>
+						<RowDefinition Name="AvailableProjectRow" Height="{Binding NewProjects.Count, Converter={StaticResource IntToGridLengthConverter}, FallbackValue=*}"/>
 						<RowDefinition Height="Auto"/>
 					</Grid.RowDefinitions>
 					<StackPanel Orientation="Horizontal">
@@ -76,8 +74,8 @@
 					<Grid Grid.Row="1" Width="200" MaxWidth="200">
 						<Grid>
 
-							<ListBox x:Name="AvailableProjectsList" ItemsSource="{Binding NewProjects, NotifyOnTargetUpdated=True}" HorizontalContentAlignment="Left" SelectionMode="Extended" SelectionChanged="AvailableProjectsList_SelectionChanged" MouseRightButtonUp="AvailableProjectsList_MouseRightButtonUp"
-									 ScrollViewer.HorizontalScrollBarVisibility="Auto" ScrollViewer.VerticalScrollBarVisibility="Auto" cb:ListBoxSelectionBehavior.ClickSelection="True" TargetUpdated="AvailableProjectsList_TargetUpdated"
+							<ListBox x:Name="AvailableProjectsList" ItemsSource="{Binding NewProjects, NotifyOnTargetUpdated=True}" HorizontalContentAlignment="Left" SelectionMode="Extended" SelectionChanged="AvailableProjectsList_SelectionChanged"
+									 ScrollViewer.HorizontalScrollBarVisibility="Auto" ScrollViewer.VerticalScrollBarVisibility="Auto" cb:ListBoxSelectionBehavior.ClickSelection="True" TargetUpdated="AvailableProjectsList_TargetUpdated" MaxHeight="192"
 									 >
 								<ListBox.ItemContainerStyle>
 									<Style TargetType="ListBoxItem" BasedOn="{StaticResource {x:Type ListBoxItem}}">
@@ -99,11 +97,11 @@
 									</DataTemplate>
 								</ListBox.ItemTemplate>
 							</ListBox>
-							<TextBlock Text="No Unmanaged Projects Found" Visibility="{Binding NewProjects, Converter={StaticResource EmptyListVisibilityConverter}}" FontStyle="Italic" Foreground="#FF4D4D4D" Margin="5,5,0,5" Padding="0,0,10,0" HorizontalAlignment="Center" />
+							<TextBlock Text="No Unmanaged Projects Found" Visibility="{Binding NewProjects.Count, Converter={StaticResource IntToVisibilityConverter}, ConverterParameter='0', FallbackValue=Visible}" FontStyle="Italic" Foreground="#FF4D4D4D" Margin="5,5,0,5" Padding="0,0,10,0" HorizontalAlignment="Center" VerticalAlignment="Center"  />
 						</Grid>
 					</Grid>
 					<Grid Grid.Row="2">
-						<Button x:Name="AddSelectedProjectsButton" Click="AddSelectedProjectsButton_Click" Content="{Binding ManageButtonsText}" HorizontalAlignment="Center" Margin="0,5" FontFamily="Roboto" MinWidth="129" MinHeight="20" />
+						<Button x:Name="AddSelectedProjectsButton" Click="AddSelectedProjectsButton_Click" Content="{Binding ManageButtonsText}" IsEnabled="{Binding CanAddProject}" HorizontalAlignment="Center" Margin="0,5" FontFamily="Roboto" MinWidth="150" MinHeight="20" />
 					</Grid>
 				</Grid>
 			</Grid>
@@ -120,15 +118,63 @@
 				</Grid.RowDefinitions>
 				<Grid Grid.Row="0">
 					<Grid.ColumnDefinitions>
-						<ColumnDefinition />
-						<ColumnDefinition />
+						<ColumnDefinition Width="*" />
+						<ColumnDefinition Width="Auto" />
+						<ColumnDefinition Width="Auto" />
 					</Grid.ColumnDefinitions>
 					<StackPanel Orientation="Horizontal">
 						<Label Content="Managed Projects" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Row="0" />
 						<Button x:Name="Btn_ModProjects_Refresh" ToolTip="Refresh Project Data" Click="Btn_ModProjects_Refresh_Click" Margin="10,4,0,4" IsEnabled="{Binding CanClickRefresh}" >
-							<Image Source="{Binding Source={StaticResource IconProxy}, Path=Data.RefreshSmall, FallbackValue={x:Null}}" Stretch="UniformToFill" MaxHeight="16" MaxWidth="16" Width="16" Height="16"/>
+							<Image Source="{Binding Source={StaticResource IconProxy}, Path=Data.RefreshSmall, FallbackValue={x:Null}}" Stretch="UniformToFill" Width="16" Height="16" MaxWidth="16" MaxHeight="16" MinWidth="16" MinHeight="16"/>
 						</Button>
 					</StackPanel>
+					<Grid Grid.Column="2">
+						<Button x:Name="Btn_AvailableProjects" ToolTip="{Binding AvailableProjectsTooltip}" Click="Btn_AvailableProjects_Click" HorizontalAlignment="Right" VerticalAlignment="Center" Padding="10,2" Margin="4,0">
+							<Button.Resources>
+								<Style TargetType="{x:Type Image}">
+									<Setter Property="MinWidth" Value="16" />
+									<Setter Property="MaxWidth" Value="16" />
+									<Setter Property="MinHeight" Value="16" />
+									<Setter Property="MaxHeight" Value="16" />
+									<Setter Property="Stretch" Value="UniformToFill" />
+									<Setter Property="Margin" Value="0" />
+								</Style>
+							</Button.Resources>
+							<Button.Style>
+								<Style TargetType="{x:Type Button}" BasedOn="{StaticResource {x:Type Button}}">
+									<!-- Default Content value -->
+									<Setter Property="Content">
+										<Setter.Value>
+											<StackPanel Orientation="Horizontal" cb:MarginSetter.Margin="2">
+												<TextBlock Text="{Binding AvailableProjectsToggleText, FallbackValue='Available Projects'}" />
+												<Image Source="{Binding Source={StaticResource IconProxy}, Path=Data.ExpanderRight, FallbackValue={x:Null}}"
+													RenderTransformOrigin=".5,.5">
+													<Image.RenderTransform>
+														<RotateTransform Angle="180" />
+													</Image.RenderTransform>
+												</Image>
+												<Image Source="{Binding Source={StaticResource IconProxy}, Path=Data.Star, FallbackValue={x:Null}}" Visibility="{Binding NewProjectsAvailable, Converter={StaticResource BoolToVisibilityConverter}}" />
+											</StackPanel>
+										</Setter.Value>
+									</Setter>
+
+									<!-- Triggered values -->
+									<Style.Triggers>
+										<DataTrigger Binding="{Binding AvailableProjectsVisible}" Value="True">
+											<Setter Property="Content">
+												<Setter.Value>
+													<StackPanel Orientation="Horizontal" cb:MarginSetter.Margin="2">
+														<TextBlock Text="{Binding AvailableProjectsToggleText, FallbackValue='Available Projects'}" />
+														<Image Source="{Binding Source={StaticResource IconProxy}, Path=Data.ExpanderRight, FallbackValue={x:Null}}" />
+													</StackPanel>
+												</Setter.Value>
+											</Setter>
+										</DataTrigger>
+									</Style.Triggers>
+								</Style>
+							</Button.Style>
+						</Button>
+					</Grid>
 				</Grid>
 				<Border Grid.Row="1" BorderThickness="1,1,1,0" BorderBrush="{DynamicResource {x:Static SystemColors.ControlLightBrushKey}}">
 					<Grid x:Name="ProjectsDataGridScrollViewer" >

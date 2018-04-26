@@ -353,9 +353,9 @@ namespace LL.SCG.Windows
 
 		private void KeywordsList_Default_Click(object sender, RoutedEventArgs e)
 		{
-			FileCommands.OpenConfirmationDialog(this, "Reset Keyword List?", "Reset Keyword values to default?", "Changes will be lost.", () =>
+			FileCommands.OpenConfirmationDialog(this, "Reset Keyword List?", "Reset Keyword values to default?", "Changes will be lost.", (bool confirmed) =>
 			{
-				Data.UserKeywords.ResetToDefault();
+				if(confirmed) Data.UserKeywords.ResetToDefault();
 			});
 		}
 

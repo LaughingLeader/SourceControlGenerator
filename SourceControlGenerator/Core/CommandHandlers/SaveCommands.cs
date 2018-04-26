@@ -101,15 +101,15 @@ namespace LL.SCG.Commands
 			}
 		}
 
-		public void SaveAppSettings(IModuleData Data)
+		public void SaveModuleSettings(IModuleData Data)
 		{
-			Log.Here().Activity("Saving AppSettings to {0}", Path.GetFullPath(DefaultPaths.AppSettings(Data)));
+			Log.Here().Activity("Saving module settings to {0}", Path.GetFullPath(DefaultPaths.ModuleSettings(Data)));
 
 			if (Data.ModuleSettings != null)
 			{
 				SaveTemplates(Data);
 				string json = JsonConvert.SerializeObject(Data.ModuleSettings, Newtonsoft.Json.Formatting.Indented);
-				FileCommands.WriteToFile(DefaultPaths.AppSettings(Data), json);
+				FileCommands.WriteToFile(DefaultPaths.ModuleSettings(Data), json);
 			}
 		}
 

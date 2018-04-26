@@ -6,8 +6,10 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Data;
 using LL.SCG.Collections;
+using LL.SCG.Commands;
 using LL.SCG.Data;
 using LL.SCG.Data.View;
+using LL.SCG.DOS2.Core;
 using LL.SCG.DOS2.Data.App;
 
 namespace LL.SCG.DOS2.Data.View
@@ -26,6 +28,19 @@ namespace LL.SCG.DOS2.Data.View
 			}
 		}
 
+		private bool canAddProject = false;
+
+		public bool CanAddProject
+		{
+			get { return canAddProject; }
+			set
+			{
+				canAddProject = value;
+				RaisePropertyChanged("CanAddProject");
+			}
+		}
+
+
 		private string availableProjectsToggleText;
 
 		public string AvailableProjectsToggleText
@@ -37,6 +52,40 @@ namespace LL.SCG.DOS2.Data.View
 				RaisePropertyChanged("AvailableProjectsToggleText");
 			}
 		}
+
+		private bool availableProjectsVisible = false;
+
+		public bool AvailableProjectsVisible
+		{
+			get { return availableProjectsVisible; }
+			set
+			{
+				availableProjectsVisible = value;
+				RaisePropertyChanged("AvailableProjectsVisible");
+			}
+		}
+
+		private bool newProjectsAvailable = false;
+
+		public bool NewProjectsAvailable
+		{
+			get { return newProjectsAvailable; }
+			set
+			{
+				newProjectsAvailable = value;
+				RaisePropertyChanged("NewProjectsAvailable");
+				RaisePropertyChanged("AvailableProjectsTooltip");
+			}
+		}
+
+		public string AvailableProjectsTooltip
+		{
+			get
+			{
+				return NewProjectsAvailable ? "New Projects Available" : "No New Projects Found";
+			}
+		}
+
 
 		private bool canClickRefresh = true;
 
@@ -80,10 +129,36 @@ namespace LL.SCG.DOS2.Data.View
 			return Properties.Resources.ResourceManager.GetString(Name, Properties.Resources.Culture);
 		}
 
+		public void UpdateManageButtonsText(int selectedCount = 0)
+		{
+			CanAddProject = selectedCount != 0;
+
+			if (selectedCount > 1)
+			{
+				ManageButtonsText = "Manage Selected Projects";
+			}
+			else if (selectedCount == 1)
+			{
+				ManageButtonsText = "Manage Selected Project";
+			}
+			else
+			{
+				if (NewProjects.Count > 0)
+				{
+					ManageButtonsText = "Select a Project";
+				}
+				else
+				{
+					//ManageButtonsText = "No New Projects Found";
+					ManageButtonsText = "Select a Project";
+				}
+			}
+		}
+
 		public DOS2ModuleData() : base("Divinity: Original Sin 2", "DivinityOriginalSin2")
 		{
 			ManageButtonsText = "Select a Project";
-			AvailableProjectsToggleText = "Hide Available Projects";
+			AvailableProjectsToggleText = "Available Projects";
 
 			ModProjects = new ObservableImmutableList<ModProjectData>();
 			ManagedProjects = new ObservableImmutableList<ModProjectData>();

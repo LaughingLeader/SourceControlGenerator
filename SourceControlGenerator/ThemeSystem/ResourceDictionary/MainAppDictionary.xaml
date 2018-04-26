@@ -25,6 +25,8 @@
 	<cv:NewlineStringConverter x:Key="NewlineStringConverter"/>
 	<cv:SettingsAttributeConverter x:Key="SettingsAttributeConverter"/>
 	<cv:SettingsAttributeValueControlConverter x:Key="SettingsAttributeValueControlConverter"/>
+	<cv:IntToGridLengthConverter x:Key="IntToGridLengthConverter"/>
+	<cv:IntToVisibilityConverter x:Key="IntToVisibilityConverter"/>
 
 	<Style TargetType="{x:Type c:TemplateKeywordControl}"/>
 	<Style TargetType="{x:Type ListViewItem}" />

@@ -42,6 +42,8 @@ namespace LL.SCG.DOS2.Controls
 
 			DataContext = Controller.Data;
 
+			ToggleAvailableProjectsView(Controller.Data.NewProjectsAvailable);
+
 			/*
 			var gridSplitter = (GridSplitter)this.FindName("ProjectsDataGridSplitter");
 			if (gridSplitter != null)
@@ -57,27 +59,7 @@ namespace LL.SCG.DOS2.Controls
 			ListBox list = (ListBox)this.FindName("AvailableProjectsList");
 			if (list != null)
 			{
-				var selectedCount = list.SelectedItems.Count;
-				if (selectedCount > 1)
-				{
-					Controller.Data.ManageButtonsText = "Manage Selected Projects";
-				}
-				else if (selectedCount == 1)
-				{
-					Controller.Data.ManageButtonsText = "Manage Selected Project";
-				}
-				else
-				{
-					if (Controller.Data.NewProjects.Count > 0)
-					{
-						Controller.Data.ManageButtonsText = "Select a Project";
-					}
-					else
-					{
-						Controller.Data.ManageButtonsText = "No New Projects Found";
-					}
-				}
-
+				Controller.Data.UpdateManageButtonsText(list.SelectedItems.Count);
 			}
 		}
 
@@ -112,51 +94,34 @@ namespace LL.SCG.DOS2.Controls
 				}
 				else
 				{
-					if (availableProjectsVisible) ToggleAvailableProjectsView();
+					ToggleAvailableProjectsView(false);
 				}
 			}
 		}
-
-		private void AvailableProjectsList_MouseRightButtonUp(object sender, MouseButtonEventArgs e)
-		{
-			/*
-			ListBox list = (ListBox)this.FindName("AvailableProjectsList");
-			if (list != null && list.SelectedItems.Count > 0)
-			{
-				foreach(ListBoxItem item in list.ItemContainerGenerator.Items.Cast<ListBoxItem>().ToList())
-				{
-					if(item.IsMouseOver)
-					{
-						
-					}
-				}
-			}
-			else
-			{
-				Log.Here().Activity("No projects selected!");
-			}
-			*/
-		}
-
-		private bool availableProjectsVisible = true;
 
 		private void Btn_AvailableProjects_Click(object sender, RoutedEventArgs e)
 		{
 			ToggleAvailableProjectsView();
-			if(sender is Button btn)
-			{
-				btn.BorderThickness = new Thickness(1, 0, 1, 1);
-			}
 		}
 
-		private void ToggleAvailableProjectsView()
+		public void ToggleAvailableProjectsView(bool? NextValue = null)
 		{
 			var grid = (Grid)this.FindName("AvailableProjectsView");
 			if (grid != null)
 			{
+				bool nextValue = Controller.Data.AvailableProjectsVisible;
+				if (NextValue != null)
+				{
+					nextValue = NextValue.Value;
+				}
+				else
+				{
+					nextValue = !Controller.Data.AvailableProjectsVisible;
+				}
+
 				var viewRow = grid.ColumnDefinitions.ElementAtOrDefault(1);
 
-				if (availableProjectsVisible)
+				if (!nextValue)
 				{
 					viewRow.Width = new GridLength(0);
 				}
@@ -165,12 +130,7 @@ namespace LL.SCG.DOS2.Controls
 					viewRow.Width = new GridLength(1, GridUnitType.Star);
 				}
 
-				availableProjectsVisible = !availableProjectsVisible;
-
-				if (availableProjectsVisible)
-					Controller.Data.AvailableProjectsToggleText = "Hide Available Projects";
-				else
-					Controller.Data.AvailableProjectsToggleText = "Show Available Projects";
+				Controller.Data.AvailableProjectsVisible = nextValue;
 			}
 		}
 

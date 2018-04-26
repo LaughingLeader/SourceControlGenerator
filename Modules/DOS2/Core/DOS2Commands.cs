@@ -133,6 +133,8 @@ namespace LL.SCG.DOS2.Core
 				}
 			}
 
+			Data.NewProjectsAvailable = false;
+
 			if (Data.ModProjects != null && Data.ModProjects.Count > 0)
 			{
 				foreach (var project in Data.ModProjects)
@@ -159,6 +161,7 @@ namespace LL.SCG.DOS2.Core
 									Tooltip = project.Tooltip
 								};
 								Data.NewProjects.DoOperation(data => data.Add(availableProject));
+								Data.NewProjectsAvailable = true;
 							}
 						}
 					}
@@ -183,12 +186,12 @@ namespace LL.SCG.DOS2.Core
 				}
 			}
 
-			if (Data.Settings != null && !String.IsNullOrEmpty(Data.Settings.DataDirectory))
+			if (Data.Settings != null && !String.IsNullOrEmpty(Data.Settings.DOS2DataDirectory))
 			{
-				if (Directory.Exists(Data.Settings.DataDirectory))
+				if (Directory.Exists(Data.Settings.DOS2DataDirectory))
 				{
-					string projectsPath = Path.Combine(Data.Settings.DataDirectory, "Projects");
-					string modsPath = Path.Combine(Data.Settings.DataDirectory, "Mods");
+					string projectsPath = Path.Combine(Data.Settings.DOS2DataDirectory, "Projects");
+					string modsPath = Path.Combine(Data.Settings.DOS2DataDirectory, "Mods");
 
 					if (Directory.Exists(modsPath))
 					{
@@ -237,7 +240,7 @@ namespace LL.SCG.DOS2.Core
 				}
 				else
 				{
-					Log.Here().Error("Loading available projects failed. DOS2 data directory not found at {0}", Data.Settings.DataDirectory);
+					Log.Here().Error("Loading available projects failed. DOS2 data directory not found at {0}", Data.Settings.DOS2DataDirectory);
 				}
 			}
 		}
@@ -290,12 +293,12 @@ namespace LL.SCG.DOS2.Core
 		{
 			if (Data.ManagedProjects != null && Data.ManagedProjects.Count > 0)
 			{
-				if (Data.Settings != null && !String.IsNullOrEmpty(Data.Settings.DataDirectory))
+				if (Data.Settings != null && !String.IsNullOrEmpty(Data.Settings.DOS2DataDirectory))
 				{
-					if (Directory.Exists(Data.Settings.DataDirectory))
+					if (Directory.Exists(Data.Settings.DOS2DataDirectory))
 					{
-						string projectsPath = Path.Combine(Data.Settings.DataDirectory, "Projects");
-						string modsPath = Path.Combine(Data.Settings.DataDirectory, "Mods");
+						string projectsPath = Path.Combine(Data.Settings.DOS2DataDirectory, "Projects");
+						string modsPath = Path.Combine(Data.Settings.DOS2DataDirectory, "Mods");
 
 						if (Directory.Exists(modsPath))
 						{
@@ -314,7 +317,7 @@ namespace LL.SCG.DOS2.Core
 					}
 					else
 					{
-						Log.Here().Error("Loading available projects failed. DOS2 data directory not found at {0}", Data.Settings.DataDirectory);
+						Log.Here().Error("Loading available projects failed. DOS2 data directory not found at {0}", Data.Settings.DOS2DataDirectory);
 					}
 				}
 			}
@@ -387,7 +390,7 @@ namespace LL.SCG.DOS2.Core
 
 			if (MainData != null)
 			{
-				string startPath = Path.Combine(MainData.Settings.DataDirectory, "Mods");
+				string startPath = Path.Combine(MainData.Settings.DOS2DataDirectory, "Mods");
 				string directory = Path.Combine(Path.GetFullPath(startPath), modProjectData.FolderName);
 
 				Log.Here().Activity($"Attempting to open directory {directory}");
@@ -414,7 +417,7 @@ namespace LL.SCG.DOS2.Core
 		{
 			if (MainData != null)
 			{
-				string startPath = Path.Combine(MainData.Settings.DataDirectory, "Public");
+				string startPath = Path.Combine(MainData.Settings.DOS2DataDirectory, "Public");
 				string directory = Path.Combine(Path.GetFullPath(startPath), modProjectData.FolderName);
 				if (Directory.Exists(directory))
 				{
@@ -438,7 +441,7 @@ namespace LL.SCG.DOS2.Core
 		{
 			if (MainData != null)
 			{
-				string startPath = Path.Combine(MainData.Settings.DataDirectory, "Editor/Mods");
+				string startPath = Path.Combine(MainData.Settings.DOS2DataDirectory, "Editor/Mods");
 				string directory = Path.Combine(Path.GetFullPath(startPath), modProjectData.FolderName);
 				if (Directory.Exists(directory))
 				{
@@ -462,7 +465,7 @@ namespace LL.SCG.DOS2.Core
 		{
 			if (MainData != null)
 			{
-				string startPath = Path.Combine(MainData.Settings.DataDirectory, "Projects");
+				string startPath = Path.Combine(MainData.Settings.DOS2DataDirectory, "Projects");
 				string directory = Path.Combine(Path.GetFullPath(startPath), modProjectData.FolderName);
 				if (Directory.Exists(directory))
 				{

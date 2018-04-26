@@ -7,15 +7,25 @@ using System.Windows.Input;
 
 namespace LL.SCG.Commands
 {
+	/// <summary>
+	/// Executes an action, ignoring the parameter.
+	/// </summary>
 	public class ActionCommand : ICommand
 	{
-		private Action<object> execute;
+		private Action callback;
 
 		public event EventHandler CanExecuteChanged;
 
-		public ActionCommand(Action<object> execute)
+		public ActionCommand(Action callback)
 		{
-			this.execute = execute;
+			this.callback = callback;
+		}
+
+		public ActionCommand() { }
+
+		public void SetCallback(Action newCallback)
+		{
+			callback = newCallback;
 		}
 
 		public bool CanExecute(object parameter)
@@ -25,7 +35,7 @@ namespace LL.SCG.Commands
 
 		public void Execute(object parameter)
 		{
-			this.execute?.Invoke(parameter);
+			this.callback?.Invoke();
 		}
 	}
 }

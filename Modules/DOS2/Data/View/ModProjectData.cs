@@ -290,12 +290,12 @@ namespace LL.SCG.Data
 			//OpenEditorFolder = new CallbackCommand();
 			//OpenProjectFolder = new CallbackCommand();
 
-			OpenBackupFolder = new CallbackCommand(() => { DOS2Commands.OpenBackupFolder(this); });
-			OpenGitFolder = new CallbackCommand(() => { DOS2Commands.OpenGitFolder(this); });
-			OpenModsFolder = new CallbackCommand(() => { DOS2Commands.OpenModsFolder(this); });
-			OpenPublicFolder = new CallbackCommand(() => { DOS2Commands.OpenPublicFolder(this); });
-			OpenEditorFolder = new CallbackCommand(() => { DOS2Commands.OpenEditorFolder(this); });
-			OpenProjectFolder = new CallbackCommand(() => { DOS2Commands.OpenProjectFolder(this); });
+			OpenBackupFolder = new ActionCommand(() => { DOS2Commands.OpenBackupFolder(this); });
+			OpenGitFolder = new ActionCommand(() => { DOS2Commands.OpenGitFolder(this); });
+			OpenModsFolder = new ActionCommand(() => { DOS2Commands.OpenModsFolder(this); });
+			OpenPublicFolder = new ActionCommand(() => { DOS2Commands.OpenPublicFolder(this); });
+			OpenEditorFolder = new ActionCommand(() => { DOS2Commands.OpenEditorFolder(this); });
+			OpenProjectFolder = new ActionCommand(() => { DOS2Commands.OpenProjectFolder(this); });
 
 			//RaisePropertyChanged("OpenBackupFolder");
 			//RaisePropertyChanged("OpenModsFolder");

@@ -111,10 +111,12 @@
     <Compile Include="Collections\ObservableCollectionObject.cs" />
     <Compile Include="Collections\ObservableImmutableDictionary.cs" />
     <Compile Include="Collections\ObservableImmutableList.cs" />
+    <Compile Include="Commands\TaskCommand.cs" />
     <Compile Include="Controls\AddTemplateControl.xaml.cs">
       <DependentUpon>AddTemplateControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="Controls\Behavior\ListBoxSelectionBehavior.cs" />
+    <Compile Include="Controls\Behavior\MarginSetter.cs" />
     <Compile Include="Controls\Behavior\TextBoxEnterKeyBehavior.cs" />
     <Compile Include="Controls\MenuItemContainerTemplateSelector.cs" />
     <Compile Include="Converters\DateTimeToStringConverter.cs" />
@@ -127,6 +129,8 @@
     <Compile Include="Converters\EnumToCollectionConverter.cs" />
     <Compile Include="Converters\FileValidationColorConverter.cs" />
     <Compile Include="Converters\FooterOutputColorConverter.cs" />
+    <Compile Include="Converters\IntToGridLengthConverter.cs" />
+    <Compile Include="Converters\IntToVisibilityConverter.cs" />
     <Compile Include="Converters\ListViewStarWidthConverter.cs" />
     <Compile Include="Converters\LogTypeColorConverter.cs" />
     <Compile Include="Controls\PaddedGridViewColumnHeader.cs" />
@@ -161,8 +165,8 @@
     <Compile Include="Data\App\TemplateFileData.cs" />
     <Compile Include="Data\Command\SaveFileCommandData.cs" />
     <Compile Include="Data\View\TooltipText.cs" />
+    <Compile Include="Commands\ParameterCommand.cs" />
     <Compile Include="Commands\ActionCommand.cs" />
-    <Compile Include="Commands\CallbackCommand.cs" />
     <Compile Include="Core\CommandHandlers\LoadCommands.cs" />
     <Compile Include="Commands\OpenFileBrowseCommand.cs" />
     <Compile Include="Commands\OpenFileCommand.cs" />
@@ -230,6 +234,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Controls\TemplateKeywordControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="ThemeSystem\ResourceDictionary\ButtonStyles.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -313,6 +321,18 @@
     <Content Include="Resources\Icons\7zipIcon.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="Resources\Icons\Activity_16x.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Icons\ExpandChevronRight_16x.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Icons\ExportFile_16x.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Icons\FileError_16x.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Resources\Icons\GitLogo.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -349,6 +369,9 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Resources\Icons\Refresh_16x.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Icons\Star_16x.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Resources\Logos\DivinityOriginalSin2.png">

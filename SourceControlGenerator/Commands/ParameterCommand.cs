@@ -7,22 +7,18 @@ using System.Windows.Input;
 
 namespace LL.SCG.Commands
 {
-	public class CallbackCommand : ICommand
+	/// <summary>
+	/// Executes an action, passing in a parameter.
+	/// </summary>
+	public class ParameterCommand : ICommand
 	{
-		private Action callback;
+		private Action<object> execute;
 
 		public event EventHandler CanExecuteChanged;
 
-		public CallbackCommand(Action callback)
+		public ParameterCommand(Action<object> execute)
 		{
-			this.callback = callback;
-		}
-
-		public CallbackCommand() { }
-
-		public void SetCallback(Action newCallback)
-		{
-			callback = newCallback;
+			this.execute = execute;
 		}
 
 		public bool CanExecute(object parameter)
@@ -32,7 +28,7 @@ namespace LL.SCG.Commands
 
 		public void Execute(object parameter)
 		{
-			this.callback?.Invoke();
+			this.execute?.Invoke(parameter);
 		}
 	}
 }
