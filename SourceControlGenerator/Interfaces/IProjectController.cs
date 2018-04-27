@@ -16,6 +16,9 @@ namespace LL.SCG.Interfaces
 		MainAppData MainAppData { get; set; }
 
 		void AddProjects(List<AvailableProjectViewData> selectedItems);
+
+		void OpenSetup(Action OnSetupFinished);
+
 		void Initialize(MainAppData mainAppData);
 		void Start();
 		void Unload();

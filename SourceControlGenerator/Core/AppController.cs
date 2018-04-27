@@ -138,6 +138,13 @@ namespace LL.SCG.Core
 			return true;
 		}
 
+		private void OnSetupComplete()
+		{
+			Data.LockScreenVisibility = Visibility.Collapsed;
+			CurrentModule.ModuleData.ModuleSettings.FirstTimeSetup = false;
+			FileCommands.Save.SaveModuleSettings(CurrentModule.ModuleData);
+		}
+
 		public void UnloadCurrentModule()
 		{
 			if(CurrentModule != null)
@@ -473,6 +480,18 @@ namespace LL.SCG.Core
 
 		#endregion
 
+		public void OnAppLoaded()
+		{
+			if(CurrentModule != null)
+			{
+				if (CurrentModule.ModuleData.ModuleSettings.FirstTimeSetup)
+				{
+					Data.LockScreenVisibility = Visibility.Visible;
+					CurrentModule.OpenSetup(OnSetupComplete);
+				}
+			}
+		}
+
 		public AppController(MainWindow MainAppWindow)
 		{
 			_instance = this;
@@ -486,19 +505,19 @@ namespace LL.SCG.Core
 			LoadAppSettings();
 
 			Data.MenuBarData.File.Register("Base",
-				new MenuData()
+				new MenuData(MenuID.CreateTemplate)
 				{
 					Header = "Create Template...",
 					ClickCommand = new ActionCommand(MenuAction_AddNewTemplate)
 				},
-				new MenuData()
+				new MenuData(MenuID.SelectModule)
 				{
 					Header = "Select Module...",
 					ClickCommand = new ActionCommand(MenuAction_OpenModuleSelectScreen)
 				}
 			);
 
-			LogMenuData = new MenuData()
+			LogMenuData = new MenuData(MenuID.OpenLog)
 			{
 				Header = "Open Log Window",
 				ClickCommand = new ActionCommand(MenuAction_ToggleLogWindow),
@@ -509,7 +528,7 @@ namespace LL.SCG.Core
 
 			Data.MenuBarData.Options.Register("Base",
 				LogMenuData,
-				new MenuData()
+				new MenuData(MenuID.SaveLog)
 				{
 					Header = "Save Log...",
 					ClickCommand = new ActionCommand(MenuAction_SaveLog)
@@ -517,17 +536,17 @@ namespace LL.SCG.Core
 			);
 
 			Data.MenuBarData.Help.Register("Base",
-				new MenuData()
+				new MenuData(MenuID.IssuesLink)
 				{
 					Header = "Report Bug / Give Feedback (Github)...",
 					ClickCommand = new ActionCommand(MenuAction_OpenIssuesLink)
 				},
-				new MenuData()
+				new MenuData(MenuID.RepoLink)
 				{
 					Header = "Source Code (Github)...",
 					ClickCommand = new ActionCommand(MenuAction_OpenRepoLink)
 				},
-				new MenuData()
+				new MenuData(MenuID.About)
 				{
 					Header = "About Source Control Generator",
 					ClickCommand = new ActionCommand(MenuAction_OpenAbout),

@@ -29,6 +29,7 @@ using System.Windows.Threading;
 using LL.SCG.Collections;
 using LL.SCG.Commands;
 using System.Windows.Data;
+using LL.SCG.DOS2.Windows;
 
 namespace LL.SCG.Core
 {
@@ -662,6 +663,16 @@ namespace LL.SCG.Core
 			Data.ManagedProjects.Add(ModProjectData.Test("Test Project 2"));
 		}
 
+		public void OpenSetup(Action OnSetupFinished)
+		{
+			if (Data.Settings.FirstTimeSetup)
+			{
+				SetupWindow setupWindow = new SetupWindow(this, OnSetupFinished);
+				setupWindow.Owner = App.Current.MainWindow;
+				setupWindow.Show();
+			}
+		}
+
 		public DOS2ProjectController()
 		{
 			Data = new DOS2ModuleData();
@@ -673,13 +684,13 @@ namespace LL.SCG.Core
 
 			MainAppData.MenuBarData.File.Register(Data.ModuleName,
 				new SeparatorData(),
-				new MenuData()
+				new MenuData("DOS2.RefreshProjects")
 				{
 					Header = "Refresh Projects",
 					MenuItems = new ObservableCollection<IMenuData>()
 					{
-						new MenuData("Refresh All", new ActionCommand(RefreshAllProjects)) { ShortcutKey = System.Windows.Input.Key.F5 },
-						new MenuData("Refresh Managed Data", new ActionCommand(RefreshModProjects)),
+						new MenuData("DOS2.RefreshAll", "Refresh All", new ActionCommand(RefreshAllProjects)) { ShortcutKey = System.Windows.Input.Key.F5 },
+						new MenuData("DOS2.RefreshManagedData", "Refresh Managed Data", new ActionCommand(RefreshModProjects)),
 					}
 				}
 			);

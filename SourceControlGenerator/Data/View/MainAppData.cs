@@ -183,6 +183,19 @@ namespace LL.SCG.Data.View
 			}
 		}
 
+		private Visibility lockScreenVisibility = Visibility.Collapsed;
+
+		public Visibility LockScreenVisibility
+		{
+			get { return lockScreenVisibility; }
+			set
+			{
+				lockScreenVisibility = value;
+				RaisePropertyChanged("LockScreenVisibility");
+			}
+		}
+
+
 		public void SetModuleKeyList(ObservableCollection<KeywordData> keyList)
 		{
 			ModuleKeyList = keyList;

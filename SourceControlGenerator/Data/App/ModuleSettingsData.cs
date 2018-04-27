@@ -161,7 +161,6 @@ namespace LL.SCG.Data
 
 		private string lastBackupPath = "";
 
-		[Bindable(BindableSupport.No)]
 		public string LastBackupPath
 		{
 			get { return lastBackupPath; }
@@ -172,8 +171,20 @@ namespace LL.SCG.Data
 			}
 		}
 
-		[Bindable(BindableSupport.No)]
 		public ObservableCollection<TemplateFileData> TemplateFiles { get; set; }
+
+		private bool firstTimeSetup = true;
+
+		public bool FirstTimeSetup
+		{
+			get { return firstTimeSetup; }
+			set
+			{
+				firstTimeSetup = value;
+				RaisePropertyChanged("FirstTimeSetup");
+			}
+		}
+
 
 		public virtual void SetToDefault(IModuleData Data)
 		{

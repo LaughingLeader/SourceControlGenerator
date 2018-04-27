@@ -13,7 +13,7 @@
 			 xmlns:proxy="clr-namespace:LL.SCG.Data.Proxy;assembly=SourceControlGenerator"
 			 mc:Ignorable="d" 
 			 d:DesignHeight="500" d:DesignWidth="900"
-			 KeyDown="ProjectViewControlMain_KeyDown" KeyUp="ProjectViewControlMain_KeyUp" Foreground="{x:Null}"
+			 KeyDown="ProjectViewControlMain_KeyDown" KeyUp="ProjectViewControlMain_KeyUp" Foreground="{x:Null}" Loaded="ProjectViewControlMain_Loaded"
 			 >
 	<UserControl.Resources>
 		<ResourceDictionary>

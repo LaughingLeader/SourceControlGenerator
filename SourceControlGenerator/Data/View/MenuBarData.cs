@@ -56,6 +56,16 @@ namespace LL.SCG.Data.View
 			Log.Here().Activity($"Removed menus for module {ModuleName}.");
 		}
 
+		public MenuData FindByID(string ID)
+		{
+			foreach(var menu in Menus)
+			{
+				var match = menu.FindByID(ID);
+				if (match != null) return match;
+			}
+			return null;
+		}
+
 		public MenuBarData()
 		{
 			File = new MenuData("File");

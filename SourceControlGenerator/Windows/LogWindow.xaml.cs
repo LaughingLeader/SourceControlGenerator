@@ -38,8 +38,6 @@ namespace LL.SCG.Windows
 			this.DataContext = Data;
 
 			this.IsVisibleChanged += LogWindow_IsVisibleChanged;
-
-			
 		}
 
 		public void Init(AppController controller)

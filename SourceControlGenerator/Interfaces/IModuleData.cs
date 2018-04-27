@@ -46,6 +46,8 @@ namespace LL.SCG.Interfaces
 	{
 		ObservableCollection<TemplateFileData> TemplateFiles { get; set; }
 
+		bool FirstTimeSetup { get; set; }
+
 		//Paths
 		string GitRootDirectory { get; set; }
 		string BackupRootDirectory { get; set; }

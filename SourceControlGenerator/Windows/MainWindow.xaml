@@ -363,6 +363,14 @@
 			<TextBox Grid.Column="0" x:Name="FooterOuputTextboxDate" Text="{Binding Path=FooterOutputDate, ElementName=MainAppWindow}" IsReadOnly="True" Margin="0" BorderThickness="0" TextAlignment="Center" Background="{x:Null}" />
 			<TextBox Grid.Column="1" x:Name="FooterOuputTextboxText" Text="{Binding Path=FooterOutputText, ElementName=MainAppWindow}" IsReadOnly="True" TextAlignment="Left" Foreground="{Binding Path=FooterOutputType, ElementName=MainAppWindow, Converter={StaticResource FooterOutputColorConverter}}" Margin="0" BorderThickness="0" Background="{x:Null}" Padding="4,0,0,0" />
 		</Grid>
+		<Grid Name="LockScreen" Grid.Row="0" Grid.RowSpan="3" Visibility="{Binding LockScreenVisibility, FallbackValue=Collapsed}" Opacity="0.75">
+			<Grid.Background>
+				<LinearGradientBrush EndPoint="0.5,1" MappingMode="RelativeToBoundingBox" StartPoint="0.5,0">
+					<GradientStop Color="Gainsboro" Offset="0.29"/>
+					<GradientStop Color="#FFCBCBCB" Offset="0.967"/>
+				</LinearGradientBrush>
+			</Grid.Background>
+		</Grid>
 		<Grid Name="ModuleSelection" Grid.Row="0" Grid.RowSpan="3" Visibility="{Binding ModuleSelectionVisibility, FallbackValue=Collapsed}">
 			<Grid.Background>
 				<LinearGradientBrush EndPoint="0.5,1" MappingMode="RelativeToBoundingBox" StartPoint="0.5,0">

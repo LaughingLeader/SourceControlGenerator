@@ -20,6 +20,7 @@ using LL.SCG.Windows;
 using LL.SCG.Controls.Behavior;
 using LL.SCG.DOS2.Core;
 using System.ComponentModel;
+using LL.SCG.DOS2.Windows;
 
 namespace LL.SCG.DOS2.Controls
 {
@@ -29,7 +30,7 @@ namespace LL.SCG.DOS2.Controls
 	public partial class ProjectViewControl : UserControl
 	{
 		private DOS2ProjectController Controller { get; set; }
-		private MainWindow mainWindow;
+		private MainWindow MainWindow { get; set; }
 
 		//private bool gridSplitterMoving = false;
 
@@ -38,7 +39,7 @@ namespace LL.SCG.DOS2.Controls
 			InitializeComponent();
 
 			Controller = controller;
-			mainWindow = mainAppWindow;
+			MainWindow = mainAppWindow;
 
 			DataContext = Controller.Data;
 
@@ -52,6 +53,11 @@ namespace LL.SCG.DOS2.Controls
 				gridSplitter.DragCompleted += (s, e) => { gridSplitterMoving = false; };
 			}
 			*/
+		}
+
+		private void ProjectViewControlMain_Loaded(object sender, RoutedEventArgs e)
+		{
+			
 		}
 
 		private void AvailableProjectsList_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -95,6 +101,7 @@ namespace LL.SCG.DOS2.Controls
 				else
 				{
 					ToggleAvailableProjectsView(false);
+					Controller.Data.NewProjectsAvailable = false;
 				}
 			}
 		}
@@ -237,7 +244,7 @@ namespace LL.SCG.DOS2.Controls
 				Controller.Data.Settings.LastBackupPath = Controller.Data.Settings.BackupRootDirectory;
 			}
 
-			FileCommands.Load.OpenFolderDialog(mainWindow, "Select Archive Export Location", Controller.Data.Settings.LastBackupPath, (path) =>
+			FileCommands.Load.OpenFolderDialog(MainWindow, "Select Archive Export Location", Controller.Data.Settings.LastBackupPath, (path) =>
 			{
 				Controller.Data.Settings.LastBackupPath = path;
 				Controller.BackupSelectedProjects(path);
@@ -247,7 +254,7 @@ namespace LL.SCG.DOS2.Controls
 		private void GitGenerationButton_Click(object sender, RoutedEventArgs e)
 		{
 			var selectedProjects = Controller.Data.ManagedProjects.Where(p => p.Selected && p.GitGenerated == false).ToList<IProjectData>();
-			mainWindow.OpenGitGenerationWindow(Controller.Data.GitGenerationSettings, selectedProjects, Controller.StartGitGeneration);
+			MainWindow.OpenGitGenerationWindow(Controller.Data.GitGenerationSettings, selectedProjects, Controller.StartGitGeneration);
 		}
 
 		public bool HasFocus(Control aControl, bool aCheckChildren)

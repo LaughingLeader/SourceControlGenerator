@@ -67,7 +67,7 @@
 		</Style.Triggers>
 	</Style>
 	
-	<Style x:Key="GadgetStyle" TargetType="{x:Type window:CustomWindow}">
+	<Style x:Key="GadgetStyle" TargetType="{x:Type window:UnclosableWindow}">
 		<Setter Property="shell:WindowChrome.WindowChrome">
 			<Setter.Value>
 				<shell:WindowChrome GlassFrameThickness="-1" 
@@ -77,7 +77,7 @@
 		</Setter>
 		<Setter Property="Template">
 			<Setter.Value>
-				<ControlTemplate TargetType="{x:Type window:CustomWindow}">
+				<ControlTemplate TargetType="{x:Type window:UnclosableWindow}">
 					<Grid>
 						<!-- This is the ContentPresenter that displays the window content. -->
 						<Border Margin="0,40,0,25" >
@@ -106,7 +106,7 @@
 			</Setter.Value>
 		</Setter>
 	</Style>
-	<Style TargetType="{x:Type window:CustomWindow}" x:Key="CustomWindowStyle">
+	<Style TargetType="{x:Type window:UnclosableWindow}" x:Key="CustomWindowStyle">
 		<Setter Property="WindowStyle" Value="None"/>
 		<Setter Property="ResizeMode" Value="NoResize"/>
 		<Setter Property="Background" Value="White"/>
@@ -114,7 +114,7 @@
 		<Setter Property="BorderBrush" Value="Silver"/>
 		<Setter Property="Template">
 			<Setter.Value>
-				<ControlTemplate TargetType="{x:Type window:CustomWindow}">
+				<ControlTemplate TargetType="{x:Type window:UnclosableWindow}">
 					<Border BorderThickness="{TemplateBinding BorderThickness}"
 							BorderBrush="{TemplateBinding BorderBrush}">
 						<Grid>

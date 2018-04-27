@@ -19,6 +19,8 @@ namespace LL.SCG.Data.View
 	[DebuggerDisplay("{Header}, Children={MenuItems.Count}")]
 	public class MenuData : PropertyChangedBase, IMenuData
 	{
+		public string ID { get; set; }
+
 		private string header;
 
 		public string Header
@@ -189,13 +191,42 @@ namespace LL.SCG.Data.View
 			}
 		}
 
-		public MenuData()
+		public MenuData FindByID(string ID)
 		{
+			if (this.ID == ID) return this;
+
+			if(MenuItems.Count > 0)
+			{
+				var match = MenuItems.Where(d => d is MenuData menu && menu.ID == ID).FirstOrDefault() as MenuData;
+				if (match != null)
+				{
+					return match;
+				}
+				else
+				{
+					foreach (var data in this.MenuItems)
+					{
+						if (data is MenuData menu)
+						{
+							var nextMatch = menu.FindByID(ID);
+							if (nextMatch != null) return nextMatch;
+						}
+					}
+				}
+			}
+			
+			return null;
+		}
+
+		public MenuData(string MenuID)
+		{
+			ID = MenuID;
 			MenuItems = new ObservableCollection<IMenuData>();
 		}
 
-		public MenuData(string menuName, ICommand command = null)
+		public MenuData(string MenuID, string menuName, ICommand command = null)
 		{
+			ID = MenuID;
 			MenuItems = new ObservableCollection<IMenuData>();
 
 			Header = menuName;

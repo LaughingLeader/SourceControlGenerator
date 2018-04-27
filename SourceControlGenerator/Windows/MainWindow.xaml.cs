@@ -80,7 +80,7 @@ namespace LL.SCG.Windows
 			DataContext = Controller.Data;
 
 			logWindow.Init(Controller);
-
+			aboutWindow.Init(Controller);
 
 			Controller.OnModuleSet += LoadProjectModuleView;
 
@@ -279,6 +279,8 @@ namespace LL.SCG.Windows
 		{
 			//Super long tooltip durations
 			ToolTipService.ShowDurationProperty.OverrideMetadata(typeof(DependencyObject), new FrameworkPropertyMetadata(Int32.MaxValue));
+
+			Controller.OnAppLoaded();
 		}
 
 		private void MainAppWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
