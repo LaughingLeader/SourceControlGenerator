@@ -32,10 +32,39 @@ namespace LL.SCG.DOS2.Windows
 			onConfirmed = OnConfirmed;
 
 			DataContext = controller.Data;
+
+			Loaded += SetupWindow_Loaded;
+		}
+
+		private void SetupWindow_Loaded(object sender, RoutedEventArgs e)
+		{
+			if(Owner != null && Owner is MainWindow mainWindow)
+			{
+				mainWindow.LocationChanged += UpdatePositionWithMainWindow;
+				mainWindow.SizeChanged += UpdatePositionWithMainWindow;
+			}
+		}
+
+		private void UpdatePositionWithMainWindow(object sender, EventArgs e)
+		{
+			if(sender is MainWindow mainWindow)
+			{
+				double top = mainWindow.Top + ((mainWindow.Height - this.ActualHeight) / 2);
+				double left = mainWindow.Left + ((mainWindow.Width - this.ActualWidth) / 2);
+
+				this.Top = top < 0 ? 0 : top;
+				this.Left = left < 0 ? 0 : left;
+			}
 		}
 
 		private void ConfirmButton_Click(object sender, RoutedEventArgs e)
 		{
+			if (Owner != null && Owner is MainWindow mainWindow)
+			{
+				mainWindow.LocationChanged -= UpdatePositionWithMainWindow;
+				mainWindow.SizeChanged -= UpdatePositionWithMainWindow;
+			}
+
 			onConfirmed?.Invoke();
 			Close();
 		}

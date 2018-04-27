@@ -10,7 +10,9 @@
 		mc:Ignorable="d"
 		Title="First Time Setup" Height="Auto" Width="700"
 		SizeToContent="Height"
-		WindowStartupLocation="CenterOwner"	
+		WindowStartupLocation="CenterOwner"
+		ResizeMode="NoResize"
+		LockPosition="True"
 		>
 	<w:UnclosableWindow.Resources>
 		<ResourceDictionary>
