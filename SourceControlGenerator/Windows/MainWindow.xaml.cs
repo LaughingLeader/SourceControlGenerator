@@ -98,6 +98,13 @@ namespace LL.SCG.Windows
 			}
 		}
 
+		private void MainAppWindow_Loaded(object sender, RoutedEventArgs e)
+		{
+			//Super long tooltip durations
+			ToolTipService.ShowDurationProperty.OverrideMetadata(typeof(DependencyObject), new FrameworkPropertyMetadata(Int32.MaxValue));
+			Controller.OnAppLoaded();
+		}
+
 		public Task<int> StartLoadingModules()
 		{
 			return LoadModules();
@@ -271,16 +278,6 @@ namespace LL.SCG.Windows
 				sizeChangedEventArgs.Handled = true;
 				//((GridViewColumnHeader)sender).Column.Width = 60;
 			}
-		}
-
-		
-
-		private void Window_Loaded(object sender, RoutedEventArgs e)
-		{
-			//Super long tooltip durations
-			ToolTipService.ShowDurationProperty.OverrideMetadata(typeof(DependencyObject), new FrameworkPropertyMetadata(Int32.MaxValue));
-
-			Controller.OnAppLoaded();
 		}
 
 		private void MainAppWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)

@@ -14,7 +14,7 @@
 		xmlns:listview="clr-namespace:Itenso.Windows.Controls.ListViewLayout"
 		xmlns:cb="clr-namespace:LL.SCG.Controls.Behavior"
 		mc:Ignorable="d"
-		Title="Source Control Generator" Height="600" Width="1024" Loaded="Window_Loaded" Closing="MainAppWindow_Closing"
+		Title="Source Control Generator" Height="600" Width="1024" Loaded="MainAppWindow_Loaded" Closing="MainAppWindow_Closing"
 		WindowStartupLocation="CenterOwner"
 		
 		>

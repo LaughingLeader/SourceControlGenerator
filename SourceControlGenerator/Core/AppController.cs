@@ -133,6 +133,15 @@ namespace LL.SCG.Core
 			if(CurrentModule.ModuleData != null)
 			{
 				CurrentModule.ModuleData.OnSettingsReverted += OnSettingsReverted;
+
+				if(mainWindow.IsLoaded)
+				{
+					if (CurrentModule.ModuleData.ModuleSettings.FirstTimeSetup)
+					{
+						Data.LockScreenVisibility = Visibility.Visible;
+						CurrentModule.OpenSetup(OnSetupComplete);
+					}
+				}
 			}
 
 			return true;
