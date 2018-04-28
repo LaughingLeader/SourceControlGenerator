@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace LL.SCG.Data.View
+namespace LL.SCG.Core
 {
 	static public class TooltipText
 	{
@@ -18,5 +18,12 @@ namespace LL.SCG.Data.View
 		static public string Generation_License => "Select a license to generate.";
 		static public string Generation_Confirm => "Generate git repository files for selected projects.";
 		static public string Generation_Cancel => "Cancel git repository creation.";
+
+		//Log
+		static public string Log_Button_SearchClear => "Clear Search";
+		static public string Log_Checkbox_Activity => "Show Activity Logs";
+		static public string Log_Checkbox_Important => "Show Important Logs";
+		static public string Log_Checkbox_Warning => "Show Warning Logs";
+		static public string Log_Checkbox_Error => "Show Error Logs";
 	}
 }

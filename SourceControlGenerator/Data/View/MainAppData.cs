@@ -55,7 +55,6 @@ namespace LL.SCG.Data.View
 			}
 		}
 
-		public ObservableCollection<MenuData> TopMenus { get; set; }
 		//public static ThemeColorData ThemeColorData { get; set; }
 
 		private IModuleData selectedModuleData = null;
@@ -207,7 +206,6 @@ namespace LL.SCG.Data.View
 
 			IconData = new IconPathData();
 			MenuBarData = new MenuBarData();
-			TopMenus = MenuBarData.Menus;
 
 			//ThemeColorData = ThemeColorData.Default();
 			//ThemeColorData.RefreshTheme();

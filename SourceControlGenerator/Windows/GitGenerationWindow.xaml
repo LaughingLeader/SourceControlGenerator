@@ -7,6 +7,7 @@
 		xmlns:viewdata="clr-namespace:LL.SCG.Data.View"
 		xmlns:convert="clr-namespace:LL.SCG.Converters"
 		xmlns:local="clr-namespace:LL.SCG.Windows"
+		xmlns:core="clr-namespace:LL.SCG.Core"
 		mc:Ignorable="d"
 		Title="Git Generation Settings" Height="200" Width="400"
 		WindowStartupLocation="CenterOwner"
@@ -47,7 +48,7 @@
 					</Style>
 				</Grid.Resources>
 				<Border BorderThickness="1,1,0,0">
-					<Label Content="License" Height="Auto" ToolTip="{x:Static viewdata:TooltipText.Generation_License}"  />
+					<Label Content="License" Height="Auto" ToolTip="{x:Static core:TooltipText.Generation_License}"  />
 				</Border>
 				<Border Grid.Column="1" BorderThickness="1,1,1,0" Background="{DynamicResource {x:Static SystemColors.ControlLightLightBrushKey}}" >
 					<ComboBox x:Name="LicenseComboBox" ItemsSource="{Binding Path=SelectedLicense, Converter={convert:EnumToCollectionConverter}, Mode=OneTime}"
@@ -58,7 +59,7 @@
 						Margin="5,5" />
 				</Border>
 				<Border Grid.Row="1" BorderThickness="1,1,0,1" Background="{DynamicResource {x:Static SystemColors.ControlLightBrushKey}}">
-					<Label Content="Templates" Background="{x:Null}" ToolTip="{x:Static viewdata:TooltipText.Generation_Templates}"  />
+					<Label Content="Templates" Background="{x:Null}" ToolTip="{x:Static core:TooltipText.Generation_Templates}"  />
 				</Border>
 				<Border Grid.Row="1" Grid.Column="1" BorderThickness="1" Background="{DynamicResource {x:Static SystemColors.ControlLightLightBrushKey}}">
 					<ItemsControl x:Name="GenerationSettingsControl" ItemsSource="{Binding TemplateSettings}" 
@@ -82,8 +83,8 @@
 					<Setter Property="Padding" Value="4" />
 				</Style>
 			</StackPanel.Resources>
-			<Button x:Name="ConfirmButton" Content="Generate" ToolTip="{x:Static viewdata:TooltipText.Generation_Confirm}" Click="ConfirmButton_Click" />
-			<Button x:Name="CancelButton" Content="Cancel" ToolTip="{x:Static viewdata:TooltipText.Generation_Cancel}" Click="CancelButton_Click" />
+			<Button x:Name="ConfirmButton" Content="Generate" ToolTip="{x:Static core:TooltipText.Generation_Confirm}" Click="ConfirmButton_Click" />
+			<Button x:Name="CancelButton" Content="Cancel" ToolTip="{x:Static core:TooltipText.Generation_Cancel}" Click="CancelButton_Click" />
 		</StackPanel>
 	</Grid>
 </Window>

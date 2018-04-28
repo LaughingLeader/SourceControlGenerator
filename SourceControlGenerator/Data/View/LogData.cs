@@ -24,6 +24,18 @@ namespace LL.SCG.Data.View
 
 		public Brush BackgroundColor { get; set; }
 
+		private bool isVisible = true;
+
+		public bool IsVisible
+		{
+			get { return isVisible; }
+			set
+			{
+				isVisible = value;
+				RaisePropertyChanged("IsVisible");
+			}
+		}
+
 		public void FormatOutput()
 		{
 			//Output = String.Format("[{0}][{1}]: {2}", DateTime.ToLongTimeString(), Index.ToString().PadLeft(4, '0'), Message);
@@ -39,6 +51,9 @@ namespace LL.SCG.Data.View
 					break;
 				case LogType.Error:
 					BackgroundColor = new SolidColorBrush(Colors.Salmon);
+					break;
+				case LogType.Warning:
+					BackgroundColor = new SolidColorBrush(Colors.Khaki);
 					break;
 			}
 		}

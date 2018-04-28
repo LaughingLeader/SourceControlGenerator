@@ -68,9 +68,9 @@ namespace LL.SCG.Data.View
 
 		public MenuBarData()
 		{
-			File = new MenuData("File");
-			Options = new MenuData("Options");
-			Help = new MenuData("Help");
+			File = new MenuData("Base.File", "File");
+			Options = new MenuData("Base.Options", "Options");
+			Help = new MenuData("Base.Help", "Help");
 
 			Menus = new ObservableCollection<MenuData>()
 			{

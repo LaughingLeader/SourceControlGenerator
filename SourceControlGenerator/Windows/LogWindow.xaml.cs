@@ -64,5 +64,53 @@ namespace LL.SCG.Windows
 		{
 			Data.Restore();
 		}
+
+		private void SaveButton_Click(object sender, RoutedEventArgs e)
+		{
+			mainWindow.Controller.MenuAction_SaveLog();
+		}
+
+		private void SearchClearButton_Click(object sender, RoutedEventArgs e)
+		{
+			Data.SearchText = "";
+		}
+
+		private void FilterCheck_MouseRightButtonDown(object sender, MouseButtonEventArgs e)
+		{
+			if(sender is CheckBox checkBox)
+			{
+				LogType? nextFilter = null;
+				if (checkBox.Name == "ActivityCheck")
+				{
+					nextFilter = LogType.Activity;
+				}
+				else if (checkBox.Name == "ImportantCheck")
+				{
+					nextFilter = LogType.Important;
+				}
+				else if (checkBox.Name == "WarningCheck")
+				{
+					nextFilter = LogType.Warning;
+				}
+				else if (checkBox.Name == "ErrorCheck")
+				{
+					nextFilter = LogType.Error;
+				}
+
+
+				if (nextFilter != null)
+				{
+					//Log.Here().Activity($"Right clicked {nextFilter.ToString()} filter. Solely visible: {Data.FilterIsSolelyVisible(nextFilter.Value)}");
+					if (Data.FilterIsSolelyVisible(nextFilter.Value))
+					{
+						Data.ToggleAllFilters(true);
+					}
+					else
+					{
+						Data.OnlyShowFilter(nextFilter.Value);
+					}
+				}
+			}
+		}
 	}
 }

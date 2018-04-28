@@ -153,6 +153,7 @@
     <Compile Include="Converters\SettingsAttributeConverter.cs" />
     <Compile Include="Converters\SettingsAttributeValueControlConverter.cs" />
     <Compile Include="Converters\EmptyValueVisibilityConverter.cs" />
+    <Compile Include="Converters\VisibleLogsConverter.cs" />
     <Compile Include="Core\MenuID.cs" />
     <Compile Include="Data\App\AppSettingsData.cs" />
     <Compile Include="Data\App\JunctionData.cs" />
@@ -166,6 +167,7 @@
     <Compile Include="Data\View\ModuleSelectionData.cs" />
     <Compile Include="Data\View\SettingsEntryData.cs" />
     <Compile Include="Enum\FileValidation.cs" />
+    <Compile Include="Enum\LogType.cs" />
     <Compile Include="Extensions\AttributeExtensions.cs" />
     <Compile Include="Extensions\ObservableCollectionExtensions.cs" />
     <Compile Include="FileGen\JsonInterface.cs" />
@@ -173,7 +175,7 @@
     <Compile Include="Interfaces\IProjectData.cs" />
     <Compile Include="Data\App\TemplateFileData.cs" />
     <Compile Include="Data\Command\SaveFileCommandData.cs" />
-    <Compile Include="Data\View\TooltipText.cs" />
+    <Compile Include="Core\TooltipText.cs" />
     <Compile Include="Commands\ParameterCommand.cs" />
     <Compile Include="Commands\ActionCommand.cs" />
     <Compile Include="Core\CommandHandlers\LoadCommands.cs" />

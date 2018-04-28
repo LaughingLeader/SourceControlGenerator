@@ -29,5 +29,10 @@ namespace LL.SCG
 			if (string.IsNullOrEmpty(value)) return value;
 			return value.Length <= maxLength ? value : value.Substring(0, maxLength) + Append;
 		}
+
+		public static bool CaseInsensitiveContains(this string text, string value, StringComparison stringComparison = StringComparison.CurrentCultureIgnoreCase)
+		{
+			return text.IndexOf(value, stringComparison) >= 0;
+		}
 	}
 }

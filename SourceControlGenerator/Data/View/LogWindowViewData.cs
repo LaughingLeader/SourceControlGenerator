@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Data;
+using LL.SCG.Util;
 using LL.SCG.Windows;
 
 namespace LL.SCG.Data.View
@@ -49,7 +50,7 @@ namespace LL.SCG.Data.View
 			RaisePropertyChanged("Logs");
 			RaisePropertyChanged("CanClear");
 
-			if(LastLogs != null)
+			if (LastLogs != null)
 			{
 				LastLogs = null;
 				RaisePropertyChanged("CanRestore");
@@ -73,7 +74,7 @@ namespace LL.SCG.Data.View
 		{
 			if (LastLogs != null)
 			{
-				foreach(var log in LastLogs)
+				foreach (var log in LastLogs)
 				{
 					Logs.Add(log);
 				}
@@ -84,6 +85,160 @@ namespace LL.SCG.Data.View
 				RaisePropertyChanged("CanClear");
 				RaisePropertyChanged("CanRestore");
 			}
+		}
+
+		private string searchText;
+
+		public string SearchText
+		{
+			get { return searchText; }
+			set
+			{
+				var lastVal = searchText;
+				searchText = value;
+				RaisePropertyChanged("SearchText");
+
+				if(searchText != lastVal)
+				{
+					RaisePropertyChanged("Logs");
+				}
+			}
+		}
+
+		private bool autoRaiseLogsChanged = true;
+
+		private bool filterActivity = true;
+
+		public bool FilterActivity
+		{
+			get { return filterActivity; }
+			set
+			{
+				filterActivity = value;
+				RaisePropertyChanged("FilterActivity");
+				FilterChanged(LogType.Activity, filterActivity, autoRaiseLogsChanged);
+			}
+		}
+
+		private bool filterImportant = true;
+
+		public bool FilterImportant
+		{
+			get { return filterImportant; }
+			set
+			{
+				filterImportant = value;
+				RaisePropertyChanged("FilterImportant");
+				FilterChanged(LogType.Important, filterImportant, autoRaiseLogsChanged);
+			}
+		}
+
+		private bool filterWarnings = true;
+
+		public bool FilterWarnings
+		{
+			get { return filterWarnings; }
+			set
+			{
+				filterWarnings = value;
+				RaisePropertyChanged("FilterWarnings");
+				FilterChanged(LogType.Warning, filterWarnings, autoRaiseLogsChanged);
+			}
+		}
+
+		private bool filterErrors = true;
+
+		public bool FilterErrors
+		{
+			get { return filterErrors; }
+			set
+			{
+				filterErrors = value;
+				RaisePropertyChanged("FilterErrors");
+				FilterChanged(LogType.Error, filterErrors, autoRaiseLogsChanged);
+			}
+		}
+
+		public void FilterChanged(LogType logType, bool showType, bool raiseLogsChanged = true)
+		{
+			var logs = Logs.Where(ld => ld.MessageType == logType);
+			if(logs != null && logs.Count() > 0)
+			{
+				foreach(var log in logs)
+				{
+					log.IsVisible = showType;
+				}
+
+				if(raiseLogsChanged) RaisePropertyChanged("Logs");
+			}
+		}
+
+		public bool FilterIsSolelyVisible(LogType logType)
+		{
+			switch (logType)
+			{
+				case LogType.Activity:
+					return filterActivity == true && (!filterImportant && !filterWarnings && !filterErrors);
+				case LogType.Important:
+					return filterImportant == true && (!filterActivity && !filterWarnings && !filterErrors);
+				case LogType.Warning:
+					return filterWarnings == true && (!filterActivity && !filterImportant && !filterErrors);
+				case LogType.Error:
+					return filterErrors == true && (!filterActivity && !filterImportant && !filterWarnings);
+				default:
+					return false;
+			}
+		}
+
+		public void OnlyShowFilter(LogType logType)
+		{
+			if(logType == LogType.Activity)
+			{
+				filterActivity = true;
+				filterImportant = filterWarnings = filterErrors = false;
+			}
+			else if(logType == LogType.Important)
+			{
+				filterImportant = true;
+				filterActivity = filterWarnings = filterErrors = false;
+			}
+			else if (logType == LogType.Warning)
+			{
+				filterWarnings = true;
+				filterActivity = filterImportant = filterErrors = false;
+			}
+			else if (logType == LogType.Error)
+			{
+				filterErrors = true;
+				filterActivity = filterImportant = filterWarnings = false;
+			}
+
+			foreach(var log in Logs)
+			{
+				log.IsVisible = log.MessageType == logType;
+			}
+
+			RaisePropertyChanged("FilterActivity");
+			RaisePropertyChanged("FilterImportant");
+			RaisePropertyChanged("FilterWarnings");
+			RaisePropertyChanged("FilterErrors");
+			RaisePropertyChanged("Logs");
+		}
+
+		public void ToggleAllFilters(bool toValue)
+		{
+			filterActivity = filterImportant = filterWarnings = filterErrors = toValue;
+
+			foreach (var log in Logs)
+			{
+				log.IsVisible = toValue;
+			}
+
+			RaisePropertyChanged("FilterActivity");
+			RaisePropertyChanged("FilterImportant");
+			RaisePropertyChanged("FilterWarnings");
+			RaisePropertyChanged("FilterErrors");
+			RaisePropertyChanged("Logs");
 		}
 
 		private object logsLock = new object();

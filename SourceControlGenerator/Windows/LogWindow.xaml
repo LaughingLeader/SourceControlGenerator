@@ -5,7 +5,10 @@
 		xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 		xmlns:local="clr-namespace:LL.SCG.Windows"
 		xmlns:data="clr-namespace:LL.SCG.Data.View"
+		xmlns:behavior="clr-namespace:LL.SCG.Controls.Behavior"
 		xmlns:c="clr-namespace:LL.SCG.Controls"
+		xmlns:core="clr-namespace:LL.SCG.Core"
+		xmlns:scg="clr-namespace:LL.SCG"
 		mc:Ignorable="d"
 		Title="Logs (Source Control Generator)" Height="400" Width="800"
 		WindowStartupLocation="CenterOwner"
@@ -20,6 +23,15 @@
 							<ItemsPresenter/>
 						</ScrollViewer>
 					</ControlTemplate>
+				</Setter.Value>
+			</Setter>
+
+			<Setter Property="ItemsSource">
+				<Setter.Value>
+					<MultiBinding Converter="{StaticResource VisibleLogsConverter}">
+						<Binding Path="Logs" />
+						<Binding Path="SearchText" />
+					</MultiBinding>
 				</Setter.Value>
 			</Setter>
 
@@ -39,22 +51,33 @@
 		</DataTemplate>
 	</local:HideWindowBase.Resources>
 
-	<DockPanel Margin="2,0,0,0">
-		<Grid DockPanel.Dock="Top" Margin="0,2">
-			<Grid.ColumnDefinitions>
-				<ColumnDefinition/>
-				<ColumnDefinition/>
-				<ColumnDefinition Width="*"/>
-				<ColumnDefinition/>
-				<ColumnDefinition/>
-			</Grid.ColumnDefinitions>
-			<StackPanel Orientation="Horizontal" Grid.Column="2" HorizontalAlignment="Center">
-				<Button x:Name="ClearButton" Content="Clear" Margin="4,2" Padding="2" Click="ClearButton_Click" IsEnabled="{Binding CanClear}" />
-				<Button x:Name="RestoreButton" Content="Restore" Margin="4,2" Padding="2" Click="RestoreButton_Click" IsEnabled="{Binding CanRestore}" />
+	<Grid Margin="2,0,0,0">
+		<Grid.RowDefinitions>
+			<RowDefinition Height="Auto" />
+			<RowDefinition Height="*" />
+			<RowDefinition Height="Auto" />
+		</Grid.RowDefinitions>
+		<Grid Margin="4">
+			<Grid.Resources>
+				<Style TargetType="CheckBox">
+					<Setter Property="VerticalAlignment" Value="Center" />
+					<EventSetter Event="MouseRightButtonDown" Handler="FilterCheck_MouseRightButtonDown" />
+				</Style>
+			</Grid.Resources>
+			<StackPanel Orientation="Horizontal" Grid.Column="1" HorizontalAlignment="Center" >
+				<StackPanel Orientation="Horizontal" Margin="2,0,45,0" >
+					<TextBlock Text="Filter:" TextAlignment="Center" VerticalAlignment="Center" Margin="4,0" />
+					<TextBox x:Name="SearchTextBox" Width="150" BorderThickness="1,1,0,1" behavior:TextBoxEnterKeyBehavior.EnterLosesFocus="True" Text="{Binding SearchText, Mode=TwoWay}" />
+					<Button x:Name="SearchClearButton" Content="x" BorderThickness="1" Click="SearchClearButton_Click" ToolTip="{x:Static core:TooltipText.Log_Button_SearchClear}" />
+				</StackPanel>
+				<TextBlock Text="Types:" TextAlignment="Center" VerticalAlignment="Center" Margin="4,0" />
+				<CheckBox x:Name="ActivityCheck" Background="{Binding Source={x:Static scg:LogType.Activity}, Converter={StaticResource LogTypeColorConverter}}" Content="Activity" ToolTip="{x:Static core:TooltipText.Log_Checkbox_Activity}" IsChecked="{Binding FilterActivity}" />
+				<CheckBox x:Name="ImportantCheck" Background="{Binding Source={x:Static scg:LogType.Important}, Converter={StaticResource LogTypeColorConverter}}" Content="Important" ToolTip="{x:Static core:TooltipText.Log_Checkbox_Important}" IsChecked="{Binding FilterImportant}" />
+				<CheckBox x:Name="WarningCheck" Background="{Binding Source={x:Static scg:LogType.Warning}, Converter={StaticResource LogTypeColorConverter}}" Content="Warning" ToolTip="{x:Static core:TooltipText.Log_Checkbox_Warning}" IsChecked="{Binding FilterWarnings}" />
+				<CheckBox x:Name="ErrorCheck" Background="{Binding Source={x:Static scg:LogType.Error}, Converter={StaticResource LogTypeColorConverter}}" Content="Error" ToolTip="{x:Static core:TooltipText.Log_Checkbox_Error}" IsChecked="{Binding FilterErrors}" />
 			</StackPanel>
 		</Grid>
-
-		<ItemsControl ItemsSource="{Binding Logs}" Style="{StaticResource LogViewerStyle}">
+		<ItemsControl Grid.Row="1" Style="{StaticResource LogViewerStyle}">
 			<ItemsControl.Template>
 				<ControlTemplate>
 					<ScrollViewer CanContentScroll="True" HorizontalScrollBarVisibility="Auto">
@@ -68,5 +91,12 @@
 				</ItemsPanelTemplate>
 			</ItemsControl.ItemsPanel>
 		</ItemsControl>
-	</DockPanel>
+		<Grid Grid.Row="2" Margin="0,2">
+			<StackPanel Orientation="Horizontal" Grid.Column="1" HorizontalAlignment="Center" behavior:MarginSetter.Margin="2,0" >
+				<Button x:Name="SaveButton" Content="Save As..." Click="SaveButton_Click" />
+				<Button x:Name="ClearButton" Content="Clear" Click="ClearButton_Click" IsEnabled="{Binding CanClear}" />
+				<Button x:Name="RestoreButton" Content="Restore" Click="RestoreButton_Click" IsEnabled="{Binding CanRestore}" />
+			</StackPanel>
+		</Grid>
+	</Grid>
 </local:HideWindowBase>

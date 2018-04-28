@@ -43,7 +43,7 @@
 			<RowDefinition Height="Auto" />
 		</Grid.RowDefinitions>
 		<DockPanel Grid.Row="0">
-			<Menu DockPanel.Dock="Top" ItemsSource="{Binding TopMenus}" UsesItemContainerTemplate="True" ItemContainerTemplateSelector="{StaticResource MenuItemContainerTemplateSelector}" />
+			<Menu DockPanel.Dock="Top" ItemsSource="{Binding MenuBarData.Menus}" UsesItemContainerTemplate="True" ItemContainerTemplateSelector="{StaticResource MenuItemContainerTemplateSelector}" MinHeight="10" />
 		</DockPanel>
 		<TabControl x:Name="MainTabsControl" Grid.Row="1" SelectionChanged="PreventInitialTextboxFocus" BorderThickness="0,1,0,0" Padding="0"
 			Visibility="{Binding ModuleIsLoaded, Converter={StaticResource BoolToVisibilityConverter}}" 
@@ -155,7 +155,7 @@
 							<ColumnDefinition Width="Auto"/>
 							<ColumnDefinition Width="*"/>
 						</Grid.ColumnDefinitions>
-						<Label x:Name="TemplateLabel" Content="Template Keywords" Grid.Column="0" Width="Auto" HorizontalAlignment="Left" VerticalAlignment="Center" ToolTip="{x:Static vdata:TooltipText.TemplateKeywords}" Padding="2,0,50,0">
+						<Label x:Name="TemplateLabel" Content="Template Keywords" Grid.Column="0" Width="Auto" HorizontalAlignment="Left" VerticalAlignment="Center" ToolTip="{x:Static core:TooltipText.TemplateKeywords}" Padding="2,0,50,0">
 							<Label.Style>
 								<Style TargetType="Label" BasedOn="{StaticResource {x:Type Label}}">
 									<Style.Triggers>

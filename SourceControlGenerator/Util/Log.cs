@@ -6,17 +6,6 @@ using System;
 using LL.SCG.Data;
 using System.ComponentModel;
 
-namespace LL.SCG.Util
-{
-	public enum LogType
-	{
-		Activity,
-		Important,
-		Warning,
-		Error
-	}
-}
-
 namespace LL.SCG
 {
 	public delegate void LogDelegate(string Message, params object[] Vars);

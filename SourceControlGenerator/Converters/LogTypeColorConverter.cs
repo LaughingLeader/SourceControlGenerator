@@ -15,19 +15,20 @@ namespace LL.SCG.Converters
 	{
 		public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
 		{
-			LogType logType = (LogType)value;			
+			LogType logType = (LogType)value;
+			Log.Here().Important($"Converting log type {logType.ToString()} to color.");
 			switch (logType)
 			{
 				case LogType.Activity:
-					return Colors.Gainsboro;
+					return SystemColors.WindowBrush;
 				case LogType.Important:
-					return Colors.Azure;
+					return new SolidColorBrush(Colors.Azure);
 				case LogType.Error:
-					return Colors.Salmon;
+					return new SolidColorBrush(Colors.Salmon);
 				case LogType.Warning:
-					return Colors.Khaki;
+					return new SolidColorBrush(Colors.Khaki);
 				default:
-					return SystemColors.WindowBrush.Color;
+					return SystemColors.WindowBrush;
 			}
 		}
 

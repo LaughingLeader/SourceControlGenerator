@@ -27,6 +27,8 @@
 	<cv:SettingsAttributeValueControlConverter x:Key="SettingsAttributeValueControlConverter"/>
 	<cv:IntToGridLengthConverter x:Key="IntToGridLengthConverter"/>
 	<cv:IntToVisibilityConverter x:Key="IntToVisibilityConverter"/>
+	<cv:VisibleLogsConverter x:Key="VisibleLogsConverter"/>
+	<cv:LogTypeColorConverter x:Key="LogTypeColorConverter"/>
 
 	<Style TargetType="{x:Type c:TemplateKeywordControl}"/>
 	<Style TargetType="{x:Type ListViewItem}" />
