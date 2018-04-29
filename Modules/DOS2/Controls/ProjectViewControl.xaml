@@ -30,7 +30,31 @@
 				</Style.Triggers>
 			</Style>
 
-			
+			<Style x:Key="RefreshButtonStyle" TargetType="Button" >
+				<Setter Property="Margin" Value="10,4,0,4" />
+				<Setter Property="Template">
+					<Setter.Value>
+						<ControlTemplate>
+							<Grid>
+								<Image Name="Image" Source="{Binding Source={StaticResource IconProxy}, Path=Data.RefreshSmall, FallbackValue={x:Null}}" Stretch="UniformToFill" MaxHeight="16" MaxWidth="16" Width="16" Height="16"/>
+								<Rectangle Name="ImageHighlight" Width="16" Height="16" Visibility="Collapsed">
+									<Rectangle.Fill>
+										<SolidColorBrush Color="White" Opacity="0.25"/>
+									</Rectangle.Fill>
+									<Rectangle.OpacityMask>
+										<ImageBrush ImageSource="{Binding Path=Source, ElementName=Image}" />
+									</Rectangle.OpacityMask>
+								</Rectangle>
+							</Grid>
+							<ControlTemplate.Triggers>
+								<Trigger Property="IsMouseOver" Value="True">
+									<Setter TargetName="ImageHighlight" Property="Visibility" Value="Visible" />
+								</Trigger>
+							</ControlTemplate.Triggers>
+						</ControlTemplate>
+					</Setter.Value>
+				</Setter>
+			</Style>
 		</ResourceDictionary>
 	</UserControl.Resources>
 	<Grid x:Name="Projects_ParentGrid" Width="Auto" Height="Auto">
@@ -67,9 +91,7 @@
 					</Grid.RowDefinitions>
 					<StackPanel Orientation="Horizontal">
 						<Label Content="Available Projects" HorizontalAlignment="Center" VerticalAlignment="Center" Grid.Row="0" Margin="0" ToolTip="{Binding Source={x:Static core:DOS2Tooltips.AvailableProjects}, Converter={StaticResource NewlineStringConverter}}" />
-						<Button x:Name="Btn_AvailableProjects_Refresh" ToolTip="Refresh Available Projects" Click="Btn_AvailableProjects_Refresh_Click" Margin="10,4,0,4" IsEnabled="{Binding CanClickRefresh}" >
-							<Image Source="{Binding Source={StaticResource IconProxy}, Path=Data.RefreshSmall, FallbackValue={x:Null}}" Stretch="UniformToFill" MaxHeight="16" MaxWidth="16" Width="16" Height="16"/>
-						</Button>
+						<Button x:Name="Btn_AvailableProjects_Refresh" ToolTip="Refresh Available Projects" Click="Btn_AvailableProjects_Refresh_Click" IsEnabled="{Binding CanClickRefresh}" Style="{StaticResource RefreshButtonStyle}" />
 					</StackPanel>
 					<Grid Grid.Row="1" Width="200" MaxWidth="200">
 						<Grid>
@@ -124,9 +146,7 @@
 					</Grid.ColumnDefinitions>
 					<StackPanel Orientation="Horizontal">
 						<Label Content="Managed Projects" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Row="0" />
-						<Button x:Name="Btn_ModProjects_Refresh" ToolTip="Refresh Project Data" Click="Btn_ModProjects_Refresh_Click" Margin="10,4,0,4" IsEnabled="{Binding CanClickRefresh}" >
-							<Image Source="{Binding Source={StaticResource IconProxy}, Path=Data.RefreshSmall, FallbackValue={x:Null}}" Stretch="UniformToFill" Width="16" Height="16" MaxWidth="16" MaxHeight="16" MinWidth="16" MinHeight="16"/>
-						</Button>
+						<Button x:Name="Btn_ModProjects_Refresh" ToolTip="Refresh Project Data" Click="Btn_ModProjects_Refresh_Click" IsEnabled="{Binding CanClickRefresh}" Style="{StaticResource RefreshButtonStyle}" />
 					</StackPanel>
 					<Grid Grid.Column="2">
 						<Button x:Name="Btn_AvailableProjects" ToolTip="{Binding AvailableProjectsTooltip}" Click="Btn_AvailableProjects_Click" HorizontalAlignment="Right" VerticalAlignment="Center" Padding="10,2" Margin="4,0">

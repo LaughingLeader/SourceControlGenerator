@@ -135,7 +135,7 @@ namespace LL.SCG.DOS2.Core
 
 			Data.NewProjectsAvailable = false;
 
-			if (Data.ModProjects != null && Data.ModProjects.Count > 0)
+			if (Data.ModProjects != null)
 			{
 				foreach (var project in Data.ModProjects)
 				{

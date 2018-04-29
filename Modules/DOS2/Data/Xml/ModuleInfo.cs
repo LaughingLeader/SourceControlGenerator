@@ -122,7 +122,7 @@ namespace LL.SCG.Data.Xml
 				{
 					var modTargets = modMetaXml.Descendants("node").FirstOrDefault(x => (string)x.Attribute("id") == "TargetModes").Descendants("node").Descendants("attribute");
 
-					if (modTargets != null && modTargets.Count() > 0)
+					if (modTargets != null)
 					{
 						foreach (var target in modTargets)
 						{

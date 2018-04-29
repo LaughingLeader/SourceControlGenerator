@@ -162,14 +162,19 @@ namespace LL.SCG.Data.View
 		public void FilterChanged(LogType logType, bool showType, bool raiseLogsChanged = true)
 		{
 			var logs = Logs.Where(ld => ld.MessageType == logType);
-			if(logs != null && logs.Count() > 0)
+			if(logs != null)
 			{
+				var change = false;
 				foreach(var log in logs)
 				{
-					log.IsVisible = showType;
+					if(log.IsVisible != showType)
+					{
+						log.IsVisible = showType;
+						change = true;
+					}
 				}
 
-				if(raiseLogsChanged) RaisePropertyChanged("Logs");
+				if(raiseLogsChanged && change) RaisePropertyChanged("Logs");
 			}
 		}
 

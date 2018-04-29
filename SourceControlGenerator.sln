@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SourceControlGenerator", "S
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SCG_DOS2", "Modules\DOS2\SCG_DOS2.csproj", "{7653F93F-78A9-4D82-9289-C40FBD3FF3F6}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MarkdownConverter", "MarkdownConverter\MarkdownConverter.csproj", "{139A1053-E54E-4FD7-B64A-A3F0A2CAE350}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{7653F93F-78A9-4D82-9289-C40FBD3FF3F6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7653F93F-78A9-4D82-9289-C40FBD3FF3F6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7653F93F-78A9-4D82-9289-C40FBD3FF3F6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{139A1053-E54E-4FD7-B64A-A3F0A2CAE350}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{139A1053-E54E-4FD7-B64A-A3F0A2CAE350}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{139A1053-E54E-4FD7-B64A-A3F0A2CAE350}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{139A1053-E54E-4FD7-B64A-A3F0A2CAE350}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

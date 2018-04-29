@@ -45,7 +45,7 @@ namespace LL.SCG.Controls.Behavior
 
 		static void OnSelectionChanged(object sender, SelectionChangedEventArgs e)
 		{
-			if (e.AddedItems.Count > 0 && !Keyboard.IsKeyDown(Key.LeftShift) && !Keyboard.IsKeyDown(Key.RightShift))
+			if (!Keyboard.IsKeyDown(Key.LeftShift) && !Keyboard.IsKeyDown(Key.RightShift))
 			{
 				ListBox listBox = sender as ListBox;
 				var valid = e.AddedItems[0];

@@ -51,6 +51,9 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>SourceControlGenerator_Icon.ico</ApplicationIcon>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="Common.Functions.GetRelativePath, Version=1.0.1.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\CDorst.Common.Functions.GetRelativePath.1.0.1\lib\netstandard2.0\Common.Functions.GetRelativePath.dll</HintPath>
@@ -347,6 +350,7 @@
     <Content Include="Resources\Icons\GitLogo.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Resource Include="SourceControlGenerator_Icon.ico" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Resources\Icons\Log_MouseOver.png">

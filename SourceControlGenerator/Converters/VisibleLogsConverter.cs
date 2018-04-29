@@ -21,11 +21,11 @@ namespace LL.SCG.Converters
 				if(values[1] is string searchText && !String.IsNullOrWhiteSpace(searchText))
 				{
 					//Log.Here().Important($"Search val: {searchVal}");
-					return logs.Where(l => l.IsVisible && l.Message.CaseInsensitiveContains(searchText)).ToList();
+					return logs.Where(l => l.IsVisible && l.Message.CaseInsensitiveContains(searchText))?.ToList();
 				}
 				else
 				{
-					return logs.Where(l => l.IsVisible).ToList();
+					return logs.Where(l => l.IsVisible)?.ToList();
 				}
 			}
 			return null;

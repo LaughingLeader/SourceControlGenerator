@@ -170,7 +170,7 @@ namespace LL.SCG.Commands
 				Log.Here().Error(Message: $"Error loading template file {templateFilePath}: {ex.ToString()}");
 			}
 
-			if(Data.ModuleSettings.TemplateFiles != null && Data.ModuleSettings.TemplateFiles.Count > 0)
+			if(Data.ModuleSettings.TemplateFiles != null)
 			{
 				foreach(var templateFile in Data.ModuleSettings.TemplateFiles)
 				{
@@ -273,7 +273,7 @@ namespace LL.SCG.Commands
 
 			//Rebuild from previous settings, in case a template name has changed, or new templates were added.
 			List<TemplateGenerationData> previousSettings = null;
-			if (Data.GitGenerationSettings.TemplateSettings != null && Data.GitGenerationSettings.TemplateSettings.Count > 0)
+			if (Data.GitGenerationSettings.TemplateSettings != null)
 			{
 				previousSettings = Data.GitGenerationSettings.TemplateSettings.ToList();
 			}

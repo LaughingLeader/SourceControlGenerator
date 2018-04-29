@@ -66,15 +66,18 @@
 			</Grid.Resources>
 			<StackPanel Orientation="Horizontal" Grid.Column="1" HorizontalAlignment="Center" >
 				<StackPanel Orientation="Horizontal" Margin="2,0,45,0" >
-					<TextBlock Text="Filter:" TextAlignment="Center" VerticalAlignment="Center" Margin="4,0" />
+					<TextBlock Text="Search:" TextAlignment="Center" VerticalAlignment="Center" Margin="4,0" />
 					<TextBox x:Name="SearchTextBox" Width="150" BorderThickness="1,1,0,1" behavior:TextBoxEnterKeyBehavior.EnterLosesFocus="True" Text="{Binding SearchText, Mode=TwoWay}" />
 					<Button x:Name="SearchClearButton" Content="x" BorderThickness="1" Click="SearchClearButton_Click" ToolTip="{x:Static core:TooltipText.Log_Button_SearchClear}" />
 				</StackPanel>
-				<TextBlock Text="Types:" TextAlignment="Center" VerticalAlignment="Center" Margin="4,0" />
-				<CheckBox x:Name="ActivityCheck" Background="{Binding Source={x:Static scg:LogType.Activity}, Converter={StaticResource LogTypeColorConverter}}" Content="Activity" ToolTip="{x:Static core:TooltipText.Log_Checkbox_Activity}" IsChecked="{Binding FilterActivity}" />
-				<CheckBox x:Name="ImportantCheck" Background="{Binding Source={x:Static scg:LogType.Important}, Converter={StaticResource LogTypeColorConverter}}" Content="Important" ToolTip="{x:Static core:TooltipText.Log_Checkbox_Important}" IsChecked="{Binding FilterImportant}" />
-				<CheckBox x:Name="WarningCheck" Background="{Binding Source={x:Static scg:LogType.Warning}, Converter={StaticResource LogTypeColorConverter}}" Content="Warning" ToolTip="{x:Static core:TooltipText.Log_Checkbox_Warning}" IsChecked="{Binding FilterWarnings}" />
-				<CheckBox x:Name="ErrorCheck" Background="{Binding Source={x:Static scg:LogType.Error}, Converter={StaticResource LogTypeColorConverter}}" Content="Error" ToolTip="{x:Static core:TooltipText.Log_Checkbox_Error}" IsChecked="{Binding FilterErrors}" />
+				<TextBlock Text="Filter:" TextAlignment="Center" VerticalAlignment="Center" Margin="4,0" />
+				<StackPanel Orientation="Horizontal" behavior:MarginSetter.Margin="4,0">
+					<CheckBox x:Name="ActivityCheck" Background="{Binding Source={x:Static scg:LogType.Activity}, Converter={StaticResource LogTypeColorConverter}}" Content="Activity" ToolTip="{x:Static core:TooltipText.Log_Checkbox_Activity}" IsChecked="{Binding FilterActivity}" />
+					<CheckBox x:Name="ImportantCheck" Background="{Binding Source={x:Static scg:LogType.Important}, Converter={StaticResource LogTypeColorConverter}}" Content="Important" ToolTip="{x:Static core:TooltipText.Log_Checkbox_Important}" IsChecked="{Binding FilterImportant}" />
+					<CheckBox x:Name="WarningCheck" Background="{Binding Source={x:Static scg:LogType.Warning}, Converter={StaticResource LogTypeColorConverter}}" Content="Warning" ToolTip="{x:Static core:TooltipText.Log_Checkbox_Warning}" IsChecked="{Binding FilterWarnings}" />
+					<CheckBox x:Name="ErrorCheck" Background="{Binding Source={x:Static scg:LogType.Error}, Converter={StaticResource LogTypeColorConverter}}" Content="Error" ToolTip="{x:Static core:TooltipText.Log_Checkbox_Error}" IsChecked="{Binding FilterErrors}" />
+				</StackPanel>
+				
 			</StackPanel>
 		</Grid>
 		<ItemsControl Grid.Row="1" Style="{StaticResource LogViewerStyle}">

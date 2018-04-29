@@ -469,20 +469,24 @@ namespace LL.SCG.Core
 
 		public void AddLogMessage(string LogMessage, LogType logType)
 		{
-			var log = new LogData()
-			{
-				Index = logIndex++,
-				DateTime = DateTime.Now,
-				Message = LogMessage,
-				MessageType = logType
-			};
-			log.FormatOutput();
+			AddLogMessageAsync(LogMessage, logType);
+		}
 
-			mainWindow.LogWindow.Data.Add(log);
-			//Dispatcher.CurrentDispatcher.BeginInvoke(DispatcherPriority.Background, (Action)(() =>
-			//{
-			//	mainWindow.LogWindow.Data.Add(log);
-			//}));
+		public async void AddLogMessageAsync(string LogMessage, LogType logType)
+		{
+			await Dispatcher.CurrentDispatcher.BeginInvoke(DispatcherPriority.Background, (Action)(() =>
+			{
+				var log = new LogData()
+				{
+					Index = logIndex++,
+					DateTime = DateTime.Now,
+					Message = LogMessage,
+					MessageType = logType
+				};
+				log.FormatOutput();
+
+				mainWindow.LogWindow.Data.Add(log);
+			}));
 		}
 
 		public MenuData LogMenuData { get; set; }

@@ -269,7 +269,7 @@ namespace LL.SCG.Core
 
 			bool success = false;
 
-			if (selectedProjects != null && selectedProjects.Count > 0)
+			if (selectedProjects != null)
 			{
 				for (var i = 0; i < total; i++)
 				{

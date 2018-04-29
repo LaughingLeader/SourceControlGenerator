@@ -149,17 +149,14 @@ namespace LL.SCG.DOS2.Controls
 
 			if (managedGrid != null)
 			{
-				if (managedGrid.SelectedItems.Count > 0)
+				foreach (var item in managedGrid.SelectedItems)
 				{
-					foreach (var item in managedGrid.SelectedItems)
+					if (item is ModProjectData data)
 					{
-						if (item is ModProjectData data)
+						if (data.Selected)
 						{
-							if(data.Selected)
-							{
-								if (!data.GitGenerated) canGitGenerate = true;
-								projectSelected = true;
-							}
+							if (!data.GitGenerated) canGitGenerate = true;
+							projectSelected = true;
 						}
 					}
 				}

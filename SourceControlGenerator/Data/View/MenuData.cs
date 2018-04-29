@@ -160,7 +160,7 @@ namespace LL.SCG.Data.View
 				window.InputBindings.Add(binding);
 			}
 
-			if(MenuItems != null && MenuItems.Count > 0)
+			if(MenuItems != null)
 			{
 				foreach(var menu in MenuItems)
 				{
@@ -179,7 +179,7 @@ namespace LL.SCG.Data.View
 				window.InputBindings.Remove(InputBinding);
 			}
 
-			if (MenuItems != null && MenuItems.Count > 0)
+			if (MenuItems != null)
 			{
 				foreach (var menu in MenuItems)
 				{

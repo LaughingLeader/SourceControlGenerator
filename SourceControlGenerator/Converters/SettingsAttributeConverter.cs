@@ -30,7 +30,7 @@ namespace LL.SCG.Converters
 					{
 						var attributes = Attribute.GetCustomAttributes(prop, typeof(VisibleToViewAttribute), false);
 
-						if (attributes != null && attributes.Count() > 0)
+						if (attributes != null)
 						{
 							foreach (var attribute in attributes)
 							{
