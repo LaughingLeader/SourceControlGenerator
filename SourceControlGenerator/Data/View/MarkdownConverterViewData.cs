@@ -38,6 +38,19 @@ namespace LL.SCG.Data.View
 			}
 		}
 
+		private bool isHTML = false;
+
+		public bool IsHTML
+		{
+			get { return isHTML; }
+			set
+			{
+				isHTML = value;
+				RaisePropertyChanged("IsHTML");
+			}
+		}
+
+
 		public ObservableCollection<IMarkdownFormatter> Formatters { get; set; }
 
 		private IMarkdownFormatter selectedFormatter;
@@ -56,7 +69,15 @@ namespace LL.SCG.Data.View
 		{
 			if(SelectedFormatter != null && !String.IsNullOrWhiteSpace(Input))
 			{
-				Output = SelectedFormatter.Convert(Input);
+				if(!IsHTML)
+				{
+					string html = MarkdownConverter.ConvertMarkdownToHTML(Input);
+					Output = SelectedFormatter.ConvertHTML(html);
+				}
+				else
+				{
+					Output = SelectedFormatter.ConvertHTML(Input);
+				}
 			}
 		}
 

@@ -10,6 +10,6 @@ namespace LL.SCG.Markdown
 	{
 		string Name { get; set; }
 
-		string Convert(string input);
+		string ConvertHTML(string input);
 	}
 }

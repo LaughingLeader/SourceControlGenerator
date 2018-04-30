@@ -16,15 +16,12 @@ namespace LL.SCG.Markdown
 			Name = "Steam Workshop";
 		}
 
-		public override string Convert(string input)
+		public override string ConvertHTML(string input)
 		{
 			try
 			{
-				var pipeline = new MarkdownPipelineBuilder().Build();
-				var html = Markdig.Markdown.ToHtml(input, pipeline);
-
 				var parser = new HtmlParser(new HtmlParserOptions() { IsStrictMode = false });
-				var doc = parser.Parse(html);
+				var doc = parser.Parse(input);
 
 				doc = BBCodeConversion(doc);
 
@@ -35,7 +32,6 @@ namespace LL.SCG.Markdown
 
 				//AngleSharp adds html, head, and body tags.
 				var output = doc.Body.InnerHtml;
-				output = output.Replace("<p>", "").Replace("</p>", Environment.NewLine);
 				return output;
 			}
 			catch (Exception ex)

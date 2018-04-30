@@ -69,7 +69,9 @@
   <ItemGroup>
     <Compile Include="BBCodeFormatter.cs" />
     <Compile Include="IMarkdownFormatter.cs" />
+    <Compile Include="LarianForumsUBBCodeFormatter.cs" />
     <Compile Include="MarkdownConverter.cs" />
+    <Compile Include="NexusFormatter.cs" />
     <Compile Include="SteamWorkshopFormatter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

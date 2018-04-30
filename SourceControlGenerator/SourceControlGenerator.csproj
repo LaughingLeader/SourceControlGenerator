@@ -132,6 +132,7 @@
     <Reference Include="System.Xaml">
       <RequiredTargetFramework>4.0</RequiredTargetFramework>
     </Reference>
+    <Reference Include="UIAutomationProvider" />
     <Reference Include="WindowsBase" />
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
@@ -148,6 +149,7 @@
     <Compile Include="Controls\AddTemplateControl.xaml.cs">
       <DependentUpon>AddTemplateControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Controls\Behavior\ComboBoxWidthFromItemsBehavior.cs" />
     <Compile Include="Controls\Behavior\ListBoxSelectionBehavior.cs" />
     <Compile Include="Controls\Behavior\MarginSetter.cs" />
     <Compile Include="Controls\Behavior\TextBoxEnterKeyBehavior.cs" />
@@ -195,6 +197,7 @@
     <Compile Include="Data\View\SettingsEntryData.cs" />
     <Compile Include="Enum\FileValidation.cs" />
     <Compile Include="Extensions\AttributeExtensions.cs" />
+    <Compile Include="Extensions\ComboBoxExtensionMethods.cs" />
     <Compile Include="Extensions\ObservableCollectionExtensions.cs" />
     <Compile Include="FileGen\JsonInterface.cs" />
     <Compile Include="Interfaces\IModuleData.cs" />

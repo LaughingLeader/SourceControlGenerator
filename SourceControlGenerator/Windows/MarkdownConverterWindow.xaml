@@ -35,7 +35,7 @@
 			</Grid>
 		</Grid>
 		<StackPanel Grid.Row="2" HorizontalAlignment="Center" VerticalAlignment="Center" behavior:MarginSetter.Margin="4" Orientation="Horizontal" Margin="4">
-			<ComboBox ItemsSource="{Binding Formatters}" SelectedValue="{Binding SelectedFormatter, Mode=TwoWay}" DisplayMemberPath="Name" />
+			<ComboBox ItemsSource="{Binding Formatters}" SelectedValue="{Binding SelectedFormatter, Mode=TwoWay}" DisplayMemberPath="Name" behavior:ComboBoxWidthFromItemsBehavior.ComboBoxWidthFromItems="True" />
 			<Button Content="Convert" Command="{Binding ConvertCommand}" CommandParameter="{Binding SelectedFormatter}" />
 		</StackPanel>
 	</Grid>

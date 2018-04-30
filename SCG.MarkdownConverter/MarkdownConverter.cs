@@ -12,10 +12,9 @@ namespace LL.SCG.Markdown
 	{
 		public string Name { get; set; }
 
-		public string Convert(string input)
+		public string ConvertHTML(string input)
 		{
-			var pipeline = new MarkdownPipelineBuilder().UseAdvancedExtensions().Build();
-			return Markdig.Markdown.ToHtml(input, pipeline);
+			return input;
 		}
 
 		public HTMLFormatterInterface()
@@ -31,10 +30,27 @@ namespace LL.SCG.Markdown
 			List<IMarkdownFormatter> formatters = new List<IMarkdownFormatter>();
 
 			formatters.Add(new SteamWorkshopFormatter());
+			formatters.Add(new NexusFormatter());
+			formatters.Add(new LarianForumsUBBCodeFormatter());
 			formatters.Add(new BBCodeFormatter());
 			formatters.Add(new HTMLFormatterInterface());
 
 			return formatters;
+		}
+
+		public static string ConvertMarkdownToHTML(string input)
+		{
+			try
+			{
+				var pipeline = new MarkdownPipelineBuilder().Build();
+				var html = Markdig.Markdown.ToHtml(input, pipeline);
+				return html;
+			}
+			catch(Exception ex)
+			{
+				Log.Here().Error($"Error converting markdown to HTML: {ex.ToString()}");
+			}
+			return input;
 		}
 	}
 }
