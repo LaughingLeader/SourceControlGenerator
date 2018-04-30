@@ -38,6 +38,22 @@ namespace LL.SCG.Core
 
 		public Dictionary<string, IProjectController> ProjectControllers { get; set; }
 
+		private bool gitDetected = false;
+
+		public bool GitDetected
+		{
+			get { return gitDetected; }
+			set
+			{
+				gitDetected = value;
+				RaisePropertyChanged("GitDetected");
+			}
+		}
+
+		public ICommand OpenGitWebsiteCommand { get; set; }
+		public ICommand SetSetupFoldersToRelativeCommand { get; set; }
+		public ICommand SetSetupFoldersToMyDocumentsCommand { get; set; }
+
 		private IProjectController currentModule;
 
 		public IProjectController CurrentModule
@@ -457,8 +473,14 @@ namespace LL.SCG.Core
 		//Workaround for converted settings data (used for the file browsers) not updating when reverting to default.
 		private void OnSettingsReverted(object settingsData, EventArgs e)
 		{
-			ListView listView = (ListView)mainWindow.FindName("SettingsDataGrid");
+			ListView listView = (ListView)mainWindow.FindName("ModuleSettingsListView");
 			if(listView != null)
+			{
+				listView.GetBindingExpression(ListView.ItemsSourceProperty).UpdateTarget();
+			}
+
+			listView = (ListView)mainWindow.FindName("MainSettingsListView");
+			if (listView != null)
 			{
 				listView.GetBindingExpression(ListView.ItemsSourceProperty).UpdateTarget();
 			}
@@ -493,6 +515,29 @@ namespace LL.SCG.Core
 
 		#endregion
 
+		public void MakeSettingsFoldersToPortable()
+		{
+			DefaultPaths.RootFolder = DefaultPaths.DefaultPortableRootFolder;
+			if(CurrentModule != null && CurrentModule.ModuleData != null && CurrentModule.ModuleData.ModuleSettings != null)
+			{
+				CurrentModule.ModuleData.ModuleSettings.SetToDefault(CurrentModule.ModuleData);
+			}
+		}
+
+		public void SwitchSettingsFoldersToMyDocuments()
+		{
+			var myDocumentsRoot = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+			if(Directory.Exists(myDocumentsRoot))
+			{
+				DefaultPaths.RootFolder = Path.Combine(myDocumentsRoot, DefaultPaths.DefaultMyDocumentsRootFolder);
+				if (CurrentModule != null && CurrentModule.ModuleData != null && CurrentModule.ModuleData.ModuleSettings != null)
+				{
+					CurrentModule.ModuleData.ModuleSettings.SetToDefault(CurrentModule.ModuleData);
+				}
+			}
+			
+		}
+
 		public void OnAppLoaded()
 		{
 			if(CurrentModule != null)
@@ -513,7 +558,27 @@ namespace LL.SCG.Core
 			Data = new MainAppData();
 			ProjectControllers = new Dictionary<string, IProjectController>();
 
+			OpenGitWebsiteCommand = new ActionCommand(() => { Helpers.Web.OpenUri("https://git-scm.com/downloads"); });
+
+			SetSetupFoldersToMyDocumentsCommand = new ActionCommand(SwitchSettingsFoldersToMyDocuments);
+			SetSetupFoldersToRelativeCommand = new ActionCommand(MakeSettingsFoldersToPortable);
+
 			mainWindow = MainAppWindow;
+
+			Data.Portable = File.Exists(DefaultPaths.PortableSettingsFile);
+
+			if (Data.Portable)
+			{
+				DefaultPaths.RootFolder = DefaultPaths.DefaultPortableRootFolder;
+			}
+			else
+			{
+				var myDocumentsRoot = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+				if (Directory.Exists(myDocumentsRoot))
+				{
+					DefaultPaths.RootFolder = Path.Combine(myDocumentsRoot, DefaultPaths.DefaultMyDocumentsRootFolder);
+				}
+			}
 
 			LoadAppSettings();
 
@@ -570,6 +635,22 @@ namespace LL.SCG.Core
 			Data.MenuBarData.RaisePropertyChanged(String.Empty);
 
 			RegisterMenuShortcuts();
+
+			if(String.IsNullOrWhiteSpace(Data.AppSettings.GitInstallPath))
+			{
+				var gitPath = Helpers.Registry.GetRegistryKeyValue("InstallPath", "GitForWindows", "SOFTWARE");
+				if(!String.IsNullOrEmpty(gitPath))
+				{
+					Data.AppSettings.GitInstallPath = gitPath;
+					RaisePropertyChanged("GitInstallPath");
+					GitDetected = true;
+					Log.Here().Important($"Git install location found at {gitPath}.");
+				}
+				else
+				{
+					Log.Here().Error($"Git install location not found.");
+				}
+			}
 		}
 	}
 }

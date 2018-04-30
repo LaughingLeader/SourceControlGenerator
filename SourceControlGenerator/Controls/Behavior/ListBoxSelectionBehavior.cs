@@ -48,12 +48,15 @@ namespace LL.SCG.Controls.Behavior
 			if (!Keyboard.IsKeyDown(Key.LeftShift) && !Keyboard.IsKeyDown(Key.RightShift))
 			{
 				ListBox listBox = sender as ListBox;
-				var valid = e.AddedItems[0];
-				foreach (var item in new ArrayList(listBox.SelectedItems))
+				if(e.AddedItems.Count > 0)
 				{
-					if (item != valid)
+					var valid = e.AddedItems[0];
+					foreach (var item in new ArrayList(listBox.SelectedItems))
 					{
-						listBox.SelectedItems.Remove(item);
+						if (item != valid)
+						{
+							listBox.SelectedItems.Remove(item);
+						}
 					}
 				}
 			}

@@ -8,7 +8,7 @@
 		xmlns:behavior="clr-namespace:LL.SCG.Controls.Behavior"
 		xmlns:c="clr-namespace:LL.SCG.Controls"
 		xmlns:core="clr-namespace:LL.SCG.Core"
-		xmlns:scg="clr-namespace:LL.SCG"
+		xmlns:log="clr-namespace:LL.SCG;assembly=SCGUtilities"
 		mc:Ignorable="d"
 		Title="Logs (Source Control Generator)" Height="400" Width="800"
 		WindowStartupLocation="CenterOwner"
@@ -72,10 +72,10 @@
 				</StackPanel>
 				<TextBlock Text="Filter:" TextAlignment="Center" VerticalAlignment="Center" Margin="4,0" />
 				<StackPanel Orientation="Horizontal" behavior:MarginSetter.Margin="4,0">
-					<CheckBox x:Name="ActivityCheck" Background="{Binding Source={x:Static scg:LogType.Activity}, Converter={StaticResource LogTypeColorConverter}}" Content="Activity" ToolTip="{x:Static core:TooltipText.Log_Checkbox_Activity}" IsChecked="{Binding FilterActivity}" />
-					<CheckBox x:Name="ImportantCheck" Background="{Binding Source={x:Static scg:LogType.Important}, Converter={StaticResource LogTypeColorConverter}}" Content="Important" ToolTip="{x:Static core:TooltipText.Log_Checkbox_Important}" IsChecked="{Binding FilterImportant}" />
-					<CheckBox x:Name="WarningCheck" Background="{Binding Source={x:Static scg:LogType.Warning}, Converter={StaticResource LogTypeColorConverter}}" Content="Warning" ToolTip="{x:Static core:TooltipText.Log_Checkbox_Warning}" IsChecked="{Binding FilterWarnings}" />
-					<CheckBox x:Name="ErrorCheck" Background="{Binding Source={x:Static scg:LogType.Error}, Converter={StaticResource LogTypeColorConverter}}" Content="Error" ToolTip="{x:Static core:TooltipText.Log_Checkbox_Error}" IsChecked="{Binding FilterErrors}" />
+					<CheckBox x:Name="ActivityCheck" Background="{Binding Source={x:Static log:LogType.Activity}, Converter={StaticResource LogTypeColorConverter}}" Content="Activity" ToolTip="{x:Static core:TooltipText.Log_Checkbox_Activity}" IsChecked="{Binding FilterActivity}" />
+					<CheckBox x:Name="ImportantCheck" Background="{Binding Source={x:Static log:LogType.Important}, Converter={StaticResource LogTypeColorConverter}}" Content="Important" ToolTip="{x:Static core:TooltipText.Log_Checkbox_Important}" IsChecked="{Binding FilterImportant}" />
+					<CheckBox x:Name="WarningCheck" Background="{Binding Source={x:Static log:LogType.Warning}, Converter={StaticResource LogTypeColorConverter}}" Content="Warning" ToolTip="{x:Static core:TooltipText.Log_Checkbox_Warning}" IsChecked="{Binding FilterWarnings}" />
+					<CheckBox x:Name="ErrorCheck" Background="{Binding Source={x:Static log:LogType.Error}, Converter={StaticResource LogTypeColorConverter}}" Content="Error" ToolTip="{x:Static core:TooltipText.Log_Checkbox_Error}" IsChecked="{Binding FilterErrors}" />
 				</StackPanel>
 				
 			</StackPanel>

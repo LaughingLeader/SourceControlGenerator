@@ -7,7 +7,7 @@
     <ProjectGuid>{7653F93F-78A9-4D82-9289-C40FBD3FF3F6}</ProjectGuid>
     <OutputType>library</OutputType>
     <RootNamespace>LL.SCG.DOS2</RootNamespace>
-    <AssemblyName>SCG_DOS2</AssemblyName>
+    <AssemblyName>SCGDOS2</AssemblyName>
     <TargetFrameworkVersion>v4.7.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
@@ -34,6 +34,24 @@
   </PropertyGroup>
   <PropertyGroup>
     <RunPostBuildEvent>Always</RunPostBuildEvent>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x86\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
+    <OutputPath>bin\x86\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="ControlzEx, Version=3.0.2.4, Culture=neutral, processorArchitecture=MSIL">
@@ -106,6 +124,10 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\SCG_Utilities\SCGUtilities.csproj">
+      <Project>{2709c5c0-66ae-49dc-a65b-391163a39602}</Project>
+      <Name>SCGUtilities</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\SourceControlGenerator\SourceControlGenerator.csproj">
       <Project>{e96f2eeb-e207-4ab6-9b85-f86b3f386117}</Project>
       <Name>SourceControlGenerator</Name>
@@ -140,6 +162,9 @@
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>xcopy "$(TargetDir)$(TargetFileName)" "$(SolutionDir)Modules_Export\" /Y
-xcopy "$(TargetDir)$(TargetFileName)" "D:\Projects\_Visual_Studio\SourceControlGenerator\SourceControlGenerator\bin\Debug\Modules\" /Y</PostBuildEvent>
+xcopy "$(TargetDir)$(TargetFileName)" "D:\Projects\_Visual_Studio\SourceControlGenerator\SourceControlGenerator\bin\Debug\Modules\" /Y
+
+xcopy "$(TargetDir)$(TargetFileName)" "$(SolutionDir)Modules_Export\" /Y
+xcopy "$(TargetDir)$(TargetFileName)" "D:\Projects\_Visual_Studio\SourceControlGenerator\SourceControlGenerator\bin\Release\Modules\" /Y</PostBuildEvent>
   </PropertyGroup>
 </Project>

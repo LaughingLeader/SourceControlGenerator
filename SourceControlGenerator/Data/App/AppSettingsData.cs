@@ -3,12 +3,47 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using LL.SCG.Enum;
 
 namespace LL.SCG.Data.App
 {
 	public class AppSettingsData : PropertyChangedBase
 	{
-		public string LastModule { get; set; } = "";
-		public string LastLogPath { get; set; } = "";
+		private string lastModule;
+
+		public string LastModule
+		{
+			get { return lastModule; }
+			set
+			{
+				lastModule = value;
+				RaisePropertyChanged("LastModule");
+			}
+		}
+
+		private string lastLogPath;
+
+		public string LastLogPath
+		{
+			get { return lastLogPath; }
+			set
+			{
+				lastLogPath = value;
+				RaisePropertyChanged("LastLogPath");
+			}
+		}
+
+		private string gitInstallPath;
+
+		[VisibleToView("Git Install Directory", FileBrowseType.Directory)]
+		public string GitInstallPath
+		{
+			get { return gitInstallPath; }
+			set
+			{
+				gitInstallPath = value;
+				RaisePropertyChanged("GitInstallPath");
+			}
+		}
 	}
 }

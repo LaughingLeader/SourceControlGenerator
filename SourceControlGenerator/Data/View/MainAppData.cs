@@ -41,6 +41,18 @@ namespace LL.SCG.Data.View
 		public ObservableCollection<KeywordData> ModuleKeyList { get; private set; }
 		public ObservableCollection<ModuleSelectionData> Modules { get; private set; }
 
+		private bool portable = false;
+
+		public bool Portable
+		{
+			get { return portable; }
+			set
+			{
+				portable = value;
+				RaisePropertyChanged("Portable");
+			}
+		}
+
 		public static IconPathData IconData { get; set; }
 
 		private MenuBarData menuBarData;
@@ -193,7 +205,6 @@ namespace LL.SCG.Data.View
 				RaisePropertyChanged("LockScreenVisibility");
 			}
 		}
-
 
 		public void SetModuleKeyList(ObservableCollection<KeywordData> keyList)
 		{

@@ -47,10 +47,16 @@ namespace LL.SCG.Util.HelperUtil
 			{
 				using (var reg = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, registryView))
 				{
+					foreach(var name in reg.GetSubKeyNames())
+					{
+						Log.Here().Important(name);
+					}
+
 					using (Microsoft.Win32.RegistryKey key = reg.OpenSubKey(KeyLocation))
 					{
 						foreach (string subkey_name in key.GetSubKeyNames())
 						{
+							Log.Here().Activity($"Checking subkey {subkey_name}");
 							using (RegistryKey subkey = key.OpenSubKey(subkey_name))
 							{
 								string keyValue = subkey.GetValue(KeyName) as string;
@@ -63,10 +69,97 @@ namespace LL.SCG.Util.HelperUtil
 			}
 			catch (Exception e)
 			{
-				Log.Here().Error("Error checking registry key: {0}", e.ToString());
+				Log.Here().Error($"Error checking registry key ({KeyLocation}\\{KeyName}): {e.ToString()}");
+			}
+			
+			return "";
+		}
+
+		public string GetRegistryKeyValue(RegistryView registryView, string SubKeyName, string KeyName, string KeyLocation)
+		{
+			try
+			{
+				using (var reg = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, registryView))
+				{
+					using (Microsoft.Win32.RegistryKey key = reg.OpenSubKey(KeyLocation))
+					{
+						foreach (string subkey_name in key.GetSubKeyNames().Where(k => k == KeyName))
+						{
+							Log.Here().Activity($"Checking subkey {subkey_name}");
+							using (RegistryKey subkey = key.OpenSubKey(subkey_name))
+							{
+								string subkeyValue = subkey.GetValue(SubKeyName) as string;
+								return subkeyValue;
+							}
+						}
+					}
+				}
+			}
+			catch (Exception e)
+			{
+				Log.Here().Error($"Error checking registry key ({KeyLocation}\\{KeyName}): {e.ToString()}");
 			}
 
 			return "";
+		}
+
+		public string GetRegistryKeyValue(string KeyName, string KeyLocation)
+		{
+			var firstCheck = GetRegistryKeyValue(RegistryView.Registry64, KeyName, KeyLocation);
+			if (!String.IsNullOrEmpty(firstCheck))
+			{
+				return firstCheck;
+			}
+			else
+			{
+				return GetRegistryKeyValue(RegistryView.Registry32, KeyName, KeyLocation);
+			}
+		}
+
+		public string GetRegistryKeyValue(string SubKeyName, string KeyName, string KeyLocation)
+		{
+			var firstCheck = GetRegistryKeyValue(RegistryView.Registry64, SubKeyName, KeyName, KeyLocation);
+			if (!String.IsNullOrEmpty(firstCheck))
+			{
+				return firstCheck;
+			}
+			else
+			{
+				return GetRegistryKeyValue(RegistryView.Registry32, SubKeyName, KeyName, KeyLocation);
+			}
+		}
+
+		public bool KeyExists(string Path, RegistryView registryView)
+		{
+			//Computer\HKEY_LOCAL_MACHINE\SOFTWARE\GitForWindows
+			try
+			{
+				using (var reg = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, registryView))
+				{
+					using (Microsoft.Win32.RegistryKey key = reg.OpenSubKey(Path))
+					{
+						return key != null;
+					}
+				}
+			}
+			catch (Exception e)
+			{
+				Log.Here().Error("Error checking registry key: {0}", e.ToString());
+			}
+			return false;
+		}
+
+		public bool KeyExists(string Path)
+		{
+			var firstCheck = KeyExists(Path, RegistryView.Registry32);
+			if (firstCheck)
+			{
+				return firstCheck;
+			}
+			else
+			{
+				return KeyExists(Path, RegistryView.Registry64);
+			}
 		}
 
 		public string GetAppInstallPath(RegistryView registryView, string AppDisplayName)

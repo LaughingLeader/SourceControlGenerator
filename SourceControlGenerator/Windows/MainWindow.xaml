@@ -278,72 +278,100 @@
 
 			</TabItem>
 			<TabItem x:Name="Tab_Settings" Header="Settings" BorderThickness="0" Style="{StaticResource MainTabStyle}">
+				<TabItem.Resources>
+					<Style x:Key="SettingsListViewItemStyle" TargetType="ListViewItem" BasedOn="{StaticResource {x:Type ListViewItem}}">
+						<Setter Property="HorizontalContentAlignment" Value="Stretch" />
+						<Style.Triggers>
+							<Trigger Property="IsSelected" Value="True">
+								<Setter Property="Background" Value="{x:Null}" />
+								<Setter Property="BorderBrush" Value="{x:Null}" />
+							</Trigger>
+						</Style.Triggers>
+					</Style>
+					<Style x:Key="Settings_ListViewHeaderStyle" TargetType="{x:Type GridViewColumnHeader}" BasedOn="{StaticResource {x:Type GridViewColumnHeader}}">
+						<Setter Property="Visibility" Value="Collapsed" />
+					</Style>
+					<Style x:Key="SettingsContentControlStyle" TargetType="ContentControl" >
+						<Setter Property="HorizontalAlignment" Value="Stretch" />
+						
+						<Style.Triggers>
+							<DataTrigger Binding="{Binding Converter={StaticResource SettingsAttributeValueControlConverter}}" Value="{x:Type c:FileBrowseControl}">
+								<Setter Property="ContentTemplate">
+									<Setter.Value>
+										<DataTemplate>
+											<c:FileBrowseControl OpenFileText="{Binding OpenFileText}" BrowseType="{Binding BrowseType, Mode=TwoWay}" FileLocationText="{Binding Path=Value, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+																							OnOpen="{Binding OnOpened}" Filter="{Binding Filter}"
+																											 />
+										</DataTemplate>
+									</Setter.Value>
+								</Setter>
+							</DataTrigger>
+							<DataTrigger Binding="{Binding Converter={StaticResource SettingsAttributeValueControlConverter}}" Value="{x:Type TextBox}">
+								<Setter Property="ContentTemplate">
+									<Setter.Value>
+										<DataTemplate>
+											<TextBox Text="{Binding Path=Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+										</DataTemplate>
+									</Setter.Value>
+								</Setter>
+							</DataTrigger>
+						</Style.Triggers>
+					</Style>
+					<Style x:Key="SettingsHeaderStyle" TargetType="TextBlock" BasedOn="{StaticResource {x:Type TextBlock}}">
+						<Setter Property="Margin" Value="10" />
+						<Setter Property="FontSize" Value="16" />
+						<Setter Property="FontFamily" Value="Arial" />
+					</Style>
+				</TabItem.Resources>
 				<Grid>
 					<Grid.RowDefinitions>
 						<RowDefinition Height="*"/>
 						<RowDefinition Height="Auto" />
 					</Grid.RowDefinitions>
-					<ListView x:Name="SettingsDataGrid" Padding="10,0,10,0" ItemsSource="{Binding ModuleSettings, Converter={StaticResource SettingsAttributeConverter}, UpdateSourceTrigger=PropertyChanged}" AllowDrop="False"
-							 listview:ListViewLayoutManager.Enabled="True" ScrollViewer.VerticalScrollBarVisibility="Auto"
-						>
-						<ListView.ItemContainerStyle>
-							<Style TargetType="ListViewItem" BasedOn="{StaticResource {x:Type ListViewItem}}">
-								<Setter Property="HorizontalContentAlignment" Value="Stretch" />
-								<Style.Triggers>
-									<Trigger Property="IsSelected" Value="True">
-										<Setter Property="Background" Value="{x:Null}" />
-										<Setter Property="BorderBrush" Value="{x:Null}" />
-									</Trigger>
-								</Style.Triggers>
-							</Style>
-
-						</ListView.ItemContainerStyle>
-						<ListView.Resources>
-							<Style x:Key="Settings_ListViewHeaderStyle" TargetType="{x:Type GridViewColumnHeader}" BasedOn="{StaticResource {x:Type GridViewColumnHeader}}">
-								<Setter Property="Visibility" Value="Collapsed" />
-							</Style>
-						</ListView.Resources>
-						<ListView.View>
-							<GridView ColumnHeaderContainerStyle="{StaticResource Settings_ListViewHeaderStyle}">
-								<GridViewColumn Header="Settings Name" DisplayMemberBinding="{Binding Name}" listview:RangeColumn.MaxWidth="400" />
-								<GridViewColumn Header="Value" Width="600" listview:RangeColumn.IsFillColumn="True" listview:RangeColumn.MinWidth="200" >
-									<GridViewColumn.CellTemplate>
-										<DataTemplate DataType="{x:Type ListViewItem}">
-											<!-- Width="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ListView}}, Path=ActualWidth}"-->
-											<ContentControl Content="{Binding}" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch" >
-												<ContentControl.Style>
-													<Style TargetType="ContentControl" >
-														<Style.Triggers>
-															<DataTrigger Binding="{Binding Converter={StaticResource SettingsAttributeValueControlConverter}}" Value="{x:Type c:FileBrowseControl}">
-																<Setter Property="ContentTemplate">
-																	<Setter.Value>
-																		<DataTemplate>
-																			<c:FileBrowseControl OpenFileText="{Binding OpenFileText}" BrowseType="{Binding BrowseType, Mode=TwoWay}" FileLocationText="{Binding Path=Value, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
-																					OnOpen="{Binding OnOpened}" Filter="{Binding Filter}"
-																									 />
-																		</DataTemplate>
-																	</Setter.Value>
-																</Setter>
-															</DataTrigger>
-															<DataTrigger Binding="{Binding Converter={StaticResource SettingsAttributeValueControlConverter}}" Value="{x:Type TextBox}">
-																<Setter Property="ContentTemplate">
-																	<Setter.Value>
-																		<DataTemplate>
-																			<TextBox Text="{Binding Path=Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
-																		</DataTemplate>
-																	</Setter.Value>
-																</Setter>
-															</DataTrigger>
-														</Style.Triggers>
-													</Style>
-												</ContentControl.Style>
-											</ContentControl>
-										</DataTemplate>
-									</GridViewColumn.CellTemplate>
-								</GridViewColumn>
-							</GridView>
-						</ListView.View>
-					</ListView>
+					<ScrollViewer VerticalScrollBarVisibility="Auto">
+						<StackPanel Orientation="Vertical">
+							<TextBlock Text="{Binding ModuleName, FallbackValue='Module', StringFormat='\{0\} Settings'}" Style="{StaticResource SettingsHeaderStyle}" />
+							<Separator/>
+							<ListView x:Name="ModuleSettingsListView" Padding="10,0,10,0" ItemsSource="{Binding ModuleSettings, Converter={StaticResource SettingsAttributeConverter}, UpdateSourceTrigger=PropertyChanged}" AllowDrop="False"
+									 listview:ListViewLayoutManager.Enabled="True"
+									 ItemContainerStyle="{StaticResource SettingsListViewItemStyle}"
+								>
+								<ListView.View>
+									<GridView ColumnHeaderContainerStyle="{StaticResource Settings_ListViewHeaderStyle}">
+										<GridViewColumn Header="Settings Name" DisplayMemberBinding="{Binding Name}" listview:RangeColumn.MaxWidth="400" />
+										<GridViewColumn Header="Value" Width="600" listview:RangeColumn.IsFillColumn="True" listview:RangeColumn.MinWidth="200" >
+											<GridViewColumn.CellTemplate>
+												<DataTemplate DataType="{x:Type ListViewItem}">
+													<!-- Width="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ListView}}, Path=ActualWidth}"-->
+													<ContentControl Content="{Binding}" Style="{StaticResource SettingsContentControlStyle}" />
+												</DataTemplate>
+											</GridViewColumn.CellTemplate>
+										</GridViewColumn>
+									</GridView>
+								</ListView.View>
+							</ListView>
+							<Separator/>
+							<TextBlock Text="Source Control Generator Settings" Style="{StaticResource SettingsHeaderStyle}" />
+							<Separator/>
+							<ListView x:Name="MainSettingsListView" Padding="10,0,10,0" ItemsSource="{Binding Path=DataContext.AppSettings, RelativeSource={RelativeSource FindAncestor,AncestorType={x:Type Window}}, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource SettingsAttributeConverter}}" AllowDrop="False"
+									 listview:ListViewLayoutManager.Enabled="True"
+									 ItemContainerStyle="{StaticResource SettingsListViewItemStyle}"
+								>
+								<ListView.View>
+									<GridView ColumnHeaderContainerStyle="{StaticResource Settings_ListViewHeaderStyle}">
+										<GridViewColumn Header="Settings Name" DisplayMemberBinding="{Binding Name}" listview:RangeColumn.MaxWidth="400" />
+										<GridViewColumn Header="Value" Width="600" listview:RangeColumn.IsFillColumn="True" listview:RangeColumn.MinWidth="200" >
+											<GridViewColumn.CellTemplate>
+												<DataTemplate DataType="{x:Type ListViewItem}">
+													<ContentControl Content="{Binding}" Style="{StaticResource SettingsContentControlStyle}" />
+												</DataTemplate>
+											</GridViewColumn.CellTemplate>
+										</GridViewColumn>
+									</GridView>
+								</ListView.View>
+							</ListView>
+						</StackPanel>
+					</ScrollViewer>
 					<StackPanel Grid.Row="1" Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="2" cb:MarginSetter.Margin="2">
 						<Button Content="Save" Command="{Binding SaveSettingsCommand}" />
 						<Button Content="Default" Command="{Binding DefaultSettingsCommand}" />

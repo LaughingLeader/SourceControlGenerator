@@ -30,9 +30,11 @@
     <IsWebBootstrapper>false</IsWebBootstrapper>
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
+    <PlatformTarget>x86</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
@@ -53,6 +55,26 @@
   </PropertyGroup>
   <PropertyGroup>
     <ApplicationIcon>SourceControlGenerator_Icon.ico</ApplicationIcon>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x86\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>true</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
+    <OutputPath>bin\x86\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>true</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Common.Functions.GetRelativePath, Version=1.0.1.0, Culture=neutral, processorArchitecture=MSIL">
@@ -163,6 +185,7 @@
     <Compile Include="Data\App\ManagedProjectsData.cs" />
     <Compile Include="Data\Proxy\IconProxy.cs" />
     <Compile Include="Data\View\IconPathData.cs" />
+    <Compile Include="Data\View\LogData.cs" />
     <Compile Include="Data\View\LogWindowViewData.cs" />
     <Compile Include="Data\View\MenuBarData.cs" />
     <Compile Include="Data\View\MenuData.cs" />
@@ -170,7 +193,6 @@
     <Compile Include="Data\View\ModuleSelectionData.cs" />
     <Compile Include="Data\View\SettingsEntryData.cs" />
     <Compile Include="Enum\FileValidation.cs" />
-    <Compile Include="Enum\LogType.cs" />
     <Compile Include="Extensions\AttributeExtensions.cs" />
     <Compile Include="Extensions\ObservableCollectionExtensions.cs" />
     <Compile Include="FileGen\JsonInterface.cs" />
@@ -191,7 +213,6 @@
     <Compile Include="Core\FileCommands.cs" />
     <Compile Include="Data\App\KeywordData.cs" />
     <Compile Include="Data\App\UserKeywordData.cs" />
-    <Compile Include="Data\View\LogData.cs" />
     <Compile Include="Data\PropertyChangedBase.cs" />
     <Compile Include="Data\View\TemplateEditorData.cs" />
     <Compile Include="Enum\EditorTextPropertyType.cs" />
@@ -213,14 +234,7 @@
     <Compile Include="Controls\ListViewLayoutManager\RangeColumn.cs" />
     <Compile Include="Modules\Loader.cs" />
     <Compile Include="ThemeSystem\ThemeController.cs" />
-    <Compile Include="Util\EnumHelper.cs" />
-    <Compile Include="Util\HelperUtil\ImageHelper.cs" />
-    <Compile Include="Util\HelperUtil\WebHelper.cs" />
-    <Compile Include="Util\JunctionHelper.cs" />
-    <Compile Include="Util\Log.cs" />
     <Compile Include="Core\AppController.cs" />
-    <Compile Include="Util\HelperUtil\RegisteryHelper.cs" />
-    <Compile Include="Util\PropertyCopier.cs" />
     <Compile Include="Windows\AboutWindow.xaml.cs">
       <DependentUpon>AboutWindow.xaml</DependentUpon>
     </Compile>
@@ -291,7 +305,6 @@
     <Compile Include="Data\View\AvailableProjectViewData.cs" />
     <Compile Include="Data\App\GitGenerationSettings.cs" />
     <Compile Include="Data\Xml\XmlDataHelper.cs" />
-    <Compile Include="Util\Helpers.cs" />
     <Compile Include="Windows\MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -404,6 +417,12 @@
       <ProductName>.NET Framework 3.5 SP1</ProductName>
       <Install>false</Install>
     </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\SCG_Utilities\SCGUtilities.csproj">
+      <Project>{2709c5c0-66ae-49dc-a65b-391163a39602}</Project>
+      <Name>SCGUtilities</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

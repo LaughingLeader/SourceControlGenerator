@@ -7,6 +7,7 @@
 		xmlns:w="clr-namespace:LL.SCG.Windows;assembly=SourceControlGenerator"
 		xmlns:c="clr-namespace:LL.SCG.Controls;assembly=SourceControlGenerator"
 		xmlns:behavior="clr-namespace:LL.SCG.Controls.Behavior;assembly=SourceControlGenerator"
+		xmlns:core="clr-namespace:LL.SCG.Core;assembly=SourceControlGenerator"
 		mc:Ignorable="d"
 		Title="First Time Setup" Height="Auto" Width="700"
 		SizeToContent="Height"
@@ -21,19 +22,69 @@
 			</ResourceDictionary.MergedDictionaries>
 		</ResourceDictionary>
 	</w:UnclosableWindow.Resources>
-	<StackPanel Orientation="Vertical" behavior:MarginSetter.Margin="0,10" Margin="10" >
-		<TextBlock Text="Confirm the Divinity: Original Sin 2 data directory. This is used to scan for mods to add." Margin="4" TextAlignment="Center" />
-		<Grid Margin="2" >
+	<StackPanel Orientation="Vertical" >
+		<StackPanel.Resources>
+			<Style TargetType="TextBlock" BasedOn="{StaticResource {x:Type TextBlock}}">
+				<Setter Property="TextAlignment" Value="Right" />
+			</Style>
+		</StackPanel.Resources>
+		<TextBlock Text="Required Settings" Margin="4" TextAlignment="Center" />
+		<Separator />
+		<Grid Margin="8" >
 			<Grid.ColumnDefinitions>
 				<ColumnDefinition Width="Auto" />
 				<ColumnDefinition Width="*" />
 			</Grid.ColumnDefinitions>
-			<TextBlock Text="DOS2 Data Directory:" Margin="4" />
+			<Grid.RowDefinitions>
+				<RowDefinition />
+				<RowDefinition />
+			</Grid.RowDefinitions>
+			<TextBlock Text="DOS2 Data Directory:" Margin="4" ToolTip="{x:Static core:TooltipText.DOS2DataDirectory}" />
 			<c:FileBrowseControl Grid.Column="1" OpenFileText="Select Divinity: Original Sin 2 data directory..." BrowseType="Directory" ToolTip="{Binding Settings.DOS2DataDirectory, UpdateSourceTrigger=PropertyChanged}"
 								 FileLocationText="{Binding Settings.DOS2DataDirectory, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"/>
+			<TextBlock Text="Git Install Location:" Grid.Row="1" Margin="4" ToolTip="{x:Static core:TooltipText.GitDetection}" />
+			<c:FileBrowseControl Grid.Row="1" Grid.Column="1" OpenFileText="Select git directory..." BrowseType="Directory"
+								 FileLocationText="{Binding Path=Data.AppSettings.GitInstallPath, Source={x:Static core:AppController.Main}, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"/>
 		</Grid>
-		<StackPanel x:Name="___No_Name_" HorizontalAlignment="Center">
-			<Button x:Name="ConfirmButton" Content="OK" Padding="10,2" Click="ConfirmButton_Click" />
+		<StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="4">
+			<TextBlock Text="Missing git? Grab it here: " TextAlignment="Center" VerticalAlignment="Center" />
+			<Button x:Name="GitLinkButton" Content="Open Git Website" Margin="4" Padding="10,4" Command="{Binding Path=OpenGitWebsiteCommand, Source={x:Static core:AppController.Main}}" />
+		</StackPanel>
+		<Separator />
+		<TextBlock Text="Optional Settings" Margin="4" TextAlignment="Center" />
+		<Separator />
+		<Grid Margin="8">
+			<Grid.ColumnDefinitions>
+				<ColumnDefinition Width="Auto" />
+				<ColumnDefinition Width="*" />
+			</Grid.ColumnDefinitions>
+			<Grid.RowDefinitions>
+				<RowDefinition />
+				<RowDefinition />
+				<RowDefinition />
+				<RowDefinition />
+			</Grid.RowDefinitions>
+			<TextBlock Text="Default Git Author:" Margin="4" Grid.Row="0"  ToolTip="{x:Static core:TooltipText.GitAuthor}" />
+			<TextBox Grid.Row="0" Grid.Column="1" Text="{Binding Settings.DefaultAuthor, Mode=TwoWay}" behavior:TextBoxEnterKeyBehavior.EnterLosesFocus="True" />
+
+			<TextBlock Text="Default Git Email:" Margin="4" Grid.Row="1" ToolTip="{x:Static core:TooltipText.GitEmail}" />
+			<TextBox Grid.Row="1" Grid.Column="1" Text="{Binding Settings.DefaultEmail, Mode=TwoWay}" behavior:TextBoxEnterKeyBehavior.EnterLosesFocus="True" />
+			
+			<TextBlock Text="Git Repo Directory:" Margin="4" Grid.Row="2" ToolTip="{x:Static core:TooltipText.ProjectRootDirectory}" />
+			<c:FileBrowseControl Grid.Row="2" Grid.Column="1" OpenFileText="Select git repository directory..." BrowseType="Directory" ToolTip="{Binding Settings.GitRootDirectory, UpdateSourceTrigger=PropertyChanged}"
+								 FileLocationText="{Binding Settings.GitRootDirectory, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"/>
+
+			<TextBlock Text="Backup Directory:" Margin="4" Grid.Row="3" ToolTip="{x:Static core:TooltipText.BackupRootDirectory}" />
+			<c:FileBrowseControl Grid.Row="3" Grid.Column="1" OpenFileText="Select backup directory..." BrowseType="Directory" ToolTip="{Binding Settings.BackupRootDirectory, UpdateSourceTrigger=PropertyChanged}"
+								 FileLocationText="{Binding Settings.BackupRootDirectory, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"/>
+		</Grid>
+		<StackPanel HorizontalAlignment="Center" Orientation="Horizontal" VerticalAlignment="Center">
+			<Button x:Name="RelativeButton" Content="Use Relative Folders (Portable)" Padding="10,2" Command="{Binding Path=SetSetupFoldersToRelativeCommand, Source={x:Static core:AppController.Main}}" Margin="4,4,4,8" />
+			<Button x:Name="MyDocumentsButton" Content="Use MyDocuments Folders" Padding="10,2" Command="{Binding Path=SetSetupFoldersToMyDocumentsCommand, Source={x:Static core:AppController.Main}}" Margin="4,4,4,8" />
+		</StackPanel>
+		<Separator />
+		<StackPanel HorizontalAlignment="Center" Orientation="Horizontal" VerticalAlignment="Center">
+			<Button x:Name="ConfirmButton" Content="OK" Padding="10,2" Click="ConfirmButton_Click" Margin="4,4,4,8" />
 		</StackPanel>
 	</StackPanel>
 

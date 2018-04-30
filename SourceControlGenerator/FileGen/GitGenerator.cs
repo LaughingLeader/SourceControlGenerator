@@ -81,7 +81,7 @@ namespace LL.SCG.FileGen
 			return false;
 		}
 
-		public static bool InitRepository(string RepoPath)
+		public static bool InitRepository(string RepoPath, string AuthorName = "", string Email = "")
 		{
 			try
 			{
@@ -106,6 +106,10 @@ namespace LL.SCG.FileGen
 				stream.WriteLine("git config core.longpaths true");
 				stream.WriteLine("git config core.autocrlf true");
 				stream.WriteLine("git config core.safecrlf false"); // Disable the warnings
+
+				if(!String.IsNullOrWhiteSpace(AuthorName)) stream.WriteLine("git config user.name \"" + AuthorName + "\"");
+				if(!String.IsNullOrWhiteSpace(Email)) stream.WriteLine("git config user.email \"" + Email + "\"");
+
 				stream.Close();
 
 				process.WaitForExit(1000 * 60 * 5);
@@ -154,7 +158,8 @@ namespace LL.SCG.FileGen
 			{
 				//Directory.CreateDirectory(Path.GetDirectoryName(OutputFileName));
 
-				string command = "git archive HEAD --output=\"" + OutputFileName + "\"";
+				string command = "git archive master > --output=\"" + OutputFileName + "\"";
+				command += Environment.NewLine + "tar -rf " + OutputFileName + " .git";
 				if(UseAttributesFile)
 				{
 					//command += " --worktree-attributes";

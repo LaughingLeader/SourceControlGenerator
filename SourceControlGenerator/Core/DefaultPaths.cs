@@ -10,51 +10,56 @@ namespace LL.SCG
 {
 	public static class DefaultPaths
 	{
-		public static string DataFolder => @"Data/";
-		public static string MainAppSettings => DataFolder + @"Settings/MainSettings.json";
+		public static string DefaultPortableRootFolder => @"Data/";
+		public static string DefaultMyDocumentsRootFolder => @"SourceControlGenerator/";
+
+		public static string PortableSettingsFile => @"portable";
+
+		public static string RootFolder { get; set; } = DefaultPortableRootFolder;
+		public static string MainAppSettings => RootFolder + @"Settings/MainSettings.json";
 
 		public static string SourceControlGeneratorDataFile => @"SourceControlGenerator.json";
 
 		public static string ModuleSettings(IModuleData Data)
 		{
-			return DataFolder + @"Settings/" + Data.ModuleFolderName + @"/ModuleSettings.json";
+			return RootFolder + @"Settings/" + Data.ModuleFolderName + @"/ModuleSettings.json";
 		}
 
 		public static string ProjectsAppData(IModuleData Data)
 		{
-			return DataFolder + @"Settings/" + Data.ModuleFolderName + @"/AddedProjects.json";
+			return RootFolder + @"Settings/" + Data.ModuleFolderName + @"/AddedProjects.json";
 		}
 
 		public static string TemplateSettings(IModuleData Data)
 		{
-			return DataFolder + @"Settings/" + Data.ModuleFolderName + @"/Templates.xml";
+			return RootFolder + @"Settings/" + Data.ModuleFolderName + @"/Templates.xml";
 		}
 
 		public static string TemplateFiles(IModuleData Data)
 		{
-			return DataFolder + @"Templates/" + Data.ModuleFolderName + @"/";
+			return RootFolder + @"Templates/" + Data.ModuleFolderName + @"/";
 		}
 
 		public static string Keywords(IModuleData Data)
 		{
-			return DataFolder + @"Settings/" + Data.ModuleFolderName + @"/Keywords.json";
+			return RootFolder + @"Settings/" + Data.ModuleFolderName + @"/Keywords.json";
 		}
 
 		public static string GitGenSettings(IModuleData Data)
 		{
-			return DataFolder + @"Settings/" + Data.ModuleFolderName + @"/GitGeneration.json";
+			return RootFolder + @"Settings/" + Data.ModuleFolderName + @"/GitGeneration.json";
 		}
 
 		//Folders
 
 		public static string Backups(IModuleData Data)
 		{
-			return DataFolder + @"Backups/" + Data.ModuleFolderName;
+			return RootFolder + @"Backups/" + Data.ModuleFolderName;
 		}
 
 		public static string GitRoot(IModuleData Data)
 		{
-			return DataFolder + @"Projects/" + Data.ModuleFolderName;
+			return RootFolder + @"Projects/" + Data.ModuleFolderName;
 		}
 	}
 }

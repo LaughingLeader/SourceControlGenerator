@@ -46,7 +46,7 @@ namespace LL.SCG.Converters
 											Source = value,
 											SourceProperty = prop
 										});
-										//Log.Here().Important("Adding attribute: {0} {1} {2}", viewAttribute.Name, viewAttribute.FileBrowseType, viewAttribute.ViewType);
+										Log.Here().Important("Adding attribute: {0} {1} {2}", viewAttribute.Name, viewAttribute.FileBrowseType, viewAttribute.ViewType);
 									}
 								}
 								else
@@ -58,7 +58,7 @@ namespace LL.SCG.Converters
 						}
 						else
 						{
-							//Log.Here().Error($"Problem reading attributes from settings class: {value.GetType()} | {attributes.Count()}");
+							Log.Here().Error($"Problem reading attributes from settings class: {value.GetType()} | {attributes.Count()}");
 						}
 					}
 				}
@@ -70,6 +70,18 @@ namespace LL.SCG.Converters
 			else
 			{
 				Log.Here().Error("Converter value is null!");
+			}
+
+			if(settingsList.Count <= 0)
+			{
+				settingsList.Add(new SettingsEntryData()
+				{
+					Name = "Test",
+					BrowseType = FileBrowseType.Disabled,
+					ViewType = SettingsViewPropertyType.Text,
+					Source = null,
+					SourceProperty = null
+				});
 			}
 
 			return settingsList;

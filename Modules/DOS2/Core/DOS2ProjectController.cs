@@ -120,12 +120,47 @@ namespace LL.SCG.Core
 
 				var rootRepoDirectory = Directory.CreateDirectory(gitProjectRootDirectory);
 
-				AppController.Main.UpdateProgress(percentageIncrement, "Initializing git repo...");
-
-				if (GitGenerator.InitRepository(gitProjectRootDirectory))
+				if (!Directory.Exists(gitProjectRootDirectory))
 				{
-					Log.Here().Activity("Created git repository for Project ({0}) at {1}", modProject.ProjectName, gitProjectRootDirectory);
+					Directory.CreateDirectory(gitProjectRootDirectory);
+				}
 
+				if (generationSettings.InitGit)
+				{
+					AppController.Main.UpdateProgress(percentageIncrement, "Initializing git repo...");
+
+					if(GitGenerator.InitRepository(gitProjectRootDirectory, modProject.ModuleInfo.Author))
+					{
+						Log.Here().Activity("Created git repository for Project ({0}) at {1}", modProject.ProjectName, gitProjectRootDirectory);
+					}
+					else
+					{
+						Log.Here().Error("Error creating git repository for Project {0}.", modProject.ProjectName);
+					}
+				}
+
+				bool commitGit = false;
+				string commitMessage = "";
+
+				if (generationSettings.CreateJunctions)
+				{
+					AppController.Main.UpdateProgress(percentageIncrement, "Creating junctions...");
+
+					var sourceFolders = PrepareDirectories(modProject, Data.Settings.DirectoryLayouts);
+					if (GitGenerator.CreateJunctions(modProject.ProjectName, sourceFolders, Data))
+					{
+						Log.Here().Activity("[{0}] Successfully created junctions.", modProject.ProjectName);
+						commitGit = true;
+						commitMessage = "Junctioned project folders";
+					}
+					else
+					{
+						Log.Here().Error("[{0}] Problem creating junctions.", modProject.ProjectName);
+					}
+				}
+
+				if (generationSettings.TemplateSettings.Count > 0)
+				{
 					AppController.Main.UpdateProgress(percentageIncrement, "Generating templates...");
 
 					Parallel.ForEach(generationSettings.TemplateSettings, templateSetting =>
@@ -135,11 +170,16 @@ namespace LL.SCG.Core
 						{
 							if (templateSetting.Enabled)
 							{
-								string outputFIlePath = Path.Combine(gitProjectRootDirectory, templateData.ExportPath);
+								string outputFilePath = Path.Combine(gitProjectRootDirectory, templateData.ExportPath);
 								string outputText = GitGenerator.ReplaceKeywords(templateData.EditorText, modProject, MainAppData, Data);
-								if (!FileCommands.WriteToFile(outputFIlePath, outputText))
+								if (!FileCommands.WriteToFile(outputFilePath, outputText))
 								{
 									Log.Here().Error("[{0}] Failed to create template file at {1}", modProject.ProjectName, templateData.ExportPath);
+								}
+								else
+								{
+									commitGit = true;
+									commitMessage += (", added " + templateData.Name);
 								}
 							}
 							else
@@ -148,85 +188,72 @@ namespace LL.SCG.Core
 							}
 						}
 					});
+				}
 
-					if (generationSettings.SelectedLicense != LicenseType.None)
+				if (generationSettings.SelectedLicense != LicenseType.None)
+				{
+					AppController.Main.UpdateProgress(percentageIncrement, "Generating license...");
+
+					string outputText = "";
+					if (generationSettings.SelectedLicense == LicenseType.Custom)
 					{
-						AppController.Main.UpdateProgress(percentageIncrement, "Generating license...");
-
-						string outputText = "";
-						if (generationSettings.SelectedLicense == LicenseType.Custom)
+						var customLicenseTemplate = Data.Templates.Where(t => t.Name == "LICENSE").FirstOrDefault();
+						if (customLicenseTemplate != null)
 						{
-							var customLicenseTemplate = Data.Templates.Where(t => t.Name == "LICENSE").FirstOrDefault();
-							if (customLicenseTemplate != null)
-							{
-								outputText = customLicenseTemplate.EditorText;
-							}
+							outputText = customLicenseTemplate.EditorText;
 						}
-						else
-						{
-							switch (generationSettings.SelectedLicense)
-							{
-								case LicenseType.MIT:
-									outputText = Properties.Resources.License_MIT;
-									break;
-								case LicenseType.Apache:
-									outputText = Properties.Resources.License_Apache;
-									break;
-								case LicenseType.GNU:
-									outputText = Properties.Resources.License_GNU;
-									break;
-							}
-						}
-
-						if (!String.IsNullOrEmpty(outputText))
-						{
-							outputText = GitGenerator.ReplaceKeywords(outputText, modProject, MainAppData, Data);
-						}
-
-						string licenseFile = Path.Combine(gitProjectRootDirectory, "LICENSE");
-
-						if (!FileCommands.WriteToFile(licenseFile, outputText))
-						{
-							Log.Here().Error("[{0}] Failed to write license template file at {1}", modProject.ProjectName, licenseFile);
-						}
-					}
-
-					AppController.Main.UpdateProgress(percentageIncrement, "Setting initial git commit...");
-
-					GitGenerator.Commit(gitProjectRootDirectory, "Initial Commit");
-
-					AppController.Main.UpdateProgress(percentageIncrement, "Creating junctions...");
-
-					var sourceFolders = PrepareDirectories(modProject, Data.Settings.DirectoryLayouts);
-					if (GitGenerator.CreateJunctions(modProject.ProjectName, sourceFolders, Data))
-					{
-						Log.Here().Activity("[{0}] Successfully created junctions.", modProject.ProjectName);
 					}
 					else
 					{
-						Log.Here().Error("[{0}] Problem creating junctions.", modProject.ProjectName);
+						switch (generationSettings.SelectedLicense)
+						{
+							case LicenseType.MIT:
+								outputText = Properties.Resources.License_MIT;
+								break;
+							case LicenseType.Apache:
+								outputText = Properties.Resources.License_Apache;
+								break;
+							case LicenseType.GNU:
+								outputText = Properties.Resources.License_GNU;
+								break;
+						}
 					}
 
-					AppController.Main.UpdateProgress(percentageIncrement, "Committing new files...");
-
-					GitGenerator.Commit(gitProjectRootDirectory, "Junctioned Project Folders");
-
-					AppController.Main.UpdateProgress(percentageIncrement, "Generating source control data file...");
-
-					SourceControlData sourceControlData = new SourceControlData()
+					if (!String.IsNullOrEmpty(outputText))
 					{
-						ProjectName = modProject.ProjectName,
-						ProjectUUID = modProject.UUID
-					};
+						outputText = GitGenerator.ReplaceKeywords(outputText, modProject, MainAppData, Data);
+					}
 
-					modProject.GitData = sourceControlData;
+					string licenseFile = Path.Combine(gitProjectRootDirectory, "LICENSE");
 
-					FileCommands.Save.SaveSourceControlData(sourceControlData, gitProjectRootDirectory);
+					if (!FileCommands.WriteToFile(licenseFile, outputText))
+					{
+						Log.Here().Error("[{0}] Failed to write license template file at {1}", modProject.ProjectName, licenseFile);
+					}
+					else
+					{
+						commitGit = true;
+						commitMessage += ", added license";
+					}
 				}
-				else
+
+				if (generationSettings.InitGit && commitGit)
 				{
-					Log.Here().Error("Error creating git repository for Project {0}.", modProject.ProjectName);
+					AppController.Main.UpdateProgress(percentageIncrement, "Committing new files...");
+					GitGenerator.Commit(gitProjectRootDirectory, commitMessage);
 				}
+
+				AppController.Main.UpdateProgress(percentageIncrement, "Generating source control data file...");
+
+				SourceControlData sourceControlData = new SourceControlData()
+				{
+					ProjectName = modProject.ProjectName,
+					ProjectUUID = modProject.UUID
+				};
+
+				modProject.GitData = sourceControlData;
+
+				FileCommands.Save.SaveSourceControlData(sourceControlData, gitProjectRootDirectory);
 
 				AppController.Main.UpdateProgress(percentageIncrement);
 
@@ -325,13 +352,12 @@ namespace LL.SCG.Core
 
 			//Log.Here().Important($"System date format: {sysFormat}");
 
-			string archiveName = modProject.ProjectName + "_" + DateTime.Now.ToString(sysFormat + "_HH-mm-ss") + ".zip";
+			string archiveName = modProject.ProjectName + "_" + DateTime.Now.ToString(sysFormat + "_HH-mm-ss");
 			string archivePath = Path.Combine(OutputDirectory, archiveName);
 			string gitProjectDirectory = "";
 
 			bool gitProjectDetected = false;
 
-			/*
 			if (!String.IsNullOrEmpty(Data.Settings.GitRootDirectory))
 			{
 				gitProjectDirectory = Path.Combine(Data.Settings.GitRootDirectory, modProject.ProjectName);
@@ -341,18 +367,22 @@ namespace LL.SCG.Core
 					gitProjectDetected = true;
 				}
 			}
-			*/
+
+			var sourceFolders = PrepareDirectories(modProject, Data.Settings.DirectoryLayouts);
 
 			if (!gitProjectDetected)
 			{
+				archivePath += ".zip";
 				//Log.Here().Activity($"Git project not found. Archiving project {modProject.ProjectName} from project folders directly.");
-				var sourceFolders = PrepareDirectories(modProject, Data.Settings.DirectoryLayouts);
 				return BackupGenerator.CreateArchiveFromRoot(Data.Settings.DOS2DataDirectory, sourceFolders, archivePath);
 			}
 			else
 			{
+				archivePath += ".tar";
+				return GitGenerator.Archive(gitProjectDirectory, archivePath);
+
 				//Seems to have a problem with junctions and long paths
-				return BackupGenerator.CreateArchiveFromRepo(gitProjectDirectory, archivePath);
+				//return BackupGenerator.CreateArchiveFromRepo(gitProjectDirectory, archivePath);
 			}
 		}
 

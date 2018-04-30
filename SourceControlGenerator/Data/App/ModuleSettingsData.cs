@@ -78,6 +78,34 @@ namespace LL.SCG.Data
 
 	public class ModuleSettingsData : PropertyChangedBase, IModuleSettingsData
 	{
+		private string defaultAuthor;
+
+		[VisibleToView("Default Git Author", SettingsViewPropertyType.Text)]
+		[Bindable(BindableSupport.Yes, BindingDirection.TwoWay)]
+		public string DefaultAuthor
+		{
+			get { return defaultAuthor; }
+			set
+			{
+				defaultAuthor = value;
+				RaisePropertyChanged("DefaultAuthor");
+			}
+		}
+
+		private string defaultEmail;
+
+		[VisibleToView("Default Git Email", SettingsViewPropertyType.Text)]
+		[Bindable(BindableSupport.Yes, BindingDirection.TwoWay)]
+		public string DefaultEmail
+		{
+			get { return defaultEmail; }
+			set
+			{
+				defaultEmail = value;
+				RaisePropertyChanged("DefaultEmail");
+			}
+		}
+
 		private string gitRootDirectory;
 
 		[VisibleToView("Git Projects Root Directory", FileBrowseType.Directory)]

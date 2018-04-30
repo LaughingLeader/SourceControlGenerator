@@ -3,7 +3,6 @@ using System.IO;
 using System.Diagnostics;
 using LL.SCG.Util;
 using System;
-using LL.SCG.Data;
 using System.ComponentModel;
 
 namespace LL.SCG
@@ -11,6 +10,14 @@ namespace LL.SCG
 	public delegate void LogDelegate(string Message, params object[] Vars);
 	public delegate void OnLog(string Message);
 	public delegate void OnSpecificLog(string Message, LogType logType);
+
+	public enum LogType
+	{
+		Activity,
+		Important,
+		Warning,
+		Error
+	}
 
 	public class LogContext
 	{

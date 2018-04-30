@@ -371,6 +371,7 @@ namespace LL.SCG.Windows
 
 			if (selectedProjects != null && selectedProjects.Count > 0)
 			{
+				Controller.Data.LockScreenVisibility = Visibility.Visible;
 				gitGenerationWindow.Init(this, settings, selectedProjects);
 				gitGenerationWindow.Owner = this;
 				gitGenerationWindow.Show();
@@ -388,12 +389,13 @@ namespace LL.SCG.Windows
 
 		public void StartGitGeneration(GitGenerationSettings settings)
 		{
+			Controller.Data.LockScreenVisibility = Visibility.Collapsed;
 			onGitGenerationConfirmed?.Invoke();
 		}
 
 		public void OnGitWindowCanceled()
 		{
-			
+			Controller.Data.LockScreenVisibility = Visibility.Collapsed;
 		}
 
 		private void SettingsDataGrid_Selected(object sender, RoutedEventArgs e)

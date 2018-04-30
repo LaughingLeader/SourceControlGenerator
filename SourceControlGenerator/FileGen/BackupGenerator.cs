@@ -28,7 +28,7 @@ namespace LL.SCG.FileGen
 					{
 						if (Directory.Exists(folderData.SourcePath))
 						{
-							foreach(var file in Directory.EnumerateFiles(folderData.SourcePath))
+							foreach(var file in Directory.EnumerateFiles(folderData.SourcePath, "*", SearchOption.AllDirectories))
 							{
 								FileInfo fileInfo = new FileInfo(file);
 								string fileKey = file.Replace(rootPath, "");

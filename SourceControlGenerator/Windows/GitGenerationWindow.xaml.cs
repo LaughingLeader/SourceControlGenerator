@@ -61,5 +61,42 @@ namespace LL.SCG.Windows
 			this.Hide();
 			mainWindow.StartGitGeneration(generationSettings);
 		}
+
+		private void OptionsCheckBox_MouseRightButtonUp(object sender, MouseButtonEventArgs e)
+		{
+			if (sender is CheckBox checkBox)
+			{
+				StackPanel parent = (StackPanel)this.FindName("OptionsPanel");
+
+				var checkBoxes = parent.Children.OfType<CheckBox>().ToList();
+
+				if(checkBox.IsChecked == true)
+				{
+					bool targetVal = false;
+					//All true
+					if(!checkBoxes.Any(c => c.IsChecked == false))
+					{
+						targetVal = false;
+					}
+					else
+					{
+						targetVal = true;
+					}
+
+					foreach (var child in checkBoxes)
+					{
+						if (child != checkBox) child.IsChecked = targetVal;
+					}
+				}
+				else if (checkBox.IsChecked == false)
+				{
+					checkBox.IsChecked = true;
+					foreach (var child in checkBoxes)
+					{
+						if (child != checkBox) child.IsChecked = false;
+					}
+				}
+			}
+		}
 	}
 }

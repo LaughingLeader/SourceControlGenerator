@@ -43,6 +43,41 @@ namespace LL.SCG.Data
 		[JsonIgnore]
 		public ObservableCollection<IProjectData> ExportProjects { get; set; }
 
+		private bool createJunctions = true;
+
+		public bool CreateJunctions
+		{
+			get { return createJunctions; }
+			set
+			{
+				createJunctions = value;
+				RaisePropertyChanged("CreateJunctions");
+			}
+		}
+
+		private bool initGit = true;
+
+		public bool InitGit
+		{
+			get { return initGit; }
+			set
+			{
+				initGit = value;
+				RaisePropertyChanged("InitGit");
+			}
+		}
+
+		private bool initialGitCommit = true;
+
+		public bool InitialGitCommit
+		{
+			get { return initialGitCommit; }
+			set
+			{
+				initialGitCommit = value;
+				RaisePropertyChanged("InitialGitCommit");
+			}
+		}
 
 		public GitGenerationSettings()
 		{

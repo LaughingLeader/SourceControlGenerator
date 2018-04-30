@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+using HtmlAgilityPack;
+
 namespace MarkdownConverter
 {
 	public class HTMLFormatter
@@ -16,12 +18,13 @@ namespace MarkdownConverter
 		public ITagReplacer Strikethrough { get; set; }
 		public ITagReplacer List { get; set; }
 		public ITagReplacer OrderedList { get; set; }
+		public ITagReplacer ListItem { get; set; }
 		public ITagReplacer Quote { get; set; }
 		public ITagReplacer Code { get; set; }
 
 		public HTMLFormatter()
 		{
-			Link = new TagReplacerData("<a>");
+			Link = new TagReplacerData("<a href=*>");
 			Header = new TagReplacerCollection
 			(
 				new TagReplacerData("<h1>"), 
@@ -31,6 +34,15 @@ namespace MarkdownConverter
 				new TagReplacerData("<h5>"),
 				new TagReplacerData("<h6>")
 			);
+			Bold = new TagReplacerData("<b>");
+			Underline = new TagReplacerData("<u>");
+			Italic = new TagReplacerData("<i>");
+			Strikethrough = new TagReplacerData("<s>");
+			List = new TagReplacerData("<ul>");
+			OrderedList = new TagReplacerData("<ol>");
+			ListItem = new TagReplacerData("<li>");
+			Quote = new TagReplacerData("<q>");
+			Code = new TagReplacerData("<code>");
 		}
 	}
 
