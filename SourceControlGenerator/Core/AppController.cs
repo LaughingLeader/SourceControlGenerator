@@ -421,6 +421,18 @@ namespace LL.SCG.Core
 			}, fileName);
 		}
 
+		public void MenuAction_ToggleMarkdownWindow()
+		{
+			if(!mainWindow.MarkdownConverterWindow.IsVisible)
+			{
+				mainWindow.MarkdownConverterWindow.Show();
+			}
+			else
+			{
+				mainWindow.MarkdownConverterWindow.Hide();
+			}
+		}
+
 		public void MenuAction_OpenAbout()
 		{
 			if(!mainWindow.AboutWindow.IsVisible)
@@ -610,6 +622,15 @@ namespace LL.SCG.Core
 				{
 					Header = "Save Log...",
 					ClickCommand = new ActionCommand(MenuAction_SaveLog)
+				}
+			);
+
+			Data.MenuBarData.Tools.Register("Base",
+				new MenuData(MenuID.Markdown)
+				{
+					Header = "Open Markdown Converter",
+					ClickCommand = new ActionCommand(MenuAction_ToggleMarkdownWindow),
+					ShortcutKey = Key.F3
 				}
 			);
 

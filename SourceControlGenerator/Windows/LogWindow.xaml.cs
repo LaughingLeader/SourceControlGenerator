@@ -22,7 +22,7 @@ namespace LL.SCG.Windows
 	/// <summary>
 	/// Interaction logic for LogWindow.xaml
 	/// </summary>
-	public partial class LogWindow : HideWindowBase
+	public partial class LogWindow : HideWindowBase, IToolWindow
 	{
 		public LogWindowViewData Data { get; set; }
 

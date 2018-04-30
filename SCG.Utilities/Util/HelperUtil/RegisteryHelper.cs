@@ -9,11 +9,11 @@ namespace LL.SCG.Util.HelperUtil
 {
 	public class RegisteryHelper
 	{
-		public string GetRegistryKeyValue(RegistryView registryView, string MatchName, string MatchValue, string KeyName, string RegistryKeyLocation)
+		public string GetRegistryKeyValue(RegistryView registryView, string MatchName, string MatchValue, string KeyName, string RegistryKeyLocation, RegistryHive registryHive = RegistryHive.LocalMachine)
 		{
 			try
 			{
-				using (var reg = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, registryView))
+				using (var reg = RegistryKey.OpenBaseKey(registryHive, registryView))
 				{
 					using (Microsoft.Win32.RegistryKey key = reg.OpenSubKey(RegistryKeyLocation))
 					{
@@ -25,7 +25,7 @@ namespace LL.SCG.Util.HelperUtil
 								if (keyDisplayName != null && keyDisplayName == MatchValue)
 								{
 									string keyValue = subkey.GetValue(KeyName) as string;
-									Log.Here().Activity("Matched {0} to {1} in {2}. {3} = {4}", MatchName, MatchValue, RegistryKeyLocation, KeyName, keyValue);
+									//Log.Here().Activity("Matched {0} to {1} in {2}. {3} = {4}", MatchName, MatchValue, RegistryKeyLocation, KeyName, keyValue);
 									return keyValue;
 								}
 							}
@@ -41,11 +41,11 @@ namespace LL.SCG.Util.HelperUtil
 			return "";
 		}
 
-		public string GetRegistryKeyValue(RegistryView registryView, string KeyName, string KeyLocation)
+		public string GetRegistryKeyValue(RegistryView registryView, string KeyName, string KeyLocation, RegistryHive registryHive = RegistryHive.LocalMachine)
 		{
 			try
 			{
-				using (var reg = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, registryView))
+				using (var reg = RegistryKey.OpenBaseKey(registryHive, registryView))
 				{
 					foreach(var name in reg.GetSubKeyNames())
 					{
@@ -56,11 +56,11 @@ namespace LL.SCG.Util.HelperUtil
 					{
 						foreach (string subkey_name in key.GetSubKeyNames())
 						{
-							Log.Here().Activity($"Checking subkey {subkey_name}");
+							//Log.Here().Activity($"Checking subkey {subkey_name}");
 							using (RegistryKey subkey = key.OpenSubKey(subkey_name))
 							{
 								string keyValue = subkey.GetValue(KeyName) as string;
-								Log.Here().Activity("Found {0} in {1}. Value = {2}", KeyName, KeyLocation, keyValue);
+								//Log.Here().Activity("Found {0} in {1}. Value = {2}", KeyName, KeyLocation, keyValue);
 								return keyValue;
 							}
 						}
@@ -75,17 +75,17 @@ namespace LL.SCG.Util.HelperUtil
 			return "";
 		}
 
-		public string GetRegistryKeyValue(RegistryView registryView, string SubKeyName, string KeyName, string KeyLocation)
+		public string GetRegistryKeyValue(RegistryView registryView, string SubKeyName, string KeyName, string KeyLocation, RegistryHive registryHive = RegistryHive.LocalMachine)
 		{
 			try
 			{
-				using (var reg = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, registryView))
+				using (var reg = RegistryKey.OpenBaseKey(registryHive, registryView))
 				{
 					using (Microsoft.Win32.RegistryKey key = reg.OpenSubKey(KeyLocation))
 					{
 						foreach (string subkey_name in key.GetSubKeyNames().Where(k => k == KeyName))
 						{
-							Log.Here().Activity($"Checking subkey {subkey_name}");
+							//Log.Here().Activity($"Checking subkey {subkey_name}");
 							using (RegistryKey subkey = key.OpenSubKey(subkey_name))
 							{
 								string subkeyValue = subkey.GetValue(SubKeyName) as string;
@@ -103,38 +103,38 @@ namespace LL.SCG.Util.HelperUtil
 			return "";
 		}
 
-		public string GetRegistryKeyValue(string KeyName, string KeyLocation)
+		public string GetRegistryKeyValue(string KeyName, string KeyLocation, RegistryHive registryHive = RegistryHive.LocalMachine)
 		{
-			var firstCheck = GetRegistryKeyValue(RegistryView.Registry64, KeyName, KeyLocation);
+			var firstCheck = GetRegistryKeyValue(RegistryView.Registry64, KeyName, KeyLocation, registryHive);
 			if (!String.IsNullOrEmpty(firstCheck))
 			{
 				return firstCheck;
 			}
 			else
 			{
-				return GetRegistryKeyValue(RegistryView.Registry32, KeyName, KeyLocation);
+				return GetRegistryKeyValue(RegistryView.Registry32, KeyName, KeyLocation, registryHive);
 			}
 		}
 
-		public string GetRegistryKeyValue(string SubKeyName, string KeyName, string KeyLocation)
+		public string GetRegistryKeyValue(string SubKeyName, string KeyName, string KeyLocation, RegistryHive registryHive = RegistryHive.LocalMachine)
 		{
-			var firstCheck = GetRegistryKeyValue(RegistryView.Registry64, SubKeyName, KeyName, KeyLocation);
+			var firstCheck = GetRegistryKeyValue(RegistryView.Registry64, SubKeyName, KeyName, KeyLocation, registryHive);
 			if (!String.IsNullOrEmpty(firstCheck))
 			{
 				return firstCheck;
 			}
 			else
 			{
-				return GetRegistryKeyValue(RegistryView.Registry32, SubKeyName, KeyName, KeyLocation);
+				return GetRegistryKeyValue(RegistryView.Registry32, SubKeyName, KeyName, KeyLocation, registryHive);
 			}
 		}
 
-		public bool KeyExists(string Path, RegistryView registryView)
+		public bool KeyExists(string Path, RegistryView registryView, RegistryHive registryHive = RegistryHive.LocalMachine)
 		{
 			//Computer\HKEY_LOCAL_MACHINE\SOFTWARE\GitForWindows
 			try
 			{
-				using (var reg = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, registryView))
+				using (var reg = RegistryKey.OpenBaseKey(registryHive, registryView))
 				{
 					using (Microsoft.Win32.RegistryKey key = reg.OpenSubKey(Path))
 					{
@@ -149,16 +149,16 @@ namespace LL.SCG.Util.HelperUtil
 			return false;
 		}
 
-		public bool KeyExists(string Path)
+		public bool KeyExists(string Path, RegistryHive registryHive = RegistryHive.LocalMachine)
 		{
-			var firstCheck = KeyExists(Path, RegistryView.Registry32);
+			var firstCheck = KeyExists(Path, RegistryView.Registry32, registryHive);
 			if (firstCheck)
 			{
 				return firstCheck;
 			}
 			else
 			{
-				return KeyExists(Path, RegistryView.Registry64);
+				return KeyExists(Path, RegistryView.Registry64, registryHive);
 			}
 		}
 

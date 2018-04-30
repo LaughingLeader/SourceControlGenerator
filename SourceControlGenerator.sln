@@ -5,11 +5,11 @@ VisualStudioVersion = 15.0.27130.2024
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SourceControlGenerator", "SourceControlGenerator\SourceControlGenerator.csproj", "{E96F2EEB-E207-4AB6-9B85-F86B3F386117}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SCGDOS2", "Modules\DOS2\SCGDOS2.csproj", "{7653F93F-78A9-4D82-9289-C40FBD3FF3F6}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SCG.Modules.DOS2", "SCG.Modules\SCG.DOS2\SCG.Modules.DOS2.csproj", "{7653F93F-78A9-4D82-9289-C40FBD3FF3F6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MarkdownConverter", "MarkdownConverter\MarkdownConverter.csproj", "{139A1053-E54E-4FD7-B64A-A3F0A2CAE350}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SCG.MarkdownConverter", "SCG.MarkdownConverter\SCG.MarkdownConverter.csproj", "{139A1053-E54E-4FD7-B64A-A3F0A2CAE350}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SCGUtilities", "SCG_Utilities\SCGUtilities.csproj", "{2709C5C0-66AE-49DC-A65B-391163A39602}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SCG.Utilities", "SCG.Utilities\SCG.Utilities.csproj", "{2709C5C0-66AE-49DC-A65B-391163A39602}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

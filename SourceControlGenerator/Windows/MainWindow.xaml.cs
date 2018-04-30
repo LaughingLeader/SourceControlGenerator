@@ -27,6 +27,10 @@ using LL.SCG.FileGen;
 
 namespace LL.SCG.Windows
 {
+	public interface IToolWindow
+	{
+		void Init(AppController appController);
+	}
 	/// <summary>
 	/// Interaction logic for MainWindow.xaml
 	/// </summary>
@@ -48,8 +52,24 @@ namespace LL.SCG.Windows
 			set { aboutWindow = value; }
 		}
 
+		private MarkdownConverterWindow markdownConverterWindow;
+
+		public MarkdownConverterWindow MarkdownConverterWindow
+		{
+			get { return markdownConverterWindow; }
+			set { markdownConverterWindow = value; }
+		}
 
 		private GitGenerationWindow gitGenerationWindow;
+
+		public GitGenerationWindow GitGenerationWindow
+		{
+			get { return gitGenerationWindow; }
+			set { gitGenerationWindow = value; }
+		}
+
+		public List<Window> SubWindows { get; set; }
+
 		private UserControl lastModuleView;
 
 		public AppController Controller
@@ -70,17 +90,26 @@ namespace LL.SCG.Windows
 
 			_instance = this;
 
-			logWindow = new LogWindow(this);
-			logWindow.Hide();
+			LogWindow = new LogWindow(this);
+			AboutWindow = new AboutWindow(this);
+			MarkdownConverterWindow = new MarkdownConverterWindow();
+			GitGenerationWindow = new GitGenerationWindow();
 
-			aboutWindow = new AboutWindow(this);
-			aboutWindow.Hide();
+			SubWindows = new List<Window>()
+			{
+				LogWindow,
+				AboutWindow,
+				MarkdownConverterWindow,
+				GitGenerationWindow
+			};
+
+			foreach(var window in SubWindows)
+			{
+				window.Hide();
+			}
 
 			Controller = new AppController(this);
 			DataContext = Controller.Data;
-
-			logWindow.Init(Controller);
-			aboutWindow.Init(Controller);
 
 			Controller.OnModuleSet += LoadProjectModuleView;
 
@@ -103,6 +132,16 @@ namespace LL.SCG.Windows
 			//Super long tooltip durations
 			ToolTipService.ShowDurationProperty.OverrideMetadata(typeof(DependencyObject), new FrameworkPropertyMetadata(Int32.MaxValue));
 			Controller.OnAppLoaded();
+
+			foreach (var window in SubWindows)
+			{
+				if(window is IToolWindow toolWindow)
+				{
+					toolWindow.Init(Controller);
+				}
+
+				window.Owner = this;
+			}
 		}
 
 		public Task<int> StartLoadingModules()

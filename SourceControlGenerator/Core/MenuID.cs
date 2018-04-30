@@ -15,5 +15,6 @@ namespace LL.SCG.Core
 		public static string IssuesLink => "Base.IssuesLink";
 		public static string RepoLink => "Base.RepoLink";
 		public static string About => "Base.About";
+		public static string Markdown => "Base.MarkdownWindowToggle";
 	}
 }

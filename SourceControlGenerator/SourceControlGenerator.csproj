@@ -187,6 +187,7 @@
     <Compile Include="Data\View\IconPathData.cs" />
     <Compile Include="Data\View\LogData.cs" />
     <Compile Include="Data\View\LogWindowViewData.cs" />
+    <Compile Include="Data\View\MarkdownConverterViewData.cs" />
     <Compile Include="Data\View\MenuBarData.cs" />
     <Compile Include="Data\View\MenuData.cs" />
     <Compile Include="Data\View\ModuleData.cs" />
@@ -237,6 +238,9 @@
     <Compile Include="Core\AppController.cs" />
     <Compile Include="Windows\AboutWindow.xaml.cs">
       <DependentUpon>AboutWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Windows\MarkdownConverterWindow.xaml.cs">
+      <DependentUpon>MarkdownConverterWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="Windows\UnclosableWindow.cs" />
     <Compile Include="Windows\EditTextWindow.xaml.cs">
@@ -310,6 +314,10 @@
       <SubType>Code</SubType>
     </Compile>
     <Page Include="Windows\LogWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Windows\MarkdownConverterWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -419,9 +427,13 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\SCG_Utilities\SCGUtilities.csproj">
+    <ProjectReference Include="..\SCG.MarkdownConverter\SCG.MarkdownConverter.csproj">
+      <Project>{139a1053-e54e-4fd7-b64a-a3f0a2cae350}</Project>
+      <Name>SCG.MarkdownConverter</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\SCG.Utilities\SCG.Utilities.csproj">
       <Project>{2709c5c0-66ae-49dc-a65b-391163a39602}</Project>
-      <Name>SCGUtilities</Name>
+      <Name>SCG.Utilities</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

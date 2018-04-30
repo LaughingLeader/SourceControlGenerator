@@ -8,7 +8,7 @@
 		xmlns:behavior="clr-namespace:LL.SCG.Controls.Behavior"
 		xmlns:c="clr-namespace:LL.SCG.Controls"
 		xmlns:core="clr-namespace:LL.SCG.Core"
-		xmlns:log="clr-namespace:LL.SCG;assembly=SCGUtilities"
+		xmlns:log="clr-namespace:LL.SCG;assembly=SCG.Utilities"
 		mc:Ignorable="d"
 		Title="Logs (Source Control Generator)" Height="400" Width="800"
 		WindowStartupLocation="CenterOwner"

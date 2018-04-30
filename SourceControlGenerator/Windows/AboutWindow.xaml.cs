@@ -18,7 +18,7 @@ namespace LL.SCG.Windows
 	/// <summary>
 	/// Interaction logic for AboutWindow.xaml
 	/// </summary>
-	public partial class AboutWindow : UnclosableWindow
+	public partial class AboutWindow : UnclosableWindow, IToolWindow
 	{
 		private MainWindow mainWindow;
 

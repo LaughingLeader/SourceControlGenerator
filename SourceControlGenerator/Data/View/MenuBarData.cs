@@ -33,6 +33,19 @@ namespace LL.SCG.Data.View
 			}
 		}
 
+		private MenuData toolsMenu;
+
+		public MenuData Tools
+		{
+			get { return toolsMenu; }
+			set
+			{
+				toolsMenu = value;
+				RaisePropertyChanged("Tools");
+			}
+		}
+
+
 		private MenuData helpMenu;
 
 		public MenuData Help
@@ -70,12 +83,14 @@ namespace LL.SCG.Data.View
 		{
 			File = new MenuData("Base.File", "File");
 			Options = new MenuData("Base.Options", "Options");
+			Tools = new MenuData("Base.Tools", "Tools");
 			Help = new MenuData("Base.Help", "Help");
 
 			Menus = new ObservableCollection<MenuData>()
 			{
 				File,
 				Options,
+				Tools,
 				Help
 			};
 		}
