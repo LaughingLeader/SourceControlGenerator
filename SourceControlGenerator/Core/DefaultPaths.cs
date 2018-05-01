@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -10,56 +11,78 @@ namespace LL.SCG
 {
 	public static class DefaultPaths
 	{
-		public static string DefaultPortableRootFolder => @"Data/";
-		public static string DefaultMyDocumentsRootFolder => @"SourceControlGenerator/";
+		public static string DefaultPortableRootFolder => @"Data\";
+		public static string DefaultMyDocumentsRootFolder => @"SourceControlGenerator\";
 
 		public static string PortableSettingsFile => @"portable";
 
 		public static string RootFolder { get; set; } = DefaultPortableRootFolder;
-		public static string MainAppSettings => RootFolder + @"Settings/MainSettings.json";
+
+		public static string MainSettingsFolder => RootFolder + @"Settings\";
+
+		public static string MainAppSettingsFile => MainSettingsFolder + @"MainSettings.json";
 
 		public static string SourceControlGeneratorDataFile => @"SourceControlGenerator.json";
 
-		public static string ModuleSettings(IModuleData Data)
+		//Module
+		public static string ModuleRootFolder(IModuleData Data)
 		{
-			return RootFolder + @"Settings/" + Data.ModuleFolderName + @"/ModuleSettings.json";
+			return Path.Combine(RootFolder, Data.ModuleFolderName);
 		}
 
-		public static string ProjectsAppData(IModuleData Data)
+		public static string ModuleBackupsFolder(IModuleData Data)
 		{
-			return RootFolder + @"Settings/" + Data.ModuleFolderName + @"/AddedProjects.json";
+			return RootFolder + Data.ModuleFolderName + @"\Backups\";
 		}
 
-		public static string TemplateSettings(IModuleData Data)
+		public static string ModuleProjectsFolder(IModuleData Data)
 		{
-			return RootFolder + @"Settings/" + Data.ModuleFolderName + @"/Templates.xml";
+			return RootFolder + Data.ModuleFolderName + @"\Projects\";
 		}
 
-		public static string TemplateFiles(IModuleData Data)
+		public static string ModuleSettingsFolder(IModuleData Data)
 		{
-			return RootFolder + @"Templates/" + Data.ModuleFolderName + @"/";
+			return RootFolder + Data.ModuleFolderName + @"\Settings\";
 		}
 
-		public static string Keywords(IModuleData Data)
+		public static string ModuleExportFolder(IModuleData Data)
 		{
-			return RootFolder + @"Settings/" + Data.ModuleFolderName + @"/Keywords.json";
+			return RootFolder + Data.ModuleFolderName + @"\Export\";
 		}
 
-		public static string GitGenSettings(IModuleData Data)
+		public static string ModuleTemplatesFolder(IModuleData Data)
 		{
-			return RootFolder + @"Settings/" + Data.ModuleFolderName + @"/GitGeneration.json";
+			return RootFolder + Data.ModuleFolderName + @"\Templates\";
 		}
 
-		//Folders
-
-		public static string Backups(IModuleData Data)
+		public static string ModuleSettingsFile(IModuleData Data)
 		{
-			return RootFolder + @"Backups/" + Data.ModuleFolderName;
+			return ModuleSettingsFolder(Data) + @"ModuleSettings.json";
 		}
 
-		public static string GitRoot(IModuleData Data)
+		public static string ModuleAddedProjectsFile(IModuleData Data)
 		{
-			return RootFolder + @"Projects/" + Data.ModuleFolderName;
+			return ModuleSettingsFolder(Data) + @"AddedProjects.json";
+		}
+
+		public static string ModuleTemplateSettingsFile(IModuleData Data)
+		{
+			return ModuleSettingsFolder(Data) + @"Templates.xml";
+		}
+
+		public static string ModuleKeywordsFile(IModuleData Data)
+		{
+			return ModuleSettingsFolder(Data) + @"Keywords.json";
+		}
+
+		public static string ModuleGitGenSettingsFile(IModuleData Data)
+		{
+			return ModuleSettingsFolder(Data) + @"GitGeneration.json";
+		}
+
+		public static string ModuleMarkdownConverterSettingsFile(IModuleData Data)
+		{
+			return ModuleSettingsFolder(Data) + @"MarkdownConverterSettings.json";
 		}
 	}
 }

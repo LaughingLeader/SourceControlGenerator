@@ -205,7 +205,7 @@ namespace LL.SCG.Data.View
 
 		public virtual void LoadSettings()
 		{
-			Settings = JsonConvert.DeserializeObject<T>(File.ReadAllText(DefaultPaths.ModuleSettings(this)));
+			Settings = JsonConvert.DeserializeObject<T>(File.ReadAllText(DefaultPaths.ModuleSettingsFile(this)));
 		}
 
 		public virtual string LoadStringResource(string Name)

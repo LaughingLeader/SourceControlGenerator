@@ -103,13 +103,13 @@ namespace LL.SCG.Commands
 
 		public void SaveModuleSettings(IModuleData Data)
 		{
-			Log.Here().Activity("Saving module settings to {0}", Path.GetFullPath(DefaultPaths.ModuleSettings(Data)));
+			Log.Here().Activity("Saving module settings to {0}", Path.GetFullPath(DefaultPaths.ModuleSettingsFile(Data)));
 
 			if (Data.ModuleSettings != null)
 			{
 				SaveTemplates(Data);
 				string json = JsonConvert.SerializeObject(Data.ModuleSettings, Newtonsoft.Json.Formatting.Indented);
-				FileCommands.WriteToFile(DefaultPaths.ModuleSettings(Data), json);
+				FileCommands.WriteToFile(DefaultPaths.ModuleSettingsFile(Data), json);
 			}
 		}
 

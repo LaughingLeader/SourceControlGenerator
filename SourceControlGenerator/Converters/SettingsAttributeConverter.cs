@@ -46,7 +46,7 @@ namespace LL.SCG.Converters
 											Source = value,
 											SourceProperty = prop
 										});
-										Log.Here().Important("Adding attribute: {0} {1} {2}", viewAttribute.Name, viewAttribute.FileBrowseType, viewAttribute.ViewType);
+										//Log.Here().Important("Adding attribute: {0} {1} {2}", viewAttribute.Name, viewAttribute.FileBrowseType, viewAttribute.ViewType);
 									}
 								}
 								else

@@ -365,7 +365,7 @@ namespace LL.SCG.Data.View
 			}
 			*/
 
-			if (!String.IsNullOrWhiteSpace(Filename)) DefaultFilePath = Path.Combine(DefaultPaths.TemplateFiles(parentData), Filename);
+			if (!String.IsNullOrWhiteSpace(Filename)) DefaultFilePath = Path.Combine(DefaultPaths.ModuleTemplatesFolder(parentData), Filename);
 
 			if (String.IsNullOrWhiteSpace(FilePath) && !String.IsNullOrWhiteSpace(DefaultFilePath))
 			{
@@ -400,12 +400,11 @@ namespace LL.SCG.Data.View
 
 			OpenCommand = new ParameterCommand((object param) =>
 			{
-				FileBrowseControl fileBrowseControl = (FileBrowseControl)param;
-				if (fileBrowseControl != null)
+				if(param is string FileLocationText)
 				{
-					FilePath = fileBrowseControl.FileLocationText;
-					EditorText = File.ReadAllText(FilePath);
+					FilePath = FileLocationText;
 					FileCommands.Save.SaveModuleSettings(parentData);
+					EditorText = FileCommands.ReadFile(FilePath);
 				}
 			});
 

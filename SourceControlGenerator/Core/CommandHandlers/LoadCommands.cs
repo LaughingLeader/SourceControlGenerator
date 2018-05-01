@@ -129,22 +129,40 @@ namespace LL.SCG.Commands
 
 		public void LoadModuleSettings(IModuleData Data)
 		{
-			if (File.Exists(DefaultPaths.ModuleSettings(Data)))
+			if (File.Exists(DefaultPaths.ModuleSettingsFile(Data)))
 			{
-				Log.Here().Activity("Loading settings from {0}", DefaultPaths.ModuleSettings(Data));
+				Log.Here().Activity("Loading settings from {0}", DefaultPaths.ModuleSettingsFile(Data));
 				Data.LoadSettings();
 			}
 			else
 			{
-				Log.Here().Warning("settings file at {0} not found. Creating new file.", DefaultPaths.ModuleSettings(Data));
+				Log.Here().Warning("settings file at {0} not found. Creating new file.", DefaultPaths.ModuleSettingsFile(Data));
 				Data.InitializeSettings();
 				SaveAppSettings = true;
 			}
 		}
 
+		public MarkdownConverterViewData LoadModuleMarkdownConverterSettings(IModuleData Data)
+		{
+			var filePath = DefaultPaths.ModuleMarkdownConverterSettingsFile(Data);
+			if (File.Exists(filePath))
+			{
+				Log.Here().Activity("Loading markdown converter settings from {0}", DefaultPaths.ModuleMarkdownConverterSettingsFile(Data));
+				try
+				{
+					return JsonConvert.DeserializeObject<MarkdownConverterViewData>(File.ReadAllText(filePath));
+				}
+				catch(Exception ex)
+				{
+					Log.Here().Error($"Error loading markdown converter settings: {ex.ToString()}");
+				}
+			}
+			return null;
+		}
+
 		public void LoadTemplates(IModuleData Data)
 		{
-			string templateFilePath = DefaultPaths.TemplateSettings(Data);
+			string templateFilePath = DefaultPaths.ModuleTemplateSettingsFile(Data);
 			if(File.Exists(Data.ModuleSettings.TemplateSettingsFile))
 			{
 				templateFilePath = Data.ModuleSettings.TemplateSettingsFile;
@@ -201,9 +219,9 @@ namespace LL.SCG.Commands
 				}
 				else
 				{
-					if(File.Exists(DefaultPaths.Keywords(Data)))
+					if(File.Exists(DefaultPaths.ModuleKeywordsFile(Data)))
 					{
-						LoadUserKeywords(Data, DefaultPaths.Keywords(Data));
+						LoadUserKeywords(Data, DefaultPaths.ModuleKeywordsFile(Data));
 					}
 					else
 					{
@@ -244,7 +262,7 @@ namespace LL.SCG.Commands
 
 		public void LoadGitGenerationSettings(IModuleData Data)
 		{
-			string filePath = DefaultPaths.GitGenSettings(Data);
+			string filePath = DefaultPaths.ModuleGitGenSettingsFile(Data);
 			if (Data != null && Data.ModuleSettings != null && File.Exists(Data.ModuleSettings.GitGenSettingsFile))
 			{
 				filePath = Data.ModuleSettings.GitGenSettingsFile;
@@ -304,7 +322,7 @@ namespace LL.SCG.Commands
 
 			Data.GitGenerationSettings.TemplateSettings = templateSettings;
 
-			if (settingsNeedSaving) FileCommands.Save.SaveGitGenerationSettings(Data, DefaultPaths.GitGenSettings(Data));
+			if (settingsNeedSaving) FileCommands.Save.SaveGitGenerationSettings(Data, DefaultPaths.ModuleGitGenSettingsFile(Data));
 		}
 
 		public SourceControlData LoadSourceControlData(string filePath)

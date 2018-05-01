@@ -23,19 +23,6 @@ namespace LL.SCG.Data.View
 			}
 		}
 
-		private string filter = "Test";
-
-		public string Filter
-		{
-			get { return filter; }
-			set
-			{
-				filter = value;
-				RaisePropertyChanged("Filter");
-			}
-		}
-
-
 		private FileBrowseType fileBrowseType;
 
 		public FileBrowseType BrowseType

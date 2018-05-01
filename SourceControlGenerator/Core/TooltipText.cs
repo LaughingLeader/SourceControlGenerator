@@ -37,5 +37,9 @@ namespace LL.SCG.Core
 		static public string GitNotInstalled => "Git is not installed. You won't be able to create git repositories!";
 		static public string ProjectRootDirectory => "The root directory where git projects will be stored. This directory will be created if it does not exist already.";
 		static public string BackupRootDirectory => "The root directory where project backups will be stored. This directory will be created if it does not exist already.";
+
+		//Markdown Converter
+		static public string MarkdownConverterModeShortcut => "Press Shift + Tab to switch modes.";
+		static public string MarkdownConverterSingleModeFileBrowser => "Output File Location";
 	}
 }

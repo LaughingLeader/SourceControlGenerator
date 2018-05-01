@@ -164,6 +164,7 @@
     <Compile Include="Converters\EnumToCollectionConverter.cs" />
     <Compile Include="Converters\FileValidationColorConverter.cs" />
     <Compile Include="Converters\FooterOutputColorConverter.cs" />
+    <Compile Include="Converters\FormatterToFormatterDataConverter.cs" />
     <Compile Include="Converters\IntToGridLengthConverter.cs" />
     <Compile Include="Converters\IntToVisibilityConverter.cs" />
     <Compile Include="Converters\ListViewStarWidthConverter.cs" />
@@ -190,6 +191,7 @@
     <Compile Include="Data\View\LogData.cs" />
     <Compile Include="Data\View\LogWindowViewData.cs" />
     <Compile Include="Data\View\MarkdownConverterViewData.cs" />
+    <Compile Include="Data\View\MarkdownFormatterData.cs" />
     <Compile Include="Data\View\MenuBarData.cs" />
     <Compile Include="Data\View\MenuData.cs" />
     <Compile Include="Data\View\ModuleData.cs" />

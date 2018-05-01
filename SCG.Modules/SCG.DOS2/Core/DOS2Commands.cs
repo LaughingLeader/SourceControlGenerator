@@ -48,7 +48,7 @@ namespace LL.SCG.DOS2.Core
 				}
 			}
 
-			string projectsAppDataPath = DefaultPaths.ProjectsAppData(Data);
+			string projectsAppDataPath = DefaultPaths.ModuleAddedProjectsFile(Data);
 
 			if (Data.Settings != null && File.Exists(Data.Settings.AddedProjectsFile))
 			{

@@ -18,6 +18,53 @@ using LL.SCG.Data.View;
 
 namespace LL.SCG.Controls
 {
+	public enum FileBrowserMode
+	{
+		Open,
+		Save
+	}
+
+	public class FileBrowserFilter
+	{
+		public string Name { get; set; }
+		public string Values { get; set; }
+	}
+
+	public static class CommonFileFilters
+	{
+		public static FileBrowserFilter All { get; private set; } = new FileBrowserFilter()
+		{
+			Name = "All types",
+			Values = "*.*"
+		};
+
+		public static FileBrowserFilter NormalTextFile { get; private set; } = new FileBrowserFilter()
+		{
+			Name = "Normal text file",
+			Values = "*.txt"
+		};
+
+		public static FileBrowserFilter Json { get; private set; } = new FileBrowserFilter()
+		{
+			Name = "JSON file",
+			Values = "*.json"
+		};
+
+		public static FileBrowserFilter SourceControlGeneratorFiles { get; private set; } = new FileBrowserFilter()
+		{
+			Name = "Source Control Generator files",
+			Values = "*.txt;*.json;*.xml"
+		};
+
+		public static List<FileBrowserFilter> DefaultFilters { get; set; } = new List<FileBrowserFilter>()
+		{
+			NormalTextFile,
+			SourceControlGeneratorFiles,
+			Json,
+			All
+		};
+	}
+
 	/// <summary>
 	/// Interaction logic for FileBrowseControl.xaml
 	/// </summary>
@@ -59,15 +106,6 @@ namespace LL.SCG.Controls
 			}
 		}
 
-		public string Filter
-		{
-			get { return (string)GetValue(FilterProperty); }
-			set
-			{
-				SetValue(FilterProperty, value);
-			}
-		}
-
 		public FileBrowseType BrowseType
 		{
 			get { return (FileBrowseType)GetValue(FileBrowseTypeProperty); }
@@ -76,6 +114,16 @@ namespace LL.SCG.Controls
 				SetValue(FileBrowseTypeProperty, value);
 			}
 		}
+
+		public List<FileBrowserFilter> Filters
+		{
+			get { return (List<FileBrowserFilter>)GetValue(FiltersProperty); }
+			set { SetValue(FiltersProperty, value); }
+		}
+
+		// Using a DependencyProperty as the backing store for Filters.  This enables animation, styling, binding, etc...
+		public static readonly DependencyProperty FiltersProperty =
+			DependencyProperty.Register("Filters", typeof(List<FileBrowserFilter>), typeof(FileBrowseControl), new PropertyMetadata(null));
 
 		public static readonly DependencyProperty BrowseTextProperty =
 			DependencyProperty.Register("OpenFileText", typeof(string),
@@ -101,10 +149,6 @@ namespace LL.SCG.Controls
 		public static readonly DependencyProperty DefaultExtProperty =
 			DependencyProperty.Register("DefaultExt", typeof(string),
 			typeof(FileBrowseControl), new PropertyMetadata("*"));
-
-		public static readonly DependencyProperty FilterProperty =
-			DependencyProperty.Register("Filter", typeof(string),
-			typeof(FileBrowseControl), new PropertyMetadata(""));
 
 		public static readonly DependencyProperty FileBrowseTypeProperty =
 			DependencyProperty.Register("BrowseType", typeof(FileBrowseType),
@@ -139,27 +183,66 @@ namespace LL.SCG.Controls
 			DependencyProperty.Register("OnOpen", typeof(ICommand), typeof(FileBrowseControl), new PropertyMetadata(null));
 
 
+
+		public FileBrowserMode BrowseMode
+		{
+			get { return (FileBrowserMode)GetValue(BrowseModeProperty); }
+			set { SetValue(BrowseModeProperty, value); }
+		}
+
+		// Using a DependencyProperty as the backing store for BrowseMode.  This enables animation, styling, binding, etc...
+		public static readonly DependencyProperty BrowseModeProperty =
+			DependencyProperty.Register("BrowseMode", typeof(FileBrowserMode), typeof(FileBrowseControl), new PropertyMetadata(FileBrowserMode.Open));
+
+		public string DefaultFileName
+		{
+			get { return (string)GetValue(DefaultFileNameProperty); }
+			set { SetValue(DefaultFileNameProperty, value); }
+		}
+
+		// Using a DependencyProperty as the backing store for DefaultFileName.  This enables animation, styling, binding, etc...
+		public static readonly DependencyProperty DefaultFileNameProperty =
+			DependencyProperty.Register("DefaultFileName", typeof(string), typeof(FileBrowseControl), new PropertyMetadata(""));
+
+
+
 		public FileBrowseControl()
 		{
 			InitializeComponent();
 
+			Loaded += FileBrowseControl_Loaded;
+
 			//this.DataContext = this;
+		}
+
+		private void FileBrowseControl_Loaded(object sender, RoutedEventArgs e)
+		{
+			if (Filters == null) Filters = CommonFileFilters.DefaultFilters;
 		}
 
 		private void FileBrowseButton_Click(object sender, RoutedEventArgs e)
 		{
 			Window parentWindow = Window.GetWindow(this);
 
+			Log.Here().Activity($"LastFileLocation is {LastFileLocation} FileLocationText: {FileLocationText}");
+
 			if (String.IsNullOrEmpty(LastFileLocation))
 			{
-				if (!String.IsNullOrEmpty(FileLocationText))
+				if (!String.IsNullOrEmpty(FileLocationText) && FileCommands.IsValidPath(FileLocationText))
 				{
 					if(BrowseType == FileBrowseType.File)
 					{
-						var parentDirectory = new DirectoryInfo(FileLocationText);
-						if(parentDirectory != null)
+						if(FileCommands.IsValidFilePath(FileLocationText))
 						{
-							LastFileLocation = parentDirectory.Parent.FullName;
+							var parentDirectory = new DirectoryInfo(FileLocationText);
+							if (parentDirectory != null)
+							{
+								LastFileLocation = parentDirectory.Parent.FullName;
+							}
+						}
+						else
+						{
+							LastFileLocation = FileLocationText;
 						}
 					}
 					else
@@ -172,72 +255,93 @@ namespace LL.SCG.Controls
 					}
 				}
 			}
-			else
-			{
-				//Confirm to the browse type
-				if (BrowseType == FileBrowseType.File)
-				{
-					var parentDirectory = new DirectoryInfo(LastFileLocation);
-					if (parentDirectory != null)
-					{
-						LastFileLocation = parentDirectory.Parent.FullName;
-					}
-				}
-				else
-				{
-					var directory = new DirectoryInfo(LastFileLocation);
-					if (directory != null)
-					{
-						LastFileLocation = directory.FullName;
-					}
-				}
-			}
 
 			if(!FileCommands.IsValidPath(LastFileLocation))
 			{
-				if (BrowseType == FileBrowseType.Directory)
+				if (AppController.Main.CurrentModule != null && AppController.Main.CurrentModule.ModuleData != null)
 				{
-					LastFileLocation = Path.GetFullPath(Assembly.GetExecutingAssembly().Location);
+					LastFileLocation = DefaultPaths.ModuleRootFolder(AppController.Main.CurrentModule.ModuleData);
 				}
 				else
 				{
-					LastFileLocation = Directory.GetParent(Assembly.GetExecutingAssembly().Location).FullName;
+					LastFileLocation = DefaultPaths.RootFolder;
 				}
+				// Path.GetFullPath(Assembly.GetExecutingAssembly().Location);
 			}
 
-			Log.Here().Activity($"LastFileLocation is {LastFileLocation} FileLocationText: {FileLocationText}");
+			
 
 			if (BrowseType == FileBrowseType.File)
 			{
-				OpenFileDialog fileDialog = new OpenFileDialog();
-				fileDialog.Title = OpenFileText;
-				fileDialog.InitialDirectory = LastFileLocation;
-				fileDialog.DefaultExt = DefaultExt;
-				fileDialog.Filter = Filter;
-				fileDialog.Multiselect = false;
+				CommonFileDialog fileDialog = null;
 
-				if(FileCommands.IsValidPath(FileLocationText))
+				if (BrowseMode == FileBrowserMode.Open)
 				{
-					fileDialog.FileName = Path.GetFileName(FileLocationText);
+					var openFileDialog = new CommonOpenFileDialog();
+					openFileDialog.Multiselect = false;
+					fileDialog = openFileDialog;
+				}
+				else if(BrowseMode == FileBrowserMode.Save)
+				{
+					fileDialog = new CommonSaveFileDialog();
 				}
 
-				Nullable<bool> result = fileDialog.ShowDialog(parentWindow);
-				if (result == true)
+				if(fileDialog != null)
 				{
-					string filename = fileDialog.FileName;
-
-					if(FileCommands.PathIsRelative(filename))
+					fileDialog.Title = OpenFileText;
+					fileDialog.InitialDirectory = LastFileLocation;
+					fileDialog.DefaultExtension = DefaultExt;
+					if (Filters != null)
 					{
-						filename = Common.Functions.GetRelativePath.RelativePathGetter.Relative(Directory.GetCurrentDirectory(), fileDialog.FileName);
+						if(Filters.Count <= 0)
+						{
+							Filters.Add(CommonFileFilters.All);
+						}
+
+						foreach (var filter in Filters)
+						{
+							fileDialog.Filters.Add(new CommonFileDialogFilter(filter.Name, filter.Values));
+						}
+					}
+					else
+					{
+						fileDialog.Filters.Add(new CommonFileDialogFilter("All Files", "*.*"));
 					}
 
-					FileLocationText = filename;
-					LastFileLocation = Path.GetDirectoryName(FileLocationText);
-					OnOpen?.Execute(this);
-
-					if(OnOpen == null)
+					if(String.IsNullOrWhiteSpace(DefaultFileName))
 					{
-						System.Diagnostics.Debug.WriteLine("OnOpen is null!");
+						if (FileCommands.IsValidFilePath(FileLocationText))
+						{
+							fileDialog.DefaultFileName = Path.GetFileName(FileLocationText);
+						}
+					}
+					else
+					{
+						fileDialog.DefaultFileName = DefaultFileName;
+					}
+
+					var result = fileDialog.ShowDialog(parentWindow);
+
+					if (result == CommonFileDialogResult.Ok)
+					{
+						string filename = fileDialog.FileName;
+
+						if (FileCommands.PathIsRelative(filename))
+						{
+							filename = Common.Functions.GetRelativePath.RelativePathGetter.Relative(Directory.GetCurrentDirectory(), fileDialog.FileName);
+						}
+						else
+						{
+							if(!FileCommands.IsValidFilePath(filename))
+							{
+								filename = filename.CleanFileName();
+								filename = Path.GetFullPath(filename);
+							}							
+						}
+
+						FileLocationText = filename;
+						LastFileLocation = Path.GetDirectoryName(FileLocationText);
+						OnOpen?.Execute(FileLocationText);
 					}
 				}
 			}
@@ -253,28 +357,64 @@ namespace LL.SCG.Controls
 				Nullable<bool> result = folderDialog.ShowDialog(parentWindow);
 				*/
 
-				var openFolder = new CommonOpenFileDialog();
-				openFolder.AllowNonFileSystemItems = true;
-				openFolder.Multiselect = false;
-				openFolder.IsFolderPicker = true;
-				openFolder.Title = OpenFileText;
-				openFolder.DefaultFileName = "";
-				openFolder.InitialDirectory = LastFileLocation;
-				openFolder.DefaultDirectory = Path.GetFullPath(Assembly.GetExecutingAssembly().Location);
+				CommonFileDialog fileDialog = null;
 
-				var result = openFolder.ShowDialog(parentWindow);
-
-				if (result == CommonFileDialogResult.Ok)
+				if (BrowseMode == FileBrowserMode.Open)
 				{
-					string path = openFolder.FileNames.First();
-					if (FileCommands.PathIsRelative(path))
+					var openFileDialog = new CommonOpenFileDialog();
+					openFileDialog.Multiselect = false;
+					openFileDialog.AllowNonFileSystemItems = true;
+					openFileDialog.IsFolderPicker = true;
+
+					fileDialog = openFileDialog;
+				}
+				else if (BrowseMode == FileBrowserMode.Save)
+				{
+					fileDialog = new CommonSaveFileDialog();
+				}
+
+				if (fileDialog != null)
+				{
+					fileDialog.Title = OpenFileText;
+					fileDialog.InitialDirectory = LastFileLocation;
+					fileDialog.DefaultDirectory = Path.GetFullPath(DefaultPaths.RootFolder);
+
+					var result = fileDialog.ShowDialog(parentWindow);
+
+					if (String.IsNullOrWhiteSpace(DefaultFileName))
 					{
-						path = path.Replace(Directory.GetCurrentDirectory(), "");
+						if (FileCommands.IsValidFilePath(FileLocationText))
+						{
+							fileDialog.DefaultFileName = Path.GetDirectoryName(FileLocationText);
+						}
+					}
+					else
+					{
+						fileDialog.DefaultFileName = DefaultFileName;
 					}
 
-					FileLocationText = path;
-					LastFileLocation = FileLocationText;
-					OnOpen?.Execute(this);
+					if (result == CommonFileDialogResult.Ok)
+					{
+						string path = "";
+
+						if (BrowseMode == FileBrowserMode.Open && fileDialog is CommonOpenFileDialog openFileDialog)
+						{
+							path = openFileDialog.FileNames.First();
+						}
+						else
+						{
+							path = fileDialog.FileName;
+						}
+
+						if (FileCommands.PathIsRelative(path))
+						{
+							path = path.Replace(Directory.GetCurrentDirectory(), "");
+						}
+
+						FileLocationText = path;
+						LastFileLocation = FileLocationText;
+						OnOpen?.Execute(FileLocationText);
+					}
 				}
 			}
 		}
@@ -285,25 +425,28 @@ namespace LL.SCG.Controls
 
 			FileValidation = FileValidation.None;
 
-			if (!FileCommands.IsValidPath(FileLocationText))
+			if(!String.IsNullOrWhiteSpace(FileLocationText))
 			{
-				FileValidation = FileValidation.Error;
-			}
-			else
-			{
-				
-				if (BrowseType == FileBrowseType.Directory)
+				if (!FileCommands.IsValidPath(FileLocationText))
 				{
-					if (!Directory.Exists(FileLocationText))
-					{
-						FileValidation = FileValidation.Warning;
-					}
+					FileValidation = FileValidation.Error;
 				}
-				else if (BrowseType == FileBrowseType.File)
+				else
 				{
-					if (!File.Exists(FileLocationText))
+
+					if (BrowseType == FileBrowseType.Directory)
 					{
-						FileValidation = FileValidation.Warning;
+						if (!Directory.Exists(FileLocationText))
+						{
+							FileValidation = FileValidation.Warning;
+						}
+					}
+					else if (BrowseType == FileBrowseType.File)
+					{
+						if (!File.Exists(FileLocationText))
+						{
+							FileValidation = FileValidation.Warning;
+						}
 					}
 				}
 			}

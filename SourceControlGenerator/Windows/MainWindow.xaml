@@ -300,7 +300,7 @@
 									<Setter.Value>
 										<DataTemplate>
 											<c:FileBrowseControl OpenFileText="{Binding OpenFileText}" BrowseType="{Binding BrowseType, Mode=TwoWay}" FileLocationText="{Binding Path=Value, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
-																							OnOpen="{Binding OnOpened}" Filter="{Binding Filter}"
+																							OnOpen="{Binding OnOpened}"
 																											 />
 										</DataTemplate>
 									</Setter.Value>

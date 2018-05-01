@@ -24,7 +24,21 @@ namespace LL.SCG
 		public static LoadCommands Load => loadCommands;
 		public static SaveCommands Save => saveCommands;
 
-		public static bool WriteToFile(string filePath, string Contents)
+		public static string ReadFile(string filePath)
+		{
+			var contents = "";
+			try
+			{
+				contents = File.ReadAllText(filePath);
+			}
+			catch (Exception e)
+			{
+				Log.Here().Error("Error reading file at {0} - {1}", filePath, e.ToString());
+			}
+			return contents;
+		}
+
+		public static bool WriteToFile(string filePath, string Contents, bool supressLogMessage = true)
 		{
 			try
 			{
@@ -33,7 +47,7 @@ namespace LL.SCG
 				FileInfo file = new FileInfo(filePath);
 				File.WriteAllText(filePath, Contents);
 
-				Log.Here().Activity("Saved file: {0}", filePath);
+				if (!supressLogMessage) Log.Here().Activity("Saved file: {0}", filePath);
 				return true;
 			}
 			catch (Exception e)

@@ -42,7 +42,7 @@
 					</Style>
 				</StackPanel.Resources>
 				<local:FileBrowseControl x:Name="TemplateFileBrowser" OpenFileText="{Binding OpenFileText}" FileLocationText="{Binding FilePath}" OnOpen="{Binding OpenCommand}" Width="400" MaxWidth="400" />
-				<Button x:Name="SaveButton" Content="Save" Command="{Binding SaveCommand}" Height="20" BorderThickness="1" BorderBrush="#FFABADB3" Margin="4,2,0,2" >
+				<Button x:Name="SaveButton" Content="Save" Command="{Binding SaveCommand}" Height="{Binding Path=Height, ElementName=TemplateFileBrowser, FallbackValue=22}" BorderThickness="1" BorderBrush="#FFABADB3" Margin="4,2,0,2" >
 					<Button.CommandParameter>
 						<MultiBinding Converter="{StaticResource SaveFileAsCommandDataConverter}">
 							<Binding Path="EditorText" />
@@ -53,7 +53,7 @@
 						</MultiBinding>
 					</Button.CommandParameter>
 				</Button>
-				<Button x:Name="SaveAsButton" Content="Save As..." Command="{Binding SaveAsCommand}" Height="20" BorderThickness="1" BorderBrush="#FFABADB3" Margin="4,0,4,0" >
+				<Button x:Name="SaveAsButton" Content="Save As..." Command="{Binding SaveAsCommand}" Height="{Binding Path=Height, ElementName=TemplateFileBrowser, FallbackValue=20}" BorderThickness="1" BorderBrush="#FFABADB3" Margin="4,0,4,0" >
 					<Button.CommandParameter>
 						<MultiBinding Converter="{StaticResource SaveFileAsCommandDataConverter}">
 							<Binding Path="EditorText" />

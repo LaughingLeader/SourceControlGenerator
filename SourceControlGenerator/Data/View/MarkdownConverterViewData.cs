@@ -1,20 +1,64 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Data;
 using System.Windows.Input;
 using LL.SCG.Commands;
+using LL.SCG.Core;
 using LL.SCG.Interfaces;
 using LL.SCG.Markdown;
+using Newtonsoft.Json;
 
 namespace LL.SCG.Data.View
 {
+	public enum MarkdownConverterMode
+	{
+		[Description("Single Conversion")]
+		Single,
+		[Description("Batch Conversion")]
+		Batch
+	}
+
+	public enum MarkdownInputType
+	{
+		Markdown = 0,
+		HTML
+	}
+
+	public class MarkdownConverterModeToColumnWidthConverter : IValueConverter
+	{
+		public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+		{
+			if (parameter is MarkdownConverterMode targetMode)
+			{
+				if (value is MarkdownConverterMode mode && mode == targetMode)
+				{
+					return new GridLength(1, GridUnitType.Star);
+					//return "*";
+				}
+			}
+			return GridLength.Auto;
+			//return "Auto";
+		}
+
+		public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+		{
+			return null;
+		}
+	}
+
 	public class MarkdownConverterViewData : PropertyChangedBase
 	{
-		private string input;
+		private string input = "";
 
 		public string Input
 		{
@@ -23,10 +67,11 @@ namespace LL.SCG.Data.View
 			{
 				input = value;
 				RaisePropertyChanged("Input");
+				RaisePropertyChanged("CanPreview");
 			}
 		}
 
-		private string output;
+		private string output = "";
 
 		public string Output
 		{
@@ -38,23 +83,72 @@ namespace LL.SCG.Data.View
 			}
 		}
 
-		private bool isHTML = false;
+		private TextWrapping textWrapMode = TextWrapping.Wrap;
 
-		public bool IsHTML
+		public TextWrapping TextWrapMode
 		{
-			get { return isHTML; }
+			get { return textWrapMode; }
 			set
 			{
-				isHTML = value;
-				RaisePropertyChanged("IsHTML");
+				textWrapMode = value;
+				RaisePropertyChanged("TextWrapMode");
 			}
 		}
 
+		private MarkdownInputType inputType = MarkdownInputType.Markdown;
 
+		public MarkdownInputType InputType
+		{
+			get { return inputType; }
+			set
+			{
+				inputType = value;
+				RaisePropertyChanged("InputType");
+			}
+		}
+
+		private MarkdownConverterMode mode = MarkdownConverterMode.Single;
+
+		public MarkdownConverterMode Mode
+		{
+			get { return mode; }
+			set
+			{
+				mode = value;
+				RaisePropertyChanged("Mode");
+				RaisePropertyChanged("SingleMode");
+				RaisePropertyChanged("BatchMode");
+			}
+		}
+
+		[JsonIgnore]
+		public Visibility SingleMode
+		{
+			get => mode == MarkdownConverterMode.Single ? Visibility.Visible : Visibility.Collapsed;
+		}
+
+		[JsonIgnore]
+		public Visibility BatchMode
+		{
+			get => mode == MarkdownConverterMode.Batch ? Visibility.Visible : Visibility.Collapsed;
+		}
+
+		[JsonIgnore]
 		public ObservableCollection<IMarkdownFormatter> Formatters { get; set; }
 
+		[JsonIgnore]
+		public bool CanPreview
+		{
+			get
+			{
+				return !String.IsNullOrEmpty(Input);
+			}
+		}
+
+		#region Single Mode
 		private IMarkdownFormatter selectedFormatter;
 
+		[JsonIgnore]
 		public IMarkdownFormatter SelectedFormatter
 		{
 			get { return selectedFormatter; }
@@ -62,38 +156,308 @@ namespace LL.SCG.Data.View
 			{
 				selectedFormatter = value;
 				RaisePropertyChanged("SelectedFormatter");
+				SelectedFormatterName = selectedFormatter.Name;
+				SingleModeDefaultFileName = SelectedFormatterName.TrimWhitespace() + ".txt";
 			}
 		}
 
-		public void ConvertInput()
+		private string selectedFormatterName = "";
+
+		public string SelectedFormatterName
 		{
-			if(SelectedFormatter != null && !String.IsNullOrWhiteSpace(Input))
+			get { return selectedFormatterName; }
+			set
 			{
-				if(!IsHTML)
+				selectedFormatterName = value;
+				RaisePropertyChanged("SelectedFormatterName");
+			}
+		}
+
+		private string singleModeLastFilePath = "";
+
+		public string SingleModeLastFilePath
+		{
+			get { return singleModeLastFilePath; }
+			set
+			{
+				singleModeLastFilePath = value;
+				RaisePropertyChanged("SingleModeLastFilePath");
+				RaisePropertyChanged("CanSave");
+			}
+		}
+
+		private string singleModeDefaultFileName = "";
+
+		[JsonIgnore]
+		public string SingleModeDefaultFileName
+		{
+			get { return singleModeDefaultFileName; }
+			set
+			{
+				singleModeDefaultFileName = value;
+				RaisePropertyChanged("SingleModeDefaultFileName");
+			}
+		}
+
+
+		[JsonIgnore]
+		public bool CanSave
+		{
+			get
+			{
+				return !CanPreview && FileCommands.IsValidFilePath(SingleModeLastFilePath);
+			}
+		}
+
+		[JsonIgnore] public ICommand PreviewSingleCommand { get; set; }
+
+		[JsonIgnore] public ICommand ExportSingleCommand { get; set; }
+
+		public void ExportSingle()
+		{
+			PreviewSelected();
+
+			if(!String.IsNullOrEmpty(Output))
+			{
+				if (FileCommands.IsValidFilePath(SingleModeLastFilePath))
+				{
+					FileCommands.WriteToFile(SingleModeLastFilePath, Output);
+					Log.Here().Activity($"Converted text to {SelectedFormatter.Name} and saved to {SingleModeLastFilePath}.");
+				}
+			}
+		}
+
+		public void PreviewSelected()
+		{
+			if (SelectedFormatter != null && !String.IsNullOrWhiteSpace(Input))
+			{
+				if (InputType == MarkdownInputType.Markdown)
 				{
 					string html = MarkdownConverter.ConvertMarkdownToHTML(Input);
 					Output = SelectedFormatter.ConvertHTML(html);
 				}
-				else
+				else if (InputType == MarkdownInputType.HTML)
 				{
 					Output = SelectedFormatter.ConvertHTML(Input);
 				}
 			}
 		}
 
-		public ICommand ConvertCommand { get; set; }
+		#endregion
 
-		private StringWriter writer;
+		#region Batch Mode
+		public List<MarkdownFormatterData> BatchFormatterData { get; set; }
 
+		[JsonIgnore]
+		public List<string> SelectedBatchFormatters
+		{
+			get
+			{
+				if (BatchFormatterData != null) return BatchFormatterData.Where(f => f.Enabled).Select(f => f.Name).ToList();
+				return null;
+			}
+		}
+
+		[JsonIgnore] public ICommand BatchExportCommand { get; set; }
+
+		[JsonIgnore] public ICommand PreviewCommand { get; set; }
+
+		public void ExportBatch()
+		{
+			if (!String.IsNullOrWhiteSpace(Input))
+			{
+				var formatters = BatchFormatterData.Where(f => f.Enabled);
+
+				foreach (var formatterData in formatters)
+				{
+					if (FileCommands.IsValidFilePath(formatterData.FilePath))
+					{
+						string output = "";
+						if (InputType == MarkdownInputType.Markdown)
+						{
+							string html = MarkdownConverter.ConvertMarkdownToHTML(Input);
+							output = formatterData.Formatter.ConvertHTML(html);
+						}
+						else if (InputType == MarkdownInputType.HTML)
+						{
+							output = formatterData.Formatter.ConvertHTML(Input);
+						}
+
+						FileCommands.WriteToFile(formatterData.FilePath, output);
+						Log.Here().Activity($"Converted text to {formatterData.Name} and saved to {formatterData.FilePath}.");
+					}
+				}
+			}
+		}
+
+		#endregion
+
+		[JsonIgnore] public ICommand NextModeCommand { get; set; }
+
+		private void ConvertInputForData(object value)
+		{
+			if (value is IMarkdownFormatter formatter)
+			{
+				if (formatter != null && !String.IsNullOrWhiteSpace(Input))
+				{
+					if (InputType == MarkdownInputType.Markdown)
+					{
+						string html = MarkdownConverter.ConvertMarkdownToHTML(Input);
+						Output = formatter.ConvertHTML(html);
+					}
+					else if (InputType == MarkdownInputType.HTML)
+					{
+						Output = formatter.ConvertHTML(Input);
+					}
+				}
+			}
+		}
+
+		public void NextMode()
+		{
+			Mode = Mode == MarkdownConverterMode.Single ? MarkdownConverterMode.Batch : MarkdownConverterMode.Single;
+		}
+
+		private bool savingSettings = false;
+		private Timer saveDelayTimer;
+
+		public async void StartSavingAsync()
+		{
+			if (!savingSettings)
+			{
+				savingSettings = true;
+				//if (saveDelayTimer == null) saveDelayTimer = new Timer(_ => OnSaveTimerComplete());
+				//saveDelayTimer.Change(250, Timeout.Infinite);
+				await Task.Delay(500);
+				await Save();
+				savingSettings = false;
+			}
+			else
+			{
+				if(saveDelayTimer != null)
+				{
+					//Reset
+					//saveDelayTimer.Change(250, Timeout.Infinite);
+				}
+			}
+		}
+
+		private async void OnSaveTimerComplete()
+		{
+			//saveDelayTimer.Change(Timeout.Infinite, Timeout.Infinite);
+			await Save();
+			savingSettings = false;
+		}
+
+		public Task<bool> Save()
+		{
+			if(AppController.Main != null)
+			{
+				if(AppController.Main.CurrentModule != null && AppController.Main.CurrentModule.ModuleData != null)
+				{
+					var outputPath = DefaultPaths.ModuleMarkdownConverterSettingsFile(AppController.Main.CurrentModule.ModuleData);
+					var outputText = JsonConvert.SerializeObject(this, Formatting.Indented);
+					if(FileCommands.WriteToFile(outputPath, outputText, true))
+					{
+						Log.Here().Activity($"Saved markdown converter settings file for current module {AppController.Main.CurrentModule.ModuleData.ModuleName}.");
+						return Task.FromResult<bool>(true);
+					}
+				}
+				else
+				{
+					Log.Here().Error($"Could not save markdown converter settings file for current module: ModuleData is null.");
+				}
+			}
+			return Task.FromResult<bool>(false);
+		}
 
 		public MarkdownConverterViewData()
 		{
-			writer = new StringWriter();
-
 			Formatters = new ObservableCollection<IMarkdownFormatter>(MarkdownConverter.InitFormatters());
-			ConvertCommand = new ActionCommand(ConvertInput);
+			PreviewSingleCommand = new ActionCommand(PreviewSelected);
+			PreviewCommand = new ParameterCommand(ConvertInputForData);
+			NextModeCommand = new ActionCommand(NextMode);
+			ExportSingleCommand = new ActionCommand(ExportSingle);
+			BatchExportCommand = new ActionCommand(ExportBatch);
+		}
 
-			SelectedFormatter = Formatters.First();
+		public void InitSettings()
+		{
+			if (String.IsNullOrEmpty(SelectedFormatterName))
+			{
+				SelectedFormatter = Formatters.First();
+			}
+			else
+			{
+				var nextFormatter = Formatters.Where(f => f.Name == SelectedFormatterName).FirstOrDefault();
+				if (nextFormatter != null)
+				{
+					SelectedFormatter = nextFormatter;
+				}
+				else
+				{
+					SelectedFormatter = Formatters.First();
+				}
+			}
+
+			List<MarkdownFormatterData> previousBatchData = null;
+
+			if (BatchFormatterData != null)
+			{
+				previousBatchData = new List<MarkdownFormatterData>(BatchFormatterData);
+				/*
+				foreach (var data in BatchFormatterData)
+				{
+					previousBatchData.Add(new MarkdownFormatterData(this)
+					{
+						Name = data.Name,
+						Enabled = data.Enabled,
+						FilePath = data.FilePath,
+					});
+				}
+				*/
+			}
+
+			BatchFormatterData = new List<MarkdownFormatterData>();
+
+			var startFilePath = "";
+
+			if (AppController.Main != null)
+			{
+				if (AppController.Main.CurrentModule != null && AppController.Main.CurrentModule.ModuleData != null)
+				{
+					startFilePath = DefaultPaths.ModuleExportFolder(AppController.Main.CurrentModule.ModuleData);
+					Directory.CreateDirectory(startFilePath);
+				}
+			}
+
+			if (String.IsNullOrEmpty(startFilePath)) startFilePath = DefaultPaths.RootFolder;
+
+			foreach (var formatter in Formatters)
+			{
+				var previousData = previousBatchData != null ? previousBatchData.Where(f => f.Name == formatter.Name).FirstOrDefault() : null;
+
+				//if(previousData != null) Log.Here().Activity($"Previous data {previousData.Enabled} | {previousData.FilePath}");
+
+				var enabled = previousData != null ? previousData.Enabled : false;
+				var filePath = previousData != null && !String.IsNullOrEmpty(previousData.FilePath) ? previousData.FilePath : "";
+
+				if(!FileCommands.IsValidFilePath(filePath) && FileCommands.IsValidDirectoryPath(filePath))
+				{
+					filePath = Path.Combine(filePath, formatter.Name.TrimWhitespace() + ".txt");
+				}
+				
+				BatchFormatterData.Add(new MarkdownFormatterData(this)
+				{
+					Name = formatter.Name,
+					Formatter = formatter,
+					Enabled = enabled,
+					FilePath = filePath,
+					LastPath = !String.IsNullOrEmpty(filePath) ? filePath : startFilePath,
+					DefaultFileName = formatter.Name.TrimWhitespace() + ".txt"
+				});
+			}
+			RaisePropertyChanged("BatchFormatterData");
 		}
 	}
 }

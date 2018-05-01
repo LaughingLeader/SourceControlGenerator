@@ -152,11 +152,7 @@ namespace LL.SCG.Core
 
 				if(mainWindow.IsLoaded)
 				{
-					if (CurrentModule.ModuleData.ModuleSettings.FirstTimeSetup)
-					{
-						Data.LockScreenVisibility = Visibility.Visible;
-						CurrentModule.OpenSetup(OnSetupComplete);
-					}
+					OnAppLoaded();
 				}
 			}
 
@@ -285,21 +281,21 @@ namespace LL.SCG.Core
 
 		public void LoadAppSettings()
 		{
-			if (File.Exists(DefaultPaths.MainAppSettings))
+			if (File.Exists(DefaultPaths.MainAppSettingsFile))
 			{
 				try
 				{
-					Log.Here().Activity($"Loading main app settings from {DefaultPaths.MainAppSettings}");
-					Data.AppSettings = JsonConvert.DeserializeObject<AppSettingsData>(File.ReadAllText(DefaultPaths.MainAppSettings));
+					Log.Here().Activity($"Loading main app settings from {DefaultPaths.MainAppSettingsFile}");
+					Data.AppSettings = JsonConvert.DeserializeObject<AppSettingsData>(File.ReadAllText(DefaultPaths.MainAppSettingsFile));
 				}
 				catch(Exception ex)
 				{
-					Log.Here().Error($"Error loading main app settings from {DefaultPaths.MainAppSettings}: {ex.ToString()}");
+					Log.Here().Error($"Error loading main app settings from {DefaultPaths.MainAppSettingsFile}: {ex.ToString()}");
 				}
 			}
 			else
 			{
-				Log.Here().Warning($"Main app settings file at {DefaultPaths.MainAppSettings} not found. Creating new file.");
+				Log.Here().Warning($"Main app settings file at {DefaultPaths.MainAppSettingsFile} not found. Creating new file.");
 				Data.AppSettings = new AppSettingsData();
 			}
 		}
@@ -308,20 +304,20 @@ namespace LL.SCG.Core
 		{
 			try
 			{
-				Log.Here().Activity($"Saving main app settings to {DefaultPaths.MainAppSettings}");
+				Log.Here().Activity($"Saving main app settings to {DefaultPaths.MainAppSettingsFile}");
 				var json = JsonConvert.SerializeObject(Data.AppSettings);
-				if (FileCommands.WriteToFile(DefaultPaths.MainAppSettings, json))
+				if (FileCommands.WriteToFile(DefaultPaths.MainAppSettingsFile, json))
 				{
 					Log.Here().Activity($"Main app settings saved.");
 				}
 				else
 				{
-					Log.Here().Error($"Error saving main app settings to {DefaultPaths.MainAppSettings}.");
+					Log.Here().Error($"Error saving main app settings to {DefaultPaths.MainAppSettingsFile}.");
 				}
 			}
 			catch (Exception ex)
 			{
-				Log.Here().Error($"Error loading main app settings from {DefaultPaths.MainAppSettings}: {ex.ToString()}");
+				Log.Here().Error($"Error loading main app settings from {DefaultPaths.MainAppSettingsFile}: {ex.ToString()}");
 			}
 		}
 
@@ -552,48 +548,20 @@ namespace LL.SCG.Core
 
 		public void OnAppLoaded()
 		{
-			if(CurrentModule != null)
+			if(CurrentModule != null && CurrentModule.ModuleData != null)
 			{
 				if (CurrentModule.ModuleData.ModuleSettings.FirstTimeSetup)
 				{
 					Data.LockScreenVisibility = Visibility.Visible;
 					CurrentModule.OpenSetup(OnSetupComplete);
 				}
+
+				mainWindow.MarkdownConverterWindow.SetData(FileCommands.Load.LoadModuleMarkdownConverterSettings(CurrentModule.ModuleData));
 			}
 		}
 
-		public AppController(MainWindow MainAppWindow)
+		private void InitDefaultMenus()
 		{
-			_instance = this;
-			Log.AllCallback = AddLogMessage;
-
-			Data = new MainAppData();
-			ProjectControllers = new Dictionary<string, IProjectController>();
-
-			OpenGitWebsiteCommand = new ActionCommand(() => { Helpers.Web.OpenUri("https://git-scm.com/downloads"); });
-
-			SetSetupFoldersToMyDocumentsCommand = new ActionCommand(SwitchSettingsFoldersToMyDocuments);
-			SetSetupFoldersToRelativeCommand = new ActionCommand(MakeSettingsFoldersToPortable);
-
-			mainWindow = MainAppWindow;
-
-			Data.Portable = File.Exists(DefaultPaths.PortableSettingsFile);
-
-			if (Data.Portable)
-			{
-				DefaultPaths.RootFolder = DefaultPaths.DefaultPortableRootFolder;
-			}
-			else
-			{
-				var myDocumentsRoot = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
-				if (Directory.Exists(myDocumentsRoot))
-				{
-					DefaultPaths.RootFolder = Path.Combine(myDocumentsRoot, DefaultPaths.DefaultMyDocumentsRootFolder);
-				}
-			}
-
-			LoadAppSettings();
-
 			Data.MenuBarData.File.Register("Base",
 				new MenuData(MenuID.CreateTemplate)
 				{
@@ -656,6 +624,40 @@ namespace LL.SCG.Core
 			Data.MenuBarData.RaisePropertyChanged(String.Empty);
 
 			RegisterMenuShortcuts();
+		}
+
+		public AppController(MainWindow MainAppWindow)
+		{
+			_instance = this;
+			Log.AllCallback = AddLogMessage;
+
+			Data = new MainAppData();
+			ProjectControllers = new Dictionary<string, IProjectController>();
+
+			OpenGitWebsiteCommand = new ActionCommand(() => { Helpers.Web.OpenUri("https://git-scm.com/downloads"); });
+
+			SetSetupFoldersToMyDocumentsCommand = new ActionCommand(SwitchSettingsFoldersToMyDocuments);
+			SetSetupFoldersToRelativeCommand = new ActionCommand(MakeSettingsFoldersToPortable);
+
+			mainWindow = MainAppWindow;
+
+			Data.Portable = File.Exists(DefaultPaths.PortableSettingsFile);
+
+			if (Data.Portable)
+			{
+				DefaultPaths.RootFolder = DefaultPaths.DefaultPortableRootFolder;
+			}
+			else
+			{
+				var myDocumentsRoot = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+				if (Directory.Exists(myDocumentsRoot))
+				{
+					DefaultPaths.RootFolder = Path.Combine(myDocumentsRoot, DefaultPaths.DefaultMyDocumentsRootFolder);
+				}
+			}
+
+			LoadAppSettings();
+			InitDefaultMenus();
 
 			if(String.IsNullOrWhiteSpace(Data.AppSettings.GitInstallPath))
 			{

@@ -33,9 +33,6 @@ namespace LL.SCG.Windows
 		public MarkdownConverterWindow()
 		{
 			InitializeComponent();
-
-			ViewData = new MarkdownConverterViewData();
-			DataContext = ViewData;
 		}
 
 		public void Init(AppController controller)
@@ -45,6 +42,22 @@ namespace LL.SCG.Windows
 			{
 				InputBindings.Add(markdownMenu.InputBinding);
 			}
+		}
+
+		public void SetData(MarkdownConverterViewData viewData = null)
+		{
+			if(viewData == null)
+			{
+				viewData = new MarkdownConverterViewData();
+			}
+			ViewData = viewData;
+			ViewData.InitSettings();
+			DataContext = ViewData;
+		}
+
+		private void Control_InvokeDataSaving(object sender, EventArgs e)
+		{
+			ViewData.StartSavingAsync();
 		}
 	}
 }

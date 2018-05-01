@@ -216,12 +216,12 @@ namespace LL.SCG.Data
 
 		public virtual void SetToDefault(IModuleData Data)
 		{
-			BackupRootDirectory = DefaultPaths.Backups(Data);
-			GitRootDirectory = DefaultPaths.GitRoot(Data);
-			AddedProjectsFile = DefaultPaths.ProjectsAppData(Data);
-			TemplateSettingsFile = DefaultPaths.TemplateSettings(Data);
-			UserKeywordsFile = DefaultPaths.Keywords(Data);
-			GitGenSettingsFile = DefaultPaths.GitGenSettings(Data);
+			BackupRootDirectory = DefaultPaths.ModuleBackupsFolder(Data);
+			GitRootDirectory = DefaultPaths.ModuleProjectsFolder(Data);
+			AddedProjectsFile = DefaultPaths.ModuleAddedProjectsFile(Data);
+			TemplateSettingsFile = DefaultPaths.ModuleTemplateSettingsFile(Data);
+			UserKeywordsFile = DefaultPaths.ModuleKeywordsFile(Data);
+			GitGenSettingsFile = DefaultPaths.ModuleGitGenSettingsFile(Data);
 		}
 
 		public void Init(IModuleData Data)

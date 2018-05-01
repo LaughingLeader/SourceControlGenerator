@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -34,6 +35,16 @@ namespace LL.SCG
 		public static bool CaseInsensitiveContains(this string text, string value, StringComparison stringComparison = StringComparison.CurrentCultureIgnoreCase)
 		{
 			return text.IndexOf(value, stringComparison) >= 0;
+		}
+
+		public static string TrimWhitespace(this string str)
+		{
+			return string.Join("", str.Split(default(string[]), StringSplitOptions.RemoveEmptyEntries));
+		}
+
+		public static string CleanFileName(this string fileName)
+		{
+			return Path.GetInvalidFileNameChars().Aggregate(fileName, (current, c) => current.Replace(c.ToString(), string.Empty));
 		}
 
 		//https://stackoverflow.com/questions/6275980/string-replace-ignoring-case/45756981#45756981

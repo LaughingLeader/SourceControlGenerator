@@ -14,7 +14,7 @@ namespace LL.SCG.Markdown
 	{
 		public LarianForumsUBBCodeFormatter() : base()
 		{
-			Name = "Larian Forums UBBCode";
+			Name = "Larian Forums";
 
 			AddTagToIgnoreList(TagNames.Strike);
 			AddElementToIgnoreList(typeof(IHtmlHeadingElement));
