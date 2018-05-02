@@ -16,7 +16,7 @@ namespace LL.SCG.Commands
 
 		public bool OpenSaveAsOnDefault { get; set; }
 
-		override public void Execute(object parameter)
+		public override void Execute(object parameter)
 		{
 			if (parameter != null && parameter is SaveFileCommandData data)
 			{

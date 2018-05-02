@@ -8,13 +8,11 @@ using System.Windows.Input;
 
 namespace LL.SCG.Commands
 {
-	public class OpenFileBrowserCommand : ICommand
+	public class OpenFileBrowserCommand : BaseCommand
 	{
-		public event EventHandler CanExecuteChanged;
-
 		private Action<string> onLoad;
 
-		public bool CanExecute(object parameter)
+		public override bool CanExecute(object parameter)
 		{
 			if (parameter != null && FileCommands.Load != null)
 			{
@@ -25,7 +23,7 @@ namespace LL.SCG.Commands
 			return false;
 		}
 
-		public void Execute(object parameter)
+		public override void Execute(object parameter)
 		{
 			string filePath = (String)parameter;
 

@@ -37,17 +37,21 @@ namespace LL.SCG.Commands
 		}
 	}
 
-	public class SaveFileAsCommand : ICommand
+	public class SaveFileAsCommand : BaseCommand
 	{
-		public Action<bool, string> OnSaveAs { get; set; }
+		private Action<bool, string> onSaveAs;
 
-		public event EventHandler CanExecuteChanged
+		public Action<bool, string> OnSaveAs
 		{
-			add { CommandManager.RequerySuggested += value; }
-			remove { CommandManager.RequerySuggested -= value; }
+			get { return onSaveAs; }
+			set
+			{
+				onSaveAs = value;
+				RaiseCanExecuteChanged();
+			}
 		}
 
-		public bool CanExecute(object parameter)
+		public override bool CanExecute(object parameter)
 		{
 			if(parameter != null && FileCommands.Save != null)
 			{
@@ -60,7 +64,7 @@ namespace LL.SCG.Commands
 			return false;
 		}
 
-		public virtual void Execute(object parameter)
+		public new virtual void Execute(object parameter)
 		{
 			if (parameter != null && parameter is SaveFileCommandData data)
 			{

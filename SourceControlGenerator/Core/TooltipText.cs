@@ -40,6 +40,8 @@ namespace LL.SCG.Core
 
 		//Markdown Converter
 		static public string MarkdownConverterModeShortcut => "Press Shift + Tab to switch modes.";
-		static public string MarkdownConverterSingleModeFileBrowser => "Output File Location";
+		static public string MarkdownConverterSingleModeOutputFileBrowser => "Select Export File Location...";
+		static public string MarkdownConverterSingleModeInputFileBrowser => "Select Input File Location...";
+		static public string MarkdownConverterBatchModeExportFileBrowser => "Select Export File Location...";
 	}
 }

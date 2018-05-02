@@ -34,7 +34,10 @@
 		<DataTemplate DataType="{x:Type vdata:SeparatorData}">
 			<Separator />
 		</DataTemplate>
-		
+
+		<Style TargetType="TabControl" BasedOn="{StaticResource {x:Type TabControl}}">
+			<EventSetter Event="SelectionChanged" Handler="Tab_ResetFocus" />
+		</Style>
 	</Window.Resources>
 	<Grid Width="Auto" Height="Auto">
 		<Grid.RowDefinitions>
@@ -144,7 +147,7 @@
 						</Style.Triggers>
 					</Style>
 				</TabItem.Resources>
-				<Grid >
+				<Grid>
 					<Grid.RowDefinitions>
 						<RowDefinition Height="Auto"/>
 						<RowDefinition Height="*" />

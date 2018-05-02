@@ -274,8 +274,11 @@ namespace LL.SCG.Core
 
 		private async Task HideProgressBar()
 		{
-			mainWindow.IsEnabled = true;
-			Data.ProgressVisiblity = System.Windows.Visibility.Collapsed;
+			await new Task(() =>
+			{
+				mainWindow.IsEnabled = true;
+				Data.ProgressVisiblity = System.Windows.Visibility.Collapsed;
+			});
 		}
 		#endregion
 

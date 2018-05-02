@@ -16,6 +16,8 @@ namespace LL.SCG.Markdown
 	{
 		public string Name { get; set; }
 
+		public string DefaultFileExtension { get; set; }
+
 		public List<string> BBIgnoredTags { get; set; }
 
 		public List<Type> BBIgnoredElements { get; set; }
@@ -181,6 +183,7 @@ namespace LL.SCG.Markdown
 		public BBCodeFormatter()
 		{
 			Name = "BBCode";
+			DefaultFileExtension = ".txt";
 
 			BBIgnoredTags = new List<string>();
 			BBIgnoredElements = new List<Type>();

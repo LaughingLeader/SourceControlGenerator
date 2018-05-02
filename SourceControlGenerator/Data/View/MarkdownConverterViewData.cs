@@ -145,6 +145,10 @@ namespace LL.SCG.Data.View
 			}
 		}
 
+		[JsonIgnore] public ICommand NextModeCommand { get; set; }
+
+		[JsonIgnore] public ICommand OpenInputFileCommand { get; set; }
+
 		#region Single Mode
 		private IMarkdownFormatter selectedFormatter;
 
@@ -173,18 +177,31 @@ namespace LL.SCG.Data.View
 			}
 		}
 
-		private string singleModeLastFilePath = "";
+		private string singleModeLastFileOutputPath = "";
 
-		public string SingleModeLastFilePath
+		public string SingleModeLastFileExportPath
 		{
-			get { return singleModeLastFilePath; }
+			get { return singleModeLastFileOutputPath; }
 			set
 			{
-				singleModeLastFilePath = value;
-				RaisePropertyChanged("SingleModeLastFilePath");
+				singleModeLastFileOutputPath = value;
+				RaisePropertyChanged("SingleModeLastFileExportPath");
 				RaisePropertyChanged("CanSave");
 			}
 		}
+
+		private string singleModeLastFileInputPath = "";
+
+		public string SingleModeLastFileInputPath
+		{
+			get { return singleModeLastFileInputPath; }
+			set
+			{
+				singleModeLastFileInputPath = value;
+				RaisePropertyChanged("SingleModeLastFileInputPath");
+			}
+		}
+
 
 		private string singleModeDefaultFileName = "";
 
@@ -205,7 +222,7 @@ namespace LL.SCG.Data.View
 		{
 			get
 			{
-				return !CanPreview && FileCommands.IsValidFilePath(SingleModeLastFilePath);
+				return !CanPreview && FileCommands.IsValidFilePath(SingleModeLastFileExportPath);
 			}
 		}
 
@@ -219,10 +236,11 @@ namespace LL.SCG.Data.View
 
 			if(!String.IsNullOrEmpty(Output))
 			{
-				if (FileCommands.IsValidFilePath(SingleModeLastFilePath))
+				if (FileCommands.IsValidFilePath(SingleModeLastFileExportPath))
 				{
-					FileCommands.WriteToFile(SingleModeLastFilePath, Output);
-					Log.Here().Activity($"Converted text to {SelectedFormatter.Name} and saved to {SingleModeLastFilePath}.");
+					FileCommands.WriteToFile(SingleModeLastFileExportPath, Output);
+					Log.Here().Activity($"Converted text to {SelectedFormatter.Name} and saved to {SingleModeLastFileExportPath}.");
+					StartSavingAsync();
 				}
 			}
 		}
@@ -292,8 +310,6 @@ namespace LL.SCG.Data.View
 
 		#endregion
 
-		[JsonIgnore] public ICommand NextModeCommand { get; set; }
-
 		private void ConvertInputForData(object value)
 		{
 			if (value is IMarkdownFormatter formatter)
@@ -319,7 +335,7 @@ namespace LL.SCG.Data.View
 		}
 
 		private bool savingSettings = false;
-		private Timer saveDelayTimer;
+		//private Timer saveDelayTimer;
 
 		public async void StartSavingAsync()
 		{
@@ -328,17 +344,19 @@ namespace LL.SCG.Data.View
 				savingSettings = true;
 				//if (saveDelayTimer == null) saveDelayTimer = new Timer(_ => OnSaveTimerComplete());
 				//saveDelayTimer.Change(250, Timeout.Infinite);
-				await Task.Delay(500);
+				await Task.Delay(250);
 				await Save();
 				savingSettings = false;
 			}
 			else
 			{
+				/*
 				if(saveDelayTimer != null)
 				{
 					//Reset
 					//saveDelayTimer.Change(250, Timeout.Infinite);
 				}
+				*/
 			}
 		}
 
@@ -371,9 +389,22 @@ namespace LL.SCG.Data.View
 			return Task.FromResult<bool>(false);
 		}
 
+		private void LoadInputFile(object value)
+		{
+			if(value is string path)
+			{
+				Input = FileCommands.ReadFile(path);
+				if(!String.IsNullOrEmpty(path))
+				{
+					StartSavingAsync();
+				}
+			}
+		}
+
 		public MarkdownConverterViewData()
 		{
 			Formatters = new ObservableCollection<IMarkdownFormatter>(MarkdownConverter.InitFormatters());
+			OpenInputFileCommand = new ParameterCommand(LoadInputFile);
 			PreviewSingleCommand = new ActionCommand(PreviewSelected);
 			PreviewCommand = new ParameterCommand(ConvertInputForData);
 			NextModeCommand = new ActionCommand(NextMode);
@@ -428,10 +459,30 @@ namespace LL.SCG.Data.View
 				{
 					startFilePath = DefaultPaths.ModuleExportFolder(AppController.Main.CurrentModule.ModuleData);
 					Directory.CreateDirectory(startFilePath);
+
+					if (String.IsNullOrWhiteSpace(SingleModeLastFileExportPath))
+					{
+						SingleModeLastFileExportPath = startFilePath;
+					}
+
+					if (String.IsNullOrWhiteSpace(SingleModeLastFileInputPath))
+					{
+						SingleModeLastFileExportPath = DefaultPaths.ModuleRootFolder(AppController.Main.CurrentModule.ModuleData);
+					}
 				}
 			}
 
 			if (String.IsNullOrEmpty(startFilePath)) startFilePath = DefaultPaths.RootFolder;
+
+			if (String.IsNullOrWhiteSpace(SingleModeLastFileExportPath))
+			{
+				SingleModeLastFileExportPath = startFilePath;
+			}
+
+			if (String.IsNullOrWhiteSpace(SingleModeLastFileInputPath))
+			{
+				SingleModeLastFileExportPath = startFilePath;
+			}
 
 			foreach (var formatter in Formatters)
 			{
@@ -444,7 +495,7 @@ namespace LL.SCG.Data.View
 
 				if(!FileCommands.IsValidFilePath(filePath) && FileCommands.IsValidDirectoryPath(filePath))
 				{
-					filePath = Path.Combine(filePath, formatter.Name.TrimWhitespace() + ".txt");
+					filePath = Path.Combine(filePath, formatter.Name.TrimWhitespace());
 				}
 				
 				BatchFormatterData.Add(new MarkdownFormatterData(this)
@@ -454,7 +505,7 @@ namespace LL.SCG.Data.View
 					Enabled = enabled,
 					FilePath = filePath,
 					LastPath = !String.IsNullOrEmpty(filePath) ? filePath : startFilePath,
-					DefaultFileName = formatter.Name.TrimWhitespace() + ".txt"
+					DefaultFileName = formatter.Name.TrimWhitespace()
 				});
 			}
 			RaisePropertyChanged("BatchFormatterData");

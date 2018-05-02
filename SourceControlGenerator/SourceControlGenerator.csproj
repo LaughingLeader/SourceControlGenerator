@@ -116,10 +116,6 @@
     </Reference>
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
-    <Reference Include="System.Drawing.Primitives">
-      <HintPath>..\packages\System.Drawing.Primitives.4.3.0\lib\net45\System.Drawing.Primitives.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="System.Windows.Interactivity, Version=4.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\ControlzEx.3.0.2.4\lib\net462\System.Windows.Interactivity.dll</HintPath>
     </Reference>
@@ -145,6 +141,7 @@
     <Compile Include="Collections\ObservableCollectionObject.cs" />
     <Compile Include="Collections\ObservableImmutableDictionary.cs" />
     <Compile Include="Collections\ObservableImmutableList.cs" />
+    <Compile Include="Commands\BaseCommand.cs" />
     <Compile Include="Commands\TaskCommand.cs" />
     <Compile Include="Controls\AddTemplateControl.xaml.cs">
       <DependentUpon>AddTemplateControl.xaml</DependentUpon>
@@ -169,7 +166,6 @@
     <Compile Include="Converters\IntToVisibilityConverter.cs" />
     <Compile Include="Converters\ListViewStarWidthConverter.cs" />
     <Compile Include="Converters\LogTypeColorConverter.cs" />
-    <Compile Include="Controls\PaddedGridViewColumnHeader.cs" />
     <Compile Include="Controls\TemplateEditorControl.xaml.cs">
       <DependentUpon>TemplateEditorControl.xaml</DependentUpon>
     </Compile>
@@ -181,6 +177,7 @@
     <Compile Include="Converters\SettingsAttributeConverter.cs" />
     <Compile Include="Converters\SettingsAttributeValueControlConverter.cs" />
     <Compile Include="Converters\EmptyValueVisibilityConverter.cs" />
+    <Compile Include="Converters\StringToFilterConverter.cs" />
     <Compile Include="Converters\VisibleLogsConverter.cs" />
     <Compile Include="Core\MenuID.cs" />
     <Compile Include="Data\App\AppSettingsData.cs" />
@@ -443,8 +440,7 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PreBuildEvent>
-    </PreBuildEvent>
+    <PreBuildEvent>rd /s /q $(TargetDir)_Lib</PreBuildEvent>
   </PropertyGroup>
   <PropertyGroup>
     <PostBuildEvent>

@@ -8,10 +8,8 @@ using System.Windows.Input;
 
 namespace LL.SCG.Commands
 {
-	public class TaskCommand : ICommand
+	public class TaskCommand : BaseCommand
 	{
-		public event EventHandler CanExecuteChanged;
-
 		public Action<bool> TaskAction { get; set; }
 
 		public Window ParentWindow { get; set; }
@@ -22,14 +20,25 @@ namespace LL.SCG.Commands
 
 		public string TaskContent { get; set; }
 
-		public bool CanExecute(object parameter)
+		public bool TaskOpen { get; private set; } = false;
+
+		public override bool CanExecute(object parameter)
 		{
-			return true;
+			return !TaskOpen;
 		}
 
-		public void Execute(object parameter)
+		public override void Execute(object parameter)
 		{
-			FileCommands.OpenConfirmationDialog(ParentWindow, TaskTitle, TaskInstructions, TaskContent, TaskAction);
+			TaskOpen = true;
+			FileCommands.OpenConfirmationDialog(ParentWindow, TaskTitle, TaskInstructions, TaskContent, OnTaskDone);
+			RaiseCanExecuteChanged();
+		}
+
+		private void OnTaskDone(bool param)
+		{
+			TaskOpen = false;
+			TaskAction?.Invoke(param);
+			RaiseCanExecuteChanged();
 		}
 
 		public TaskCommand(Action<bool> taskAction, Window parentWindow = null, string taskTitle = "", string taskInstructions = "", string taskContent = "")

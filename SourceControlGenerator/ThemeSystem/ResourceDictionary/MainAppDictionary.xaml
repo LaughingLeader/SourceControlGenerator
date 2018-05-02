@@ -8,6 +8,7 @@
 					xmlns:data="clr-namespace:LL.SCG.Data.View"
 					xmlns:theme="clr-namespace:LL.SCG.ThemeSystem"
 					xmlns:window="clr-namespace:LL.SCG.Windows"
+					xmlns:sys="clr-namespace:System;assembly=mscorlib"
 					xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
 					xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
 					x:Name="MainAppDictionary"
@@ -25,6 +26,8 @@
 	<cv:NewlineStringConverter x:Key="NewlineStringConverter"/>
 	<cv:SettingsAttributeConverter x:Key="SettingsAttributeConverter"/>
 	<cv:SettingsAttributeValueControlConverter x:Key="SettingsAttributeValueControlConverter"/>
+	<cv:StringToFilterConverter x:Key="StringToFilterConverter" />
+	<cv:StringToFilterListConverter x:Key="StringToFilterListConverter" />
 	<cv:IntToGridLengthConverter x:Key="IntToGridLengthConverter"/>
 	<cv:IntToVisibilityConverter x:Key="IntToVisibilityConverter"/>
 	<cv:VisibleLogsConverter x:Key="VisibleLogsConverter"/>
@@ -32,6 +35,22 @@
 
 	<Style TargetType="{x:Type c:TemplateKeywordControl}"/>
 	<Style TargetType="{x:Type ListViewItem}" />
+
+	<!-- Style to hide tool tips that have an empty content. -->
+	<Style TargetType="ToolTip" BasedOn="{StaticResource {x:Type ToolTip}}">
+		<Style.Triggers>
+			<Trigger Property="Content"
+				 Value="{x:Static sys:String.Empty}">
+				<Setter Property="Visibility"
+					Value="Collapsed" />
+			</Trigger>
+			<Trigger Property="Content"
+				 Value="{x:Null}">
+				<Setter Property="Visibility"
+					Value="Collapsed" />
+			</Trigger>
+		</Style.Triggers>
+	</Style>
 
 	<!--  Button style -->
 	<Style TargetType="{x:Type Button}" x:Key="WindowButtonStyle">

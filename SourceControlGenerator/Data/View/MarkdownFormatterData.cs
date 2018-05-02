@@ -22,6 +22,7 @@ namespace LL.SCG.Data.View
 			{
 				formatter = value;
 				Name = formatter.Name;
+				DefaultFileExtension = formatter.DefaultFileExtension;
 				RaisePropertyChanged("Formatter");
 				RaisePropertyChanged("Name");
 				RaisePropertyChanged("OpenFileText");
@@ -92,6 +93,20 @@ namespace LL.SCG.Data.View
 				RaisePropertyChanged("DefaultFileName");
 			}
 		}
+
+		private string defaultFileExtension = ".txt";
+
+		[JsonIgnore]
+		public string DefaultFileExtension
+		{
+			get { return defaultFileExtension; }
+			set
+			{
+				defaultFileExtension = value;
+				RaisePropertyChanged("DefaultFileExtension");
+			}
+		}
+
 
 		[JsonIgnore] public ICommand OnFilePathSet { get; set; }
 

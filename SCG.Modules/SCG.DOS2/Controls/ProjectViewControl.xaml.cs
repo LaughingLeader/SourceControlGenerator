@@ -168,7 +168,7 @@ namespace LL.SCG.DOS2.Controls
 
 		private async void DeselectSelectedRows()
 		{
-			Task.Delay(200);
+			await Task.Delay(200);
 
 			DataGrid managedGrid = (DataGrid)this.FindName("ManagedProjectsDataGrid");
 

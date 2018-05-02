@@ -10,23 +10,27 @@ namespace LL.SCG.Commands
 	/// <summary>
 	/// Executes an action, passing in a parameter.
 	/// </summary>
-	public class ParameterCommand : ICommand
+	public class ParameterCommand : BaseCommand
 	{
 		private Action<object> execute;
-
-		public event EventHandler CanExecuteChanged;
 
 		public ParameterCommand(Action<object> execute)
 		{
 			this.execute = execute;
 		}
 
-		public bool CanExecute(object parameter)
+		public void SetExecuteAction(Action<object> executeAction)
 		{
-			return true;
+			execute = executeAction;
+			RaiseCanExecuteChanged();
 		}
 
-		public void Execute(object parameter)
+		public override bool CanExecute(object parameter)
+		{
+			return execute != null;
+		}
+
+		public override void Execute(object parameter)
 		{
 			this.execute?.Invoke(parameter);
 		}

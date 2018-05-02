@@ -8,18 +8,18 @@ using System.Windows.Input;
 
 namespace LL.SCG.Commands
 {
-	public class OpenFileBrowseCommand : ICommand
+	public class OpenFileBrowseCommand : BaseCommand
 	{
-		public event EventHandler CanExecuteChanged;
-
 		private Action<string> onSelected;
 
-		public bool CanExecute(object parameter)
+		public bool BrowserOpen { get; private set; } = false;
+
+		public override bool CanExecute(object parameter)
 		{
-			return true;
+			return !BrowserOpen;
 		}
 
-		public void Execute(object parameter)
+		public override void Execute(object parameter)
 		{
 			var values = (object[])parameter;
 			string startPath = (String)values[0];
@@ -28,15 +28,23 @@ namespace LL.SCG.Commands
 
 			if (String.IsNullOrEmpty(startPath)) startPath = Directory.GetCurrentDirectory();
 
+			BrowserOpen = true;
+
 			if (!folderMode)
 			{
-				FileCommands.Load.OpenFileDialog(App.Current.MainWindow, title, startPath, onSelected);
+				FileCommands.Load.OpenFileDialog(App.Current.MainWindow, title, startPath, OnFileSelected);
 			}
 			else
 			{
-				FileCommands.Load.OpenFolderDialog(App.Current.MainWindow, title, startPath, onSelected);
+				FileCommands.Load.OpenFolderDialog(App.Current.MainWindow, title, startPath, OnFileSelected);
 			}
 
+		}
+
+		private void OnFileSelected(string path)
+		{
+			BrowserOpen = false;
+			onSelected?.Invoke(path);
 		}
 
 		public OpenFileBrowseCommand(Action<string> OnFileSelected)

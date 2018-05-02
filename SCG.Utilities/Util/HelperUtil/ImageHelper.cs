@@ -52,9 +52,9 @@ namespace LL.SCG.Util.HelperUtil
 					}
 				}
 			}
-			catch (Exception exc)
+			catch (Exception ex)
 			{
-				//Debug.Print(exc.ToString());
+				Log.Here().Error($"Error reading image: {ex.ToString()}");
 				return ImageType.None;
 			}
 			return CheckImageType(buf);

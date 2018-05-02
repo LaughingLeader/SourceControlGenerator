@@ -12,6 +12,8 @@ namespace LL.SCG.Markdown
 	{
 		public string Name { get; set; }
 
+		public string DefaultFileExtension { get; set; }
+
 		public string ConvertHTML(string input)
 		{
 			return input;
@@ -20,6 +22,7 @@ namespace LL.SCG.Markdown
 		public HTMLFormatterInterface()
 		{
 			Name = "HTML";
+			DefaultFileExtension = ".html";
 		}
 	}
 

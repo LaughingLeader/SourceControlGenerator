@@ -24,6 +24,8 @@ using LL.SCG.Interfaces;
 using Newtonsoft.Json;
 using LL.SCG.Modules;
 using LL.SCG.FileGen;
+using LL.SCG.Controls;
+using System.Windows.Threading;
 
 namespace LL.SCG.Windows
 {
@@ -159,36 +161,41 @@ namespace LL.SCG.Windows
 
 			if (modules.Length > 0)
 			{
+				var tasks = new List<Task<bool>>();
 				for (var i = 0; i < modules.Length; i++)
 				{
 					var module = modules[i];
-					Log.Here().Important("Module {0} found. Attempting to initialize.", module.Name);
+					tasks.Add(LoadModule(module.FullName, module.Name));
 					//Assembly.LoadFrom(module.FullName);
+				}
 
-					var result = await LoadModule(module.FullName);
-					if(result)
+				foreach(var task in await Task.WhenAll(tasks))
+				{
+					if(task == true)
 					{
 						totalModulesLoaded += 1;
 					}
 				}
+
+				if(totalModulesLoaded <= 0) Log.Here().Important("No modules were loaded.");
 			}
 
 			return totalModulesLoaded;
 		}
 
-		private async Task<bool> LoadModule(string fileName)
+		private async Task<bool> LoadModule(string fileName, string Name = "")
 		{
 			try
 			{
+				Log.Here().Important($"Attempting to load module {Name}.");
 				Loader.Call(AppDomain.CurrentDomain, fileName, "LL.SCG.Module", "Init");
-				return true;
+				return await Task.FromResult(true);
 			}
 			catch (Exception ex)
 			{
 				Log.Here().Error("Error loading module file {0}: {1}", fileName, ex.ToString());
 			}
-
-			return false;
+			return await Task.FromResult(false);
 		}
 
 		public void LoadProjectModuleView(object sender, EventArgs e)
@@ -476,6 +483,29 @@ namespace LL.SCG.Windows
 		private void ProgressScreen_Loaded(object sender, EventArgs e)
 		{
 			Controller.OnProgressLoaded?.Invoke();
+		}
+
+		private void Tab_ResetFocus(object sender, EventArgs e)
+		{
+			if (sender is TabControl tabControl)
+			{
+				Dispatcher.BeginInvoke((Action)(() =>
+				{
+					IInputElement focusedControl = FocusManager.GetFocusedElement(this);
+					if (focusedControl is TextBox textBox)
+					{
+						// Move to a parent that can take focus
+						FrameworkElement parent = (FrameworkElement)textBox.Parent;
+						while (parent != null && parent is IInputElement && !((IInputElement)parent).Focusable)
+						{
+							parent = (FrameworkElement)parent.Parent;
+						}
+
+						DependencyObject scope = FocusManager.GetFocusScope(textBox);
+						FocusManager.SetFocusedElement(scope, parent as IInputElement);
+					}
+				}), DispatcherPriority.Background);
+			}
 		}
 	}
 }

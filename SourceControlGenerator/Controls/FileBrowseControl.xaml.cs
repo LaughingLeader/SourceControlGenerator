@@ -15,6 +15,9 @@ using System.Windows.Input;
 using LL.SCG.Core;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using LL.SCG.Data.View;
+using System.Windows.Data;
+using System.Globalization;
+using System.Windows.Threading;
 
 namespace LL.SCG.Controls
 {
@@ -32,6 +35,11 @@ namespace LL.SCG.Controls
 
 	public static class CommonFileFilters
 	{
+		public static string CombineFilters(params FileBrowserFilter[] filters)
+		{
+			return String.Join(";", filters.Select(f => f.Values));
+		}
+
 		public static FileBrowserFilter All { get; private set; } = new FileBrowserFilter()
 		{
 			Name = "All types",
@@ -50,16 +58,46 @@ namespace LL.SCG.Controls
 			Values = "*.json"
 		};
 
+		public static FileBrowserFilter GitFiles { get; private set; } = new FileBrowserFilter()
+		{
+			Name = "Git text files",
+			Values = "*.md;.gitignore;.gitattributes"
+		};
+
 		public static FileBrowserFilter SourceControlGeneratorFiles { get; private set; } = new FileBrowserFilter()
 		{
 			Name = "Source Control Generator files",
-			Values = "*.txt;*.json;*.xml"
+			Values = CombineFilters(NormalTextFile, Json, GitFiles)
+		};
+
+		public static FileBrowserFilter MarkdownFile { get; private set; } = new FileBrowserFilter()
+		{
+			Name = "Markdown file",
+			Values = "*.md"
+		};
+
+		public static FileBrowserFilter HTMLFile { get; private set; } = new FileBrowserFilter()
+		{
+			Name = "HTML file",
+			Values = "*.html"
+		};
+
+		public static FileBrowserFilter MarkdownConverterFiles { get; private set; } = new FileBrowserFilter()
+		{
+			Name = "Markdown Converter files",
+			Values = CombineFilters(NormalTextFile, MarkdownFile, HTMLFile)
+		};
+
+		public static List<FileBrowserFilter> MarkdownConverterFilesList { get; private set; } = new List<FileBrowserFilter>()
+		{
+			MarkdownConverterFiles,
+			All
 		};
 
 		public static List<FileBrowserFilter> DefaultFilters { get; set; } = new List<FileBrowserFilter>()
 		{
-			NormalTextFile,
 			SourceControlGeneratorFiles,
+			NormalTextFile,
 			Json,
 			All
 		};
@@ -206,6 +244,17 @@ namespace LL.SCG.Controls
 
 
 
+		public string BrowseToolTip
+		{
+			get { return (string)GetValue(BrowseToolTipProperty); }
+			set { SetValue(BrowseToolTipProperty, value); }
+		}
+
+		// Using a DependencyProperty as the backing store for BrowseToolTip.  This enables animation, styling, binding, etc...
+		public static readonly DependencyProperty BrowseToolTipProperty =
+			DependencyProperty.Register("BrowseToolTip", typeof(string), typeof(FileBrowseControl), new PropertyMetadata("Browse..."));
+
+
 		public FileBrowseControl()
 		{
 			InitializeComponent();
@@ -218,6 +267,15 @@ namespace LL.SCG.Controls
 		private void FileBrowseControl_Loaded(object sender, RoutedEventArgs e)
 		{
 			if (Filters == null) Filters = CommonFileFilters.DefaultFilters;
+
+			if (!String.IsNullOrEmpty(FileLocationText))
+			{
+				TextBox textBox = (TextBox)this.FindName("FilePathDisplay");
+				//Scroll to the end
+				textBox.CaretIndex = textBox.Text.Length;
+				var rect = textBox.GetRectFromCharacterIndex(textBox.CaretIndex);
+				textBox.ScrollToHorizontalOffset(rect.Right);
+			}
 		}
 
 		private void FileBrowseButton_Click(object sender, RoutedEventArgs e)
@@ -283,14 +341,21 @@ namespace LL.SCG.Controls
 				}
 				else if(BrowseMode == FileBrowserMode.Save)
 				{
-					fileDialog = new CommonSaveFileDialog();
+					var saveFileDialog = new CommonSaveFileDialog();
+					saveFileDialog.AlwaysAppendDefaultExtension = false;
+					saveFileDialog.OverwritePrompt = true;
+					fileDialog = saveFileDialog;
 				}
 
 				if(fileDialog != null)
 				{
 					fileDialog.Title = OpenFileText;
 					fileDialog.InitialDirectory = LastFileLocation;
-					fileDialog.DefaultExtension = DefaultExt;
+					//if (!String.IsNullOrWhiteSpace(DefaultExt)) fileDialog.DefaultExtension = DefaultExt;
+
+					Log.Here().Activity(DefaultExt);
+					Log.Here().Activity(DefaultFileName);
+
 					if (Filters != null)
 					{
 						if(Filters.Count <= 0)
@@ -308,23 +373,37 @@ namespace LL.SCG.Controls
 						fileDialog.Filters.Add(new CommonFileDialogFilter("All Files", "*.*"));
 					}
 
-					if(String.IsNullOrWhiteSpace(DefaultFileName))
+					if (FileCommands.IsValidFilePath(FileLocationText))
 					{
-						if (FileCommands.IsValidFilePath(FileLocationText))
+						fileDialog.DefaultFileName = Path.GetFileName(FileLocationText);
+					}
+					else if (!String.IsNullOrWhiteSpace(DefaultFileName))
+					{
+						if (!String.IsNullOrWhiteSpace(DefaultExt))
 						{
-							fileDialog.DefaultFileName = Path.GetFileName(FileLocationText);
+							fileDialog.DefaultFileName = DefaultFileName + DefaultExt;
+						}
+						else
+						{
+							fileDialog.DefaultFileName = DefaultFileName;
 						}
 					}
-					else
-					{
-						fileDialog.DefaultFileName = DefaultFileName;
-					}
+
 
 					var result = fileDialog.ShowDialog(parentWindow);
 
 					if (result == CommonFileDialogResult.Ok)
 					{
 						string filename = fileDialog.FileName;
+
+						if(fileDialog is CommonOpenFileDialog openFileDialog)
+						{
+							filename = String.Join(";", openFileDialog.FileNames);
+						}
+						else if(fileDialog is CommonSaveFileDialog saveFileDialog)
+						{
+							filename = saveFileDialog.FileName;
+						}
 
 						if (FileCommands.PathIsRelative(filename))
 						{
@@ -417,6 +496,15 @@ namespace LL.SCG.Controls
 					}
 				}
 			}
+
+			if (!String.IsNullOrEmpty(FileLocationText))
+			{
+				TextBox textBox = (TextBox)this.FindName("FilePathDisplay");
+				//Scroll to the end
+				textBox.CaretIndex = textBox.Text.Length;
+				var rect = textBox.GetRectFromCharacterIndex(textBox.CaretIndex);
+				textBox.ScrollToHorizontalOffset(rect.Right);
+			}
 		}
 
 		public void OnFileLocationChanged()
@@ -425,7 +513,7 @@ namespace LL.SCG.Controls
 
 			FileValidation = FileValidation.None;
 
-			if(!String.IsNullOrWhiteSpace(FileLocationText))
+			if (!String.IsNullOrWhiteSpace(FileLocationText))
 			{
 				if (!FileCommands.IsValidPath(FileLocationText))
 				{
@@ -453,25 +541,25 @@ namespace LL.SCG.Controls
 
 			if(FileValidation == FileValidation.None)
 			{
-				if(textBox.ToolTip != null)
+				if(ToolTip != null)
 				{
-					textBox.ClearValue(TextBox.ToolTipProperty);
+					ClearValue(FileBrowseControl.ToolTipProperty);
 				}
 			}
 			else if (FileValidation == FileValidation.Warning)
 			{
 				if (BrowseType == FileBrowseType.Directory)
 				{
-					textBox.ToolTip = "Folder not found.";
+					ToolTip = "Folder not found.";
 				}
 				else if (BrowseType == FileBrowseType.File)
 				{
-					textBox.ToolTip = "File not found.";
+					ToolTip = "File not found.";
 				}
 			}
 			else if (FileValidation == FileValidation.Error)
 			{
-				textBox.ToolTip = "Error: Path is not valid.";
+				ToolTip = "Error: Path is not valid.";
 			}
 		}
 	}

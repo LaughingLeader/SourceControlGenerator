@@ -10,11 +10,9 @@ namespace LL.SCG.Commands
 	/// <summary>
 	/// Executes an action, ignoring the parameter.
 	/// </summary>
-	public class ActionCommand : ICommand
+	public class ActionCommand : BaseCommand
 	{
 		private Action callback;
-
-		public event EventHandler CanExecuteChanged;
 
 		public ActionCommand(Action callback)
 		{
@@ -26,14 +24,15 @@ namespace LL.SCG.Commands
 		public void SetCallback(Action newCallback)
 		{
 			callback = newCallback;
+			RaiseCanExecuteChanged();
 		}
 
-		public bool CanExecute(object parameter)
+		public override bool CanExecute(object parameter)
 		{
-			return true;
+			return callback != null;
 		}
 
-		public void Execute(object parameter)
+		public override void Execute(object parameter)
 		{
 			this.callback?.Invoke();
 		}
