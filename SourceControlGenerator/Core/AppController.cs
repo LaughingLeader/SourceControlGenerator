@@ -190,67 +190,82 @@ namespace LL.SCG.Core
 
 		public Action OnProgressLoaded { get; set; }
 
-		public Progress<int> MainProgress { get; set; }
-
-		public async void StartProgress(string Title, Func<Task> StartEvent, Action OnCompleted = null, int StartValue = 0, Action OnStarted = null)
+		public void StartProgress(string Title, Action StartAction, string StartMessage = "", int StartValue = 0, Action OnCompleted = null)
 		{
-			if (MainProgress == null)
-			{
-				MainProgress = new Progress<int>(MainProgress_SetProgress);
-				MainProgress.ProgressChanged += MainProgress_ProgressChanged;
-			}
+			OnProgressLoaded = StartAction;
 
-			OnProgressLoaded = OnStarted;
 			Data.ProgressTitle = Title;
+			Data.ProgressMessage = StartMessage;
 			Data.ProgressValue = StartValue;
 			Data.ProgressVisiblity = System.Windows.Visibility.Visible;
 			mainWindow.IsEnabled = false;
 
-			await StartEvent();
-		}
-
-		private void MainProgress_ProgressChanged(object sender, int e)
-		{
-			
-		}
-
-		private void MainProgress_SetProgress(int val)
-		{
-
+			Application.Current.Dispatcher.Invoke(new Action(() =>
+			{
+				StartAction();
+			}), DispatcherPriority.ApplicationIdle);
 		}
 
 		public void UpdateProgress(int Value = 1, string Message = null)
 		{
-			if (Message != null) Data.ProgressMessage = Message;
-			Data.ProgressValue += Value;
+			Application.Current.Dispatcher.Invoke(new Action(() =>
+			{
+				if (Message != null) Data.ProgressLog += Environment.NewLine + Message;
+				Data.ProgressValue += Value;
+
+				//Log.Here().Activity($"Updated progress to {Value}.");
+			}), DispatcherPriority.Background);
 		}
 
 		public void SetProgress(int Value = 1, string Message = null)
 		{
-			//Log.Here().Activity($"Setting progress to {Value} with message {Message}.");
-			if (Message != null) Data.ProgressMessage = Message;
-			Data.ProgressValue = Value;
+			Application.Current.Dispatcher.Invoke(new Action(() =>
+			{
+				//Log.Here().Activity($"Setting progress to {Value}.");
+				if (Message != null) Data.ProgressMessage = Message;
+				Data.ProgressValue = Value;
+			}), DispatcherPriority.ApplicationIdle);
 		}
 
 		public void UpdateProgressMessage(string Message)
 		{
-			Data.ProgressMessage = Message;
+			Application.Current.Dispatcher.Invoke(new Action(() =>
+			{
+				Data.ProgressMessage = Message;
+			}), DispatcherPriority.ApplicationIdle);
+		}
+
+		public void UpdateProgressLog(string Message)
+		{
+			Application.Current.Dispatcher.Invoke(new Action(() =>
+			{
+				Data.ProgressLog += Environment.NewLine + Message;
+			}), DispatcherPriority.ApplicationIdle);
 		}
 
 		public void UpdateProgressTitle(string Title)
 		{
-			Data.ProgressTitle = Title;
+			if(Data.ProgressTitle != Title)
+			{
+				Application.Current.Dispatcher.Invoke(new Action(() =>
+				{
+					Data.ProgressTitle = Title;
+				}), DispatcherPriority.ContextIdle);
+			}
 		}
 
 		public async void FinishProgress()
 		{
-			Data.ProgressValue = Data.ProgressValueMax;
-			await OnProgressCompleteAsync();
+			await Task.Delay(250);
+			await Application.Current.Dispatcher.BeginInvoke(new Action(() =>
+			{
+				Data.ProgressValue = Data.ProgressValueMax;
+				OnProgressComplete();
+			}), DispatcherPriority.Background);
 		}
 
-		private async Task OnProgressCompleteAsync()
+		private void OnProgressComplete()
 		{
-			await Task.Delay(500);
 			HideProgressBar();
 		}
 

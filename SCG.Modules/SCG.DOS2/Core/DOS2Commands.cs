@@ -99,7 +99,7 @@ namespace LL.SCG.DOS2.Core
 								var success = DateTime.TryParse(project.LastBackupUTC, out lastBackup);
 								if (success)
 								{
-									Log.Here().Activity($"Successully parsed {modProject.LastBackup} to DateTime.");
+									//Log.Here().Activity($"Successully parsed {modProject.LastBackup} to DateTime.");
 									modProject.LastBackup = lastBackup.ToLocalTime();
 								}
 								else
@@ -267,11 +267,11 @@ namespace LL.SCG.DOS2.Core
 
 					if (success)
 					{
-						Log.Here().Important($"Source control file found in git repo for project {project.ProjectName}.");
+						//Log.Here().Important($"Source control file found in git repo for project {project.ProjectName}.");
 					}
 					else
 					{
-						Log.Here().Warning($"Source control file not found for project {project.ProjectName}.");
+						//Log.Here().Warning($"Source control file not found for project {project.ProjectName}.");
 					}
 				}
 

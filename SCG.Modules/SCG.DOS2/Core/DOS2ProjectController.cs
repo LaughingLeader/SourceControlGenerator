@@ -63,10 +63,15 @@ namespace LL.SCG.Core
 		public void StartGitGeneration()
 		{
 			Data.CanGenerateGit = false;
-			AppController.Main.StartProgress($"Generating Git Files... 0/{Data.GitGenerationSettings.ExportProjects.Count}", RunGitGeneration);
+			AppController.Main.StartProgress($"Generating Git Files... 0/{Data.GitGenerationSettings.ExportProjects.Count}", StartGitGenerationAsync);
 		}
 
-		public async Task RunGitGeneration()
+		public async void StartGitGenerationAsync()
+		{
+			await DoGitGeneration();
+		}
+
+		private async Task DoGitGeneration()
 		{
 			Log.Here().Important("Generating git repositories for selected projects.");
 			int total = Data.GitGenerationSettings.ExportProjects.Count;
@@ -74,8 +79,12 @@ namespace LL.SCG.Core
 
 			Log.Here().Activity($"[Progress] Amount per tick set to {amountPerTick}");
 
+			AppController.Main.UpdateProgressMessage("Parsing selected projects...");
+
 			for (var i = 0; i < total; i++)
 			{
+				AppController.Main.UpdateProgressTitle($"Generating Git Files... {(i)}/{total}");
+
 				var project = Data.GitGenerationSettings.ExportProjects[i];
 				int targetPercentage = amountPerTick * (i + 1);
 				int totalPercentageAmount = targetPercentage - AppController.Main.Data.ProgressValue;
@@ -88,10 +97,12 @@ namespace LL.SCG.Core
 
 				if (success)
 				{
+					AppController.Main.UpdateProgressLog($"Successfuly generated git repo for project {project.DisplayName}.");
 					Log.Here().Important("Git repository successfully generated for {0}.", project.DisplayName);
 				}
 				else
 				{
+					AppController.Main.UpdateProgressLog($"Error generating git repo for project {project.DisplayName}.");
 					Log.Here().Error("Error generating git repository for {0}.", project.DisplayName);
 				}
 
@@ -293,10 +304,15 @@ namespace LL.SCG.Core
 		public void BackupSelectedProjects(string OutputDirectory = "")
 		{
 			targetBackupOutputDirectory = OutputDirectory;
-			AppController.Main.StartProgress($"Backing up projects...", StartBackupSelectedProjects);
+			AppController.Main.StartProgress($"Backing up projects...", StartBackupSelectedProjectsAsync, "Creating archive...");
 		}
 
-		public async Task StartBackupSelectedProjects()
+		public async void StartBackupSelectedProjectsAsync()
+		{
+			await BackupSelectedProjectsAsync();
+		}
+
+		private async Task<bool> BackupSelectedProjectsAsync()
 		{
 			var selectedProjects = Data.ManagedProjects.Where(p => p.Selected).ToList();
 			var total = selectedProjects.Count;
@@ -306,17 +322,23 @@ namespace LL.SCG.Core
 
 			if (selectedProjects != null)
 			{
+				AppController.Main.UpdateProgressMessage("Creating archives...");
+
 				for (var i = 0; i < total; i++)
 				{
+					AppController.Main.UpdateProgressTitle($"Backing up projects... {i}/{total}");
+
 					var project = selectedProjects[i];
 					int targetPercentage = amountPerTick * (i + 1);
 					//int totalPercentageAmount = targetPercentage - AppController.Main.Data.ProgressValue;
 
 					//Log.Here().Activity($"[Progress-Backup] Target percentage for this backup iteration is {targetPercentage}. Amount per tick is {amountPerTick}.");
 
-					AppController.Main.UpdateProgressMessage("Creating archive...");
+					AppController.Main.UpdateProgressLog("Creating archive...");
 
-					if (BackupProject(project, targetBackupOutputDirectory))
+					var backupSuccess = await BackupProject(project, targetBackupOutputDirectory);
+
+					if (backupSuccess)
 					{
 						Log.Here().Activity("Successfully created archive for {0}.", project.ProjectName);
 						project.LastBackup = DateTime.Now;
@@ -324,16 +346,16 @@ namespace LL.SCG.Core
 						if (d != null) d.LastBackupUTC = project.LastBackup?.ToUniversalTime().ToString();
 						success = true;
 
-						AppController.Main.UpdateProgressMessage("Archive created.");
+						AppController.Main.UpdateProgressLog("Archive created.");
 					}
 					else
 					{
 						Log.Here().Error("Failed to create archive for {0}.", project.ProjectName);
-						AppController.Main.UpdateProgressMessage("Archive creation failed.");
+						AppController.Main.UpdateProgressLog("Archive creation failed.");
 					}
 
+					AppController.Main.UpdateProgressTitle($"Backing up projects... {i + 1}/{total}");
 					AppController.Main.SetProgress(targetPercentage);
-					AppController.Main.UpdateProgressTitle($"Backing up projects... {i}/{total}");
 				}
 			}
 
@@ -342,9 +364,11 @@ namespace LL.SCG.Core
 			AppController.Main.FinishProgress();
 
 			if (success) DOS2Commands.SaveManagedProjects(this.Data);
+
+			return success;
 		}
 
-		public bool BackupProject(ModProjectData modProject, string OutputDirectory = "")
+		public async Task<bool> BackupProject(ModProjectData modProject, string OutputDirectory = "")
 		{
 			if (String.IsNullOrWhiteSpace(OutputDirectory))
 			{
@@ -380,14 +404,16 @@ namespace LL.SCG.Core
 
 			if (!gitProjectDetected)
 			{
+				AppController.Main.UpdateProgressLog("Running git archive command...");
 				archivePath += ".zip";
 				//Log.Here().Activity($"Git project not found. Archiving project {modProject.ProjectName} from project folders directly.");
-				return BackupGenerator.CreateArchiveFromRoot(Data.Settings.DOS2DataDirectory, sourceFolders, archivePath);
+				return await Task.Run<bool>(() => BackupGenerator.CreateArchiveFromRoot(Data.Settings.DOS2DataDirectory, sourceFolders, archivePath));
 			}
 			else
 			{
-				archivePath += ".tar";
-				return GitGenerator.Archive(gitProjectDirectory, archivePath);
+				AppController.Main.UpdateProgressLog("Creating zip archive from project folders...");
+				archivePath += ".zip";
+				return await Task.Run<bool>(() => GitGenerator.Archive(gitProjectDirectory, archivePath));
 
 				//Seems to have a problem with junctions and long paths
 				//return BackupGenerator.CreateArchiveFromRepo(gitProjectDirectory, archivePath);

@@ -224,16 +224,16 @@
 						<RowDefinition Height="Auto" />
 						<RowDefinition Height="*" />
 					</Grid.RowDefinitions>
-					<TextBlock Text="Preview" TextAlignment="Center" Margin="4" />
+					<TextBlock Text="Conversion Preview" TextAlignment="Center" Margin="4" />
 					<Grid Grid.Row="1" Margin="8,0,0,0" >
-						<TextBox TextWrapping="{Binding TextWrapMode, FallbackValue=Wrap}" IsReadOnly="True" Text="{Binding Output, FallbackValue=''}" AcceptsReturn="True" AcceptsTab="True" VerticalScrollBarVisibility="Visible" />
+						<TextBox TextWrapping="{Binding TextWrapMode, FallbackValue=Wrap}" IsReadOnly="True" Text="{Binding Output, FallbackValue=''}" AcceptsReturn="True" AcceptsTab="True" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="{Binding TextWrapMode, Converter={StaticResource TextWrapToScrollBarVisibilityConverter}}" />
 					</Grid>
 				</Grid>
 			</Grid>
 
 			<TextBlock Grid.Column="2" Text="Conversion Preview" Visibility="{Binding SingleMode, FallbackValue=Visible}" TextAlignment="Center" Margin="4" />
 			<Grid x:Name="OutputGrid" Grid.Row="1" Grid.Column="2" Visibility="{Binding SingleMode, FallbackValue=Visible}" Margin="8,0,0,0" >
-				<TextBox TextWrapping="{Binding TextWrapMode, FallbackValue=Wrap}" IsReadOnly="True" Text="{Binding Output, FallbackValue=''}" AcceptsReturn="True" AcceptsTab="True" VerticalScrollBarVisibility="Visible" />
+				<TextBox TextWrapping="{Binding TextWrapMode, FallbackValue=Wrap}" IsReadOnly="True" Text="{Binding Output, FallbackValue=''}" AcceptsReturn="True" AcceptsTab="True" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="{Binding TextWrapMode, Converter={StaticResource TextWrapToScrollBarVisibilityConverter}}" />
 			</Grid>
 				<Grid x:Name="BatchOutputGrid" Grid.Row="1" Grid.Column="2" Visibility="{Binding SingleMode, FallbackValue=Visible}" >
 			</Grid>

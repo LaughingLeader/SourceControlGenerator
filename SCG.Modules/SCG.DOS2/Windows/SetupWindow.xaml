@@ -79,8 +79,8 @@
 								 FileLocationText="{Binding Settings.BackupRootDirectory, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"/>
 		</Grid>
 		<StackPanel HorizontalAlignment="Center" Orientation="Horizontal" VerticalAlignment="Center">
-			<Button x:Name="RelativeButton" Content="Use Relative Folders (Portable)" Padding="10,2" Command="{Binding Path=SetSetupFoldersToRelativeCommand, Source={x:Static core:AppController.Main}}" Margin="4,4,4,8" />
-			<Button x:Name="MyDocumentsButton" Content="Use MyDocuments Folders" Padding="10,2" Command="{Binding Path=SetSetupFoldersToMyDocumentsCommand, Source={x:Static core:AppController.Main}}" Margin="4,4,4,8" />
+			<Button x:Name="RelativeButton" Content="Use Relative Folder (Portable)" Padding="10,2" Command="{Binding Path=SetSetupFoldersToRelativeCommand, Source={x:Static core:AppController.Main}}" Margin="4,4,4,8" />
+			<Button x:Name="MyDocumentsButton" Content="Use My Documents Folder" Padding="10,2" Command="{Binding Path=SetSetupFoldersToMyDocumentsCommand, Source={x:Static core:AppController.Main}}" Margin="4,4,4,8" />
 		</StackPanel>
 		<Separator />
 		<StackPanel HorizontalAlignment="Center" Orientation="Horizontal" VerticalAlignment="Center">

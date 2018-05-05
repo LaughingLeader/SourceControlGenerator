@@ -97,11 +97,11 @@ namespace LL.SCG.FileGen
 				process.StartInfo.RedirectStandardInput = true;
 				process.StartInfo.CreateNoWindow = true;
 				process.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
+				process.StartInfo.WorkingDirectory = RepoPath;
 				process.Start();
 
 				StreamWriter stream = process.StandardInput;
 
-				stream.WriteLine("cd \"" + RepoPath + "\"");
 				stream.WriteLine("git init");
 				stream.WriteLine("git config core.longpaths true");
 				stream.WriteLine("git config core.autocrlf true");
@@ -133,11 +133,11 @@ namespace LL.SCG.FileGen
 				process.StartInfo.RedirectStandardInput = true;
 				process.StartInfo.CreateNoWindow = true;
 				process.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
+				process.StartInfo.WorkingDirectory = RepoPath;
 				process.Start();
 
 				StreamWriter stream = process.StandardInput;
 
-				stream.WriteLine("cd \"" + RepoPath + "\"");
 				stream.WriteLine("git add -A");
 				stream.WriteLine("git commit -m \"" + CommitMessage + "\"");
 				stream.Close();
@@ -158,9 +158,11 @@ namespace LL.SCG.FileGen
 			{
 				//Directory.CreateDirectory(Path.GetDirectoryName(OutputFileName));
 
-				string command = "git archive master > --output=\"" + OutputFileName + "\"";
-				command += Environment.NewLine + "tar -rf " + OutputFileName + " .git";
-				if(UseAttributesFile)
+				string command = "git archive --format=zip HEAD --output=\"" + OutputFileName + "\"";
+
+				//string command = "git archive master > --output=\"" + OutputFileName + "\"";
+				//command += Environment.NewLine + "tar -rf " + OutputFileName + " .git";
+				if (UseAttributesFile)
 				{
 					//command += " --worktree-attributes";
 				}
@@ -172,11 +174,12 @@ namespace LL.SCG.FileGen
 				process.StartInfo.RedirectStandardInput = true;
 				process.StartInfo.CreateNoWindow = true;
 				process.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
+				process.StartInfo.WorkingDirectory = RepoPath;
 				process.Start();
 
 				StreamWriter stream = process.StandardInput;
 
-				stream.WriteLine("cd \"" + RepoPath + "\"");
+				//stream.WriteLine("cd \"" + RepoPath + "\"");
 				stream.WriteLine(command);
 				stream.Close();
 

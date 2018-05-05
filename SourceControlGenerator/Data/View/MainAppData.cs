@@ -143,6 +143,19 @@ namespace LL.SCG.Data.View
 			}
 		}
 
+		private string progressLog = "";
+
+		public string ProgressLog
+		{
+			get { return progressLog; }
+			set
+			{
+				progressLog = value;
+				RaisePropertyChanged("ProgressLog");
+			}
+		}
+
+
 		private int progressValue = 0;
 
 		public int ProgressValue

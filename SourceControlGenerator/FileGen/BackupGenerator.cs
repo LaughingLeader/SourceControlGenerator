@@ -22,22 +22,32 @@ namespace LL.SCG.FileGen
 		{
 			if (sourceFolders != null && sourceFolders.Count > 0)
 			{
-				using (var archive = ZipArchive.Create())
+				try
 				{
-					foreach (var folderData in sourceFolders)
+					using (var archive = ZipArchive.Create())
 					{
-						if (Directory.Exists(folderData.SourcePath))
+						foreach (var folderData in sourceFolders)
 						{
-							foreach(var file in Directory.EnumerateFiles(folderData.SourcePath, "*", SearchOption.AllDirectories))
+							if (Directory.Exists(folderData.SourcePath))
 							{
-								FileInfo fileInfo = new FileInfo(file);
-								string fileKey = file.Replace(rootPath, "");
-								archive.AddEntry(fileKey, fileInfo);
+								foreach (var file in Directory.EnumerateFiles(folderData.SourcePath, "*", SearchOption.AllDirectories))
+								{
+									if(File.Exists(file))
+									{
+										FileInfo fileInfo = new FileInfo(file);
+										string fileKey = file.Replace(rootPath, "");
+										archive.AddEntry(fileKey, fileInfo);
+									}
+								}
 							}
 						}
+						archive.SaveTo(archiveFilePath, CompressionType.Deflate);
+						return true;
 					}
-					archive.SaveTo(archiveFilePath, CompressionType.Deflate);
-					return true;
+				}
+				catch(Exception ex)
+				{
+					Log.Here().Error($"Error writing archive {rootPath} to {archiveFilePath}: {ex.ToString()}");
 				}
 			}
 			return false;

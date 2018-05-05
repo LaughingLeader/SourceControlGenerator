@@ -446,7 +446,7 @@
 				</Grid>
 			</Grid>
 		</Grid>
-		<Grid Name="LockProgressScreen" Grid.Row="0" Grid.RowSpan="3" Visibility="{Binding ProgressVisiblity, FallbackValue=Collapsed}">
+		<Grid Name="LockProgressScreen" Grid.Row="0" Grid.RowSpan="3" Visibility="{Binding ProgressVisiblity, FallbackValue=Visible}">
 			<Grid.Background>
 				<SolidColorBrush Color="{DynamicResource {x:Static SystemColors.ActiveBorderColorKey}}"/>
 			</Grid.Background>
@@ -473,9 +473,8 @@
 				<TextBlock Text="{Binding ProgressTitle, FallbackValue=Processing...}" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="36" Padding="10" />
 				<TextBlock Text="{Binding ProgressMessage, FallbackValue=Running tasks...}" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="20" Padding="10" />
 			</StackPanel>
-			<Grid Grid.Row="1" >
-				<ProgressBar Minimum="0" Maximum="{Binding ProgressValueMax, FallbackValue=100}" Value="{Binding ProgressValue, FallbackValue=75}" Margin="50" HorizontalAlignment="Stretch" VerticalAlignment="Center" MinHeight="40" />
-			</Grid>
+			<ProgressBar Grid.Row="1" Minimum="0" Maximum="{Binding ProgressValueMax, FallbackValue=100}" Value="{Binding ProgressValue, FallbackValue=75}" Margin="50" HorizontalAlignment="Stretch" VerticalAlignment="Center" MinHeight="40" />
+			<c:AutoScrollingTextbox Grid.Row="2" Text="{Binding ProgressLog, FallbackValue='TestTestTestTestTestTestTestTestTestTestTestTestTestTestTest'}" HorizontalAlignment="Center" Padding="2,0" VerticalAlignment="Top" TextAlignment="Center" FontSize="12" IsReadOnly="True" VerticalScrollBarVisibility="Visible" Height="100" MinWidth="500" />
 		</Grid>
 	</Grid>
 </Window>
