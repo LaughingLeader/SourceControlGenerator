@@ -243,7 +243,7 @@
 								<DataGridTemplateColumn MinWidth="60"  HeaderStyle="{StaticResource ProjectsHeaderStyle}" CanUserResize="False" CanUserSort="False" >
 									<DataGridTemplateColumn.HeaderTemplate>
 										<DataTemplate>
-											<TextBlock Text="Shortcuts" ToolTipService.ToolTip="Project Shortcuts" />
+											<TextBlock Text="Shortcuts" ToolTipService.ToolTip="{x:Static core:DOS2Tooltips.DataGridHeaderShortcuts}" />
 										</DataTemplate>
 									</DataGridTemplateColumn.HeaderTemplate>
 									<DataGridTemplateColumn.CellTemplate>
@@ -257,7 +257,7 @@
 														<Setter Property="MaxWidth" Value="16" />
 													</Style>
 												</StackPanel.Resources>
-												<Button x:Name="Btn_Backup" ToolTip="Open Backup Folder..." Command="{Binding OpenBackupFolder}" >
+												<Button x:Name="Btn_Backup" ToolTip="{x:Static core:DOS2Tooltips.Button_BackupFolder}" Command="{Binding OpenBackupFolder}" >
 													<Image Source="{Binding Source={StaticResource IconProxy}, Path=Data.Archive, FallbackValue={x:Null}}" Stretch="UniformToFill"/>
 												</Button>
 												<Button x:Name="Btn_GenGit" IsEnabled="{Binding GitGenerated}" Command="{Binding OpenGitFolder}" >
@@ -267,25 +267,25 @@
 																<Style.Triggers>
 																	<Trigger Property="IsEnabled" Value="False">
 																		<Setter Property="Source" Value="{Binding Source={StaticResource IconProxy}, Path=Data.GitLogoDisabled, FallbackValue={x:Null}}" />
-																		<Setter Property="ToolTip" Value="Git Repo Not Detected" />
+																		<Setter Property="ToolTip" Value="{x:Static core:DOS2Tooltips.Button_GitFolderDisabled}" />
 																	</Trigger>
 																	<Trigger Property="IsEnabled" Value="True">
 																		<Setter Property="Source" Value="{Binding Source={StaticResource IconProxy}, Path=Data.GitLogoEnabled, FallbackValue={x:Null}}" />
-																		<Setter Property="ToolTip" Value="Open Git Repo..." />
+																		<Setter Property="ToolTip" Value="{x:Static core:DOS2Tooltips.Button_GitFolder}" />
 																	</Trigger>
 																</Style.Triggers>
 															</Style>
 														</Image.Style>
 													</Image>
 												</Button>
-												<Button x:Name="Btn_DataFolders" ToolTip="Open Data Folder..." Click="SetDataFolderContextMenuTarget" >
+												<Button x:Name="Btn_DataFolders" ToolTip="{x:Static core:DOS2Tooltips.Button_DataFolderParent}" Click="SetDataFolderContextMenuTarget" >
 													<Image Source="{Binding Source={StaticResource IconProxy}, Path=Data.Folder, FallbackValue={x:Null}}" Stretch="UniformToFill"/>
 													<Button.ContextMenu>
 														<ContextMenu>
-															<MenuItem x:Name="Btn_EditorFolder" Header="Open Editor Folder..." Command="{Binding OpenEditorFolder}" />
-															<MenuItem x:Name="Btn_ModsFolder" Header="Open Mods Folder..." Command="{Binding OpenModsFolder}" />
-															<MenuItem x:Name="Btn_ProjectFolder" Header="Open Project Folder..." Command="{Binding OpenProjectFolder}" />
-															<MenuItem x:Name="Btn_PublicFolder" Header="Open Public Folder..." Command="{Binding OpenPublicFolder}" />
+															<MenuItem x:Name="Btn_EditorFolder" Header="{x:Static core:DOS2Tooltips.Button_DataFolderEditor}" Command="{Binding OpenEditorFolder}" />
+															<MenuItem x:Name="Btn_ModsFolder" Header="{x:Static core:DOS2Tooltips.Button_DataFolderMods}" Command="{Binding OpenModsFolder}" />
+															<MenuItem x:Name="Btn_ProjectFolder" Header="{x:Static core:DOS2Tooltips.Button_DataFolderProject}" Command="{Binding OpenProjectFolder}" />
+															<MenuItem x:Name="Btn_PublicFolder" Header="{x:Static core:DOS2Tooltips.Button_DataFolderPublic}" Command="{Binding OpenPublicFolder}" />
 														</ContextMenu>
 													</Button.ContextMenu>
 													<Button.Style>
@@ -314,7 +314,7 @@
 														</Style>
 													</Button.Style>
 												</Button>
-												<Button x:Name="Btn_OpenMarkdown" ToolTip="Convert Readme.md..." IsEnabled="{Binding GitGenerated}" Command="{Binding Path=Data.OpenProjectReadmeInMarkdownConverterCommand, Source={StaticResource AppControllerProxy}}"
+												<Button x:Name="Btn_OpenMarkdown" ToolTip="{x:Static core:DOS2Tooltips.Button_MarkdownConverter}" IsEnabled="{Binding GitGenerated}" Command="{Binding Path=Data.OpenProjectReadmeInMarkdownConverterCommand, Source={StaticResource AppControllerProxy}}"
 														CommandParameter="{Binding}" >
 													<Image Source="{Binding Source={StaticResource IconProxy}, Path=Data.Convert, FallbackValue={x:Null}}" Stretch="UniformToFill"/>
 												</Button>

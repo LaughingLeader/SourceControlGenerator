@@ -19,6 +19,7 @@
 	</local:HideWindowBase.Resources>
 	<local:HideWindowBase.InputBindings>
 		<KeyBinding Key="Tab" Modifiers="Shift" Command="{Binding NextModeCommand}" />
+		<KeyBinding Key="S" Modifiers="Ctrl" Command="{Binding SaveInputCommand}" />
 	</local:HideWindowBase.InputBindings>
 	<Grid Margin="8">
 		<Grid.Resources>
@@ -85,7 +86,7 @@
 						DefaultFileName="{Binding SingleModeDefaultFileName}" BrowseToolTip="{x:Static core:TooltipText.MarkdownConverterSingleModeOutputFileBrowser}"
 						DefaultExt=".txt" Filters="{x:Static c:CommonFileFilters.MarkdownConverterFilesList}" OnOpen="{Binding OpenInputFileCommand}"
 						Width="Auto" MinHeight="22" />
-					<Button x:Name="SingleModeSaveButton" Grid.Column="1" Content="Save" Command="{Binding ExportSingleCommand}" IsEnabled="{Binding CanSave}" Margin="4,0,0,0" MaxHeight="{Binding Path=Height, ElementName=SingleModeFileBrowser}" />
+					<Button x:Name="SingleModeSaveButton" Grid.Column="1" Content="Export" Command="{Binding ExportSingleCommand}" IsEnabled="{Binding CanExport}" Margin="4,0,0,0" MaxHeight="{Binding Path=Height, ElementName=SingleModeFileBrowser}" />
 				</Grid>
 			</Grid>
 			<Grid HorizontalAlignment="Center" VerticalAlignment="Center" Visibility="{Binding BatchMode, FallbackValue=Collapsed}" >
@@ -107,14 +108,80 @@
 			<TextBlock Text="Input" TextAlignment="Center" Margin="4" />
 			<Grid Grid.Row="1" Grid.Column="0" Margin="0,0,8,0" >
 				<TabControl>
-					<TabItem Header="Text">
-						<TextBox TextWrapping="{Binding TextWrapMode, FallbackValue=Wrap}" Text="{Binding Input, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, FallbackValue=''}" AcceptsReturn="True" AcceptsTab="True" VerticalScrollBarVisibility="Visible" />
+					<TabControl.Resources>
+						<SolidColorBrush x:Key="WindowBackgroundBrush" Color="#FFF" />
+						<SolidColorBrush x:Key="SolidBorderBrush" Color="#888" />
+						<SolidColorBrush x:Key="DisabledForegroundBrush" Color="#888" />
+						<SolidColorBrush x:Key="DisabledBorderBrush" Color="#AAA" />
+					</TabControl.Resources>
+					<TabControl.Template>
+						<ControlTemplate TargetType="TabControl">
+							<Grid KeyboardNavigation.TabNavigation="Local">
+								<Grid.RowDefinitions>
+								<RowDefinition Height="Auto"/>
+								<RowDefinition Height="*"/>
+								</Grid.RowDefinitions>
+								<Grid.ColumnDefinitions>
+									<ColumnDefinition Width="*" />
+									<ColumnDefinition Width="Auto" />
+								</Grid.ColumnDefinitions>
+								<TabPanel 
+									Name="HeaderPanel"
+									Grid.Row="0"
+									Panel.ZIndex="1" 
+									Margin="2,0,4,-1" 
+									IsItemsHost="True"
+									KeyboardNavigation.TabIndex="1"
+									Background="Transparent" />
+								<Border 
+									Name="Border" 
+									Grid.Row="1" 
+									Grid.ColumnSpan="2"
+									Background="{StaticResource WindowBackgroundBrush}" 
+									BorderBrush="{StaticResource SolidBorderBrush}" 
+									BorderThickness="1" 
+									CornerRadius="2" 
+									KeyboardNavigation.TabNavigation="Local"
+									KeyboardNavigation.DirectionalNavigation="Contained"
+									KeyboardNavigation.TabIndex="2" >
+									<ScrollViewer Margin="0,1,0,0" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="{Binding TextWrapMode, Converter={StaticResource TextWrapToScrollBarVisibilityConverter}}">
+										<ContentPresenter 
+										 Name="PART_SelectedContentHost"
+										 ContentSource="SelectedContent" />
+									</ScrollViewer>
+								</Border>
+								<Grid Grid.Column="1">
+									<Grid.ColumnDefinitions>
+										<ColumnDefinition Width="*" />
+										<ColumnDefinition Width="Auto" />
+									</Grid.ColumnDefinitions>
+									<StackPanel Orientation="Horizontal" Margin="0,0,64,0">
+										<TextBlock Text="Text Wrap: "  VerticalAlignment="Center" />
+										<ComboBox ItemsSource="{Binding Source={scg:EnumBindingSource {x:Type TextWrapping}}}" SelectedValue="{Binding Path=TextWrapMode, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Width="Auto" VerticalAlignment="Center" />
+									</StackPanel>
+									<Button Grid.Column="1" Content="Save" ToolTip="{x:Static core:TooltipText.MarkdownConverterSaveInputFile}" IsEnabled="{Binding CanSaveInput}" Command="{Binding SaveInputCommand}" VerticalAlignment="Center" />
+								</Grid>
+							</Grid>
+							<ControlTemplate.Triggers>
+							  <Trigger Property="IsEnabled" Value="False">
+								<Setter Property="Foreground" Value="{StaticResource DisabledForegroundBrush}" />
+								<Setter TargetName="Border" Property="BorderBrush" Value="{StaticResource DisabledBorderBrush}" />
+							  </Trigger>
+							</ControlTemplate.Triggers>
+						</ControlTemplate>
+					</TabControl.Template>
+					<TabItem Header="Text" >
+						<TextBox TextWrapping="{Binding TextWrapMode, FallbackValue=Wrap}" Text="{Binding Input, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, FallbackValue=''}" AcceptsReturn="True" AcceptsTab="True" BorderThickness="0" />
 					</TabItem>
 					<TabItem>
 						<TabItem.Header>
 							<Label x:Name="InputPreviewLabel" Content="Preview" MouseLeftButtonDown="InputPreviewLabel_MouseLeftButtonDown" />
 						</TabItem.Header>
-						<markwpf:MarkdownViewer x:Name="MarkdownViewer" Markdown="{Binding Input}" ScrollViewer.VerticalScrollBarVisibility="Auto"/>
+						<markwpf:MarkdownViewer x:Name="MarkdownViewer" Markdown="{Binding Input}" ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.HorizontalScrollBarVisibility="Auto" BorderThickness="0.25">
+							<markwpf:MarkdownViewer.Resources>
+								<ResourceDictionary Source="pack://application:,,,/Markdig.Wpf;component/Themes/generic.xaml" />
+							</markwpf:MarkdownViewer.Resources>
+						</markwpf:MarkdownViewer>
 					</TabItem>
 				</TabControl>
 			</Grid>

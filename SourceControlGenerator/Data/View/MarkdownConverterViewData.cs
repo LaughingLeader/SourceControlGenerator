@@ -5,6 +5,7 @@ using System.ComponentModel;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Runtime.Serialization;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -57,8 +58,11 @@ namespace LL.SCG.Data.View
 		}
 	}
 
+	[DataContract]
 	public class MarkdownConverterViewData : PropertyChangedBase
 	{
+		private string fileContents = "";
+
 		private string input = "";
 
 		public string Input
@@ -66,13 +70,24 @@ namespace LL.SCG.Data.View
 			get { return input; }
 			set
 			{
+				CanSaveInput = input != value && value != fileContents;
 				input = value;
 				RaisePropertyChanged("Input");
 				RaisePropertyChanged("CanPreview");
 			}
 		}
 
-		public FlowDocument MarkdownDocument { get; private set; }
+		private bool canSaveInput = false;
+
+		public bool CanSaveInput
+		{
+			get { return canSaveInput; }
+			set
+			{
+				canSaveInput = value;
+				RaisePropertyChanged("CanSaveInput");
+			}
+		}
 
 		private string output = "";
 
@@ -88,6 +103,7 @@ namespace LL.SCG.Data.View
 
 		private TextWrapping textWrapMode = TextWrapping.Wrap;
 
+		[DataMember]
 		public TextWrapping TextWrapMode
 		{
 			get { return textWrapMode; }
@@ -100,6 +116,7 @@ namespace LL.SCG.Data.View
 
 		private MarkdownInputType inputType = MarkdownInputType.Markdown;
 
+		[DataMember]
 		public MarkdownInputType InputType
 		{
 			get { return inputType; }
@@ -112,6 +129,7 @@ namespace LL.SCG.Data.View
 
 		private MarkdownConverterMode mode = MarkdownConverterMode.Single;
 
+		[DataMember]
 		public MarkdownConverterMode Mode
 		{
 			get { return mode; }
@@ -124,22 +142,18 @@ namespace LL.SCG.Data.View
 			}
 		}
 
-		[JsonIgnore]
 		public Visibility SingleMode
 		{
 			get => mode == MarkdownConverterMode.Single ? Visibility.Visible : Visibility.Collapsed;
 		}
 
-		[JsonIgnore]
 		public Visibility BatchMode
 		{
 			get => mode == MarkdownConverterMode.Batch ? Visibility.Visible : Visibility.Collapsed;
 		}
 
-		[JsonIgnore]
 		public ObservableCollection<IMarkdownFormatter> Formatters { get; set; }
 
-		[JsonIgnore]
 		public bool CanPreview
 		{
 			get
@@ -148,14 +162,15 @@ namespace LL.SCG.Data.View
 			}
 		}
 
-		[JsonIgnore] public ICommand NextModeCommand { get; set; }
+		public ICommand NextModeCommand { get; set; }
 
-		[JsonIgnore] public ICommand OpenInputFileCommand { get; set; }
+		public ICommand OpenInputFileCommand { get; set; }
+
+		public ICommand SaveInputCommand { get; set; }
 
 		#region Single Mode
 		private IMarkdownFormatter selectedFormatter;
 
-		[JsonIgnore]
 		public IMarkdownFormatter SelectedFormatter
 		{
 			get { return selectedFormatter; }
@@ -170,6 +185,7 @@ namespace LL.SCG.Data.View
 
 		private string selectedFormatterName = "";
 
+		[DataMember]
 		public string SelectedFormatterName
 		{
 			get { return selectedFormatterName; }
@@ -182,6 +198,7 @@ namespace LL.SCG.Data.View
 
 		private string singleModeLastFileOutputPath = "";
 
+		[DataMember]
 		public string SingleModeLastFileExportPath
 		{
 			get { return singleModeLastFileOutputPath; }
@@ -195,6 +212,7 @@ namespace LL.SCG.Data.View
 
 		private string singleModeLastFileInputPath = "";
 
+		[DataMember]
 		public string SingleModeLastFileInputPath
 		{
 			get { return singleModeLastFileInputPath; }
@@ -208,7 +226,6 @@ namespace LL.SCG.Data.View
 
 		private string singleModeDefaultFileName = "";
 
-		[JsonIgnore]
 		public string SingleModeDefaultFileName
 		{
 			get { return singleModeDefaultFileName; }
@@ -220,8 +237,7 @@ namespace LL.SCG.Data.View
 		}
 
 
-		[JsonIgnore]
-		public bool CanSave
+		public bool CanExport
 		{
 			get
 			{
@@ -229,9 +245,9 @@ namespace LL.SCG.Data.View
 			}
 		}
 
-		[JsonIgnore] public ICommand PreviewSingleCommand { get; set; }
+		public ICommand PreviewSingleCommand { get; set; }
 
-		[JsonIgnore] public ICommand ExportSingleCommand { get; set; }
+		public ICommand ExportSingleCommand { get; set; }
 
 		public void ExportSingle()
 		{
@@ -269,7 +285,6 @@ namespace LL.SCG.Data.View
 		#region Batch Mode
 		public List<MarkdownFormatterData> BatchFormatterData { get; set; }
 
-		[JsonIgnore]
 		public List<string> SelectedBatchFormatters
 		{
 			get
@@ -279,9 +294,9 @@ namespace LL.SCG.Data.View
 			}
 		}
 
-		[JsonIgnore] public ICommand BatchExportCommand { get; set; }
+		public ICommand BatchExportCommand { get; set; }
 
-		[JsonIgnore] public ICommand PreviewCommand { get; set; }
+		public ICommand PreviewCommand { get; set; }
 
 		public void ExportBatch()
 		{
@@ -396,10 +411,13 @@ namespace LL.SCG.Data.View
 		{
 			if(value is string path)
 			{
-				Input = FileCommands.ReadFile(path);
 				if(!String.IsNullOrEmpty(path))
 				{
+					fileContents = FileCommands.ReadFile(path);
+					Input = fileContents;
+
 					this.SingleModeLastFileInputPath = path;
+					CanSaveInput = false;
 					StartSavingAsync();
 				}
 			}
@@ -418,11 +436,13 @@ namespace LL.SCG.Data.View
 			}
 		}
 
-		public void RenderMarkdown()
+		public void SaveInputFile()
 		{
-			if(!String.IsNullOrWhiteSpace(Input))
+			if(CanSaveInput && FileCommands.IsValidFilePath(SingleModeLastFileInputPath))
 			{
-
+				FileCommands.WriteToFile(SingleModeLastFileInputPath, Input, false);
+				fileContents = Input;
+				CanSaveInput = false;
 			}
 		}
 
@@ -435,6 +455,7 @@ namespace LL.SCG.Data.View
 			NextModeCommand = new ActionCommand(NextMode);
 			ExportSingleCommand = new ActionCommand(ExportSingle);
 			BatchExportCommand = new ActionCommand(ExportBatch);
+			SaveInputCommand = new ActionCommand(SaveInputFile);
 		}
 
 		public void InitSettings()

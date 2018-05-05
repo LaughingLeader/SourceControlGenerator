@@ -538,7 +538,7 @@ namespace LL.SCG.Core
 					var projectGitFolder = Path.Combine(CurrentModule.ModuleData.ModuleSettings.GitRootDirectory, projectData.ProjectName);
 					if (Directory.Exists(projectGitFolder))
 					{
-						var readmeFilePath = Path.Combine(projectGitFolder, "Readme.md");
+						var readmeFilePath = Path.Combine(projectGitFolder, "README.md");
 						if (File.Exists(readmeFilePath))
 						{
 							var converterData = mainWindow.MarkdownConverterWindow.ViewData;
@@ -549,7 +549,7 @@ namespace LL.SCG.Core
 						}
 						else
 						{
-							Log.Here().Error("Cannot find project git Readme.md.");
+							Log.Here().Error("Cannot find project file Readme.md.");
 						}
 					}
 					else

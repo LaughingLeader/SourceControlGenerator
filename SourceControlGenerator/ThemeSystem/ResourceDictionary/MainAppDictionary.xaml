@@ -30,6 +30,7 @@
 	<cv:SettingsAttributeValueControlConverter x:Key="SettingsAttributeValueControlConverter"/>
 	<cv:StringToFilterConverter x:Key="StringToFilterConverter" />
 	<cv:StringToFilterListConverter x:Key="StringToFilterListConverter" />
+	<cv:TextWrapToScrollBarVisibilityConverter x:Key="TextWrapToScrollBarVisibilityConverter" />
 	<cv:IntToGridLengthConverter x:Key="IntToGridLengthConverter"/>
 	<cv:IntToVisibilityConverter x:Key="IntToVisibilityConverter"/>
 	<cv:VisibleLogsConverter x:Key="VisibleLogsConverter"/>

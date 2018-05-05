@@ -43,5 +43,6 @@ namespace LL.SCG.Core
 		static public string MarkdownConverterSingleModeOutputFileBrowser => "Select Export File Location...";
 		static public string MarkdownConverterSingleModeInputFileBrowser => "Select Input File Location...";
 		static public string MarkdownConverterBatchModeExportFileBrowser => "Select Export File Location...";
+		static public string MarkdownConverterSaveInputFile => "Save Changes to Input";
 	}
 }

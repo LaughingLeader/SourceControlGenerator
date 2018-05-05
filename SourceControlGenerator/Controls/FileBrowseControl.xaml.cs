@@ -284,37 +284,34 @@ namespace LL.SCG.Controls
 
 			Log.Here().Activity($"LastFileLocation is {LastFileLocation} FileLocationText: {FileLocationText}");
 
-			if (String.IsNullOrEmpty(LastFileLocation))
+			if (!String.IsNullOrEmpty(FileLocationText) && FileCommands.IsValidPath(FileLocationText))
 			{
-				if (!String.IsNullOrEmpty(FileLocationText) && FileCommands.IsValidPath(FileLocationText))
+				if (BrowseType == FileBrowseType.File)
 				{
-					if(BrowseType == FileBrowseType.File)
+					if (FileCommands.IsValidFilePath(FileLocationText))
 					{
-						if(FileCommands.IsValidFilePath(FileLocationText))
+						var parentDirectory = new DirectoryInfo(FileLocationText);
+						if (parentDirectory != null)
 						{
-							var parentDirectory = new DirectoryInfo(FileLocationText);
-							if (parentDirectory != null)
-							{
-								LastFileLocation = parentDirectory.Parent.FullName;
-							}
-						}
-						else
-						{
-							LastFileLocation = FileLocationText;
+							LastFileLocation = parentDirectory.Parent.FullName;
 						}
 					}
 					else
 					{
-						var directory = new DirectoryInfo(FileLocationText);
-						if (directory != null)
-						{
-							LastFileLocation = directory.FullName;
-						}
+						LastFileLocation = FileLocationText;
+					}
+				}
+				else
+				{
+					var directory = new DirectoryInfo(FileLocationText);
+					if (directory != null)
+					{
+						LastFileLocation = directory.FullName;
 					}
 				}
 			}
 
-			if(!FileCommands.IsValidPath(LastFileLocation))
+			if (!FileCommands.IsValidPath(LastFileLocation))
 			{
 				if (AppController.Main.CurrentModule != null && AppController.Main.CurrentModule.ModuleData != null)
 				{
@@ -352,9 +349,6 @@ namespace LL.SCG.Controls
 					fileDialog.Title = OpenFileText;
 					fileDialog.InitialDirectory = LastFileLocation;
 					//if (!String.IsNullOrWhiteSpace(DefaultExt)) fileDialog.DefaultExtension = DefaultExt;
-
-					Log.Here().Activity(DefaultExt);
-					Log.Here().Activity(DefaultFileName);
 
 					if (Filters != null)
 					{
@@ -499,17 +493,18 @@ namespace LL.SCG.Controls
 
 			if (!String.IsNullOrEmpty(FileLocationText))
 			{
-				TextBox textBox = (TextBox)this.FindName("FilePathDisplay");
-				//Scroll to the end
-				textBox.CaretIndex = textBox.Text.Length;
-				var rect = textBox.GetRectFromCharacterIndex(textBox.CaretIndex);
-				textBox.ScrollToHorizontalOffset(rect.Right);
+				Dispatcher.BeginInvoke((Action)(() =>
+				{
+					//Scroll to the end
+					FilePathDisplay.CaretIndex = FileLocationText.Length;
+					var rect = FilePathDisplay.GetRectFromCharacterIndex(FilePathDisplay.CaretIndex);
+					FilePathDisplay.ScrollToHorizontalOffset(rect.Right);
+				}), DispatcherPriority.Background);
 			}
 		}
 
 		public void OnFileLocationChanged()
 		{
-			TextBox textBox = (TextBox)this.FindName("FilePathDisplay");
 
 			FileValidation = FileValidation.None;
 
