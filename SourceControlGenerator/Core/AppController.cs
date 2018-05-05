@@ -50,9 +50,10 @@ namespace LL.SCG.Core
 			}
 		}
 
-		public ICommand OpenGitWebsiteCommand { get; set; }
-		public ICommand SetSetupFoldersToRelativeCommand { get; set; }
-		public ICommand SetSetupFoldersToMyDocumentsCommand { get; set; }
+		public ICommand OpenGitWebsiteCommand { get; private set; }
+		public ICommand SetSetupFoldersToRelativeCommand { get; private set; }
+		public ICommand SetSetupFoldersToMyDocumentsCommand { get; private set; }
+		public ICommand OpenProjectReadmeInMarkdownConverterCommand { get; private set; }
 
 		private IProjectController currentModule;
 
@@ -189,20 +190,14 @@ namespace LL.SCG.Core
 
 		public Action OnProgressLoaded { get; set; }
 
-		private BackgroundWorker progressWorker { get; set; }
+		public Progress<int> MainProgress { get; set; }
 
-		public DoWorkEventHandler ProgressWorkvent { get; set; }
-		public RunWorkerCompletedEventHandler ProgressCompleteEvent { get; set; }
-
-		public void StartProgress(string Title, DoWorkEventHandler WorkEvent, RunWorkerCompletedEventHandler CompleteEvent = null, int StartValue = 0, Action OnStarted = null)
+		public async void StartProgress(string Title, Func<Task> StartEvent, Action OnCompleted = null, int StartValue = 0, Action OnStarted = null)
 		{
-			if (progressWorker == null)
+			if (MainProgress == null)
 			{
-				progressWorker = new BackgroundWorker();
-				progressWorker.WorkerReportsProgress = true;
-				progressWorker.WorkerSupportsCancellation = true;
-				progressWorker.ProgressChanged += progressWorker_ProgressChanged;
-				progressWorker.RunWorkerCompleted += progressWorker_ProgressFinished;
+				MainProgress = new Progress<int>(MainProgress_SetProgress);
+				MainProgress.ProgressChanged += MainProgress_ProgressChanged;
 			}
 
 			OnProgressLoaded = OnStarted;
@@ -211,22 +206,23 @@ namespace LL.SCG.Core
 			Data.ProgressVisiblity = System.Windows.Visibility.Visible;
 			mainWindow.IsEnabled = false;
 
-			if (ProgressWorkvent != null) progressWorker.DoWork -= ProgressWorkvent;
-			if (ProgressCompleteEvent != null) progressWorker.RunWorkerCompleted -= ProgressCompleteEvent;
-			progressWorker.DoWork += WorkEvent;
-			if(CompleteEvent != null) progressWorker.RunWorkerCompleted += CompleteEvent;
-			
-			ProgressWorkvent = WorkEvent;
-			if (CompleteEvent != null) ProgressCompleteEvent = CompleteEvent;
-
-			progressWorker.RunWorkerAsync();
+			await StartEvent();
 		}
-		
+
+		private void MainProgress_ProgressChanged(object sender, int e)
+		{
+			
+		}
+
+		private void MainProgress_SetProgress(int val)
+		{
+
+		}
+
 		public void UpdateProgress(int Value = 1, string Message = null)
 		{
 			if (Message != null) Data.ProgressMessage = Message;
 			Data.ProgressValue += Value;
-			progressWorker.ReportProgress(Data.ProgressValue);
 		}
 
 		public void SetProgress(int Value = 1, string Message = null)
@@ -234,51 +230,34 @@ namespace LL.SCG.Core
 			//Log.Here().Activity($"Setting progress to {Value} with message {Message}.");
 			if (Message != null) Data.ProgressMessage = Message;
 			Data.ProgressValue = Value;
-			progressWorker.ReportProgress(Data.ProgressValue);
 		}
 
 		public void UpdateProgressMessage(string Message)
 		{
 			Data.ProgressMessage = Message;
-			progressWorker.ReportProgress(Data.ProgressValue);
 		}
 
 		public void UpdateProgressTitle(string Title)
 		{
 			Data.ProgressTitle = Title;
-			progressWorker.ReportProgress(Data.ProgressValue);
 		}
 
-		public void FinishProgress()
-		{
-			progressWorker.ReportProgress(Data.ProgressValueMax);
-		}
-
-		private void progressWorker_ProgressChanged(object sender, ProgressChangedEventArgs e)
-		{
-			//Data.ProgressValue = e.ProgressPercentage;
-			//Log.Here().Activity($"#Progress set to {Data.ProgressValue}");
-		}
-
-		private void progressWorker_ProgressFinished(object sender, RunWorkerCompletedEventArgs e)
+		public async void FinishProgress()
 		{
 			Data.ProgressValue = Data.ProgressValueMax;
-			OnProgressCompleteAsync();
+			await OnProgressCompleteAsync();
 		}
 
-		private async void OnProgressCompleteAsync()
+		private async Task OnProgressCompleteAsync()
 		{
 			await Task.Delay(500);
-			await HideProgressBar();
+			HideProgressBar();
 		}
 
-		private async Task HideProgressBar()
+		private void HideProgressBar()
 		{
-			await new Task(() =>
-			{
-				mainWindow.IsEnabled = true;
-				Data.ProgressVisiblity = System.Windows.Visibility.Collapsed;
-			});
+			mainWindow.IsEnabled = true;
+			Data.ProgressVisiblity = System.Windows.Visibility.Collapsed;
 		}
 		#endregion
 
@@ -549,6 +528,42 @@ namespace LL.SCG.Core
 			
 		}
 
+		public void OpenProjectReadmeInMarkdownConverter(object obj)
+		{
+			Log.Here().Activity("Opening readme...");
+			if (obj is IProjectData projectData)
+			{
+				if (CurrentModule != null && CurrentModule.ModuleData != null && CurrentModule.ModuleData.ModuleSettings != null)
+				{
+					var projectGitFolder = Path.Combine(CurrentModule.ModuleData.ModuleSettings.GitRootDirectory, projectData.ProjectName);
+					if (Directory.Exists(projectGitFolder))
+					{
+						var readmeFilePath = Path.Combine(projectGitFolder, "Readme.md");
+						if (File.Exists(readmeFilePath))
+						{
+							var converterData = mainWindow.MarkdownConverterWindow.ViewData;
+							converterData.SetBatchExportRoot(Path.Combine(DefaultPaths.ModuleExportFolder(CurrentModule.ModuleData), projectData.ProjectName));
+							converterData.LoadInputFile(readmeFilePath);
+							converterData.Mode = MarkdownConverterMode.Batch;
+							MenuAction_ToggleMarkdownWindow();
+						}
+						else
+						{
+							Log.Here().Error("Cannot find project git Readme.md.");
+						}
+					}
+					else
+					{
+						Log.Here().Error("Cannot find project git folder.");
+					}
+				}
+				else
+				{
+					Log.Here().Error("Current module data is null!");
+				}
+			}
+		}
+
 		public void OnAppLoaded()
 		{
 			if(CurrentModule != null && CurrentModule.ModuleData != null)
@@ -632,6 +647,7 @@ namespace LL.SCG.Core
 		public AppController(MainWindow MainAppWindow)
 		{
 			_instance = this;
+			RaisePropertyChanged("Main");
 			Log.AllCallback = AddLogMessage;
 
 			Data = new MainAppData();
@@ -641,6 +657,8 @@ namespace LL.SCG.Core
 
 			SetSetupFoldersToMyDocumentsCommand = new ActionCommand(SwitchSettingsFoldersToMyDocuments);
 			SetSetupFoldersToRelativeCommand = new ActionCommand(MakeSettingsFoldersToPortable);
+
+			OpenProjectReadmeInMarkdownConverterCommand = new ParameterCommand(OpenProjectReadmeInMarkdownConverter);
 
 			mainWindow = MainAppWindow;
 

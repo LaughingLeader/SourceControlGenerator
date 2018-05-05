@@ -17,5 +17,6 @@ namespace LL.SCG.Data.View
 		public string RefreshSmall => @"pack://application:,,,/SourceControlGenerator;component/Resources/Icons/Refresh_16x.png";
 		public string ExpanderRight => @"pack://application:,,,/SourceControlGenerator;component/Resources/Icons/ExpandChevronRight_16x.png";
 		public string Star => @"pack://application:,,,/SourceControlGenerator;component/Resources/Icons/Star_16x.png";
+		public string Convert => @"pack://application:,,,/SourceControlGenerator;component/Resources/Icons/Convert_16x.png";
 	}
 }

@@ -66,7 +66,7 @@ namespace LL.SCG.Core
 			AppController.Main.StartProgress($"Generating Git Files... 0/{Data.GitGenerationSettings.ExportProjects.Count}", RunGitGeneration);
 		}
 
-		public void RunGitGeneration(object sender, DoWorkEventArgs e)
+		public async Task RunGitGeneration()
 		{
 			Log.Here().Important("Generating git repositories for selected projects.");
 			int total = Data.GitGenerationSettings.ExportProjects.Count;
@@ -84,7 +84,9 @@ namespace LL.SCG.Core
 
 				ModProjectData modProjectData = (ModProjectData)project;
 
-				if (GenerateGitFiles(modProjectData, Data.GitGenerationSettings, totalPercentageAmount))
+				var success = await GenerateGitFilesAsync(modProjectData, Data.GitGenerationSettings, totalPercentageAmount);
+
+				if (success)
 				{
 					Log.Here().Important("Git repository successfully generated for {0}.", project.DisplayName);
 				}
@@ -102,6 +104,12 @@ namespace LL.SCG.Core
 
 			AppController.Main.UpdateProgressMessage("Finishing up...");
 			AppController.Main.FinishProgress();
+			return;
+		}
+
+		private async Task<bool> GenerateGitFilesAsync(ModProjectData modProject, GitGenerationSettings generationSettings, int endPercentage)
+		{
+			return await Task.FromResult(GenerateGitFiles(modProject, generationSettings, endPercentage));
 		}
 
 		private bool GenerateGitFiles(ModProjectData modProject, GitGenerationSettings generationSettings, int endPercentage)
@@ -288,7 +296,7 @@ namespace LL.SCG.Core
 			AppController.Main.StartProgress($"Backing up projects...", StartBackupSelectedProjects);
 		}
 
-		public void StartBackupSelectedProjects(object sender, DoWorkEventArgs e)
+		public async Task StartBackupSelectedProjects()
 		{
 			var selectedProjects = Data.ManagedProjects.Where(p => p.Selected).ToList();
 			var total = selectedProjects.Count;

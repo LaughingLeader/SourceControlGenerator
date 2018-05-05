@@ -314,6 +314,10 @@
 														</Style>
 													</Button.Style>
 												</Button>
+												<Button x:Name="Btn_OpenMarkdown" ToolTip="Convert Readme.md..." IsEnabled="{Binding GitGenerated}" Command="{Binding Path=Data.OpenProjectReadmeInMarkdownConverterCommand, Source={StaticResource AppControllerProxy}}"
+														CommandParameter="{Binding}" >
+													<Image Source="{Binding Source={StaticResource IconProxy}, Path=Data.Convert, FallbackValue={x:Null}}" Stretch="UniformToFill"/>
+												</Button>
 											</StackPanel>
 										</DataTemplate>
 									</DataGridTemplateColumn.CellTemplate>

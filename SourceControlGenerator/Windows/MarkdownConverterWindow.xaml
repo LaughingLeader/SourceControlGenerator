@@ -10,6 +10,7 @@
 		xmlns:local="clr-namespace:LL.SCG.Windows"
 		xmlns:vdata="clr-namespace:LL.SCG.Data.View"
 		xmlns:scg="clr-namespace:LL.SCG"
+		xmlns:markwpf="clr-namespace:Markdig.Wpf;assembly=Markdig.Wpf"
 		mc:Ignorable="d"
 		Title="Markdown Converter" Height="768" Width="1200">
 	<local:HideWindowBase.Resources>
@@ -105,7 +106,17 @@
 
 			<TextBlock Text="Input" TextAlignment="Center" Margin="4" />
 			<Grid Grid.Row="1" Grid.Column="0" Margin="0,0,8,0" >
-				<TextBox TextWrapping="{Binding TextWrapMode, FallbackValue=Wrap}" Text="{Binding Input, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, FallbackValue=''}" AcceptsReturn="True" AcceptsTab="True" VerticalScrollBarVisibility="Visible" />
+				<TabControl>
+					<TabItem Header="Text">
+						<TextBox TextWrapping="{Binding TextWrapMode, FallbackValue=Wrap}" Text="{Binding Input, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, FallbackValue=''}" AcceptsReturn="True" AcceptsTab="True" VerticalScrollBarVisibility="Visible" />
+					</TabItem>
+					<TabItem>
+						<TabItem.Header>
+							<Label x:Name="InputPreviewLabel" Content="Preview" MouseLeftButtonDown="InputPreviewLabel_MouseLeftButtonDown" />
+						</TabItem.Header>
+						<markwpf:MarkdownViewer x:Name="MarkdownViewer" Markdown="{Binding Input}" ScrollViewer.VerticalScrollBarVisibility="Auto"/>
+					</TabItem>
+				</TabControl>
 			</Grid>
 
 			<Grid Grid.Row="1" Grid.Column="1" >
@@ -153,7 +164,7 @@
 				</Grid>
 			</Grid>
 
-			<TextBlock Grid.Column="2" Text="Preview" Visibility="{Binding SingleMode, FallbackValue=Visible}" TextAlignment="Center" Margin="4" />
+			<TextBlock Grid.Column="2" Text="Conversion Preview" Visibility="{Binding SingleMode, FallbackValue=Visible}" TextAlignment="Center" Margin="4" />
 			<Grid x:Name="OutputGrid" Grid.Row="1" Grid.Column="2" Visibility="{Binding SingleMode, FallbackValue=Visible}" Margin="8,0,0,0" >
 				<TextBox TextWrapping="{Binding TextWrapMode, FallbackValue=Wrap}" IsReadOnly="True" Text="{Binding Output, FallbackValue=''}" AcceptsReturn="True" AcceptsTab="True" VerticalScrollBarVisibility="Visible" />
 			</Grid>

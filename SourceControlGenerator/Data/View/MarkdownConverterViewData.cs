@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
+using System.Windows.Documents;
 using System.Windows.Input;
 using LL.SCG.Commands;
 using LL.SCG.Core;
@@ -70,6 +71,8 @@ namespace LL.SCG.Data.View
 				RaisePropertyChanged("CanPreview");
 			}
 		}
+
+		public FlowDocument MarkdownDocument { get; private set; }
 
 		private string output = "";
 
@@ -389,15 +392,37 @@ namespace LL.SCG.Data.View
 			return Task.FromResult<bool>(false);
 		}
 
-		private void LoadInputFile(object value)
+		public void LoadInputFile(object value)
 		{
 			if(value is string path)
 			{
 				Input = FileCommands.ReadFile(path);
 				if(!String.IsNullOrEmpty(path))
 				{
+					this.SingleModeLastFileInputPath = path;
 					StartSavingAsync();
 				}
+			}
+		}
+
+		public void SetBatchExportRoot(string path)
+		{
+			if (!Directory.Exists(path)) Directory.CreateDirectory(path);
+
+			if(Directory.Exists(path))
+			{
+				foreach(var batchData in BatchFormatterData)
+				{
+					batchData.FilePath = Path.Combine(path, batchData.Formatter.Name.TrimWhitespace() + batchData.DefaultFileExtension);
+				}
+			}
+		}
+
+		public void RenderMarkdown()
+		{
+			if(!String.IsNullOrWhiteSpace(Input))
+			{
+
 			}
 		}
 

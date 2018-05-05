@@ -142,7 +142,6 @@ namespace LL.SCG.Data
 			}
 		}
 
-
 		private string version;
 
 		public string Version
@@ -257,6 +256,8 @@ namespace LL.SCG.Data
 		public ICommand OpenEditorFolder { get; private set; }
 
 		public ICommand OpenProjectFolder { get; private set; }
+
+		public ICommand ConvertReadmeCommand { get; private set; }
 
 		private void openBackupFolder()
 		{

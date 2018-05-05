@@ -3,6 +3,7 @@
 					xmlns:shell="clr-namespace:System.Windows.Shell;assembly=PresentationFramework" 
 					xmlns:main="clr-namespace:LL.SCG"
 					xmlns:c="clr-namespace:LL.SCG.Controls"
+					xmlns:core="clr-namespace:LL.SCG.Core"
 					xmlns:cv="clr-namespace:LL.SCG.Converters"
 					xmlns:proxy="clr-namespace:LL.SCG.Data.Proxy"
 					xmlns:data="clr-namespace:LL.SCG.Data.View"
@@ -14,6 +15,7 @@
 					x:Name="MainAppDictionary"
 					>
 	<proxy:IconProxy x:Key="IconProxy" Data="{x:Static data:MainAppData.IconData}"/>
+	<proxy:AppControllerProxy x:Key="AppControllerProxy" Data="{x:Static core:AppController.Main}"/>
 
 	<BooleanToVisibilityConverter  x:Key="BoolToVisibilityConverter"/>
 	<cv:DateTimeToStringConverter x:Key="DateTimeToStringConverter"/>

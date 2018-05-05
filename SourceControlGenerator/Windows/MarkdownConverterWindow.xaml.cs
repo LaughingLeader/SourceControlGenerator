@@ -59,5 +59,10 @@ namespace LL.SCG.Windows
 		{
 			ViewData.StartSavingAsync();
 		}
+
+		private void InputPreviewLabel_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+		{
+			ViewData.RenderMarkdown();
+		}
 	}
 }
