@@ -157,6 +157,8 @@ namespace LL.SCG.Core
 				}
 			}
 
+			Data.MergeKeyLists();
+
 			return true;
 		}
 
@@ -188,18 +190,15 @@ namespace LL.SCG.Core
 		}
 		#region Progress
 
-		public Action OnProgressLoaded { get; set; }
-
 		public void StartProgress(string Title, Action StartAction, string StartMessage = "", int StartValue = 0, Action OnCompleted = null)
 		{
-			OnProgressLoaded = StartAction;
-
 			Data.ProgressTitle = Title;
 			Data.ProgressMessage = StartMessage;
 			Data.ProgressValue = StartValue;
+			Data.ProgressLog = "";
 			Data.ProgressVisiblity = System.Windows.Visibility.Visible;
 			mainWindow.IsEnabled = false;
-
+			
 			Application.Current.Dispatcher.Invoke(new Action(() =>
 			{
 				StartAction();
@@ -256,7 +255,8 @@ namespace LL.SCG.Core
 
 		public async void FinishProgress()
 		{
-			await Task.Delay(250);
+			Data.ProgressValue = Data.ProgressValueMax;
+			await Task.Delay(500);
 			await Application.Current.Dispatcher.BeginInvoke(new Action(() =>
 			{
 				Data.ProgressValue = Data.ProgressValueMax;

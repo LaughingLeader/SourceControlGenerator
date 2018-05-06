@@ -122,6 +122,7 @@
     </Reference>
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.IO.Compression.FileSystem" />
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Windows.Interactivity, Version=4.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\ControlzEx.3.0.2.4\lib\net462\System.Windows.Interactivity.dll</HintPath>
@@ -204,6 +205,7 @@
     <Compile Include="Data\View\ModuleData.cs" />
     <Compile Include="Data\View\ModuleSelectionData.cs" />
     <Compile Include="Data\View\SettingsEntryData.cs" />
+    <Compile Include="Enum\BackupMode.cs" />
     <Compile Include="Enum\FileValidation.cs" />
     <Compile Include="Extensions\AttributeExtensions.cs" />
     <Compile Include="Extensions\ComboBoxExtensionMethods.cs" />

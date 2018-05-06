@@ -38,6 +38,7 @@ namespace LL.SCG.Data.View
 			{
 				enabled = value;
 				RaisePropertyChanged("Enabled");
+				if (parentViewData != null) parentViewData.RaisePropertyChanged("CanBatchExport");
 			}
 		}
 

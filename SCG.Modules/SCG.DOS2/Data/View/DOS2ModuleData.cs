@@ -155,7 +155,7 @@ namespace LL.SCG.DOS2.Data.View
 			}
 		}
 
-		public DOS2ModuleData() : base("Divinity: Original Sin 2", "DivinityOriginalSin2")
+		public DOS2ModuleData() : base("Divinity: Original Sin 2", "Divinity Original Sin 2")
 		{
 			ManageButtonsText = "Select a Project";
 			AvailableProjectsToggleText = "Available Projects";

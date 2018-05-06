@@ -12,6 +12,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using LL.SCG.Collections;
 using LL.SCG.Data;
 using LL.SCG.Data.View;
 using LL.SCG.Interfaces;
@@ -39,14 +40,15 @@ namespace LL.SCG.Windows
 
 			if (GenerationSettings.ExportProjects == null)
 			{
-				GenerationSettings.ExportProjects = new ObservableCollection<IProjectData>();
+				var list = new ObservableImmutableList<IProjectData>();
+				GenerationSettings.SetExportProjects(list);
 			}
 			else
 			{
 				GenerationSettings.ExportProjects.Clear();
 			}
 
-			SelectedProjects.ForEach(GenerationSettings.ExportProjects.Add);
+			SelectedProjects.ForEach((IProjectData project) => GenerationSettings.ExportProjects.Add(project));
 		}
 
 		private void CancelButton_Click(object sender, RoutedEventArgs e)

@@ -17,7 +17,7 @@ namespace LL.SCG.Data.Xml
 		/// <returns></returns>
 		public static string GetDOS2AttributeValue(XElement xmlData, string AttributeID)
 		{
-			var val = xmlData.Descendants("attribute").FirstOrDefault(x => (string)x.Attribute("id") == AttributeID).Attribute("value").Value;
+			var val = xmlData.Descendants("attribute").FirstOrDefault(x => (string)x.Attribute("id") == AttributeID)?.Attribute("value").Value;
 			if (!String.IsNullOrEmpty(val))
 			{
 				return val;

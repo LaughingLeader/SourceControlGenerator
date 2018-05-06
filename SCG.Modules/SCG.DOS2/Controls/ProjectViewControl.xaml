@@ -42,7 +42,7 @@
 										<SolidColorBrush Color="White" Opacity="0.25"/>
 									</Rectangle.Fill>
 									<Rectangle.OpacityMask>
-										<ImageBrush ImageSource="{Binding Path=Source, ElementName=Image}" />
+										<ImageBrush ImageSource="{Binding Path=Source, ElementName=Image, FallbackValue={x:Null}}" />
 									</Rectangle.OpacityMask>
 								</Rectangle>
 							</Grid>
@@ -384,6 +384,24 @@
 										</Style>
 									</DataGridTextColumn.CellStyle>
 								</DataGridTextColumn>
+								<DataGridTextColumn Header="Modified" Binding="{Binding ModuleInfo.ModifiedDate, Converter={StaticResource DateTimeToStringConverter}, ConverterParameter='d', FallbackValue=''}"  ElementStyle="{StaticResource ColumnElementStyle}" MinWidth="80" HeaderStyle="{StaticResource ProjectsHeaderStyle}" >
+									<DataGridTextColumn.CellStyle>
+										<Style TargetType="DataGridCell" BasedOn="{StaticResource DataGrid_NoHighlight}">
+											<Style.Triggers>
+												<DataTrigger Binding="{Binding ModuleInfo.ModifiedDate, Converter={StaticResource EmptyValueVisibilityConverter}}" Value="Visible">
+													<Setter Property="ToolTip">
+														<Setter.Value>
+															<TextBlock Text="{Binding ModuleInfo.ModifiedDate, Converter={StaticResource DateTimeToStringConverter}, ConverterParameter='f'}" />
+														</Setter.Value>
+													</Setter>
+												</DataTrigger>
+												<DataTrigger Binding="{Binding ModuleInfo.ModifiedDate, Converter={StaticResource EmptyValueVisibilityConverter}}" Value="Collapsed">
+													<Setter Property="ToolTip" Value="{x:Null}" />
+												</DataTrigger>
+											</Style.Triggers>
+										</Style>
+									</DataGridTextColumn.CellStyle>
+								</DataGridTextColumn>
 								<DataGridTextColumn Header="Last Backup" Binding="{Binding LastBackup, Converter={StaticResource DateTimeToStringConverter}, ConverterParameter='d', FallbackValue=''}"  ElementStyle="{StaticResource ColumnElementStyle}" MinWidth="80" HeaderStyle="{StaticResource ProjectsHeaderStyle}">
 									<DataGridTextColumn.CellStyle>
 										<Style TargetType="DataGridCell" BasedOn="{StaticResource DataGrid_NoHighlight}">
@@ -415,9 +433,9 @@
 								<Setter Property="Padding" Value="4,2" />
 							</Style>
 						</StackPanel.Resources>
-						<Button x:Name="BackupButton" Content="Backup Selected" Click="BackupButton_Click" IsEnabled="{Binding ProjectSelected}" />
-						<Button x:Name="BackupSeletedButton" Content="Backup Selected To..." Click="BackupSelectedButton_Click" IsEnabled="{Binding ProjectSelected}" />
-						<Button x:Name="GitGenerationButton" Content="Create Git Repos for Selected..." Click="GitGenerationButton_Click" IsEnabled="{Binding CanGenerateGit}" />
+						<Button x:Name="BackupButton" Content="Backup" Click="BackupButton_Click" IsEnabled="{Binding ProjectSelected}" />
+						<Button x:Name="BackupSeletedButton" Content="Backup To..." Click="BackupSelectedButton_Click" IsEnabled="{Binding ProjectSelected}" />
+						<Button x:Name="GitGenerationButton" Content="Run Git Generator..." Click="GitGenerationButton_Click" IsEnabled="{Binding CanGenerateGit}" />
 					</StackPanel>
 				</Grid>
 			</Grid>

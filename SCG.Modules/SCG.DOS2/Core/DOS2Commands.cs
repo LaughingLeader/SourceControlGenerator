@@ -466,7 +466,7 @@ namespace LL.SCG.DOS2.Core
 			if (MainData != null)
 			{
 				string startPath = Path.Combine(MainData.Settings.DOS2DataDirectory, "Projects");
-				string directory = Path.Combine(Path.GetFullPath(startPath), modProjectData.FolderName);
+				string directory = Path.Combine(Path.GetFullPath(startPath), modProjectData.ProjectName);
 				if (Directory.Exists(directory))
 				{
 					Process.Start(directory);

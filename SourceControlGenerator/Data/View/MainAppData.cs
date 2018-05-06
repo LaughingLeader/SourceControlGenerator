@@ -18,6 +18,8 @@ using System.Windows.Input;
 using LL.SCG.Data.App;
 using LL.SCG.Interfaces;
 using System.Windows;
+using LL.SCG.Collections;
+using System.Windows.Data;
 
 namespace LL.SCG.Data.View
 {
@@ -37,9 +39,19 @@ namespace LL.SCG.Data.View
 			}
 		}
 		
-		public ObservableCollection<KeywordData> DateKeyList { get; set; }
-		public ObservableCollection<KeywordData> ModuleKeyList { get; private set; }
+		public ObservableImmutableList<KeywordData> GlobalKeyList { get; set; }
+		public ObservableImmutableList<KeywordData> DateKeyList { get; set; }
+
+		/// <summary>
+		/// The merged KeyList visible in the main window.
+		/// </summary>
+		public ObservableImmutableList<KeywordData> AppKeyList { get; private set; }
+
 		public ObservableCollection<ModuleSelectionData> Modules { get; private set; }
+
+		public object GlobalKeyListLock { get; private set; } = new object();
+		public object DateKeyListLock { get; private set; } = new object();
+		public object AppKeyListLock { get; private set; } = new object();
 
 		private bool portable = false;
 
@@ -102,6 +114,15 @@ namespace LL.SCG.Data.View
 			{
 				currentModuleData = value;
 				RaisePropertyChanged("CurrentModuleData");
+				RaisePropertyChanged("CurrentModuleName");
+			}
+		}
+
+		public string CurrentModuleName
+		{
+			get
+			{
+				return CurrentModuleData != null ? CurrentModuleData.ModuleName : "";
 			}
 		}
 
@@ -219,10 +240,17 @@ namespace LL.SCG.Data.View
 			}
 		}
 
-		public void SetModuleKeyList(ObservableCollection<KeywordData> keyList)
+		public void MergeKeyLists()
 		{
-			ModuleKeyList = keyList;
+			if(CurrentModuleData != null && CurrentModuleData.KeyList != null)
+			{
+				ModuleNameKeyword.KeywordValue = CurrentModuleName;
+				AppKeyList.DoOperation(list => list.Clear().AddRange(GlobalKeyList).AddRange(CurrentModuleData.KeyList));
+				Log.Here().Activity("Merged keyword lists.");
+			}
 		}
+
+		private KeywordData ModuleNameKeyword { get; set; }
 
 		public MainAppData()
 		{
@@ -235,7 +263,21 @@ namespace LL.SCG.Data.View
 			//ThemeColorData.RefreshTheme();
 
 			Modules = new ObservableCollection<ModuleSelectionData>();
-			DateKeyList = new ObservableCollection<KeywordData>();
+			GlobalKeyList = new ObservableImmutableList<KeywordData>();
+			DateKeyList = new ObservableImmutableList<KeywordData>();
+			AppKeyList = new ObservableImmutableList<KeywordData>();
+
+			BindingOperations.EnableCollectionSynchronization(GlobalKeyList, GlobalKeyListLock);
+			BindingOperations.EnableCollectionSynchronization(DateKeyList, DateKeyListLock);
+			BindingOperations.EnableCollectionSynchronization(AppKeyList, AppKeyListLock);
+
+			ModuleNameKeyword = new KeywordData()
+			{
+				KeywordName = "$ModuleName",
+				KeywordValue = CurrentModuleName
+			};
+
+			GlobalKeyList.Add(ModuleNameKeyword);
 
 			DateKeyList.Add(new KeywordData()
 			{

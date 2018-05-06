@@ -11,7 +11,7 @@ namespace LL.SCG.DOS2.Core
 	{
 		public static string DirectoryLayout(IModuleData Data)
 		{
-			return DefaultPaths.RootFolder + @"Settings/" + Data.ModuleFolderName + @"/DirectoryLayout.txt";
+			return DefaultPaths.ModuleSettingsFolder(Data) + @"/DirectoryLayout.txt";
 		}
 	}
 }

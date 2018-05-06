@@ -90,7 +90,7 @@
 				</Grid>
 			</Grid>
 			<Grid HorizontalAlignment="Center" VerticalAlignment="Center" Visibility="{Binding BatchMode, FallbackValue=Collapsed}" >
-				<Button Content="Convert &amp; Save All" Command="{Binding BatchExportCommand}" />
+				<Button Content="Export All Selected" Command="{Binding BatchExportCommand}" IsEnabled="{Binding CanBatchExport}" />
 			</Grid>
 		</Grid>
 
@@ -177,7 +177,7 @@
 						<TabItem.Header>
 							<Label x:Name="InputPreviewLabel" Content="Preview" MouseLeftButtonDown="InputPreviewLabel_MouseLeftButtonDown" />
 						</TabItem.Header>
-						<markwpf:MarkdownViewer x:Name="MarkdownViewer" Markdown="{Binding Input}" ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.HorizontalScrollBarVisibility="Auto" BorderThickness="0.25">
+						<markwpf:MarkdownViewer x:Name="MarkdownViewer" Markdown="{Binding Input}" BorderThickness="0">
 							<markwpf:MarkdownViewer.Resources>
 								<ResourceDictionary Source="pack://application:,,,/Markdig.Wpf;component/Themes/generic.xaml" />
 							</markwpf:MarkdownViewer.Resources>
@@ -224,14 +224,14 @@
 						<RowDefinition Height="Auto" />
 						<RowDefinition Height="*" />
 					</Grid.RowDefinitions>
-					<TextBlock Text="Conversion Preview" TextAlignment="Center" Margin="4" />
+					<TextBlock Text="Output Preview" TextAlignment="Center" Margin="4" />
 					<Grid Grid.Row="1" Margin="8,0,0,0" >
 						<TextBox TextWrapping="{Binding TextWrapMode, FallbackValue=Wrap}" IsReadOnly="True" Text="{Binding Output, FallbackValue=''}" AcceptsReturn="True" AcceptsTab="True" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="{Binding TextWrapMode, Converter={StaticResource TextWrapToScrollBarVisibilityConverter}}" />
 					</Grid>
 				</Grid>
 			</Grid>
 
-			<TextBlock Grid.Column="2" Text="Conversion Preview" Visibility="{Binding SingleMode, FallbackValue=Visible}" TextAlignment="Center" Margin="4" />
+			<TextBlock Grid.Column="2" Text="Output Preview" Visibility="{Binding SingleMode, FallbackValue=Visible}" TextAlignment="Center" Margin="4" />
 			<Grid x:Name="OutputGrid" Grid.Row="1" Grid.Column="2" Visibility="{Binding SingleMode, FallbackValue=Visible}" Margin="8,0,0,0" >
 				<TextBox TextWrapping="{Binding TextWrapMode, FallbackValue=Wrap}" IsReadOnly="True" Text="{Binding Output, FallbackValue=''}" AcceptsReturn="True" AcceptsTab="True" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="{Binding TextWrapMode, Converter={StaticResource TextWrapToScrollBarVisibilityConverter}}" />
 			</Grid>

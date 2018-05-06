@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 using System.Xml.Linq;
+using LL.SCG.Collections;
 using LL.SCG.Controls;
 using LL.SCG.Data;
 using LL.SCG.Data.View;
@@ -296,7 +297,7 @@ namespace LL.SCG.Commands
 				previousSettings = Data.GitGenerationSettings.TemplateSettings.ToList();
 			}
 
-			ObservableCollection<TemplateGenerationData> templateSettings = new ObservableCollection<TemplateGenerationData>();
+			ObservableImmutableList<TemplateGenerationData> templateSettings = new ObservableImmutableList<TemplateGenerationData>();
 			foreach (var template in Data.Templates.Where(t => t.ID.ToLower() != "license"))
 			{
 				TemplateGenerationData tdata = new TemplateGenerationData()
@@ -320,7 +321,7 @@ namespace LL.SCG.Commands
 				templateSettings.Add(tdata);
 			}
 
-			Data.GitGenerationSettings.TemplateSettings = templateSettings;
+			Data.GitGenerationSettings.SetTemplateSettings(templateSettings);
 
 			if (settingsNeedSaving) FileCommands.Save.SaveGitGenerationSettings(Data, DefaultPaths.ModuleGitGenSettingsFile(Data));
 		}

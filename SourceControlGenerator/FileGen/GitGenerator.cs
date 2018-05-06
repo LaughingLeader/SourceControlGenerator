@@ -16,19 +16,19 @@ namespace LL.SCG.FileGen
 {
 	public static class GitGenerator
 	{
-		public static string GenerateTemplateFile(string defaultText, string filePath, IProjectData projectData, MainAppData mainAppData, IModuleData moduleData)
+		public static async Task<string> GenerateTemplateFile(string defaultText, string filePath, IProjectData projectData, MainAppData mainAppData, IModuleData moduleData)
 		{
 			if (!string.IsNullOrEmpty(filePath) && File.Exists(filePath))
 			{
 				defaultText = File.ReadAllText(filePath);
 			}
 
-			defaultText = ReplaceKeywords(defaultText, projectData, mainAppData, moduleData);
+			defaultText = await ReplaceKeywords(defaultText, projectData, mainAppData, moduleData);
 
 			return defaultText;
 		}
 
-		public static bool CreateJunctions(string ProjectName, List<JunctionData> SourceFolders, IModuleData moduleData)
+		public static async Task<bool> CreateJunctions(string ProjectName, List<JunctionData> SourceFolders, IModuleData moduleData)
 		{
 			if(SourceFolders != null && SourceFolders.Count > 0)
 			{
@@ -81,7 +81,7 @@ namespace LL.SCG.FileGen
 			return false;
 		}
 
-		public static bool InitRepository(string RepoPath, string AuthorName = "", string Email = "")
+		public static async Task<bool> InitRepository(string RepoPath, string AuthorName = "", string Email = "")
 		{
 			try
 			{
@@ -90,30 +90,19 @@ namespace LL.SCG.FileGen
 					Directory.CreateDirectory(RepoPath);
 				}
 
-				Process process = new Process();
+				var commands = new List<string>()
+				{
+					"git init",
+					"git config core.longpaths true",
+					"git config core.autocrlf true",
+					"git config core.safecrlf false"
+				};
 
-				process.StartInfo.FileName = @"cmd.exe";
-				process.StartInfo.UseShellExecute = false;
-				process.StartInfo.RedirectStandardInput = true;
-				process.StartInfo.CreateNoWindow = true;
-				process.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
-				process.StartInfo.WorkingDirectory = RepoPath;
-				process.Start();
+				if(!String.IsNullOrWhiteSpace(AuthorName)) commands.Add("git config user.name \"" + AuthorName + "\"");
+				if(!String.IsNullOrWhiteSpace(Email)) commands.Add("git config user.email \"" + Email + "\"");
 
-				StreamWriter stream = process.StandardInput;
-
-				stream.WriteLine("git init");
-				stream.WriteLine("git config core.longpaths true");
-				stream.WriteLine("git config core.autocrlf true");
-				stream.WriteLine("git config core.safecrlf false"); // Disable the warnings
-
-				if(!String.IsNullOrWhiteSpace(AuthorName)) stream.WriteLine("git config user.name \"" + AuthorName + "\"");
-				if(!String.IsNullOrWhiteSpace(Email)) stream.WriteLine("git config user.email \"" + Email + "\"");
-
-				stream.Close();
-
-				process.WaitForExit(1000 * 60 * 5);
-				if (process.ExitCode == 0) return true;
+				var exitCode = await ProcessHelper.RunCommandLineAsync(RepoPath, commands.ToArray());
+				return exitCode == 0;
 			}
 			catch(Exception ex)
 			{
@@ -122,28 +111,13 @@ namespace LL.SCG.FileGen
 			return false;
 		}
 
-		public static bool Commit(string RepoPath, string CommitMessage)
+		public static async Task<bool> Commit(string RepoPath, string CommitMessage)
 		{
 			try
 			{
-				Process process = new Process();
-
-				process.StartInfo.FileName = @"cmd.exe";
-				process.StartInfo.UseShellExecute = false;
-				process.StartInfo.RedirectStandardInput = true;
-				process.StartInfo.CreateNoWindow = true;
-				process.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
-				process.StartInfo.WorkingDirectory = RepoPath;
-				process.Start();
-
-				StreamWriter stream = process.StandardInput;
-
-				stream.WriteLine("git add -A");
-				stream.WriteLine("git commit -m \"" + CommitMessage + "\"");
-				stream.Close();
-
-				process.WaitForExit(1000 * 60 * 5);
-				if (process.ExitCode == 0) return true;
+				//await ProcessHelper.RunCommandLineAsync(RepoPath, "git add -A");
+				var exitCode = await ProcessHelper.RunCommandLineAsync(RepoPath, "git add -A", "git commit -m \"" + CommitMessage + "\"");
+				return exitCode == 0;
 			}
 			catch (Exception ex)
 			{
@@ -152,7 +126,7 @@ namespace LL.SCG.FileGen
 			return false;
 		}
 
-		public static bool Archive(string RepoPath, string OutputFileName, bool UseAttributesFile = true)
+		public static async Task<bool> Archive(string RepoPath, string OutputFileName, bool UseAttributesFile = true)
 		{
 			try
 			{
@@ -167,24 +141,8 @@ namespace LL.SCG.FileGen
 					//command += " --worktree-attributes";
 				}
 
-				Process process = new Process();
-
-				process.StartInfo.FileName = @"cmd.exe";
-				process.StartInfo.UseShellExecute = false;
-				process.StartInfo.RedirectStandardInput = true;
-				process.StartInfo.CreateNoWindow = true;
-				process.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
-				process.StartInfo.WorkingDirectory = RepoPath;
-				process.Start();
-
-				StreamWriter stream = process.StandardInput;
-
-				//stream.WriteLine("cd \"" + RepoPath + "\"");
-				stream.WriteLine(command);
-				stream.Close();
-
-				process.WaitForExit(1000 * 60 * 5);
-				if (process.ExitCode == 0) return true;
+				var exitCode = await ProcessHelper.RunCommandLineAsync(RepoPath, command);
+				return exitCode == 0;
 			}
 			catch (Exception ex)
 			{
@@ -195,31 +153,69 @@ namespace LL.SCG.FileGen
 
 		private static bool KeywordIsValid(KeywordData k)
 		{
-			return k.Replace != null && !String.IsNullOrEmpty(k.KeywordName) && !String.IsNullOrEmpty(k.KeywordValue);
+			return k != null && !String.IsNullOrEmpty(k.KeywordName) && !String.IsNullOrEmpty(k.KeywordValue);
 		}
 
-		public static string ReplaceKeywords(string sourceText, IProjectData projectData, MainAppData mainAppData, IModuleData moduleData)
+		public static async Task<string> ReplaceKeywords(string sourceText, IProjectData projectData, MainAppData mainAppData, IModuleData moduleData)
 		{
 			string replacedText = sourceText;
 
-			foreach(var keywordData in mainAppData.DateKeyList.Where(k => KeywordIsValid(k)))
+			if (mainAppData != null)
 			{
-				replacedText = replacedText.Replace(keywordData.KeywordName, keywordData.Replace?.Invoke(projectData));
-			}
+				if(projectData == null)
+				{
+					Log.Here().Error($"Error replacing keywords for module {moduleData.ModuleName}: projectData is null.");
 
-			foreach (var keywordData in moduleData.KeyList.Where(k => KeywordIsValid(k)))
-			{
-				replacedText = replacedText.Replace(keywordData.KeywordName, keywordData.Replace?.Invoke(projectData));
-			}
+					return replacedText;
+				}
 
-			foreach (var keywordData in moduleData.UserKeywords.Keywords.Where(k => KeywordIsValid(k)))
-			{
-				replacedText = replacedText.Replace(keywordData.KeywordName, keywordData.Replace?.Invoke(projectData));
-			}
+				if (mainAppData.DateKeyList != null)
+				{
+					var tasks = mainAppData.DateKeyList.Where(keywordData => KeywordIsValid(keywordData) && replacedText.Contains(keywordData.KeywordName)).Select(keywordData => Task.Run(() =>
+					{
+						replacedText = keywordData.ReplaceText(replacedText, projectData);
+					}));
 
-			if(!String.IsNullOrEmpty(moduleData.UserKeywords.DateCustom))
-			{
-				replacedText = replacedText.Replace("$DateCustom", DateTime.Now.ToString(moduleData.UserKeywords.DateCustom));
+					await Task.WhenAll(tasks);
+				}
+				else
+				{
+					Log.Here().Error($"Error parsing DateKeyList for module {moduleData.ModuleName}: DateKeyList is null.");
+				}
+
+				if (mainAppData.AppKeyList != null)
+				{
+					var tasks = mainAppData.AppKeyList.Where(keywordData => KeywordIsValid(keywordData) && replacedText.Contains(keywordData.KeywordName)).Select(keywordData => Task.Run(() =>
+					{
+						Log.Here().Activity($"Replacing {keywordData.KeywordName} with {keywordData.KeywordValue}");
+						replacedText = keywordData.ReplaceText(replacedText, projectData);
+					}));
+
+					await Task.WhenAll(tasks);
+				}
+				else
+				{
+					Log.Here().Error($"Error parsing DateKeyList for module {moduleData.ModuleName}: DateKeyList is null.");
+				}
+
+				if (moduleData.UserKeywords != null && moduleData.UserKeywords.Keywords != null)
+				{
+					var tasks = moduleData.UserKeywords.Keywords.Where(keywordData => KeywordIsValid(keywordData) && replacedText.Contains(keywordData.KeywordName)).Select(keywordData => Task.Run(() =>
+					{
+						replacedText = keywordData.ReplaceText(replacedText, projectData);
+					}));
+
+					await Task.WhenAll(tasks);
+				}
+				else
+				{
+					Log.Here().Error($"Error parsing user keywords for module {moduleData.ModuleName}: UserKeywords is null.");
+				}
+
+				if (moduleData.UserKeywords != null && !String.IsNullOrEmpty(moduleData.UserKeywords.DateCustom) && replacedText.Contains("$DateCustom"))
+				{
+					replacedText = replacedText.Replace("$DateCustom", DateTime.Now.ToString(moduleData.UserKeywords.DateCustom));
+				}
 			}
 
 			return replacedText;

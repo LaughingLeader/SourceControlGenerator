@@ -41,6 +41,8 @@ namespace LL.SCG.Data.Xml
 			set { timestamp = value; }
 		}
 
+		public DateTime ModifiedDate { get; set; }
+
 		public void Set(ModuleInfo moduleInfo)
 		{
 			PropertyCopier<ModuleInfo, ModuleInfo>.Copy(moduleInfo, this);
@@ -49,19 +51,18 @@ namespace LL.SCG.Data.Xml
 		public void LoadFromXml(XDocument modMetaXml)
 		{
 			bool moduleInfoLoaded = false;
-			try
-			{
+			//try
+			//{
 				var moduleInfoXml = modMetaXml.XPathSelectElement("save/region/node/children/node[@id='ModuleInfo']");
 
 				if (moduleInfoXml != null)
 				{
-					Log.Here().Activity("Parsing module info xml data.");
-
 					PropertyInfo[] propInfo = typeof(ModuleInfo).GetProperties();
 					foreach (PropertyInfo property in propInfo)
 					{
 						if (property.Name == "TargetModes") continue;
 						if (property.Name == "Timestamp") continue;
+						if (property.Name == "ModifiedDate") continue;
 
 						var value = XmlDataHelper.GetDOS2AttributeValue(moduleInfoXml, property.Name);
 
@@ -77,7 +78,7 @@ namespace LL.SCG.Data.Xml
 								property.SetValue(this, version);
 							}
 						}
-						else
+						else if(property.PropertyType == typeof(string))
 						{
 							property.SetValue(this, value);
 						}
@@ -93,11 +94,11 @@ namespace LL.SCG.Data.Xml
 				{
 					Log.Here().Error("Error selecting path (\"{0}\") from mod meta.lsx file.", @"save / region / node / children / node[@id = 'ModuleInfo']");
 				}
-			}
-			catch (Exception ex)
-			{
-				Log.Here().Error("Error parsing mod meta.lsx: {0}", ex.ToString());
-			}
+			//}
+			//catch (Exception ex)
+			//{
+			//	Log.Here().Error("Error parsing mod meta.lsx: {0}", ex.ToString());
+			//}
 
 			try
 			{
@@ -108,6 +109,11 @@ namespace LL.SCG.Data.Xml
 					if (timeAtt != null)
 					{
 						var success = long.TryParse(timeAtt.Value, out timestamp);
+
+						if(success)
+						{
+							ModifiedDate = DateTimeOffset.FromUnixTimeSeconds(timestamp).Date;
+						}
 					}
 				}
 			}

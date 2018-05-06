@@ -66,6 +66,7 @@
     <Compile Include="Util\HelperUtil\WebHelper.cs" />
     <Compile Include="Util\JunctionHelper.cs" />
     <Compile Include="Util\Log.cs" />
+    <Compile Include="Util\ProcessHelper.cs" />
     <Compile Include="Util\PropertyCopier.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -5,7 +5,9 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Data;
 using System.Windows.Input;
+using LL.SCG.Collections;
 using LL.SCG.Commands;
 using LL.SCG.Interfaces;
 using Newtonsoft.Json;
@@ -55,8 +57,11 @@ namespace LL.SCG.Data.View
 			}
 		}
 
-		public ObservableCollection<TemplateEditorData> Templates { get; set; }
-		public ObservableCollection<KeywordData> KeyList { get; set; }
+		public ObservableImmutableList<TemplateEditorData> Templates { get; set; }
+		public ObservableImmutableList<KeywordData> KeyList { get; set; }
+
+		public object TemplatesLock { get; private set; } = new object();
+		public object KeyListLock { get; private set; } = new object();
 
 		private UserKeywordData userKeywordData;
 
@@ -232,8 +237,11 @@ namespace LL.SCG.Data.View
 			ModuleFolderName = moduleFolderName;
 			AddTemplateControlVisible = false;
 
-			Templates = new ObservableCollection<TemplateEditorData>();
-			KeyList = new ObservableCollection<KeywordData>();
+			Templates = new ObservableImmutableList<TemplateEditorData>();
+			KeyList = new ObservableImmutableList<KeywordData>();
+
+			BindingOperations.EnableCollectionSynchronization(Templates, TemplatesLock);
+			BindingOperations.EnableCollectionSynchronization(KeyList, KeyListLock);
 
 			LoadKeywords = new ActionCommand(() => { FileCommands.Load.LoadUserKeywords(this); });
 

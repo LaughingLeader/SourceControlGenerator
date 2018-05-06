@@ -5,6 +5,8 @@ using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Data;
+using LL.SCG.Collections;
 using LL.SCG.Interfaces;
 using Newtonsoft.Json;
 
@@ -38,10 +40,10 @@ namespace LL.SCG.Data
 			}
 		}
 
-		public ObservableCollection<TemplateGenerationData> TemplateSettings { get; set; }
+		public ObservableImmutableList<TemplateGenerationData> TemplateSettings { get; set; }
 
 		[JsonIgnore]
-		public ObservableCollection<IProjectData> ExportProjects { get; set; }
+		public ObservableImmutableList<IProjectData> ExportProjects { get; set; }
 
 		private bool createJunctions = true;
 
@@ -79,11 +81,32 @@ namespace LL.SCG.Data
 			}
 		}
 
+		public object TemplateSettingsLock { get; private set; } = new object();
+
+		public object ExportProjectsLock { get; private set; } = new object();
+
+		public void SetTemplateSettings(ObservableImmutableList<TemplateGenerationData> newList)
+		{
+			if(TemplateSettings != null) BindingOperations.DisableCollectionSynchronization(TemplateSettings);
+			TemplateSettings = newList;
+			BindingOperations.EnableCollectionSynchronization(TemplateSettings, TemplateSettingsLock);
+		}
+
+		public void SetExportProjects(ObservableImmutableList<IProjectData> newList)
+		{
+			if (ExportProjects != null) BindingOperations.DisableCollectionSynchronization(ExportProjects);
+			ExportProjects = newList;
+			BindingOperations.EnableCollectionSynchronization(ExportProjects, ExportProjectsLock);
+		}
+
 		public GitGenerationSettings()
 		{
-			TemplateSettings = new ObservableCollection<TemplateGenerationData>();
-			ExportProjects = new ObservableCollection<IProjectData>();
+			TemplateSettings = new ObservableImmutableList<TemplateGenerationData>();
+			ExportProjects = new ObservableImmutableList<IProjectData>();
 			SelectedLicense = LicenseType.MIT;
+
+			BindingOperations.EnableCollectionSynchronization(TemplateSettings, TemplateSettingsLock);
+			BindingOperations.EnableCollectionSynchronization(ExportProjects, ExportProjectsLock);
 		}
 	}
 

@@ -4,6 +4,9 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Data;
+using LL.SCG.Collections;
+using Newtonsoft.Json;
 
 namespace LL.SCG.Data
 {
@@ -21,42 +24,35 @@ namespace LL.SCG.Data
 			}
 		}
 
-		private ObservableCollection<KeywordData> keywords;
+		public ObservableImmutableList<KeywordData> Keywords { get; set; }
 
-		public ObservableCollection<KeywordData> Keywords
-		{
-			get { return keywords; }
-			set
-			{
-				keywords = value;
-				RaisePropertyChanged("Keywords");
-			}
-		}
+		[JsonIgnore]
+		public object KeywordsLock { get; private set; } = new object();
 
 		public void AddKeyword()
 		{
 			Keywords.Add(new KeywordData());
-			RaisePropertyChanged("Keywords");
 		}
 
 		public void RemoveLast()
 		{
 			if(Keywords.Count > 0)
 			{
-				Keywords.RemoveAt(keywords.Count - 1);
-				RaisePropertyChanged("Keywords");
+				Keywords.RemoveAt(Keywords.Count - 1);
 			}
 		}
 
 		public void ResetToDefault()
 		{
-			if(Keywords == null) Keywords = new ObservableCollection<KeywordData>();
+			if(Keywords == null) Keywords = new ObservableImmutableList<KeywordData>();
 			if (Keywords.Count > 0) Keywords.Clear();
 			Keywords.Add(new KeywordData());
 			Keywords.Add(new KeywordData());
 			Keywords.Add(new KeywordData());
 
 			DateCustom = "MMMM dd, yyyy";
+
+			BindingOperations.EnableCollectionSynchronization(Keywords, KeywordsLock);
 		}
 
 		public void RemoveEmpty()

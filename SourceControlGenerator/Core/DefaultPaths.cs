@@ -12,7 +12,7 @@ namespace LL.SCG
 	public static class DefaultPaths
 	{
 		public static string DefaultPortableRootFolder => @"Data\";
-		public static string DefaultMyDocumentsRootFolder => @"SourceControlGenerator\";
+		public static string DefaultMyDocumentsRootFolder => @"Source Control Generator\";
 
 		public static string PortableSettingsFile => @"portable";
 

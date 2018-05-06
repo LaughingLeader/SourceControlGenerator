@@ -11,7 +11,7 @@ namespace LL.SCG.Data
 {
 	public class KeywordData : PropertyChangedBase
 	{
-		private string keywordName;
+		private string keywordName = "";
 
 		public string KeywordName
 		{
@@ -23,7 +23,7 @@ namespace LL.SCG.Data
 			}
 		}
 
-		private string keywordValue;
+		private string keywordValue = "";
 
 		public string KeywordValue
 		{
@@ -36,8 +36,31 @@ namespace LL.SCG.Data
 		}
 
 		public delegate string SetKeywordText(IProjectData projectData);
+
+		private SetKeywordText replaceAction;
+
 		[JsonIgnore]
-		public SetKeywordText Replace;
+		public SetKeywordText Replace
+		{
+			get { return replaceAction; }
+			set
+			{
+				replaceAction = value;
+				RaisePropertyChanged("Replace");
+			}
+		}
+
+		public string ReplaceText(string inputText, IProjectData projectData = null)
+		{
+			if (Replace != null)
+			{
+				return inputText.Replace(KeywordName, Replace(projectData));
+			}
+			else
+			{
+				return inputText.Replace(KeywordName, KeywordValue);
+			}
+		}
 
 		public KeywordData()
 		{

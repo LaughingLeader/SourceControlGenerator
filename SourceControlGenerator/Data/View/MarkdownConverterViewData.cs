@@ -294,6 +294,15 @@ namespace LL.SCG.Data.View
 			}
 		}
 
+		public bool CanBatchExport
+		{
+			get
+			{
+				return BatchFormatterData != null && BatchFormatterData.Any(f => f.Enabled == true);
+			}
+		}
+
+
 		public ICommand BatchExportCommand { get; set; }
 
 		public ICommand PreviewCommand { get; set; }
@@ -395,7 +404,7 @@ namespace LL.SCG.Data.View
 					var outputText = JsonConvert.SerializeObject(this, Formatting.Indented);
 					if(FileCommands.WriteToFile(outputPath, outputText, true))
 					{
-						Log.Here().Activity($"Saved markdown converter settings file for current module {AppController.Main.CurrentModule.ModuleData.ModuleName}.");
+						//Log.Here().Activity($"Saved markdown converter settings file for current module {AppController.Main.CurrentModule.ModuleData.ModuleName}.");
 						return Task.FromResult<bool>(true);
 					}
 				}

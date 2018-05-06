@@ -5,6 +5,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using LL.SCG.Collections;
 using LL.SCG.Data;
 using LL.SCG.Data.App;
 using LL.SCG.Data.View;
@@ -19,8 +20,8 @@ namespace LL.SCG.Interfaces
 
 		GitGenerationSettings GitGenerationSettings { get; set; }
 
-		ObservableCollection<TemplateEditorData> Templates { get; set; }
-		ObservableCollection<KeywordData> KeyList { get; set; }
+		ObservableImmutableList<TemplateEditorData> Templates { get; set; }
+		ObservableImmutableList<KeywordData> KeyList { get; set; }
 
 		UserKeywordData UserKeywords { get; set; }
 
