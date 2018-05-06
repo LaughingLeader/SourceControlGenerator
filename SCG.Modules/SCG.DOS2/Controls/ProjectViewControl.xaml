@@ -430,7 +430,7 @@
 						<StackPanel.Resources>
 							<Style TargetType="{x:Type Button}" BasedOn="{StaticResource {x:Type Button}}">
 								<Setter Property="Margin" Value="4,2" />
-								<Setter Property="Padding" Value="4,2" />
+								<Setter Property="Padding" Value="12,2" />
 							</Style>
 						</StackPanel.Resources>
 						<Button x:Name="BackupButton" Content="Backup" Click="BackupButton_Click" IsEnabled="{Binding ProjectSelected}" />
