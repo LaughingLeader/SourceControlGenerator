@@ -428,6 +428,8 @@ namespace LL.SCG.Data.View
 					this.SingleModeLastFileInputPath = path;
 					CanSaveInput = false;
 					StartSavingAsync();
+
+					Output = String.Empty;
 				}
 			}
 		}

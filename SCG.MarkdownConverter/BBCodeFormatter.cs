@@ -9,6 +9,7 @@ using AngleSharp.Html;
 using AngleSharp.Parser.Html;
 using CodeKicker.BBCode;
 using Markdig;
+using LL.SCG;
 
 namespace LL.SCG.Markdown
 {
@@ -26,7 +27,7 @@ namespace LL.SCG.Markdown
 		{
 			get
 			{
-				return BBIgnoredTags.IndexOf(TagNames.Link) > 0 || BBIgnoredTags.IndexOf(TagNames.A) > 0 || BBIgnoredElements.IndexOf(typeof(IHtmlAnchorElement)) > 0;
+				return BBIgnoredTags.IndexOf(TagNames.Link) > -1 || BBIgnoredTags.IndexOf(TagNames.A) > -1 || BBIgnoredElements.IndexOf(typeof(IHtmlAnchorElement)) > -1;
 			}
 		}
 
@@ -34,7 +35,15 @@ namespace LL.SCG.Markdown
 		{
 			get
 			{
-				return BBIgnoredTags.IndexOf(TagNames.Image) > 0 || BBIgnoredElements.IndexOf(typeof(IHtmlImageElement)) > 0;
+				return BBIgnoredTags.IndexOf(TagNames.Image) > -1 || BBIgnoredElements.IndexOf(typeof(IHtmlImageElement)) > -1;
+			}
+		}
+
+		private bool BBIgnoringHeaders
+		{
+			get
+			{
+				return BBIgnoredTags.IndexOf(TagNames.Header) > -1 || BBIgnoredElements.IndexOf(typeof(IHtmlHeadingElement)) > -1;
 			}
 		}
 
@@ -42,7 +51,7 @@ namespace LL.SCG.Markdown
 		{
 			get
 			{
-				return BBIgnoredElements.IndexOf(typeof(IHtmlOrderedListElement)) > 0 || BBIgnoredElements.IndexOf(typeof(IHtmlUnorderedListElement)) > 0 || BBIgnoredElements.IndexOf(typeof(IHtmlListItemElement)) > 0;
+				return BBIgnoredElements.IndexOf(typeof(IHtmlOrderedListElement)) > -1 || BBIgnoredElements.IndexOf(typeof(IHtmlUnorderedListElement)) > -1 || BBIgnoredElements.IndexOf(typeof(IHtmlListItemElement)) > -1;
 			}
 		}
 
@@ -83,7 +92,20 @@ namespace LL.SCG.Markdown
 				}
 			}
 
-			if(BBIgnoredTags.IndexOf(TagNames.Strong) < 0)
+			if(!BBIgnoringHeaders)
+			{
+				foreach (var element in doc.All.OfType<IHtmlHeadingElement>())
+				{
+					//Ugly placeholder for now.
+					var comparer = StringComparison.OrdinalIgnoreCase;
+					var text = element.OuterHtml;
+					text = text.Replace("<h1>", "[h1]", comparer).Replace("<h2>", "[h2]", comparer).Replace("<h3>", "[h3]", comparer).Replace("<h4>", "[h4]", comparer).Replace("<h5>", "[h5]", comparer).Replace("<h6>", "[h6]", comparer);
+					text = text.Replace("</h1>", "[/h1]", comparer).Replace("</h2>", "[/h2]", comparer).Replace("</h3>", "[/h3]", comparer).Replace("</h4>", "[/h4]", comparer).Replace("</h5>", "[/h5]", comparer).Replace("</h6>", "[/h6]", comparer);
+					element.OuterHtml = text;
+				}
+			}
+
+			if (BBIgnoredTags.IndexOf(TagNames.Strong) < 0)
 			{
 				foreach (var element in doc.GetElementsByTagName(TagNames.Strong))
 				{

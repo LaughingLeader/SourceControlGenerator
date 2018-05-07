@@ -16,8 +16,7 @@ namespace LL.SCG.Markdown
 		{
 			Name = "Larian Forums";
 
-			AddTagToIgnoreList(TagNames.Strike);
-			AddElementToIgnoreList(typeof(IHtmlHeadingElement));
+			AddTagToIgnoreList(TagNames.Strike, TagNames.Header);
 			AddElementToIgnoreList(typeof(IHtmlOrderedListElement));
 		}
 

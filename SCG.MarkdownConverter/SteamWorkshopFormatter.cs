@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using AngleSharp.Dom.Html;
+using AngleSharp.Html;
 using AngleSharp.Parser.Html;
 using Markdig;
 
@@ -14,6 +15,8 @@ namespace LL.SCG.Markdown
 		public SteamWorkshopFormatter() : base()
 		{
 			Name = "Steam Workshop";
+
+			AddTagToIgnoreList(TagNames.Header);
 		}
 
 		public override string ConvertHTML(string input)

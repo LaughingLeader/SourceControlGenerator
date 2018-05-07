@@ -233,7 +233,6 @@
     <Compile Include="Enum\EditorTextPropertyType.cs" />
     <Compile Include="Enum\FileBrowseType.cs" />
     <Compile Include="Extensions\EnumBindingSourceExtension.cs" />
-    <Compile Include="Extensions\StringExtensions.cs" />
     <Compile Include="FileGen\BackupGenerator.cs" />
     <Compile Include="FileGen\GitGenerator.cs" />
     <Compile Include="Core\DefaultPaths.cs" />
