@@ -166,7 +166,7 @@
       <DependentUpon>FileBrowseControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="Converters\EmptyStringVisibilityConverter.cs" />
-    <Compile Include="Converters\EnumDescriptionTypeConverter.cs" />
+    <Compile Include="Converters\EnumDescriptionConverter.cs" />
     <Compile Include="Converters\EnumToCollectionConverter.cs" />
     <Compile Include="Converters\FileValidationColorConverter.cs" />
     <Compile Include="Converters\FooterOutputColorConverter.cs" />

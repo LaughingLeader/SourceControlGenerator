@@ -29,7 +29,7 @@
 
 		<HierarchicalDataTemplate DataType="{x:Type vdata:MenuData}" ItemsSource="{Binding MenuItems}" >
 			<!--<TextBlock Text="{Binding Header, FallbackValue='Null'}"/>-->
-			<MenuItem Header="{Binding Header}" Command="{Binding ClickCommand}" InputGestureText="{Binding ShortcutText}"  UsesItemContainerTemplate="True" ItemContainerTemplateSelector="{StaticResource MenuItemContainerTemplateSelector}" />
+			<MenuItem Header="{Binding Header}" Command="{Binding ClickCommand}" InputGestureText="{Binding ShortcutText}" IsEnabled="{Binding IsEnabled}" UsesItemContainerTemplate="True" ItemContainerTemplateSelector="{StaticResource MenuItemContainerTemplateSelector}" />
 		</HierarchicalDataTemplate>
 		<DataTemplate DataType="{x:Type vdata:SeparatorData}">
 			<Separator />
@@ -45,8 +45,9 @@
 			<RowDefinition Height="*" />
 			<RowDefinition Height="Auto" />
 		</Grid.RowDefinitions>
-		<DockPanel Grid.Row="0">
-			<Menu DockPanel.Dock="Top" ItemsSource="{Binding MenuBarData.Menus}" UsesItemContainerTemplate="True" ItemContainerTemplateSelector="{StaticResource MenuItemContainerTemplateSelector}" MinHeight="10" />
+		<DockPanel Grid.Row="0" Background="Transparent">
+			<Menu DockPanel.Dock="Top" ItemsSource="{Binding MenuBarData.Menus}" Background="Transparent"
+				  UsesItemContainerTemplate="True" ItemContainerTemplateSelector="{StaticResource MenuItemContainerTemplateSelector}" MinHeight="10" Padding="0" />
 		</DockPanel>
 		<TabControl x:Name="MainTabsControl" Grid.Row="1" SelectionChanged="PreventInitialTextboxFocus" BorderThickness="0,1,0,0" Padding="0"
 			Visibility="{Binding ModuleIsLoaded, Converter={StaticResource BoolToVisibilityConverter}}" 
@@ -62,30 +63,72 @@
 
 				</Grid>
 			</TabItem>
-			<TabItem Header="Templates" Style="{StaticResource MainTabStyle}">
+			<TabItem Header="Template Editor" Style="{StaticResource MainTabStyle}">
 				<Grid>
 					<c:AddTemplateControl x:Name="NewTemplateControl" Grid.ZIndex="1" DataContext="{Binding}" Visibility="{Binding AddTemplateControlVisible, Converter={StaticResource BoolToVisibilityConverter}, FallbackValue=Collapsed}" TemplateData="{Binding NewTemplateData}" ConfirmCommand="{Binding AddTemplateCommand}" CancelCommand="{Binding CancelTemplateCommand}" />
-					<TabControl  Grid.ZIndex="0" TabStripPlacement="Left" Padding="0,5,0,0" >
+					<TabControl  Grid.ZIndex="0" TabStripPlacement="Right" Margin="2,0">
 						<TabControl.Template>
 							<ControlTemplate TargetType="TabControl">
 								<Grid>
 									<Grid.ColumnDefinitions>
+										<ColumnDefinition Width="*" />
 										<ColumnDefinition Width="Auto" />
-										<ColumnDefinition />
 									</Grid.ColumnDefinitions>
-									<ScrollViewer VerticalScrollBarVisibility="Auto" >
-										<TabPanel x:Name="HeaderPanel"
-											  Panel.ZIndex ="1" 
-											  KeyboardNavigation.TabIndex="1"
-											  Grid.Column="0"
-											  Grid.Row="0"
-											  Margin="2,2,2,0"
-											  IsItemsHost="true"/>
-									</ScrollViewer>
+									<Grid Grid.Column="1" Margin="4">
+										<Grid.RowDefinitions>
+											<RowDefinition Height="Auto" />
+											<RowDefinition Height="*" />
+										</Grid.RowDefinitions>
+										<TextBlock Text="Templates:" TextAlignment="Center" />
+										<ScrollViewer VerticalScrollBarVisibility="Auto" Grid.Row="1">
+											<ScrollViewer.Resources>
+												<Style TargetType="{x:Type TabItem}" BasedOn="{StaticResource {x:Type TabItem}}">
+													<Setter Property="Template">
+														<Setter.Value>
+															<ControlTemplate TargetType="TabItem">
+																<Border Name="Border" BorderThickness="1" BorderBrush="Black" CornerRadius="4" Margin="0">
+																	<ContentPresenter x:Name="ContentSite"
+																		VerticalAlignment="Center"
+																		HorizontalAlignment="Center"
+																		ContentSource="Header"
+																		Margin="10,2"/>
+																</Border>
+																<ControlTemplate.Triggers>
+																	<Trigger Property="IsSelected" Value="True">
+																		<Setter TargetName="Border" Property="Background" >
+																			<Setter.Value>
+																				<SolidColorBrush Color="#FFC6DDFF"/>
+																			</Setter.Value>
+																		</Setter>
+																	</Trigger>
+																	<Trigger Property="IsSelected" Value="False">
+																		<Setter TargetName="Border" Property="Background" >
+																			<Setter.Value>
+																				<SolidColorBrush Color="#FF999fc2"/>
+																			</Setter.Value>
+																		</Setter>
+																	</Trigger>
+																</ControlTemplate.Triggers>
+															</ControlTemplate>
+														</Setter.Value>
+													</Setter>
+
+												</Style>
+											</ScrollViewer.Resources>
+											<TabPanel x:Name="HeaderPanel"
+												  Panel.ZIndex ="1" 
+												  KeyboardNavigation.TabIndex="1"
+												  Grid.Column="0"
+												  Grid.Row="0"
+												  Margin="2,2,2,0"
+												  IsItemsHost="true">
+											</TabPanel>
+										</ScrollViewer>
+									</Grid>
 									<ContentPresenter x:Name="PART_SelectedContentHost"
 										  SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"
 										  Margin="{TemplateBinding Padding}"
-										  ContentSource="SelectedContent" Grid.Column="1"/>
+										  ContentSource="SelectedContent" Grid.Column="0"/>
 								</Grid>
 							</ControlTemplate>
 						</TabControl.Template>
@@ -296,7 +339,7 @@
 					</Style>
 					<Style x:Key="SettingsContentControlStyle" TargetType="ContentControl" >
 						<Setter Property="HorizontalAlignment" Value="Stretch" />
-						
+
 						<Style.Triggers>
 							<DataTrigger Binding="{Binding Converter={StaticResource SettingsAttributeValueControlConverter}}" Value="{x:Type c:FileBrowseControl}">
 								<Setter Property="ContentTemplate">
@@ -387,12 +430,18 @@
 				<ColumnDefinition Width="105" />
 				<ColumnDefinition Width="*" />
 			</Grid.ColumnDefinitions>
+			<Grid.Resources>
+				<Style TargetType="TextBox" BasedOn="{StaticResource {x:Type TextBox}}">
+					<Setter Property="Margin" Value="4" />
+				</Style>
+			</Grid.Resources>
 
-			<Border Grid.Column="0" BorderThickness="1" BorderBrush="{DynamicResource {x:Static SystemColors.ActiveBorderBrushKey}}" />
-			<Border Grid.Column="1" BorderThickness="1" BorderBrush="{DynamicResource {x:Static SystemColors.ActiveBorderBrushKey}}" />
-
-			<TextBox Grid.Column="0" x:Name="FooterOuputTextboxDate" Text="{Binding Path=FooterOutputDate, ElementName=MainAppWindow}" IsReadOnly="True" Margin="0" BorderThickness="0" TextAlignment="Center" Background="{x:Null}" />
-			<TextBox Grid.Column="1" x:Name="FooterOuputTextboxText" Text="{Binding Path=FooterOutputText, ElementName=MainAppWindow}" IsReadOnly="True" TextAlignment="Left" Foreground="{Binding Path=FooterOutputType, ElementName=MainAppWindow, Converter={StaticResource FooterOutputColorConverter}}" Margin="0" BorderThickness="0" Background="{x:Null}" Padding="4,0,0,0" />
+			<Border Grid.Column="0" BorderThickness="1,1,0,1" BorderBrush="{DynamicResource {x:Static SystemColors.ActiveBorderBrushKey}}">
+				<TextBlock x:Name="FooterOuputTextboxDate" Text="{Binding Path=FooterOutputDate, ElementName=MainAppWindow}" TextAlignment="Center" Background="{x:Null}" />
+			</Border>
+			<Border Grid.Column="1" BorderThickness="1" BorderBrush="{DynamicResource {x:Static SystemColors.ActiveBorderBrushKey}}">
+				<TextBlock x:Name="FooterOuputTextboxText" Text="{Binding Path=FooterOutputText, ElementName=MainAppWindow}" TextAlignment="Left" Foreground="{Binding Path=FooterOutputType, ElementName=MainAppWindow, Converter={StaticResource FooterOutputColorConverter}}" Background="{x:Null}" Padding="4,0,0,0" />
+			</Border>
 		</Grid>
 		<Grid Name="LockScreen" Grid.Row="0" Grid.RowSpan="3" Visibility="{Binding LockScreenVisibility, FallbackValue=Collapsed}" Opacity="0.75">
 			<Grid.Background>

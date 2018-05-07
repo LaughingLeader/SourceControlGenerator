@@ -213,6 +213,17 @@ namespace LL.SCG.Data
 			}
 		}
 
+		private BackupMode backupMode = BackupMode.Zip;
+
+		public BackupMode BackupMode
+		{
+			get { return backupMode; }
+			set
+			{
+				backupMode = value;
+				RaisePropertyChanged("BackupMode");
+			}
+		}
 
 		public virtual void SetToDefault(IModuleData Data)
 		{
@@ -222,6 +233,7 @@ namespace LL.SCG.Data
 			TemplateSettingsFile = DefaultPaths.ModuleTemplateSettingsFile(Data);
 			UserKeywordsFile = DefaultPaths.ModuleKeywordsFile(Data);
 			GitGenSettingsFile = DefaultPaths.ModuleGitGenSettingsFile(Data);
+			//BackupMode = BackupMode.Zip;
 		}
 
 		public void Init(IModuleData Data)

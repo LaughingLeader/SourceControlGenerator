@@ -59,6 +59,8 @@ namespace LL.SCG.Interfaces
 
 		string LastBackupPath { get; set; }
 
+		BackupMode BackupMode { get; set; }
+
 		//Methods
 
 		void Init(IModuleData Data);

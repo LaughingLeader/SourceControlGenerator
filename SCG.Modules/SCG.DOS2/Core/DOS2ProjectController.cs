@@ -62,6 +62,15 @@ namespace LL.SCG.Core
 			return sourceFolders;
 		}
 
+		public void OpenGitGeneratorWindow()
+		{
+			if(Data.CanGenerateGit)
+			{
+				var selectedProjects = Data.ManagedProjects.Where(p => p.Selected && p.GitGenerated == false).ToList<IProjectData>();
+				projectViewControl.MainWindow.OpenGitGenerationWindow(Data.GitGenerationSettings, selectedProjects, StartGitGeneration);
+			}
+		}
+
 		public void StartGitGeneration()
 		{
 			if(Data.CanGenerateGit)
@@ -329,6 +338,27 @@ namespace LL.SCG.Core
 			return false;
 		}
 
+		private bool openFolderDialogOpen = false;
+
+		public void BackupSelectedProjectsTo()
+		{
+			if(!openFolderDialogOpen)
+			{
+				openFolderDialogOpen = true;
+				if (String.IsNullOrWhiteSpace(Data.Settings.LastBackupPath))
+				{
+					Data.Settings.LastBackupPath = Data.Settings.BackupRootDirectory;
+				}
+
+				FileCommands.Load.OpenFolderDialog(App.Current.MainWindow, "Select Archive Export Location", Data.Settings.LastBackupPath, (path) =>
+				{
+					Data.Settings.LastBackupPath = path;
+					BackupSelectedProjects(path);
+					openFolderDialogOpen = false;
+				}, false);
+			}
+		}
+
 		private string targetBackupOutputDirectory = "";
 
 		public void BackupSelectedProjects(string OutputDirectory = "")
@@ -382,7 +412,7 @@ namespace LL.SCG.Core
 
 					AppController.Main.UpdateProgressLog("Creating archive...");
 
-					var backupSuccess = await BackupProjectAsync(project, targetBackupOutputDirectory, BackupMode.Zip, totalPercentageAmount);
+					var backupSuccess = await BackupProjectAsync(project, targetBackupOutputDirectory, Data.Settings.BackupMode, totalPercentageAmount);
 
 					if (backupSuccess)
 					{
@@ -797,9 +827,40 @@ namespace LL.SCG.Core
 			Data = new DOS2ModuleData();
 		}
 
+		public void SelectionChanged()
+		{
+			BackupSelectedMenuData.IsEnabled = BackupSelectedToMenuData.IsEnabled = Data.ProjectSelected;
+			StartGitGenerationMenuData.IsEnabled = Data.CanGenerateGit;
+		}
+
+		private MenuData BackupSelectedMenuData { get; set; }
+		private MenuData BackupSelectedToMenuData { get; set; }
+		private MenuData StartGitGenerationMenuData { get; set; }
+
 		public void Initialize(MainAppData mainAppData)
 		{
 			MainAppData = mainAppData;
+
+			BackupSelectedMenuData = new MenuData("DOS2.BackupSelected")
+			{
+				Header = "Backup Selected Projects",
+				ClickCommand = new ActionCommand(() => { BackupSelectedProjects(); }),
+				IsEnabled = false
+			};
+
+			BackupSelectedToMenuData = new MenuData("DOS2.BackupSelectedTo")
+			{
+				Header = "Backup Selected Projects To...",
+				ClickCommand = new ActionCommand(BackupSelectedProjectsTo),
+				IsEnabled = false
+			};
+
+			StartGitGenerationMenuData = new MenuData("DOS2.StartGitGenerator")
+			{
+				Header = "Start Git Generator...",
+				ClickCommand = new ActionCommand(OpenGitGeneratorWindow),
+				IsEnabled = false
+			};
 
 			MainAppData.MenuBarData.File.Register(Data.ModuleName,
 				new SeparatorData(),
@@ -811,7 +872,11 @@ namespace LL.SCG.Core
 						new MenuData("DOS2.RefreshAll", "Refresh All", new ActionCommand(RefreshAllProjects)) { ShortcutKey = System.Windows.Input.Key.F5 },
 						new MenuData("DOS2.RefreshManagedData", "Refresh Managed Data", new ActionCommand(RefreshModProjects)),
 					}
-				}
+				},
+				new SeparatorData(),
+				BackupSelectedMenuData,
+				BackupSelectedToMenuData,
+				StartGitGenerationMenuData
 			);
 		}
 

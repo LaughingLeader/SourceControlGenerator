@@ -6,6 +6,8 @@
 			 xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
 			 xmlns:local="clr-namespace:LL.SCG.DOS2.Controls"
 			 xmlns:core="clr-namespace:LL.SCG.DOS2.Core"
+			 xmlns:scg="clr-namespace:LL.SCG;assembly=SourceControlGenerator"
+			 xmlns:scgcore="clr-namespace:LL.SCG.Core;assembly=SourceControlGenerator"
 			 xmlns:c="clr-namespace:LL.SCG.Controls;assembly=SourceControlGenerator"
 			 xmlns:cb="clr-namespace:LL.SCG.Controls.Behavior;assembly=SourceControlGenerator"
 			 xmlns:cv="clr-namespace:LL.SCG.Converters;assembly=SourceControlGenerator"
@@ -426,17 +428,32 @@
 				</Border>
 				<GridSplitter x:Name="ProjectsDataGridSplitter" Grid.Row="2" Height="4" HorizontalAlignment="Stretch" Foreground="{x:Null}" Margin="0,-4,0,0"/>
 				<Grid x:Name="ProjectActions" Grid.Row="3" MaxHeight="30" VerticalAlignment="Top" Margin="0,5,0,0">
-					<StackPanel Orientation="Horizontal" HorizontalAlignment="Center" >
-						<StackPanel.Resources>
+					<Grid Margin="20,0">
+						<Grid.Resources>
 							<Style TargetType="{x:Type Button}" BasedOn="{StaticResource {x:Type Button}}">
 								<Setter Property="Margin" Value="4,2" />
 								<Setter Property="Padding" Value="12,2" />
 							</Style>
-						</StackPanel.Resources>
-						<Button x:Name="BackupButton" Content="Backup" Click="BackupButton_Click" IsEnabled="{Binding ProjectSelected}" />
-						<Button x:Name="BackupSeletedButton" Content="Backup To..." Click="BackupSelectedButton_Click" IsEnabled="{Binding ProjectSelected}" />
-						<Button x:Name="GitGenerationButton" Content="Run Git Generator..." Click="GitGenerationButton_Click" IsEnabled="{Binding CanGenerateGit}" />
-					</StackPanel>
+						</Grid.Resources>
+						<Grid.ColumnDefinitions>
+							<ColumnDefinition Width="*" />
+							<ColumnDefinition Width="*" />
+						</Grid.ColumnDefinitions>
+						<StackPanel Orientation="Horizontal">
+							<TextBlock Text="Backup Mode:" Margin="0,0,4,0" Foreground="Black" VerticalAlignment="Center" />
+							<ComboBox x:Name="BackupModeCombobox" ItemsSource="{Binding Source={scg:EnumBindingSource {x:Type scg:BackupMode}}}" SelectedValue="{Binding Settings.BackupMode, Mode=TwoWay}" Width="Auto" MaxHeight="{Binding ElementName=BackupButton, Path=ActualHeight}" >
+								<ComboBox.ToolTip>
+									<TextBlock Text="{Binding Settings.BackupMode, Converter={StaticResource EnumDescriptionConverter}, FallbackValue={x:Null}}" TextWrapping="Wrap" MaxWidth="200" Visibility="{Binding Path=Text, RelativeSource={RelativeSource Self}, Converter={StaticResource EmptyStringVisibilityConverter}}" />
+								</ComboBox.ToolTip>
+							</ComboBox>
+							<Button x:Name="BackupButton" Content="Backup" Click="BackupButton_Click" IsEnabled="{Binding ProjectSelected}" ToolTip="{x:Static core:DOS2Tooltips.Button_BackupSelected}" />
+							<Button x:Name="BackupSeletedButton" Content="Backup To..." Click="BackupSelectedButton_Click" IsEnabled="{Binding ProjectSelected}" ToolTip="{x:Static core:DOS2Tooltips.Button_BackupSelectedTo}" />
+						</StackPanel>
+						<StackPanel Grid.Column="1" Orientation="Horizontal" FlowDirection="RightToLeft">
+							<Button x:Name="GitGenerationButton" Content="Start Git Generator..." Click="GitGenerationButton_Click" IsEnabled="{Binding CanGenerateGit}" ToolTip="{x:Static core:DOS2Tooltips.Button_StartGitGenerator}" />
+						</StackPanel>
+						
+					</Grid>
 				</Grid>
 			</Grid>
 		</Grid>

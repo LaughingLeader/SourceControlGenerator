@@ -3,7 +3,7 @@ using LL.SCG.Converters;
 
 namespace LL.SCG.Enum
 {
-	[TypeConverter(typeof(EnumDescriptionTypeConverter))]
+	[TypeConverter(typeof(EnumDescriptionConverter))]
 	public enum EditorTextPropertyType
 	{
 		[Description("String")]

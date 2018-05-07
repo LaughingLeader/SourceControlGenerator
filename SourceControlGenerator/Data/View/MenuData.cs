@@ -36,6 +36,18 @@ namespace LL.SCG.Data.View
 			}
 		}
 
+		private bool isEnabled = true;
+
+		public bool IsEnabled
+		{
+			get { return isEnabled; }
+			set
+			{
+				isEnabled = value;
+				RaisePropertyChanged("IsEnabled");
+			}
+		}
+
 		private Key? shortcutKey;
 
 		public Key? ShortcutKey

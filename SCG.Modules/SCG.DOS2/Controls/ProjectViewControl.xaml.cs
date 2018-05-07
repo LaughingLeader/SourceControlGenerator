@@ -29,8 +29,8 @@ namespace LL.SCG.DOS2.Controls
 	/// </summary>
 	public partial class ProjectViewControl : UserControl
 	{
-		private DOS2ProjectController Controller { get; set; }
-		private MainWindow MainWindow { get; set; }
+		public DOS2ProjectController Controller { get; private set; }
+		public MainWindow MainWindow { get; private set; }
 
 		//private bool gridSplitterMoving = false;
 
@@ -164,6 +164,7 @@ namespace LL.SCG.DOS2.Controls
 
 			Controller.Data.ProjectSelected = projectSelected;
 			Controller.Data.CanGenerateGit = canGitGenerate;
+			Controller.SelectionChanged();
 		}
 
 		private async void DeselectSelectedRows()
@@ -236,22 +237,12 @@ namespace LL.SCG.DOS2.Controls
 
 		private void BackupSelectedButton_Click(object sender, RoutedEventArgs e)
 		{
-			if (String.IsNullOrWhiteSpace(Controller.Data.Settings.LastBackupPath))
-			{
-				Controller.Data.Settings.LastBackupPath = Controller.Data.Settings.BackupRootDirectory;
-			}
-
-			FileCommands.Load.OpenFolderDialog(MainWindow, "Select Archive Export Location", Controller.Data.Settings.LastBackupPath, (path) =>
-			{
-				Controller.Data.Settings.LastBackupPath = path;
-				Controller.BackupSelectedProjects(path);
-			}, false);
+			Controller.BackupSelectedProjectsTo();
 		}
 
 		private void GitGenerationButton_Click(object sender, RoutedEventArgs e)
 		{
-			var selectedProjects = Controller.Data.ManagedProjects.Where(p => p.Selected && p.GitGenerated == false).ToList<IProjectData>();
-			MainWindow.OpenGitGenerationWindow(Controller.Data.GitGenerationSettings, selectedProjects, Controller.StartGitGeneration);
+			Controller.OpenGitGeneratorWindow();
 		}
 
 		public bool HasFocus(Control aControl, bool aCheckChildren)

@@ -22,6 +22,7 @@
 	<cv:EmptyListVisibilityConverter x:Key="EmptyListVisibilityConverter"/>
 	<cv:EmptyStringVisibilityConverter x:Key="EmptyStringVisibilityConverter"/>
 	<cv:EmptyValueVisibilityConverter x:Key="EmptyValueVisibilityConverter"/>
+	<cv:EnumDescriptionConverter x:Key="EnumDescriptionConverter"/>
 	<cv:FooterOutputColorConverter x:Key="FooterOutputColorConverter"/>
 	<cv:ListViewStarWidthConverter x:Key="ListViewStarWidthConverter"/>
 	<cv:ObjectColorConverter x:Key="ObjectColorConverter"/>
@@ -55,6 +56,8 @@
 		</Style.Triggers>
 	</Style>
 
+	<!-- TabItem Style for Templates -->
+	
 	<!--  Button style -->
 	<Style TargetType="{x:Type Button}" x:Key="WindowButtonStyle">
 		<Setter Property="Template">
@@ -174,4 +177,5 @@
 			</Setter.Value>
 		</Setter>
 	</Style>
+	
 </ResourceDictionary>

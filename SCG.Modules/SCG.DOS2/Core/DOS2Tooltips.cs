@@ -21,5 +21,9 @@ namespace LL.SCG.DOS2.Core
 		public static string Button_DataFolderMods = "Open Mods Folder...";
 		public static string Button_DataFolderProject = "Open Project Folder...";
 		public static string Button_DataFolderPublic = "Open Public Folder...";
+
+		public static string Button_BackupSelected = "Backup selected projects to auto-generated project folders.";
+		public static string Button_BackupSelectedTo = "Backup selected projects to folder...";
+		public static string Button_StartGitGenerator = "Open the Git Generation window for selected projects...";
 	}
 }

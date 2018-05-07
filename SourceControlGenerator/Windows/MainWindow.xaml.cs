@@ -408,28 +408,31 @@ namespace LL.SCG.Windows
 
 		public void OpenGitGenerationWindow(GitGenerationSettings settings, List<IProjectData> selectedProjects, Action onConfirm)
 		{
-			onGitGenerationConfirmed = onConfirm;
+			if(!GitGenerationWindow.IsVisible)
+			{
+				onGitGenerationConfirmed = onConfirm;
 
-			if (gitGenerationWindow == null)
-			{
-				gitGenerationWindow = new GitGenerationWindow();
-			}
+				if (gitGenerationWindow == null)
+				{
+					gitGenerationWindow = new GitGenerationWindow();
+				}
 
-			if (selectedProjects != null && selectedProjects.Count > 0)
-			{
-				Controller.Data.LockScreenVisibility = Visibility.Visible;
-				gitGenerationWindow.Init(this, settings, selectedProjects);
-				gitGenerationWindow.Owner = this;
-				gitGenerationWindow.Show();
-			}
-			else
-			{
-				if (gitGenerationWindow.IsVisible) gitGenerationWindow.Hide();
-			}
+				if (selectedProjects != null && selectedProjects.Count > 0)
+				{
+					Controller.Data.LockScreenVisibility = Visibility.Visible;
+					gitGenerationWindow.Init(this, settings, selectedProjects);
+					gitGenerationWindow.Owner = this;
+					gitGenerationWindow.Show();
+				}
+				else
+				{
+					if (gitGenerationWindow.IsVisible) gitGenerationWindow.Hide();
+				}
 
-			if (settings.TemplateSettings.Count <= 0)
-			{
-				Log.Here().Error("Template settings are empty!");
+				if (settings.TemplateSettings.Count <= 0)
+				{
+					Log.Here().Error("Template settings are empty!");
+				}
 			}
 		}
 

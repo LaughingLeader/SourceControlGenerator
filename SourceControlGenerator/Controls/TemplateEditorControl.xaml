@@ -53,7 +53,7 @@
 						</MultiBinding>
 					</Button.CommandParameter>
 				</Button>
-				<Button x:Name="SaveAsButton" Content="Save As..." Command="{Binding SaveAsCommand}" Height="{Binding Path=Height, ElementName=TemplateFileBrowser, FallbackValue=20}" BorderThickness="1" BorderBrush="#FFABADB3" Margin="4,0,4,0" >
+				<Button x:Name="SaveAsButton" Content="Save As..." Command="{Binding SaveAsCommand}" Height="{Binding Path=Height, ElementName=TemplateFileBrowser, FallbackValue=20}" BorderThickness="1" BorderBrush="#FFABADB3" Margin="4,0,1,0" >
 					<Button.CommandParameter>
 						<MultiBinding Converter="{StaticResource SaveFileAsCommandDataConverter}">
 							<Binding Path="EditorText" />
