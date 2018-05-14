@@ -150,6 +150,10 @@
 				</Grid>
 			</TabItem>
 			<TabItem x:Name="KeywordsTab" Header="Keywords" Style="{StaticResource MainTabStyle}">
+				<TabItem.InputBindings>
+					<KeyBinding Command="{Binding DataContext.SaveKeywordsCommand, ElementName=MainAppWindow}" Gesture="CTRL+S" />
+					<KeyBinding Command="{Binding DataContext.SaveKeywordsAsCommand, ElementName=MainAppWindow}" Gesture="CTRL+Alt+S" />
+				</TabItem.InputBindings>
 				<TabItem.Resources>
 					<Style x:Key="KeywordBorderStyle" TargetType="Border" >
 						<!-- <Border BorderThickness="1" Grid.Row="0" BorderBrush="{DynamicResource }" Background="{DynamicResource {x:Static SystemColors.MenuBrushKey}}" >-->
@@ -223,10 +227,11 @@
 								</Style>
 							</StackPanel.Resources>
 							<c:FileBrowseControl x:Name="KeywordFileBrowser" OpenFileText="Select Keywords File" FileLocationText="{Binding Settings.UserKeywordsFile, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-												OnOpen="{Binding LoadKeywords}" Width="400" MaxWidth="400" Margin="0,0,2,0" />
+												OnOpen="{Binding LoadKeywords}" Filters="{x:Static core:CommonFileFilters.JsonList}"
+												 Width="400" MaxWidth="400" Margin="0,0,2,0" />
 
-							<Button x:Name="SaveKeywordsButton" Content="Save" Click="SaveKeywordsButton_Click" />
-							<Button x:Name="SaveAsKeywordsButton" Content="Save As..." Click="SaveAsKeywordsButton_Click" />
+							<Button x:Name="SaveKeywordsButton" Content="Save" Command="{Binding DataContext.SaveKeywordsCommand, ElementName=MainAppWindow}" />
+							<Button x:Name="SaveAsKeywordsButton" Content="Save As..." Command="{Binding DataContext.SaveKeywordsAsCommand, ElementName=MainAppWindow}" />
 							<Button Content="Default..." Click="KeywordsList_Default_Click" ToolTip="Reset Keywords to Default" />
 						</StackPanel>
 					</Grid>
@@ -309,15 +314,8 @@
 					</ScrollViewer>
 					<Grid Grid.Row="2" x:Name="KeywordsFooterControls">
 						<StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Orientation="Horizontal">
-							<StackPanel.Resources>
-								<Style TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
-									<Setter Property="Margin" Value="1,0" />
-									<Setter Property="Padding" Value="4,2" />
-									<Setter Property="Width" Value="55" />
-								</Style>
-							</StackPanel.Resources>
 							<Button Content="Add" Click="KeywordsList_Add_Click" ToolTip="Add New Keyword"/>
-							<Button Content="Remove" Click="KeywordsList_Remove_Click" ToolTip="Remove Last Keyword" />
+							<Button Content="Remove Last" Click="KeywordsList_Remove_Click" ToolTip="Remove Last Keyword" />
 						</StackPanel>
 					</Grid>
 				</Grid>

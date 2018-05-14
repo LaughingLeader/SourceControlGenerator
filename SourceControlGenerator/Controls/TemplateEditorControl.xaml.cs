@@ -29,7 +29,11 @@ namespace LL.SCG.Controls
 		public TemplateEditorData TemplateData
 		{
 			get { return (TemplateEditorData)GetValue(DataProperty); }
-			set { SetValue(DataProperty, value); }
+			set
+			{
+				SetValue(DataProperty, value);
+				this.DataContext = TemplateData;
+			}
 		}
 
 		// Using a DependencyProperty as the backing store for TemplateData.  This enables animation, styling, binding, etc...
@@ -110,6 +114,11 @@ namespace LL.SCG.Controls
 		private void TestClick(object sender, RoutedEventArgs e)
 		{
 			Log.Here().Important("Clicked!");
+		}
+
+		private void SaveButton_Click(object sender, RoutedEventArgs e)
+		{
+			
 		}
 	}
 }

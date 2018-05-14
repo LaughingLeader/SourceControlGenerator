@@ -48,7 +48,7 @@
 			<c:FileBrowseControl x:Name="InputOpenFileBrowser" OpenFileText="Open file as input..." BrowseType="File" BrowseMode="Open" FileLocationText="{Binding SingleModeLastFileInputPath, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
 					LastFileLocation="{Binding SingleModeLastFileInputPath, Mode=OneTime}"
 					BrowseToolTip="{x:Static core:TooltipText.MarkdownConverterSingleModeInputFileBrowser}"
-					Filters="{x:Static c:CommonFileFilters.MarkdownConverterFilesList}" OnOpen="{Binding OpenInputFileCommand}"
+					Filters="{x:Static core:CommonFileFilters.MarkdownConverterFilesList}" OnOpen="{Binding OpenInputFileCommand}"
 					Width="Auto" MinHeight="22" Margin="0,0,4,0" />
 			<StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center" behavior:MarginSetter.Margin="4,0,4,0" ToolTip="{x:Static core:TooltipText.MarkdownConverterModeShortcut}">
 				<TextBlock Text="Mode:" TextAlignment="Left" VerticalAlignment="Center"/>
@@ -82,7 +82,7 @@
 					<c:FileBrowseControl x:Name="SingleModeFileBrowser" OpenFileText="Save output to..." BrowseType="File" BrowseMode="Save" FileLocationText="{Binding SingleModeLastFileExportPath, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
 						LastFileLocation="{Binding SingleModeLastFileExportPath, Mode=OneTime}"
 						DefaultFileName="{Binding SingleModeDefaultFileName}" BrowseToolTip="{x:Static core:TooltipText.MarkdownConverterSingleModeOutputFileBrowser}"
-						DefaultExt=".txt" Filters="{x:Static c:CommonFileFilters.MarkdownConverterFilesList}" OnOpen="{Binding OpenInputFileCommand}"
+						DefaultExt=".txt" Filters="{x:Static core:CommonFileFilters.MarkdownConverterFilesList}" OnOpen="{Binding OpenInputFileCommand}"
 						Width="Auto" MinHeight="22" />
 					<Button x:Name="SingleModeSaveButton" Grid.Column="1" Content="Export" Command="{Binding ExportSingleCommand}" IsEnabled="{Binding CanExport}" Margin="4,0,0,0" MaxHeight="{Binding Path=Height, ElementName=SingleModeFileBrowser}" />
 				</Grid>
@@ -208,7 +208,7 @@
 									<TextBlock Text="{Binding Name}" Grid.Column="1" TextAlignment="Left" VerticalAlignment="Center" Margin="4" />
 									<c:FileBrowseControl OpenFileText="{Binding OpenFileText}" BrowseType="File" BrowseMode="Save" FileLocationText="{Binding FilePath, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" 
 											LastFileLocation="{Binding LastPath}" DefaultFileName="{Binding DefaultFileName}"
-											DefaultExt="{Binding DefaultFileExtension}" Filters="{x:Static c:CommonFileFilters.MarkdownConverterFilesList}"
+											DefaultExt="{Binding DefaultFileExtension}" Filters="{x:Static core:CommonFileFilters.MarkdownConverterFilesList}"
 											OnOpen="{Binding OnFilePathSet}" Grid.Column="2" Margin="4" BrowseToolTip="{x:Static core:TooltipText.MarkdownConverterBatchModeExportFileBrowser}"
 											 />
 									<Button Content="Preview" Command="{Binding DataContext.PreviewCommand, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}}" CommandParameter="{Binding Formatter}" IsEnabled="{Binding DataContext.CanPreview, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}}" Grid.Column="3" Margin="4" />

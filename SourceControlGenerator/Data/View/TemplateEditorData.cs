@@ -18,7 +18,7 @@ using LL.SCG.Interfaces;
 
 namespace LL.SCG.Data.View
 {
-	public class TemplateEditorData : PropertyChangedBase
+	public class TemplateEditorData : PropertyChangedBase, ISaveCommandData
 	{
 		private IModuleData parentData;
 
@@ -223,6 +223,11 @@ namespace LL.SCG.Data.View
 			}
 		}
 
+		public ISaveCommandData SaveCommandParameter => this;
+
+		//ISaveCommandData
+		public string Content => EditorText;
+
 		public bool IsValid
 		{
 			get
@@ -234,7 +239,6 @@ namespace LL.SCG.Data.View
 				return false;
 			}
 		}
-
 
 		public void SetToDefault()
 		{
@@ -411,7 +415,7 @@ namespace LL.SCG.Data.View
 			SaveCommand = new SaveFileCommand(OnSave, OnSaveAs);
 			SaveAsCommand = new SaveFileAsCommand(OnSaveAs);
 
-			if(!File.Exists(FilePath) && FileCommands.IsValidPath(FilePath) && !String.IsNullOrWhiteSpace(EditorText))
+			if (!File.Exists(FilePath) && FileCommands.IsValidPath(FilePath) && !String.IsNullOrWhiteSpace(EditorText))
 			{
 				FileCommands.WriteToFile(filePath, EditorText);
 			}

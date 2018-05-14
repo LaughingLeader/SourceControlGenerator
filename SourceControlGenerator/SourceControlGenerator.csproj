@@ -189,6 +189,7 @@
     <Compile Include="Converters\StringToFilterConverter.cs" />
     <Compile Include="Converters\TextWrapToScrollBarVisibilityConverter.cs" />
     <Compile Include="Converters\VisibleLogsConverter.cs" />
+    <Compile Include="Core\CommonFileFilters.cs" />
     <Compile Include="Core\MenuID.cs" />
     <Compile Include="Data\App\AppSettingsData.cs" />
     <Compile Include="Data\App\JunctionData.cs" />
@@ -214,7 +215,6 @@
     <Compile Include="Interfaces\IModuleData.cs" />
     <Compile Include="Interfaces\IProjectData.cs" />
     <Compile Include="Data\App\TemplateFileData.cs" />
-    <Compile Include="Data\Command\SaveFileCommandData.cs" />
     <Compile Include="Core\TooltipText.cs" />
     <Compile Include="Commands\ParameterCommand.cs" />
     <Compile Include="Commands\ActionCommand.cs" />
@@ -246,6 +246,7 @@
     <Compile Include="Controls\ListViewLayoutManager\ListViewLayoutManager.cs" />
     <Compile Include="Controls\ListViewLayoutManager\ProportionalColumn.cs" />
     <Compile Include="Controls\ListViewLayoutManager\RangeColumn.cs" />
+    <Compile Include="Interfaces\ISaveCommandData.cs" />
     <Compile Include="Modules\Loader.cs" />
     <Compile Include="ThemeSystem\ThemeController.cs" />
     <Compile Include="Core\AppController.cs" />

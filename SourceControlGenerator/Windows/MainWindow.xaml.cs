@@ -343,47 +343,9 @@ namespace LL.SCG.Windows
 			}
 		}
 
-		private void SaveKeywordsButton_Click(object sender, RoutedEventArgs e)
-		{
-			if (Data != null && Data.ModuleSettings != null)
-			{
-				if (FileCommands.Save.SaveUserKeywords(Data))
-				{
-					FooterLog("Saved user keywords to {0}", Data.ModuleSettings.UserKeywordsFile);
-				}
-				else
-				{
-					FooterLog("Error saving Keywords to {0}", Data.ModuleSettings.UserKeywordsFile);
-				}
-			}
-		}
-
-		private void OnKeywordsSaveAs(bool success, string path)
-		{
-			if (success)
-			{
-				if(FileCommands.PathIsRelative(path))
-				{
-					path = Common.Functions.GetRelativePath.RelativePathGetter.Relative(Directory.GetCurrentDirectory(), path);
-				}
-				Data.ModuleSettings.UserKeywordsFile = path;
-				MainWindow.FooterLog("Saved Keywords to {0}", path);
-			}
-			else
-			{
-				MainWindow.FooterLog("Error saving Keywords to {0}", path);
-			}
-		}
-
-		private void SaveAsKeywordsButton_Click(object sender, RoutedEventArgs e)
-		{
-			string json = JsonConvert.SerializeObject(Data.UserKeywords, Newtonsoft.Json.Formatting.Indented);
-			FileCommands.Save.OpenDialogAndSave(this, "Save Keywords", Data.ModuleSettings.UserKeywordsFile, json, OnKeywordsSaveAs);
-		}
-
 		private void OpenKeywordsButton_Click(object sender, RoutedEventArgs e)
 		{
-			FileCommands.Load.OpenFileDialog(this, "Open Keywords", Data.ModuleSettings.UserKeywordsFile, (path) => { FileCommands.Load.LoadUserKeywords(Data, path); });
+			FileCommands.Load.OpenFileDialog(this, "Open Keywords", Data.ModuleSettings.UserKeywordsFile, (path) => { FileCommands.Load.LoadUserKeywords(Data, path); }, CommonFileFilters.Json);
 		}
 
 		private void KeywordsList_Add_Click(object sender, RoutedEventArgs e)

@@ -5,7 +5,6 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Data;
 using System.Windows.Input;
-using LL.SCG.Data.Command;
 using Newtonsoft.Json;
 
 namespace LL.SCG.Commands
@@ -16,19 +15,23 @@ namespace LL.SCG.Commands
 
 		public bool OpenSaveAsOnDefault { get; set; }
 
-		public override void Execute(object parameter)
+		public override void ExecuteSave(object parameter)
 		{
-			if (parameter != null && parameter is SaveFileCommandData data)
+			if (parameter != null && parameter is ISaveCommandData data)
 			{
 				if(OpenSaveAsOnDefault && data.DefaultFilePath == data.FilePath)
 				{
-					FileCommands.Save.OpenDialogAndSave(App.Current.MainWindow, data.DialogTitle, data.FilePath, data.Content, this.OnSaveAs, data.FileName, data.DefaultFilePath);
+					FileCommands.Save.OpenDialogAndSave(App.Current.MainWindow, data.SaveAsText, data.FilePath, data.Content, this.OnSaveAs, data.Filename, data.DefaultFilePath);
 				}
 				else
 				{
 					bool success = FileCommands.WriteToFile(data.FilePath, data.Content);
 					OnSave?.Invoke(success);
 				}
+			}
+			else
+			{
+				Log.Here().Error("Parameter is not SaveFileCommandData!");
 			}
 		}
 

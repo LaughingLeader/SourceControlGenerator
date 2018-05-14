@@ -11,6 +11,7 @@ using System.Windows.Input;
 using System.Xml.Linq;
 using LL.SCG.Collections;
 using LL.SCG.Controls;
+using LL.SCG.Core;
 using LL.SCG.Data;
 using LL.SCG.Data.View;
 using LL.SCG.Interfaces;
@@ -35,15 +36,34 @@ namespace LL.SCG.Commands
 
 		private bool SaveAppSettings = false;
 
-		public void OpenFileDialog(Window ParentWindow, string Title, string FilePath, Action<string> OnFileSelected)
+		public void OpenFileDialog(Window ParentWindow, string Title, string FilePath, Action<string> OnFileSelected, params FileBrowserFilter[] Filters)
 		{
-			OpenFileDialog fileDialog = new OpenFileDialog();
+			var fileDialog = new CommonOpenFileDialog();
 			fileDialog.Title = Title;
 			fileDialog.InitialDirectory = Directory.GetParent(FilePath).FullName;
-			fileDialog.FileName = Path.GetFileName(FilePath);
+			fileDialog.DefaultFileName = Path.GetFileName(FilePath);
 
-			Nullable<bool> result = fileDialog.ShowDialog(ParentWindow);
-			if (result == true)
+			if (Filters != null)
+			{
+				if (Filters.Length <= 0)
+				{
+					fileDialog.Filters.Add(new CommonFileDialogFilter(CommonFileFilters.All.Name, CommonFileFilters.All.Values));
+				}
+				else
+				{
+					foreach (var filter in Filters)
+					{
+						fileDialog.Filters.Add(new CommonFileDialogFilter(filter.Name, filter.Values));
+					}
+				}
+			}
+			else
+			{
+				fileDialog.Filters.Add(new CommonFileDialogFilter(CommonFileFilters.All.Name, CommonFileFilters.All.Values));
+			}
+
+			var result = fileDialog.ShowDialog();
+			if (result == CommonFileDialogResult.Ok)
 			{
 				OnFileSelected?.Invoke(fileDialog.FileName);
 			}
@@ -330,8 +350,6 @@ namespace LL.SCG.Commands
 		{
 			if (!String.IsNullOrEmpty(filePath) && File.Exists(filePath))
 			{
-				Log.Here().Important("Deserializing source control data.");
-
 				try
 				{
 					SourceControlData data = JsonConvert.DeserializeObject<SourceControlData>(File.ReadAllText(filePath));

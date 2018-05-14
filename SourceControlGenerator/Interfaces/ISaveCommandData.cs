@@ -1,0 +1,17 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace LL.SCG
+{
+	public interface ISaveCommandData
+	{
+		string Filename { get; set; }
+		string FilePath { get; set; }
+		string DefaultFilePath { get; set; }
+		string Content { get; }
+		string SaveAsText { get; set; }
+	}
+}

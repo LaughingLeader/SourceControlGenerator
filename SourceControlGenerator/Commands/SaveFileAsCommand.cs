@@ -6,37 +6,10 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Data;
 using System.Windows.Input;
-using LL.SCG.Data.Command;
 using Newtonsoft.Json;
 
 namespace LL.SCG.Commands
 {
-	public class SaveFileAsCommandDataConverter : IMultiValueConverter
-	{
-		public object Convert(object[] values, Type targetType, object parameter, System.Globalization.CultureInfo culture)
-		{
-			if (values != null)
-			{
-				var commandData = new SaveFileCommandData();
-
-				if (values.Length >= 0) commandData.Content = values[0]?.ToString();
-				if (values.Length > 1) commandData.DialogTitle = values[1]?.ToString();
-				if (values.Length >= 2) commandData.FileName = values[2]?.ToString();
-				if (values.Length >= 3) commandData.FilePath = values[3]?.ToString();
-				if (values.Length >= 4) commandData.DefaultFilePath = values[4]?.ToString();
-
-				return commandData;
-			}
-			
-			return null;
-		}
-
-		public object[] ConvertBack(object value, Type[] targetTypes, object parameter, System.Globalization.CultureInfo culture)
-		{
-			throw new NotImplementedException();
-		}
-	}
-
 	public class SaveFileAsCommand : BaseCommand
 	{
 		private Action<bool, string> onSaveAs;
@@ -53,9 +26,9 @@ namespace LL.SCG.Commands
 
 		public override bool CanExecute(object parameter)
 		{
-			if(parameter != null && FileCommands.Save != null)
+			if (parameter != null && FileCommands.Save != null)
 			{
-				if(parameter is SaveFileCommandData data)
+				if(parameter is ISaveCommandData data)
 				{
 					//return FileCommands.IsValidPath(data.FilePath);
 					return true;
@@ -64,15 +37,20 @@ namespace LL.SCG.Commands
 			return false;
 		}
 
-		public new virtual void Execute(object parameter)
+		public override void Execute(object parameter)
 		{
-			if (parameter != null && parameter is SaveFileCommandData data)
+			ExecuteSave(parameter);
+		}
+
+		public virtual void ExecuteSave(object parameter)
+		{
+			if (parameter != null && parameter is ISaveCommandData data)
 			{
 				Log.Here().Important("Attempting to save file: {0}", data.FilePath);
-				if (String.IsNullOrEmpty(data.DialogTitle)) data.DialogTitle = "Save File As";
+				if (String.IsNullOrEmpty(data.SaveAsText)) data.SaveAsText = "Save File As";
 				if (data.Content != null)
 				{
-					FileCommands.Save.OpenDialogAndSave(App.Current.MainWindow, data.DialogTitle, data.FilePath, data.Content, OnSaveAs, data.FileName, data.DefaultFilePath);
+					FileCommands.Save.OpenDialogAndSave(App.Current.MainWindow, data.SaveAsText, data.FilePath, data.Content, OnSaveAs, data.Filename, data.DefaultFilePath);
 				}
 			}
 		}

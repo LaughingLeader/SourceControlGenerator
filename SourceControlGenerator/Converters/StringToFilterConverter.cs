@@ -8,6 +8,7 @@ using System.Windows;
 using System.Windows.Data;
 using System.Windows.Media;
 using LL.SCG.Controls;
+using LL.SCG.Core;
 
 namespace LL.SCG.Converters
 {

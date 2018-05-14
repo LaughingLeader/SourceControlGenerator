@@ -23,6 +23,7 @@ using System.Globalization;
 using System.Windows.Input;
 using LL.SCG.Util;
 using System.Windows.Threading;
+using LL.SCG.Controls;
 
 namespace LL.SCG.Core
 {
@@ -579,6 +580,50 @@ namespace LL.SCG.Core
 			}
 		}
 
+		public void SaveKeywords()
+		{
+			if (Data.CurrentModuleData != null && Data.CurrentModuleData.ModuleSettings != null)
+			{
+				if (FileCommands.Save.SaveUserKeywords(Data.CurrentModuleData))
+				{
+					MainWindow.FooterLog("Saved user keywords to {0}", Data.CurrentModuleData.ModuleSettings.UserKeywordsFile);
+				}
+				else
+				{
+					MainWindow.FooterLog("Error saving Keywords to {0}", Data.CurrentModuleData.ModuleSettings.UserKeywordsFile);
+				}
+			}
+		}
+
+		public void SaveKeywordsAs()
+		{
+			if (Data.CurrentModuleData != null && Data.CurrentModuleData.ModuleSettings != null)
+			{
+				string json = JsonConvert.SerializeObject(Data.CurrentModuleData.UserKeywords, Newtonsoft.Json.Formatting.Indented);
+
+				var filename = Path.GetFileName(Data.CurrentModuleData.ModuleSettings.UserKeywordsFile);
+
+				FileCommands.Save.OpenDialogAndSave(mainWindow, "Save Keywords As...", Data.CurrentModuleData.ModuleSettings.UserKeywordsFile, json, OnKeywordsSaveAs, filename, "", CommonFileFilters.Json);
+			}
+		}
+
+		private void OnKeywordsSaveAs(bool success, string path)
+		{
+			if (success)
+			{
+				if (FileCommands.PathIsRelative(path))
+				{
+					path = Common.Functions.GetRelativePath.RelativePathGetter.Relative(Directory.GetCurrentDirectory(), path);
+				}
+				Data.CurrentModuleData.ModuleSettings.UserKeywordsFile = path;
+				MainWindow.FooterLog("Saved Keywords to {0}", path);
+			}
+			else
+			{
+				MainWindow.FooterLog("Error saving Keywords to {0}", path);
+			}
+		}
+
 		public void OnAppLoaded()
 		{
 			if(CurrentModule != null && CurrentModule.ModuleData != null)
@@ -666,6 +711,10 @@ namespace LL.SCG.Core
 			Log.AllCallback = AddLogMessage;
 
 			Data = new MainAppData();
+
+			Data.SaveKeywordsCommand = new ActionCommand(SaveKeywords);
+			Data.SaveKeywordsAsCommand = new ActionCommand(SaveKeywordsAs);
+
 			ProjectControllers = new Dictionary<string, IProjectController>();
 
 			OpenGitWebsiteCommand = new ActionCommand(() => { Helpers.Web.OpenUri("https://git-scm.com/downloads"); });

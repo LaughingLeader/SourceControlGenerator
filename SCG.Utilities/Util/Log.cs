@@ -131,11 +131,7 @@ namespace LL.SCG
 		public static bool debugMode = true;
 		public static bool traceActivity = true;
 		public static bool traceErrors = true;
-#if DEBUG
 		public static bool traceCaller = true;
-#else
-		public static bool traceCaller = false;
-#endif
 
 		public static LogContext Here([CallerMemberName] string MemberName = "", [CallerFilePath] string FilePath = "", [CallerLineNumber] int LineNumber = 0)
 		{

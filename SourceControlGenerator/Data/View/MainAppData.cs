@@ -138,6 +138,31 @@ namespace LL.SCG.Data.View
 			}
 		}
 
+		private ICommand saveKeywordsCommand;
+
+		public ICommand SaveKeywordsCommand
+		{
+			get { return saveKeywordsCommand; }
+			set
+			{
+				saveKeywordsCommand = value;
+				RaisePropertyChanged("SaveKeywordsCommand");
+			}
+		}
+
+		private ICommand saveKeywordsAsCommand;
+
+		public ICommand SaveKeywordsAsCommand
+		{
+			get { return saveKeywordsAsCommand; }
+			set
+			{
+				saveKeywordsAsCommand = value;
+				RaisePropertyChanged("SaveKeywordsAsCommand");
+			}
+		}
+
+
 		#region ProgressBar
 
 		private string progressTitle = "Processing...";

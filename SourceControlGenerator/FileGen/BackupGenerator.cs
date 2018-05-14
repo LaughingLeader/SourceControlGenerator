@@ -116,7 +116,8 @@ namespace LL.SCG.FileGen
 							if (incrementProgressAmount > 0) AppController.Main.UpdateProgressLog($"Searching repository for files to save.");
 							foreach (var filePath in files)
 							{
-								if (File.Exists(filePath) && !foldersToParse.Any(f => f.SourcePath == filePath))
+								//Log.Here().Important($"Checking file: {filePath}");
+								if (File.Exists(filePath))
 								{
 									var fileInfo = new FileInfo(filePath);
 									if (fileInfo != null) targetFiles.Add(fileInfo);

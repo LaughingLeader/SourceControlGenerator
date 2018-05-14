@@ -408,7 +408,7 @@ namespace LL.SCG.Core
 					int targetPercentage = amountPerTick * (i + 1);
 					int totalPercentageAmount = targetPercentage - AppController.Main.Data.ProgressValue;
 
-					Log.Here().Activity($"[Progress-Backup] Target percentage for this backup iteration is {targetPercentage} => {totalPercentageAmount}. Amount per tick is {amountPerTick}.");
+					//Log.Here().Activity($"[Progress-Backup] Target percentage for this backup iteration is {targetPercentage} => {totalPercentageAmount}. Amount per tick is {amountPerTick}.");
 
 					AppController.Main.UpdateProgressLog("Creating archive...");
 
@@ -467,6 +467,7 @@ namespace LL.SCG.Core
 			string archivePath = Path.Combine(OutputDirectory, archiveName);
 			string gitProjectDirectory = "";
 
+			/*
 			bool gitProjectDetected = false;
 
 			if (!String.IsNullOrEmpty(Data.Settings.GitRootDirectory))
@@ -479,10 +480,11 @@ namespace LL.SCG.Core
 					AppController.Main.UpdateProgressLog("Git repository detected.");
 				}
 			}
+			*/
 
 			var sourceFolders = PrepareDirectories(modProject, Data.Settings.DirectoryLayouts);
 
-			if (!gitProjectDetected)
+			if (!modProject.GitGenerated)
 			{
 				AppController.Main.UpdateProgressLog("Creating zip archive from project folders...");
 				//Log.Here().Activity($"Git project not found. Archiving project {modProject.ProjectName} from project folders directly.");
@@ -490,7 +492,9 @@ namespace LL.SCG.Core
 			}
 			else
 			{
-				if(mode == BackupMode.GitArchive)
+				gitProjectDirectory = Path.Combine(Data.Settings.GitRootDirectory, modProject.ProjectName);
+
+				if (mode == BackupMode.GitArchive)
 				{
 					AppController.Main.UpdateProgressLog("Running git archive command...");
 					return await GitGenerator.Archive(gitProjectDirectory, archivePath).ConfigureAwait(false);

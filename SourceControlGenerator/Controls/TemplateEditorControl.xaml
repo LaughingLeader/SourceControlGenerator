@@ -8,8 +8,12 @@
 			 mc:Ignorable="d" 
 			 d:DesignHeight="600" d:DesignWidth="500" x:Name="TemplateEditorMain" >
 	<UserControl.Resources>
-		<cmd:SaveFileAsCommandDataConverter x:Key="SaveFileAsCommandDataConverter"/>
+		
 	</UserControl.Resources>
+	<UserControl.InputBindings>
+		<KeyBinding Command="{Binding SaveCommand}" CommandParameter="{Binding SaveCommandParameter}" Gesture="CTRL+S" />
+		<KeyBinding Command="{Binding SaveAsCommand}" CommandParameter="{Binding SaveCommandParameter}" Gesture="CTRL+Alt+S" />
+	</UserControl.InputBindings>
 	<Grid x:Name="Editor_ParentGrid" Grid.Column="1">
 		<Grid.RowDefinitions>
 			<RowDefinition Height="Auto"/>
@@ -42,28 +46,8 @@
 					</Style>
 				</StackPanel.Resources>
 				<local:FileBrowseControl x:Name="TemplateFileBrowser" OpenFileText="{Binding OpenFileText}" FileLocationText="{Binding FilePath}" OnOpen="{Binding OpenCommand}" Width="400" MaxWidth="400" />
-				<Button x:Name="SaveButton" Content="Save" Command="{Binding SaveCommand}" Height="{Binding Path=Height, ElementName=TemplateFileBrowser, FallbackValue=22}" BorderThickness="1" BorderBrush="#FFABADB3" Margin="4,2,0,2" >
-					<Button.CommandParameter>
-						<MultiBinding Converter="{StaticResource SaveFileAsCommandDataConverter}">
-							<Binding Path="EditorText" />
-							<Binding Path="SaveAsText" />
-							<Binding Path="Filename" />
-							<Binding Path="FilePath" />
-							<Binding Path="DefaultFilePath" />
-						</MultiBinding>
-					</Button.CommandParameter>
-				</Button>
-				<Button x:Name="SaveAsButton" Content="Save As..." Command="{Binding SaveAsCommand}" Height="{Binding Path=Height, ElementName=TemplateFileBrowser, FallbackValue=20}" BorderThickness="1" BorderBrush="#FFABADB3" Margin="4,0,1,0" >
-					<Button.CommandParameter>
-						<MultiBinding Converter="{StaticResource SaveFileAsCommandDataConverter}">
-							<Binding Path="EditorText" />
-							<Binding Path="SaveAsText" />
-							<Binding Path="Filename" />
-							<Binding Path="FilePath" />
-							<Binding Path="DefaultFilePath" />
-						</MultiBinding>
-					</Button.CommandParameter>
-				</Button>
+				<Button x:Name="SaveButton" Content="Save" Command="{Binding SaveCommand}" CommandParameter="{Binding SaveCommandParameter}" Height="{Binding Path=Height, ElementName=TemplateFileBrowser, FallbackValue=22}" BorderThickness="1" BorderBrush="#FFABADB3" Margin="4,2,0,2" Click="SaveButton_Click" />
+				<Button x:Name="SaveAsButton" Content="Save As..." Command="{Binding SaveAsCommand}" CommandParameter="{Binding SaveCommandParameter}" Height="{Binding Path=Height, ElementName=TemplateFileBrowser, FallbackValue=20}" BorderThickness="1" BorderBrush="#FFABADB3" Margin="4,0,1,0" />
 			</StackPanel>
 		</Grid>
 		<Border BorderThickness="1" BorderBrush="Black" Grid.Row="1" Width="Auto">
