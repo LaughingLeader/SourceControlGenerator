@@ -6,7 +6,7 @@
 			 xmlns:local="clr-namespace:LL.SCG.Controls"
 			 xmlns:cmd="clr-namespace:LL.SCG.Commands"
 			 mc:Ignorable="d" 
-			 d:DesignHeight="600" d:DesignWidth="500" x:Name="TemplateEditorMain" >
+			 d:DesignHeight="600" d:DesignWidth="800" x:Name="TemplateEditorMain" >
 	<UserControl.Resources>
 		
 	</UserControl.Resources>
@@ -14,7 +14,7 @@
 		<KeyBinding Command="{Binding SaveCommand}" CommandParameter="{Binding SaveCommandParameter}" Gesture="CTRL+S" />
 		<KeyBinding Command="{Binding SaveAsCommand}" CommandParameter="{Binding SaveCommandParameter}" Gesture="CTRL+Alt+S" />
 	</UserControl.InputBindings>
-	<Grid x:Name="Editor_ParentGrid" Grid.Column="1">
+	<Grid x:Name="Editor_ParentGrid">
 		<Grid.RowDefinitions>
 			<RowDefinition Height="Auto"/>
 			<RowDefinition Height="*"/>
@@ -26,7 +26,7 @@
 				<ColumnDefinition Width="Auto" />
 				<ColumnDefinition Width="*"/>
 			</Grid.ColumnDefinitions>
-			<Label x:Name="TemplateLabel" Content="{Binding LabelText}" Width="Auto" HorizontalAlignment="Left" VerticalAlignment="Center" ToolTip="{Binding ToolTipText}">
+			<Label x:Name="TemplateLabel" Content="{Binding LabelText}" Width="Auto" HorizontalAlignment="Left" VerticalAlignment="Center" ToolTip="{Binding ToolTipText}" Margin="2,0">
 				<Label.Style>
 					<Style TargetType="Label" BasedOn="{StaticResource {x:Type Label}}">
 						<Setter Property="Foreground" Value="Black" />
@@ -38,17 +38,23 @@
 					</Style>
 				</Label.Style>
 			</Label>
-			<StackPanel Grid.Column="1" HorizontalAlignment="Right" x:Name="KeywordCommandsGrid" Orientation="Horizontal">
-				<StackPanel.Resources>
-					<Style TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
-						<Setter Property="Margin" Value="1,0" />
-						<Setter Property="Padding" Value="4,2" />
-					</Style>
-				</StackPanel.Resources>
-				<local:FileBrowseControl x:Name="TemplateFileBrowser" OpenFileText="{Binding OpenFileText}" FileLocationText="{Binding FilePath}" OnOpen="{Binding OpenCommand}" Width="400" MaxWidth="400" />
-				<Button x:Name="SaveButton" Content="Save" Command="{Binding SaveCommand}" CommandParameter="{Binding SaveCommandParameter}" Height="{Binding Path=Height, ElementName=TemplateFileBrowser, FallbackValue=22}" BorderThickness="1" BorderBrush="#FFABADB3" Margin="4,2,0,2" Click="SaveButton_Click" />
-				<Button x:Name="SaveAsButton" Content="Save As..." Command="{Binding SaveAsCommand}" CommandParameter="{Binding SaveCommandParameter}" Height="{Binding Path=Height, ElementName=TemplateFileBrowser, FallbackValue=20}" BorderThickness="1" BorderBrush="#FFABADB3" Margin="4,0,1,0" />
-			</StackPanel>
+			<Grid Grid.Column="1" HorizontalAlignment="Right">
+				<Grid.ColumnDefinitions>
+					<ColumnDefinition Width="*" />
+					<ColumnDefinition Width="Auto"/>
+				</Grid.ColumnDefinitions>
+				<local:FileBrowseControl x:Name="TemplateFileBrowser" OpenFileText="{Binding OpenFileText}" FileLocationText="{Binding FilePath}" OnOpen="{Binding OpenCommand}" />
+				<StackPanel Grid.Column="1" x:Name="KeywordCommandsGrid" Orientation="Horizontal" HorizontalAlignment="Right">
+					<StackPanel.Resources>
+						<Style TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+							<Setter Property="Margin" Value="1,0" />
+							<Setter Property="Padding" Value="4,2" />
+						</Style>
+					</StackPanel.Resources>
+					<Button x:Name="SaveButton" Content="Save" Command="{Binding SaveCommand}" CommandParameter="{Binding SaveCommandParameter}" Height="{Binding Path=Height, ElementName=TemplateFileBrowser, FallbackValue=22}" BorderThickness="1" BorderBrush="#FFABADB3" Margin="4,2,0,2" Click="SaveButton_Click" />
+					<Button x:Name="SaveAsButton" Content="Save As..." Command="{Binding SaveAsCommand}" CommandParameter="{Binding SaveCommandParameter}" Height="{Binding Path=Height, ElementName=TemplateFileBrowser, FallbackValue=20}" BorderThickness="1" BorderBrush="#FFABADB3" Margin="4,0,1,0" />
+				</StackPanel>
+			</Grid>
 		</Grid>
 		<Border BorderThickness="1" BorderBrush="Black" Grid.Row="1" Width="Auto">
 			<TextBox x:Name="TemplateText" Text="{Binding EditorText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Width="Auto" Height="Auto" Margin="0" Padding="0" Background="{DynamicResource {x:Static SystemColors.ControlLightLightBrushKey}}" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" AcceptsReturn="True" />

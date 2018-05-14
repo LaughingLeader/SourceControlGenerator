@@ -184,7 +184,8 @@ namespace LL.SCG.Controls
 			InitializeComponent();
 
 			Loaded += FileBrowseControl_Loaded;
-
+			SizeChanged += FileBrowseControl_Loaded;
+			//GotFocus += FileBrowseControl_Loaded;
 			//this.DataContext = this;
 		}
 
@@ -192,14 +193,7 @@ namespace LL.SCG.Controls
 		{
 			if (Filters == null) Filters = CommonFileFilters.DefaultFilters;
 
-			if (!String.IsNullOrEmpty(FileLocationText))
-			{
-				TextBox textBox = (TextBox)this.FindName("FilePathDisplay");
-				//Scroll to the end
-				textBox.CaretIndex = textBox.Text.Length;
-				var rect = textBox.GetRectFromCharacterIndex(textBox.CaretIndex);
-				textBox.ScrollToHorizontalOffset(rect.Right);
-			}
+			AutoScrollTextbox();
 		}
 
 		private void FileBrowseButton_Click(object sender, RoutedEventArgs e)
@@ -415,15 +409,28 @@ namespace LL.SCG.Controls
 				}
 			}
 
+			AutoScrollTextbox();
+		}
+
+		private async void AutoScrollTextbox()
+		{
 			if (!String.IsNullOrEmpty(FileLocationText))
 			{
-				Dispatcher.BeginInvoke((Action)(() =>
+				//await Task.Delay(500);
+
+				FilePathDisplay.CaretIndex = FilePathDisplay.Text.Length;
+				var rect = FilePathDisplay.GetRectFromCharacterIndex(FilePathDisplay.CaretIndex);
+				FilePathDisplay.ScrollToHorizontalOffset(rect.Right * 2);
+
+				/*
+				await Dispatcher.BeginInvoke((Action)(() =>
 				{
 					//Scroll to the end
-					FilePathDisplay.CaretIndex = FileLocationText.Length;
+					FilePathDisplay.CaretIndex = FilePathDisplay.Text.Length;
 					var rect = FilePathDisplay.GetRectFromCharacterIndex(FilePathDisplay.CaretIndex);
-					FilePathDisplay.ScrollToHorizontalOffset(rect.Right);
-				}), DispatcherPriority.Background);
+					FilePathDisplay.ScrollToHorizontalOffset(rect.Right * 2);
+				}), DispatcherPriority.ApplicationIdle);
+				*/
 			}
 		}
 

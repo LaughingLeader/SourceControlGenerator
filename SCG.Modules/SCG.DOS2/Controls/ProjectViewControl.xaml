@@ -449,7 +449,7 @@
 							<Button x:Name="BackupButton" Content="Backup" Click="BackupButton_Click" IsEnabled="{Binding ProjectSelected}" ToolTip="{x:Static core:DOS2Tooltips.Button_BackupSelected}" />
 							<Button x:Name="BackupSeletedButton" Content="Backup To..." Click="BackupSelectedButton_Click" IsEnabled="{Binding ProjectSelected}" ToolTip="{x:Static core:DOS2Tooltips.Button_BackupSelectedTo}" />
 						</StackPanel>
-						<StackPanel Grid.Column="1" Orientation="Horizontal" FlowDirection="RightToLeft">
+						<StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right" >
 							<Button x:Name="GitGenerationButton" Content="Start Git Generator..." Click="GitGenerationButton_Click" IsEnabled="{Binding CanGenerateGit}" ToolTip="{x:Static core:DOS2Tooltips.Button_StartGitGenerator}" />
 						</StackPanel>
 						

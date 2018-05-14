@@ -452,7 +452,7 @@ namespace LL.SCG.Windows
 
 		private void Tab_ResetFocus(object sender, EventArgs e)
 		{
-			if (sender is TabControl tabControl)
+			if (sender is TabControl || sender is TabItem)
 			{
 				Dispatcher.BeginInvoke((Action)(() =>
 				{

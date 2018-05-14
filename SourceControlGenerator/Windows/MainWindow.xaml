@@ -137,8 +137,9 @@
 							<DataTemplate DataType="{x:Type vdata:TemplateEditorData}">
 								<c:TemplateEditorControl DataContext="{Binding}" TemplateData="{Binding}" />
 							</DataTemplate>
-							<Style TargetType="{x:Type TabItem}" BasedOn="{StaticResource {x:Type TabItem}}">
+							<Style TargetType="{x:Type TabItem}">
 								<Setter Property="Header" Value="{Binding Path=Name}" />
+								<EventSetter Handler="Tab_ResetFocus" Event="GotFocus" />
 							</Style>
 						</TabControl.Resources>
 						<TabControl.ItemsSource>
