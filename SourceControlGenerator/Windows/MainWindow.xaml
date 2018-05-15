@@ -25,16 +25,7 @@
 			<c:TemplateKeywordControl DataContext="{Binding}" KeywordName="{Binding KeywordName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
 									  KeywordValue="{Binding KeywordValue, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
 		</DataTemplate>
-		<c:MenuItemContainerTemplateSelector x:Key="MenuItemContainerTemplateSelector" />
-
-		<HierarchicalDataTemplate DataType="{x:Type vdata:MenuData}" ItemsSource="{Binding MenuItems}" >
-			<!--<TextBlock Text="{Binding Header, FallbackValue='Null'}"/>-->
-			<MenuItem Header="{Binding Header}" Command="{Binding ClickCommand}" InputGestureText="{Binding ShortcutText}" IsEnabled="{Binding IsEnabled}" UsesItemContainerTemplate="True" ItemContainerTemplateSelector="{StaticResource MenuItemContainerTemplateSelector}" />
-		</HierarchicalDataTemplate>
-		<DataTemplate DataType="{x:Type vdata:SeparatorData}">
-			<Separator />
-		</DataTemplate>
-
+		
 		<Style TargetType="TabControl" BasedOn="{StaticResource {x:Type TabControl}}">
 			<EventSetter Event="SelectionChanged" Handler="Tab_ResetFocus" />
 		</Style>

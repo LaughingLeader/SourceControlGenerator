@@ -21,219 +21,227 @@
 		<KeyBinding Key="Tab" Modifiers="Shift" Command="{Binding NextModeCommand}" />
 		<KeyBinding Key="S" Modifiers="Ctrl" Command="{Binding SaveInputCommand}" />
 	</local:HideWindowBase.InputBindings>
-	<Grid Margin="8">
-		<Grid.Resources>
-			<Style TargetType="CheckBox" BasedOn="{StaticResource {x:Type CheckBox}}">
-				<EventSetter Event="Click" Handler="Control_InvokeDataSaving" />
-			</Style>
-			<Style TargetType="ComboBox" BasedOn="{StaticResource {x:Type ComboBox}}">
-				<EventSetter Event="SelectionChanged" Handler="Control_InvokeDataSaving" />
-			</Style>
-		</Grid.Resources>
+	<Grid Margin="8" >
 		<Grid.RowDefinitions>
 			<RowDefinition Height="Auto" />
 			<RowDefinition Height="*" />
-			<RowDefinition Height="Auto" />
 		</Grid.RowDefinitions>
-		<Grid.ColumnDefinitions>
-			<ColumnDefinition Width="*" />
-			<ColumnDefinition Width="*" />
-		</Grid.ColumnDefinitions>
-		<Grid Margin="4,4,8,4">
-			<Grid.ColumnDefinitions>
-				<ColumnDefinition Width="*"/>
-				<ColumnDefinition Width="Auto"/>
-				<ColumnDefinition Width="Auto"/>
-			</Grid.ColumnDefinitions>
-			<c:FileBrowseControl x:Name="InputOpenFileBrowser" OpenFileText="Open file as input..." BrowseType="File" BrowseMode="Open" FileLocationText="{Binding SingleModeLastFileInputPath, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
-					LastFileLocation="{Binding SingleModeLastFileInputPath, Mode=OneTime}"
-					BrowseToolTip="{x:Static core:TooltipText.MarkdownConverterSingleModeInputFileBrowser}"
-					Filters="{x:Static core:CommonFileFilters.MarkdownConverterFilesList}" OnOpen="{Binding OpenInputFileCommand}"
-					Width="Auto" MinHeight="22" Margin="0,0,4,0" />
-			<StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center" behavior:MarginSetter.Margin="4,0,4,0" ToolTip="{x:Static core:TooltipText.MarkdownConverterModeShortcut}">
-				<TextBlock Text="Mode:" TextAlignment="Left" VerticalAlignment="Center"/>
-				<ComboBox ItemsSource="{Binding Source={scg:EnumBindingSource {x:Type vdata:MarkdownConverterMode}}}" SelectedValue="{Binding Path=Mode, Mode=TwoWay}" Width="Auto" />
-			</StackPanel>
-			<StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center" >
-				<TextBlock Text="Input Type:" Margin="0,0,4,0" VerticalAlignment="Center" />
-				<ComboBox ItemsSource="{Binding Source={scg:EnumBindingSource {x:Type vdata:MarkdownInputType}}}" SelectedValue="{Binding Path=InputType, Mode=TwoWay}" Width="Auto" />
-			</StackPanel>
-		</Grid>
-
-		<Grid Grid.Column="1" Margin="8,0,0,0">
-			<Grid Visibility="{Binding SingleMode, FallbackValue=Visible}" >
-				<Grid.ColumnDefinitions>
-					<ColumnDefinition Width="1*" />
-					<ColumnDefinition Width="2*" />
-				</Grid.ColumnDefinitions>
-				<Grid VerticalAlignment="Center" Margin="0,4,4,4">
-					<Grid.ColumnDefinitions>
-						<ColumnDefinition Width="*" />
-						<ColumnDefinition Width="Auto" />
-					</Grid.ColumnDefinitions>
-					<ComboBox Width="Auto" ItemsSource="{Binding Formatters}" SelectedValue="{Binding SelectedFormatter, Mode=TwoWay}" DisplayMemberPath="Name" Height="{Binding Path=Height, ElementName=SingleModeFileBrowser}" />
-					<Button Grid.Column="1" Content="Preview" Command="{Binding PreviewSingleCommand}" IsEnabled="{Binding CanPreview}" Margin="4,0,0,0" Height="{Binding Path=Height, ElementName=SingleModeFileBrowser}" />
-				</Grid>
-				<Grid Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Center" Margin="4">
-					<Grid.ColumnDefinitions>
-						<ColumnDefinition Width="*" />
-						<ColumnDefinition Width="Auto" />
-					</Grid.ColumnDefinitions>
-					<c:FileBrowseControl x:Name="SingleModeFileBrowser" OpenFileText="Save output to..." BrowseType="File" BrowseMode="Save" FileLocationText="{Binding SingleModeLastFileExportPath, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
-						LastFileLocation="{Binding SingleModeLastFileExportPath, Mode=OneTime}"
-						DefaultFileName="{Binding SingleModeDefaultFileName}" BrowseToolTip="{x:Static core:TooltipText.MarkdownConverterSingleModeOutputFileBrowser}"
-						DefaultExt=".txt" Filters="{x:Static core:CommonFileFilters.MarkdownConverterFilesList}" OnOpen="{Binding OpenInputFileCommand}"
-						Width="Auto" MinHeight="22" />
-					<Button x:Name="SingleModeSaveButton" Grid.Column="1" Content="Export" Command="{Binding ExportSingleCommand}" IsEnabled="{Binding CanExport}" Margin="4,0,0,0" MaxHeight="{Binding Path=Height, ElementName=SingleModeFileBrowser}" />
-				</Grid>
-			</Grid>
-			<Grid HorizontalAlignment="Center" VerticalAlignment="Center" Visibility="{Binding BatchMode, FallbackValue=Collapsed}" >
-				<Button Content="Export All Selected" Command="{Binding BatchExportCommand}" IsEnabled="{Binding CanBatchExport}" />
-			</Grid>
-		</Grid>
-
-		<Grid Grid.Row="1" Grid.ColumnSpan="2">
-			<Grid.ColumnDefinitions>
-				<ColumnDefinition Width="*" />
-				<ColumnDefinition Width="{Binding Path=Mode, Converter={StaticResource MarkdownConverterModeToColumnWidthConverter}, ConverterParameter={x:Static vdata:MarkdownConverterMode.Batch}, FallbackValue='Auto', Mode=OneWay}" />
-				<ColumnDefinition Width="{Binding Path=Mode, Converter={StaticResource MarkdownConverterModeToColumnWidthConverter}, ConverterParameter={x:Static vdata:MarkdownConverterMode.Single}, FallbackValue='*', Mode=OneWay}" />
-			</Grid.ColumnDefinitions>
+		<Menu ItemsSource="{Binding TopMenus}" Background="Transparent"
+				  UsesItemContainerTemplate="True" ItemContainerTemplateSelector="{StaticResource MenuItemContainerTemplateSelector}" MinHeight="10" Padding="0" />
+		<Grid Grid.Row="1">
+			<Grid.Resources>
+				<Style TargetType="CheckBox" BasedOn="{StaticResource {x:Type CheckBox}}">
+					<EventSetter Event="Click" Handler="Control_InvokeDataSaving" />
+				</Style>
+				<Style TargetType="ComboBox" BasedOn="{StaticResource {x:Type ComboBox}}">
+					<EventSetter Event="SelectionChanged" Handler="Control_InvokeDataSaving" />
+				</Style>
+			</Grid.Resources>
 			<Grid.RowDefinitions>
 				<RowDefinition Height="Auto" />
 				<RowDefinition Height="*" />
+				<RowDefinition Height="Auto" />
 			</Grid.RowDefinitions>
-
-			<TextBlock Text="Input" TextAlignment="Center" Margin="4" />
-			<Grid Grid.Row="1" Grid.Column="0" Margin="0,0,8,0" >
-				<TabControl>
-					<TabControl.Resources>
-						<SolidColorBrush x:Key="WindowBackgroundBrush" Color="#FFF" />
-						<SolidColorBrush x:Key="SolidBorderBrush" Color="#888" />
-						<SolidColorBrush x:Key="DisabledForegroundBrush" Color="#888" />
-						<SolidColorBrush x:Key="DisabledBorderBrush" Color="#AAA" />
-					</TabControl.Resources>
-					<TabControl.Template>
-						<ControlTemplate TargetType="TabControl">
-							<Grid KeyboardNavigation.TabNavigation="Local">
-								<Grid.RowDefinitions>
-								<RowDefinition Height="Auto"/>
-								<RowDefinition Height="*"/>
-								</Grid.RowDefinitions>
-								<Grid.ColumnDefinitions>
-									<ColumnDefinition Width="*" />
-									<ColumnDefinition Width="Auto" />
-								</Grid.ColumnDefinitions>
-								<TabPanel 
-									Name="HeaderPanel"
-									Grid.Row="0"
-									Panel.ZIndex="1" 
-									Margin="2,0,4,-1" 
-									IsItemsHost="True"
-									KeyboardNavigation.TabIndex="1"
-									Background="Transparent" />
-								<Border 
-									Name="Border" 
-									Grid.Row="1" 
-									Grid.ColumnSpan="2"
-									Background="{StaticResource WindowBackgroundBrush}" 
-									BorderBrush="{StaticResource SolidBorderBrush}" 
-									BorderThickness="1" 
-									CornerRadius="2" 
-									KeyboardNavigation.TabNavigation="Local"
-									KeyboardNavigation.DirectionalNavigation="Contained"
-									KeyboardNavigation.TabIndex="2" >
-									<ScrollViewer Margin="0,1,0,0" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="{Binding TextWrapMode, Converter={StaticResource TextWrapToScrollBarVisibilityConverter}}">
-										<ContentPresenter 
-										 Name="PART_SelectedContentHost"
-										 ContentSource="SelectedContent" />
-									</ScrollViewer>
-								</Border>
-								<Grid Grid.Column="1">
-									<Grid.ColumnDefinitions>
-										<ColumnDefinition Width="*" />
-										<ColumnDefinition Width="Auto" />
-									</Grid.ColumnDefinitions>
-									<StackPanel Orientation="Horizontal" Margin="0,0,64,0">
-										<TextBlock Text="Text Wrap: "  VerticalAlignment="Center" />
-										<ComboBox ItemsSource="{Binding Source={scg:EnumBindingSource {x:Type TextWrapping}}}" SelectedValue="{Binding Path=TextWrapMode, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Width="Auto" VerticalAlignment="Center" />
-									</StackPanel>
-									<Button Grid.Column="1" Content="Save" ToolTip="{x:Static core:TooltipText.MarkdownConverterSaveInputFile}" IsEnabled="{Binding CanSaveInput}" Command="{Binding SaveInputCommand}" VerticalAlignment="Center" />
-								</Grid>
-							</Grid>
-							<ControlTemplate.Triggers>
-							  <Trigger Property="IsEnabled" Value="False">
-								<Setter Property="Foreground" Value="{StaticResource DisabledForegroundBrush}" />
-								<Setter TargetName="Border" Property="BorderBrush" Value="{StaticResource DisabledBorderBrush}" />
-							  </Trigger>
-							</ControlTemplate.Triggers>
-						</ControlTemplate>
-					</TabControl.Template>
-					<TabItem Header="Text" >
-						<TextBox TextWrapping="{Binding TextWrapMode, FallbackValue=Wrap}" Text="{Binding Input, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, FallbackValue=''}" AcceptsReturn="True" AcceptsTab="True" BorderThickness="0" />
-					</TabItem>
-					<TabItem>
-						<TabItem.Header>
-							<Label x:Name="InputPreviewLabel" Content="Preview" MouseLeftButtonDown="InputPreviewLabel_MouseLeftButtonDown" />
-						</TabItem.Header>
-						<markwpf:MarkdownViewer x:Name="MarkdownViewer" Markdown="{Binding Input}" BorderThickness="0">
-							<markwpf:MarkdownViewer.Resources>
-								<ResourceDictionary Source="pack://application:,,,/Markdig.Wpf;component/Themes/generic.xaml" />
-							</markwpf:MarkdownViewer.Resources>
-						</markwpf:MarkdownViewer>
-					</TabItem>
-				</TabControl>
+			<Grid.ColumnDefinitions>
+				<ColumnDefinition Width="*" />
+				<ColumnDefinition Width="*" />
+			</Grid.ColumnDefinitions>
+			<Grid Margin="4,4,8,4">
+				<Grid.ColumnDefinitions>
+					<ColumnDefinition Width="*"/>
+					<ColumnDefinition Width="Auto"/>
+					<ColumnDefinition Width="Auto"/>
+				</Grid.ColumnDefinitions>
+				<c:FileBrowseControl x:Name="InputOpenFileBrowser" OpenFileText="Open file as input..." BrowseType="File" BrowseMode="Open" FileLocationText="{Binding SingleModeLastFileInputPath, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+						LastFileLocation="{Binding SingleModeLastFileInputPath, Mode=OneTime}"
+						BrowseToolTip="{x:Static core:TooltipText.MarkdownConverterSingleModeInputFileBrowser}"
+						Filters="{x:Static core:CommonFileFilters.MarkdownConverterFilesList}" OnOpen="{Binding OpenInputFileCommand}"
+						Width="Auto" MinHeight="22" Margin="0,0,4,0" />
+				<StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center" behavior:MarginSetter.Margin="4,0,4,0" ToolTip="{x:Static core:TooltipText.MarkdownConverterModeShortcut}">
+					<TextBlock Text="Mode:" TextAlignment="Left" VerticalAlignment="Center"/>
+					<ComboBox ItemsSource="{Binding Source={scg:EnumBindingSource {x:Type vdata:MarkdownConverterMode}}}" SelectedValue="{Binding Path=Mode, Mode=TwoWay}" Width="Auto" />
+				</StackPanel>
+				<StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center" >
+					<TextBlock Text="Input Type:" Margin="0,0,4,0" VerticalAlignment="Center" />
+					<ComboBox ItemsSource="{Binding Source={scg:EnumBindingSource {x:Type vdata:MarkdownInputType}}}" SelectedValue="{Binding Path=InputType, Mode=TwoWay}" Width="Auto" />
+				</StackPanel>
 			</Grid>
 
-			<Grid Grid.Row="1" Grid.Column="1" >
+			<Grid Grid.Column="1" Margin="8,0,0,0">
+				<Grid Visibility="{Binding SingleMode, FallbackValue=Visible}" >
+					<Grid.ColumnDefinitions>
+						<ColumnDefinition Width="1*" />
+						<ColumnDefinition Width="2*" />
+					</Grid.ColumnDefinitions>
+					<Grid VerticalAlignment="Center" Margin="0,4,4,4">
+						<Grid.ColumnDefinitions>
+							<ColumnDefinition Width="*" />
+							<ColumnDefinition Width="Auto" />
+						</Grid.ColumnDefinitions>
+						<ComboBox Width="Auto" ItemsSource="{Binding Formatters}" SelectedValue="{Binding SelectedFormatter, Mode=TwoWay}" DisplayMemberPath="Name" Height="{Binding Path=Height, ElementName=SingleModeFileBrowser}" />
+						<Button Grid.Column="1" Content="Preview" Command="{Binding PreviewSingleCommand}" IsEnabled="{Binding CanPreview}" Margin="4,0,0,0" Height="{Binding Path=Height, ElementName=SingleModeFileBrowser}" />
+					</Grid>
+					<Grid Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Center" Margin="4">
+						<Grid.ColumnDefinitions>
+							<ColumnDefinition Width="*" />
+							<ColumnDefinition Width="Auto" />
+						</Grid.ColumnDefinitions>
+						<c:FileBrowseControl x:Name="SingleModeFileBrowser" OpenFileText="Save output to..." BrowseType="File" BrowseMode="Save" FileLocationText="{Binding SingleModeLastFileExportPath, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+							LastFileLocation="{Binding SingleModeLastFileExportPath, Mode=OneTime}"
+							DefaultFileName="{Binding SingleModeDefaultFileName}" BrowseToolTip="{x:Static core:TooltipText.MarkdownConverterSingleModeOutputFileBrowser}"
+							DefaultExt=".txt" Filters="{x:Static core:CommonFileFilters.MarkdownConverterFilesList}" OnOpen="{Binding OpenInputFileCommand}"
+							Width="Auto" MinHeight="22" />
+						<Button x:Name="SingleModeSaveButton" Grid.Column="1" Content="Export" Command="{Binding ExportSingleCommand}" IsEnabled="{Binding CanExport}" Margin="4,0,0,0" MaxHeight="{Binding Path=Height, ElementName=SingleModeFileBrowser}" />
+					</Grid>
+				</Grid>
+				<Grid HorizontalAlignment="Center" VerticalAlignment="Center" Visibility="{Binding BatchMode, FallbackValue=Collapsed}" >
+					<Button Content="Export All Selected" Command="{Binding BatchExportCommand}" IsEnabled="{Binding CanBatchExport}" />
+				</Grid>
+			</Grid>
+
+			<Grid Grid.Row="1" Grid.ColumnSpan="2">
+				<Grid.ColumnDefinitions>
+					<ColumnDefinition Width="*" />
+					<ColumnDefinition Width="{Binding Path=Mode, Converter={StaticResource MarkdownConverterModeToColumnWidthConverter}, ConverterParameter={x:Static vdata:MarkdownConverterMode.Batch}, FallbackValue='Auto', Mode=OneWay}" />
+					<ColumnDefinition Width="{Binding Path=Mode, Converter={StaticResource MarkdownConverterModeToColumnWidthConverter}, ConverterParameter={x:Static vdata:MarkdownConverterMode.Single}, FallbackValue='*', Mode=OneWay}" />
+				</Grid.ColumnDefinitions>
 				<Grid.RowDefinitions>
 					<RowDefinition Height="Auto" />
 					<RowDefinition Height="*" />
 				</Grid.RowDefinitions>
-				<ScrollViewer VerticalScrollBarVisibility="Auto" Visibility="{Binding BatchMode, FallbackValue=Collapsed}" BorderThickness="1" BorderBrush="Red" >
-					<ScrollViewer.Resources>
-						<!--- Makes the file browser column fit available space -->
-						<ColumnDefinition x:Key="FileBrowserColumn" Width="2*" />
-					</ScrollViewer.Resources>
-					<ItemsControl x:Name="BatchFormattersControl" ItemsSource="{Binding BatchFormatterData}" Margin="4,0,4,0" Grid.IsSharedSizeScope="True">
-						<ItemsControl.ItemTemplate>
-							<DataTemplate>
-								<Grid>
+
+				<TextBlock Text="Input" TextAlignment="Center" Margin="4" />
+				<Grid Grid.Row="1" Grid.Column="0" Margin="0,0,8,0" >
+					<TabControl>
+						<TabControl.Resources>
+							<SolidColorBrush x:Key="WindowBackgroundBrush" Color="#FFF" />
+							<SolidColorBrush x:Key="SolidBorderBrush" Color="#888" />
+							<SolidColorBrush x:Key="DisabledForegroundBrush" Color="#888" />
+							<SolidColorBrush x:Key="DisabledBorderBrush" Color="#AAA" />
+						</TabControl.Resources>
+						<TabControl.Template>
+							<ControlTemplate TargetType="TabControl">
+								<Grid KeyboardNavigation.TabNavigation="Local">
+									<Grid.RowDefinitions>
+									<RowDefinition Height="Auto"/>
+									<RowDefinition Height="*"/>
+									</Grid.RowDefinitions>
 									<Grid.ColumnDefinitions>
-										<ColumnDefinition Width="Auto" />
-										<ColumnDefinition SharedSizeGroup="Name" Width="Auto" />
-										<ColumnDefinition Width="{Binding Source={StaticResource FileBrowserColumn}}" />
+										<ColumnDefinition Width="*" />
 										<ColumnDefinition Width="Auto" />
 									</Grid.ColumnDefinitions>
-									<CheckBox IsChecked="{Binding Enabled, Mode=TwoWay}" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="4" />
-									<TextBlock Text="{Binding Name}" Grid.Column="1" TextAlignment="Left" VerticalAlignment="Center" Margin="4" />
-									<c:FileBrowseControl OpenFileText="{Binding OpenFileText}" BrowseType="File" BrowseMode="Save" FileLocationText="{Binding FilePath, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" 
-											LastFileLocation="{Binding LastPath}" DefaultFileName="{Binding DefaultFileName}"
-											DefaultExt="{Binding DefaultFileExtension}" Filters="{x:Static core:CommonFileFilters.MarkdownConverterFilesList}"
-											OnOpen="{Binding OnFilePathSet}" Grid.Column="2" Margin="4" BrowseToolTip="{x:Static core:TooltipText.MarkdownConverterBatchModeExportFileBrowser}"
-											 />
-									<Button Content="Preview" Command="{Binding DataContext.PreviewCommand, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}}" CommandParameter="{Binding Formatter}" IsEnabled="{Binding DataContext.CanPreview, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}}" Grid.Column="3" Margin="4" />
+									<TabPanel 
+										Name="HeaderPanel"
+										Grid.Row="0"
+										Panel.ZIndex="1" 
+										Margin="2,0,4,-1" 
+										IsItemsHost="True"
+										KeyboardNavigation.TabIndex="1"
+										Background="Transparent" />
+									<Border 
+										Name="Border" 
+										Grid.Row="1" 
+										Grid.ColumnSpan="2"
+										Background="{StaticResource WindowBackgroundBrush}" 
+										BorderBrush="{StaticResource SolidBorderBrush}" 
+										BorderThickness="1" 
+										CornerRadius="2" 
+										KeyboardNavigation.TabNavigation="Local"
+										KeyboardNavigation.DirectionalNavigation="Contained"
+										KeyboardNavigation.TabIndex="2" >
+										<ScrollViewer Margin="0,1,0,0" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="{Binding TextWrapMode, Converter={StaticResource TextWrapToScrollBarVisibilityConverter}}">
+											<ContentPresenter 
+											 Name="PART_SelectedContentHost"
+											 ContentSource="SelectedContent" />
+										</ScrollViewer>
+									</Border>
+									<Grid Grid.Column="1">
+										<Grid.ColumnDefinitions>
+											<ColumnDefinition Width="*" />
+											<ColumnDefinition Width="Auto" />
+										</Grid.ColumnDefinitions>
+										<StackPanel Orientation="Horizontal" Margin="0,0,64,0">
+											<TextBlock Text="Text Wrap: "  VerticalAlignment="Center" />
+											<ComboBox ItemsSource="{Binding Source={scg:EnumBindingSource {x:Type TextWrapping}}}" SelectedValue="{Binding Path=TextWrapMode, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Width="Auto" VerticalAlignment="Center" />
+										</StackPanel>
+										<Button Grid.Column="1" Content="Save" ToolTip="{x:Static core:TooltipText.MarkdownConverterSaveInputFile}" IsEnabled="{Binding CanSaveInput}" Command="{Binding SaveInputCommand}" VerticalAlignment="Center" />
+									</Grid>
 								</Grid>
-							</DataTemplate>
-						</ItemsControl.ItemTemplate>
-					</ItemsControl>
-				</ScrollViewer>
-				<Grid x:Name="BatchOutputPreview" Grid.Row="1" Visibility="{Binding BatchMode, FallbackValue=Collapsed}">
+								<ControlTemplate.Triggers>
+								  <Trigger Property="IsEnabled" Value="False">
+									<Setter Property="Foreground" Value="{StaticResource DisabledForegroundBrush}" />
+									<Setter TargetName="Border" Property="BorderBrush" Value="{StaticResource DisabledBorderBrush}" />
+								  </Trigger>
+								</ControlTemplate.Triggers>
+							</ControlTemplate>
+						</TabControl.Template>
+						<TabItem Header="Text" >
+							<TextBox TextWrapping="{Binding TextWrapMode, FallbackValue=Wrap}" Text="{Binding Input, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, FallbackValue=''}" AcceptsReturn="True" AcceptsTab="True" BorderThickness="0" />
+						</TabItem>
+						<TabItem>
+							<TabItem.Header>
+								<Label x:Name="InputPreviewLabel" Content="Preview" MouseLeftButtonDown="InputPreviewLabel_MouseLeftButtonDown" />
+							</TabItem.Header>
+							<markwpf:MarkdownViewer x:Name="MarkdownViewer" Markdown="{Binding Input}" BorderThickness="0">
+								<markwpf:MarkdownViewer.Resources>
+									<ResourceDictionary Source="pack://application:,,,/Markdig.Wpf;component/Themes/generic.xaml" />
+								</markwpf:MarkdownViewer.Resources>
+							</markwpf:MarkdownViewer>
+						</TabItem>
+					</TabControl>
+				</Grid>
+
+				<Grid Grid.Row="1" Grid.Column="1" >
 					<Grid.RowDefinitions>
 						<RowDefinition Height="Auto" />
 						<RowDefinition Height="*" />
 					</Grid.RowDefinitions>
-					<TextBlock Text="Output Preview" TextAlignment="Center" Margin="4" />
-					<Grid Grid.Row="1" Margin="8,0,0,0" >
-						<TextBox TextWrapping="{Binding TextWrapMode, FallbackValue=Wrap}" IsReadOnly="True" Text="{Binding Output, FallbackValue=''}" AcceptsReturn="True" AcceptsTab="True" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="{Binding TextWrapMode, Converter={StaticResource TextWrapToScrollBarVisibilityConverter}}" />
+					<ScrollViewer VerticalScrollBarVisibility="Auto" Visibility="{Binding BatchMode, FallbackValue=Collapsed}" BorderThickness="1" BorderBrush="Red" >
+						<ScrollViewer.Resources>
+							<!--- Makes the file browser column fit available space -->
+							<ColumnDefinition x:Key="FileBrowserColumn" Width="2*" />
+						</ScrollViewer.Resources>
+						<ItemsControl x:Name="BatchFormattersControl" ItemsSource="{Binding BatchFormatterData}" Margin="4,0,4,0" Grid.IsSharedSizeScope="True">
+							<ItemsControl.ItemTemplate>
+								<DataTemplate>
+									<Grid>
+										<Grid.ColumnDefinitions>
+											<ColumnDefinition Width="Auto" />
+											<ColumnDefinition SharedSizeGroup="Name" Width="Auto" />
+											<ColumnDefinition Width="{Binding Source={StaticResource FileBrowserColumn}}" />
+											<ColumnDefinition Width="Auto" />
+										</Grid.ColumnDefinitions>
+										<CheckBox IsChecked="{Binding Enabled, Mode=TwoWay}" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="4" />
+										<TextBlock Text="{Binding Name}" Grid.Column="1" TextAlignment="Left" VerticalAlignment="Center" Margin="4" />
+										<c:FileBrowseControl OpenFileText="{Binding OpenFileText}" BrowseType="File" BrowseMode="Save" FileLocationText="{Binding FilePath, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" 
+												LastFileLocation="{Binding LastPath}" DefaultFileName="{Binding DefaultFileName}"
+												DefaultExt="{Binding DefaultFileExtension}" Filters="{x:Static core:CommonFileFilters.MarkdownConverterFilesList}"
+												OnOpen="{Binding OnFilePathSet}" Grid.Column="2" Margin="4" BrowseToolTip="{x:Static core:TooltipText.MarkdownConverterBatchModeExportFileBrowser}"
+												 />
+										<Button Content="Preview" Command="{Binding DataContext.PreviewCommand, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}}" CommandParameter="{Binding Formatter}" IsEnabled="{Binding DataContext.CanPreview, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}}" Grid.Column="3" Margin="4" />
+									</Grid>
+								</DataTemplate>
+							</ItemsControl.ItemTemplate>
+						</ItemsControl>
+					</ScrollViewer>
+					<Grid x:Name="BatchOutputPreview" Grid.Row="1" Visibility="{Binding BatchMode, FallbackValue=Collapsed}">
+						<Grid.RowDefinitions>
+							<RowDefinition Height="Auto" />
+							<RowDefinition Height="*" />
+						</Grid.RowDefinitions>
+						<TextBlock Text="Output Preview" TextAlignment="Center" Margin="4" />
+						<Grid Grid.Row="1" Margin="8,0,0,0" >
+							<TextBox TextWrapping="{Binding TextWrapMode, FallbackValue=Wrap}" IsReadOnly="True" Text="{Binding Output, FallbackValue=''}" AcceptsReturn="True" AcceptsTab="True" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="{Binding TextWrapMode, Converter={StaticResource TextWrapToScrollBarVisibilityConverter}}" />
+						</Grid>
 					</Grid>
 				</Grid>
-			</Grid>
 
-			<TextBlock Grid.Column="2" Text="Output Preview" Visibility="{Binding SingleMode, FallbackValue=Visible}" TextAlignment="Center" Margin="4" />
-			<Grid x:Name="OutputGrid" Grid.Row="1" Grid.Column="2" Visibility="{Binding SingleMode, FallbackValue=Visible}" Margin="8,0,0,0" >
-				<TextBox TextWrapping="{Binding TextWrapMode, FallbackValue=Wrap}" IsReadOnly="True" Text="{Binding Output, FallbackValue=''}" AcceptsReturn="True" AcceptsTab="True" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="{Binding TextWrapMode, Converter={StaticResource TextWrapToScrollBarVisibilityConverter}}" />
-			</Grid>
-				<Grid x:Name="BatchOutputGrid" Grid.Row="1" Grid.Column="2" Visibility="{Binding SingleMode, FallbackValue=Visible}" >
+				<TextBlock Grid.Column="2" Text="Output Preview" Visibility="{Binding SingleMode, FallbackValue=Visible}" TextAlignment="Center" Margin="4" />
+				<Grid x:Name="OutputGrid" Grid.Row="1" Grid.Column="2" Visibility="{Binding SingleMode, FallbackValue=Visible}" Margin="8,0,0,0" >
+					<TextBox TextWrapping="{Binding TextWrapMode, FallbackValue=Wrap}" IsReadOnly="True" Text="{Binding Output, FallbackValue=''}" AcceptsReturn="True" AcceptsTab="True" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="{Binding TextWrapMode, Converter={StaticResource TextWrapToScrollBarVisibilityConverter}}" />
+				</Grid>
+					<Grid x:Name="BatchOutputGrid" Grid.Row="1" Grid.Column="2" Visibility="{Binding SingleMode, FallbackValue=Visible}" >
+				</Grid>
 			</Grid>
 		</Grid>
 	</Grid>

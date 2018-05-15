@@ -198,6 +198,11 @@ namespace LL.SCG.Controls
 
 		private void FileBrowseButton_Click(object sender, RoutedEventArgs e)
 		{
+			StartBrowse();
+		}
+		
+		public void StartBrowse()
+		{
 			Window parentWindow = Window.GetWindow(this);
 
 			Log.Here().Activity($"LastFileLocation is {LastFileLocation} FileLocationText: {FileLocationText}");

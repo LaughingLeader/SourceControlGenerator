@@ -18,6 +18,7 @@ using LL.SCG.Commands;
 using LL.SCG.Core;
 using LL.SCG.Interfaces;
 using LL.SCG.Markdown;
+using LL.SCG.Windows;
 using Newtonsoft.Json;
 
 namespace LL.SCG.Data.View
@@ -61,6 +62,8 @@ namespace LL.SCG.Data.View
 	[DataContract]
 	public class MarkdownConverterViewData : PropertyChangedBase
 	{
+		private Window parentWindow;
+
 		private string fileContents = "";
 
 		private string input = "";
@@ -154,6 +157,8 @@ namespace LL.SCG.Data.View
 
 		public ObservableCollection<IMarkdownFormatter> Formatters { get; set; }
 
+		public ObservableCollection<MenuData> TopMenus { get; set; }
+
 		public bool CanPreview
 		{
 			get
@@ -167,6 +172,10 @@ namespace LL.SCG.Data.View
 		public ICommand OpenInputFileCommand { get; set; }
 
 		public ICommand SaveInputCommand { get; set; }
+
+		public ICommand SaveInputAsCommand { get; set; }
+
+		public ICommand SaveInputCopyAsCommand { get; set; }
 
 		#region Single Mode
 		private IMarkdownFormatter selectedFormatter;
@@ -249,6 +258,8 @@ namespace LL.SCG.Data.View
 
 		public ICommand ExportSingleCommand { get; set; }
 
+		public ICommand ExportSingleAsCommand { get; set; }
+
 		public void ExportSingle()
 		{
 			PreviewSelected();
@@ -257,11 +268,28 @@ namespace LL.SCG.Data.View
 			{
 				if (FileCommands.IsValidFilePath(SingleModeLastFileExportPath))
 				{
-					FileCommands.WriteToFile(SingleModeLastFileExportPath, Output);
+					if(FileCommands.WriteToFile(SingleModeLastFileExportPath, Output))
+					{
+						Log.Here().Activity($"Converted text to {SelectedFormatter.Name} and saved to {SingleModeLastFileExportPath}.");
+						StartSavingAsync();
+					}
+				}
+			}
+		}
+
+		public void ExportSingleAs()
+		{
+			PreviewSelected();
+
+			FileCommands.Save.OpenDialogAndSave(parentWindow, "Export Output As...", SingleModeLastFileExportPath, Output, (bool success, string filePath) =>
+			{
+				if (success)
+				{
+					SingleModeLastFileExportPath = Path.GetFullPath(filePath);
 					Log.Here().Activity($"Converted text to {SelectedFormatter.Name} and saved to {SingleModeLastFileExportPath}.");
 					StartSavingAsync();
 				}
-			}
+			}, Path.GetFileName(SingleModeLastFileExportPath), "", CommonFileFilters.MarkdownConverterFilesList.ToArray());
 		}
 
 		public void PreviewSelected()
@@ -457,6 +485,24 @@ namespace LL.SCG.Data.View
 			}
 		}
 
+		public void SaveInputAsFile()
+		{
+			FileCommands.Save.OpenDialogAndSave(parentWindow, "Save Input As...", SingleModeLastFileInputPath, Input, (bool success, string filePath) =>
+			{
+				if (success)
+				{
+					SingleModeLastFileInputPath = Path.GetFullPath(filePath);
+					fileContents = Input;
+					CanSaveInput = false;
+				}
+			}, Path.GetFileName(SingleModeLastFileInputPath), "", CommonFileFilters.MarkdownConverterFilesList.ToArray());
+		}
+
+		public void SaveInputAsCopy()
+		{
+			FileCommands.Save.OpenDialogAndSave(parentWindow, "Save Input Copy As...", SingleModeLastFileInputPath, Input, null, Path.GetFileName(SingleModeLastFileInputPath), "", CommonFileFilters.MarkdownConverterFilesList.ToArray());
+		}
+
 		public MarkdownConverterViewData()
 		{
 			Formatters = new ObservableCollection<IMarkdownFormatter>(MarkdownConverter.InitFormatters());
@@ -465,12 +511,42 @@ namespace LL.SCG.Data.View
 			PreviewCommand = new ParameterCommand(ConvertInputForData);
 			NextModeCommand = new ActionCommand(NextMode);
 			ExportSingleCommand = new ActionCommand(ExportSingle);
+			ExportSingleAsCommand = new ActionCommand(ExportSingleAs);
 			BatchExportCommand = new ActionCommand(ExportBatch);
 			SaveInputCommand = new ActionCommand(SaveInputFile);
+			SaveInputAsCommand = new ActionCommand(SaveInputAsFile);
+			SaveInputCopyAsCommand = new ActionCommand(SaveInputAsCopy);
 		}
 
-		public void InitSettings()
+		public void InitSettings(Window parentWindow, ICommand fileBrowserOpenFileCommand)
 		{
+			this.parentWindow = parentWindow;
+
+			TopMenus = new ObservableCollection<MenuData>()
+			{
+				new MenuData("MD.File", "File").Add(
+					new MenuData("MD.File.Load", "Open Input File...", fileBrowserOpenFileCommand, Key.O, ModifierKeys.Control),
+					new MenuData("MD.File.Save", "Save Input File", SaveInputCommand, Key.S, ModifierKeys.Control),
+					new MenuData("MD.File.SaveAs", "Save Input File As...", SaveInputAsCommand, Key.S, ModifierKeys.Control | ModifierKeys.Alt),
+					new MenuData("MD.File.SaveAs", "Save a Copy of Input As...", SaveInputCopyAsCommand)
+				),
+				new MenuData("MD.Mode", "Mode").Add(
+					new MenuData("MD.Mode.NextMode", "Next Mode", NextModeCommand, Key.Tab, ModifierKeys.Shift),
+					new SeparatorData(),
+					new MenuData("MD.Mode.Single", "Single Mode", new ActionCommand(() => { this.Mode = MarkdownConverterMode.Single; }), Key.D1, ModifierKeys.Control),
+					new MenuData("MD.Mode.Batch", "Batch Mode", new ActionCommand(() => { this.Mode = MarkdownConverterMode.Batch; }), Key.D2, ModifierKeys.Control)
+				),
+				new MenuData("MD.Export", "Export").Add(
+					new MenuData("MD.Export.SingleSeparatorHeader", "Single").Add(
+						new MenuData("MD.Export.PreviewSingle", "Preview Output", PreviewSingleCommand),
+						new MenuData("MD.Export.ExportSingle", "Export", ExportSingleCommand),
+						new MenuData("MD.Export.ExportSingleAs", "Export As...", ExportSingleAsCommand)
+					),
+					new SeparatorData(),
+					new MenuData("MD.Export.BatchSeparatorHeader", "Batch").Add(new MenuData("MD.Export.ExportBatch", "Export Selected", BatchExportCommand))
+				)
+			};
+
 			if (String.IsNullOrEmpty(SelectedFormatterName))
 			{
 				SelectedFormatter = Formatters.First();

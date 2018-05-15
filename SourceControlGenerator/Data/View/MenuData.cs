@@ -86,11 +86,11 @@ namespace LL.SCG.Data.View
 				{
 					if(ShortcutModifiers != null)
 					{
-						return ShortcutModifiers.Value.ToString() + "+" + ShortcutKey.Value.ToString();
+						return LL.SCG.App.ModifierKeysConverter.ConvertToString(ShortcutModifiers.Value) + "+" + LL.SCG.App.KeyConverter.ConvertToString(ShortcutKey.Value);
 					}
 					else
 					{
-						return ShortcutKey.Value.ToString();
+						return LL.SCG.App.KeyConverter.ConvertToString(ShortcutKey.Value);
 					}
 				}
 				return shortcutText;
@@ -230,13 +230,22 @@ namespace LL.SCG.Data.View
 			return null;
 		}
 
+		public MenuData Add(params IMenuData[] menuItems)
+		{
+			foreach(var item in menuItems)
+			{
+				MenuItems.Add(item);
+			}
+			return this;
+		}
+
 		public MenuData(string MenuID)
 		{
 			ID = MenuID;
 			MenuItems = new ObservableCollection<IMenuData>();
 		}
 
-		public MenuData(string MenuID, string menuName, ICommand command = null)
+		public MenuData(string MenuID, string menuName, ICommand command = null, Key? shortcutKey = null, ModifierKeys? shortcutModifiers = null)
 		{
 			ID = MenuID;
 			MenuItems = new ObservableCollection<IMenuData>();
@@ -244,6 +253,10 @@ namespace LL.SCG.Data.View
 			Header = menuName;
 
 			if (command != null) ClickCommand = command;
+
+			if (shortcutKey != null) ShortcutKey = shortcutKey;
+
+			if (shortcutModifiers != null) ShortcutModifiers = shortcutModifiers;
 		}
 	}
 

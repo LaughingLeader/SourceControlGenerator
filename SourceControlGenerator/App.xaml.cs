@@ -9,6 +9,7 @@ using System.Reflection;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Data;
+using System.Windows.Input;
 using LL.SCG.Core;
 using LL.SCG.Data;
 using LL.SCG.Data.View;
@@ -28,8 +29,14 @@ namespace LL.SCG
 			base.OnStartup(e);
 		}
 
+		public static KeyConverter KeyConverter { get; private set; }
+		public static ModifierKeysConverter ModifierKeysConverter { get; private set; }
+
 		public App()
 		{
+			KeyConverter = new KeyConverter();
+			ModifierKeysConverter = new ModifierKeysConverter();
+
 			ThemeController.Init(this);
 			LL.SCG.Helpers.Init();
 			FileCommands.Init();

@@ -6,6 +6,7 @@ using System.Windows;
 using System.Windows.Documents;
 using System.Windows.Input;
 using System.Xaml;
+using LL.SCG.Commands;
 using LL.SCG.Core;
 using LL.SCG.Data.View;
 using Markdig;
@@ -48,8 +49,13 @@ namespace LL.SCG.Windows
 				viewData = new MarkdownConverterViewData();
 			}
 			ViewData = viewData;
-			ViewData.InitSettings();
+			ViewData.InitSettings(this, new ActionCommand(InputOpenFileBrowser.StartBrowse));
 			DataContext = ViewData;
+
+			foreach (var menu in ViewData.TopMenus)
+			{
+				menu.RegisterInputBinding(this);
+			}
 		}
 
 		private void Control_InvokeDataSaving(object sender, EventArgs e)
