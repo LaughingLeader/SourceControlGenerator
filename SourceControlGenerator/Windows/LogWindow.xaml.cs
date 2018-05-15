@@ -15,11 +15,11 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using System.Xaml;
-using LL.SCG.Core;
-using LL.SCG.Data;
-using LL.SCG.Data.View;
+using SCG.Core;
+using SCG.Data;
+using SCG.Data.View;
 
-namespace LL.SCG.Windows
+namespace SCG.Windows
 {
 	/// <summary>
 	/// Interaction logic for LogWindow.xaml

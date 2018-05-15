@@ -1,11 +1,11 @@
 ﻿using System.Runtime.CompilerServices;
 using System.IO;
 using System.Diagnostics;
-using LL.SCG.Util;
+using SCG.Util;
 using System;
 using System.ComponentModel;
 
-namespace LL.SCG
+namespace SCG
 {
 	public delegate void LogDelegate(string Message, params object[] Vars);
 	public delegate void OnLog(string Message);

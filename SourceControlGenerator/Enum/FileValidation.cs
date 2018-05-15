@@ -1,4 +1,4 @@
-﻿namespace LL.SCG.Enum
+﻿namespace SCG.Enum
 {
 	public enum FileValidation
 	{

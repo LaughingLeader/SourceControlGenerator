@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace LL.SCG.Data
+namespace SCG.Data
 {
 	public class ManagedProjectsData
 	{

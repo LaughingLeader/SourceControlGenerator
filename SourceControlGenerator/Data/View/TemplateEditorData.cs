@@ -4,19 +4,19 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using LL.SCG.Controls;
-using LL.SCG.Core;
-using LL.SCG.Commands;
-using LL.SCG.Util;
-using LL.SCG.Windows;
+using SCG.Controls;
+using SCG.Core;
+using SCG.Commands;
+using SCG.Util;
+using SCG.Windows;
 using System.Xml.Linq;
-using LL.SCG.Data.Xml;
+using SCG.Data.Xml;
 using System.ComponentModel;
-using LL.SCG.Converters;
-using LL.SCG.Enum;
-using LL.SCG.Interfaces;
+using SCG.Converters;
+using SCG.Enum;
+using SCG.Interfaces;
 
-namespace LL.SCG.Data.View
+namespace SCG.Data.View
 {
 	public class TemplateEditorData : PropertyChangedBase, ISaveCommandData
 	{

@@ -9,7 +9,7 @@ using System.Windows.Automation.Provider;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 
-namespace LL.SCG
+namespace SCG
 {
 	public static class ComboBoxExtensionMethods
 	{

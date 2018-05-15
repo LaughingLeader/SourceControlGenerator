@@ -7,11 +7,11 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Data;
-using LL.SCG.Data;
-using LL.SCG.Data.View;
-using LL.SCG.Enum;
+using SCG.Data;
+using SCG.Data.View;
+using SCG.Enum;
 
-namespace LL.SCG.Converters
+namespace SCG.Converters
 {
 	public class SettingsAttributeConverter : IValueConverter
 	{

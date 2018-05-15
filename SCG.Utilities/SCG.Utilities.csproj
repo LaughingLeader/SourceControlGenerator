@@ -7,7 +7,7 @@
     <ProjectGuid>{2709C5C0-66AE-49DC-A65B-391163A39602}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>LL.SCG</RootNamespace>
+    <RootNamespace>SCG</RootNamespace>
     <AssemblyName>SCG.Utilities</AssemblyName>
     <TargetFrameworkVersion>v4.7.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>

@@ -6,7 +6,7 @@ using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Collections.Immutable;
 
-namespace LL.SCG.Collections
+namespace SCG.Collections
 {
 	public class ObservableImmutableDictionary<T, V> : ObservableCollectionObject, IImmutableDictionary<T, V>, IReadOnlyDictionary<T, V>, IReadOnlyCollection<KeyValuePair<T, V>>, IDictionary<T, V>, ICollection<KeyValuePair<T, V>>, IEnumerable<KeyValuePair<T, V>>, IDictionary, INotifyCollectionChanged, INotifyPropertyChanged
 	{

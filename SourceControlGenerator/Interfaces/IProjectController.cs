@@ -4,12 +4,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Controls;
-using LL.SCG.Collections;
-using LL.SCG.Data;
-using LL.SCG.Data.View;
-using LL.SCG.Windows;
+using SCG.Collections;
+using SCG.Data;
+using SCG.Data.View;
+using SCG.Windows;
 
-namespace LL.SCG.Interfaces
+namespace SCG.Interfaces
 {
 	public interface IProjectController
 	{

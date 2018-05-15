@@ -5,14 +5,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Data;
-using LL.SCG.Collections;
-using LL.SCG.Commands;
-using LL.SCG.Data;
-using LL.SCG.Data.View;
-using LL.SCG.DOS2.Core;
-using LL.SCG.DOS2.Data.App;
+using SCG.Collections;
+using SCG.Commands;
+using SCG.Data;
+using SCG.Data.View;
+using SCG.Modules.DOS2.Core;
+using SCG.Modules.DOS2.Data.App;
 
-namespace LL.SCG.DOS2.Data.View
+namespace SCG.Modules.DOS2.Data.View
 {
 	public class DOS2ModuleData : ModuleData<DOS2SettingsData>
 	{

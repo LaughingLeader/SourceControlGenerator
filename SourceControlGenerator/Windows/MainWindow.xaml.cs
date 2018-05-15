@@ -14,20 +14,20 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using LL.SCG.Core;
-using LL.SCG.Commands;
-using LL.SCG.Data;
-using LL.SCG.Data.View;
-using LL.SCG.Util;
-using LL.SCG.Windows;
-using LL.SCG.Interfaces;
+using SCG.Core;
+using SCG.Commands;
+using SCG.Data;
+using SCG.Data.View;
+using SCG.Util;
+using SCG.Windows;
+using SCG.Interfaces;
 using Newtonsoft.Json;
-using LL.SCG.Modules;
-using LL.SCG.FileGen;
-using LL.SCG.Controls;
+using SCG.Modules;
+using SCG.FileGen;
+using SCG.Controls;
 using System.Windows.Threading;
 
-namespace LL.SCG.Windows
+namespace SCG.Windows
 {
 	public interface IToolWindow
 	{
@@ -115,18 +115,7 @@ namespace LL.SCG.Windows
 
 			Controller.OnModuleSet += LoadProjectModuleView;
 
-			var totalLoaded = StartLoadingModules().GetAwaiter().GetResult();
-
-			Log.Here().Important($"Loaded {totalLoaded} project modules.");
-
-			if (!String.IsNullOrWhiteSpace(Controller.Data.AppSettings.LastModule) && Controller.SetModule(Controller.Data.AppSettings.LastModule))
-			{
-				Controller.Data.ModuleSelectionVisibility = Visibility.Collapsed;
-			}
-			else
-			{
-				Controller.Data.ModuleSelectionVisibility = Visibility.Visible;
-			}
+			Controller.InitModules();
 		}
 
 		private void MainAppWindow_Loaded(object sender, RoutedEventArgs e)
@@ -146,61 +135,8 @@ namespace LL.SCG.Windows
 			}
 		}
 
-		public Task<int> StartLoadingModules()
-		{
-			return LoadModules();
-		}
-
-		private async Task<int> LoadModules()
-		{
-			int totalModulesLoaded = 0;
-
-			DirectoryInfo modulesFolder = new DirectoryInfo("Modules");
-			modulesFolder.Create();
-			var modules = modulesFolder.GetFiles("*.dll", SearchOption.AllDirectories);
-
-			if (modules.Length > 0)
-			{
-				var tasks = new List<Task<bool>>();
-				for (var i = 0; i < modules.Length; i++)
-				{
-					var module = modules[i];
-					tasks.Add(LoadModule(module.FullName, module.Name));
-					//Assembly.LoadFrom(module.FullName);
-				}
-
-				foreach(var task in await Task.WhenAll(tasks))
-				{
-					if(task == true)
-					{
-						totalModulesLoaded += 1;
-					}
-				}
-
-				if(totalModulesLoaded <= 0) Log.Here().Important("No modules were loaded.");
-			}
-
-			return totalModulesLoaded;
-		}
-
-		private async Task<bool> LoadModule(string fileName, string Name = "")
-		{
-			try
-			{
-				Log.Here().Important($"Attempting to load module {Name}.");
-				Loader.Call(AppDomain.CurrentDomain, fileName, "LL.SCG.Module", "Init");
-				return await Task.FromResult(true);
-			}
-			catch (Exception ex)
-			{
-				Log.Here().Error("Error loading module file {0}: {1}", fileName, ex.ToString());
-			}
-			return await Task.FromResult(false);
-		}
-
 		public void LoadProjectModuleView(object sender, EventArgs e)
 		{
-			Task.Delay(10);
 			var view = Controller.CurrentModule.GetProjectView(this);
 			var viewGrid = (Grid)FindName("ProjectsViewGrid");
 

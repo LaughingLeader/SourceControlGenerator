@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Data;
 
-namespace LL.SCG.Converters
+namespace SCG.Converters
 {
 	public class NewlineStringConverter : IValueConverter
 	{

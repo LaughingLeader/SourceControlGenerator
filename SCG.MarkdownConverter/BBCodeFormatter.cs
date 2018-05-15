@@ -9,9 +9,9 @@ using AngleSharp.Html;
 using AngleSharp.Parser.Html;
 using CodeKicker.BBCode;
 using Markdig;
-using LL.SCG;
+using SCG;
 
-namespace LL.SCG.Markdown
+namespace SCG.Markdown
 {
 	public class BBCodeFormatter : IMarkdownFormatter
 	{

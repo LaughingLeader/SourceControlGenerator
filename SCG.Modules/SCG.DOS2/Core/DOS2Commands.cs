@@ -10,17 +10,17 @@ using System.Windows;
 using System.Windows.Data;
 using System.Windows.Input;
 using System.Xml.Linq;
-using LL.SCG.Collections;
-using LL.SCG.Controls;
-using LL.SCG.Data;
-using LL.SCG.Data.View;
-using LL.SCG.DOS2.Data.App;
-using LL.SCG.DOS2.Data.View;
-using LL.SCG.FileGen;
-using LL.SCG.Windows;
+using SCG.Collections;
+using SCG.Controls;
+using SCG.Data;
+using SCG.Data.View;
+using SCG.Modules.DOS2.Data.App;
+using SCG.Modules.DOS2.Data.View;
+using SCG.FileGen;
+using SCG.Windows;
 using Microsoft.Win32;
 
-namespace LL.SCG.DOS2.Core
+namespace SCG.Modules.DOS2.Core
 {
 	public static class DOS2Commands
 	{

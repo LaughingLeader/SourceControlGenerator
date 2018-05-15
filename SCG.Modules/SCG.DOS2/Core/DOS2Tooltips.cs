@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace LL.SCG.DOS2.Core
+namespace SCG.Modules.DOS2.Core
 {
 	public static class DOS2Tooltips
 	{

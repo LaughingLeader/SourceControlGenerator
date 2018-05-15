@@ -7,12 +7,12 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Data;
 using System.Windows.Input;
-using LL.SCG.Collections;
-using LL.SCG.Commands;
-using LL.SCG.Interfaces;
+using SCG.Collections;
+using SCG.Commands;
+using SCG.Interfaces;
 using Newtonsoft.Json;
 
-namespace LL.SCG.Data.View
+namespace SCG.Data.View
 {
 	public class ModuleData<T> : PropertyChangedBase, IModuleData where T : IModuleSettingsData
 	{

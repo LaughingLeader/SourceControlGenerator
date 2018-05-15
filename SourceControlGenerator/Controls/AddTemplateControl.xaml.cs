@@ -12,11 +12,11 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using LL.SCG.Data.View;
-using LL.SCG.Windows;
+using SCG.Data.View;
+using SCG.Windows;
 
 
-namespace LL.SCG.Controls
+namespace SCG.Controls
 {
 	/// <summary>
 	/// Interaction logic for AddTemplateControl.xaml

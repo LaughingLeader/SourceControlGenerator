@@ -14,7 +14,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 
-namespace LL.SCG.Windows
+namespace SCG.Windows
 {
 	public class UnclosableWindow : Window
 	{

@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
-using LL.SCG.Data.View;
+using SCG.Data.View;
 
-namespace LL.SCG.Data.Proxy
+namespace SCG.Data.Proxy
 {
 	public class IconProxy : Freezable
 	{

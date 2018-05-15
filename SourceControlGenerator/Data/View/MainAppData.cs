@@ -4,24 +4,24 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.IO;
-using LL.SCG.Data;
+using SCG.Data;
 using Newtonsoft.Json;
 using System.Xml.Linq;
 using System.Xml.XPath;
 using System.Xml;
 using System.ComponentModel;
 using System.Collections.ObjectModel;
-using LL.SCG.Data.View;
-using LL.SCG.Core;
-using LL.SCG.Commands;
+using SCG.Data.View;
+using SCG.Core;
+using SCG.Commands;
 using System.Windows.Input;
-using LL.SCG.Data.App;
-using LL.SCG.Interfaces;
+using SCG.Data.App;
+using SCG.Interfaces;
 using System.Windows;
-using LL.SCG.Collections;
+using SCG.Collections;
 using System.Windows.Data;
 
-namespace LL.SCG.Data.View
+namespace SCG.Data.View
 {
 	public class MainAppData : PropertyChangedBase
 	{

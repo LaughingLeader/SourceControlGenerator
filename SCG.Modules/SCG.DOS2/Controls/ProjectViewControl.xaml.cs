@@ -12,17 +12,17 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using LL.SCG.Core;
-using LL.SCG.Data;
-using LL.SCG.Data.View;
-using LL.SCG.Interfaces;
-using LL.SCG.Windows;
-using LL.SCG.Controls.Behavior;
-using LL.SCG.DOS2.Core;
+using SCG.Core;
+using SCG.Data;
+using SCG.Data.View;
+using SCG.Interfaces;
+using SCG.Windows;
+using SCG.Controls.Behavior;
+using SCG.Modules.DOS2.Core;
 using System.ComponentModel;
-using LL.SCG.DOS2.Windows;
+using SCG.Modules.DOS2.Windows;
 
-namespace LL.SCG.DOS2.Controls
+namespace SCG.Modules.DOS2.Controls
 {
 	/// <summary>
 	/// Interaction logic for ProjectViewControl.xaml

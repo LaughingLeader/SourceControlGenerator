@@ -5,16 +5,19 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-using LL.SCG.Data;
-using LL.SCG.Commands;
+using SCG.Data;
+using SCG.Commands;
 using System.Windows;
 using System.Windows.Input;
 using System.Text.RegularExpressions;
-using LL.SCG.Data.View;
+using SCG.Data.View;
 using System.Windows.Media.Imaging;
 using Ookii.Dialogs.Wpf;
+using SCG.Interfaces;
+using SCG.Core;
+using System.Diagnostics;
 
-namespace LL.SCG
+namespace SCG
 {
 	public static class FileCommands
 	{
@@ -103,6 +106,44 @@ namespace LL.SCG
 					{
 						TaskAction?.Invoke(false);
 					}
+				}
+			}
+		}
+
+		public static bool ModuleSettingsExist
+		{
+			get
+			{
+				return AppController.Main.CurrentModule != null && AppController.Main.CurrentModule.ModuleData != null && AppController.Main.CurrentModule.ModuleData.ModuleSettings != null;
+			}
+		}
+
+		public static void OpenBackupFolder(IProjectData projectData)
+		{
+			if (ModuleSettingsExist)
+			{
+				string directory = Path.Combine(Path.GetFullPath(AppController.Main.CurrentModule.ModuleData.ModuleSettings.BackupRootDirectory), projectData.ProjectName);
+				if (!Directory.Exists(directory))
+				{
+					Directory.CreateDirectory(directory);
+				}
+
+				Process.Start(directory);
+			}
+		}
+
+		public static void OpenGitFolder(IProjectData projectData)
+		{
+			if (ModuleSettingsExist)
+			{
+				string directory = Path.Combine(Path.GetFullPath(AppController.Main.CurrentModule.ModuleData.ModuleSettings.GitRootDirectory), projectData.ProjectName);
+				if (Directory.Exists(directory))
+				{
+					Process.Start(directory);
+				}
+				else
+				{
+					Process.Start(Path.GetFullPath(AppController.Main.CurrentModule.ModuleData.ModuleSettings.GitRootDirectory));
 				}
 			}
 		}

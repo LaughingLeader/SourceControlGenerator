@@ -5,13 +5,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.ComponentModel;
-using LL.SCG.Data.App;
-using LL.SCG.Data.View;
-using LL.SCG.Interfaces;
+using SCG.Data.App;
+using SCG.Data.View;
+using SCG.Interfaces;
 using Newtonsoft.Json;
-using LL.SCG.Enum;
+using SCG.Enum;
 
-namespace LL.SCG.Data
+namespace SCG.Data
 {
 	public enum SettingsViewPropertyType
 	{

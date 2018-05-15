@@ -1,38 +1,26 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.IO;
-using LL.SCG.Data;
-using System.Xml.Linq;
-using System.Xml.XPath;
-using System.Xml;
-using System.ComponentModel;
-using System.Collections.ObjectModel;
-using LL.SCG.Data.View;
-using LL.SCG.FileGen;
-using LL.SCG.Windows;
-using LL.SCG.Interfaces;
-using static LL.SCG.Data.KeywordData;
-using System.Reflection;
-using LL.SCG.Data.Xml;
-using LL.SCG.Data.App;
-using LL.SCG.DOS2.Data.App;
-using LL.SCG.DOS2.Core;
-using LL.SCG.DOS2.Data.View;
-using System.Windows.Controls;
-using LL.SCG.DOS2.Controls;
-using System.Globalization;
-using System.Windows;
-using System.Windows.Threading;
-using LL.SCG.Collections;
-using LL.SCG.Commands;
-using System.Windows.Data;
-using LL.SCG.DOS2.Windows;
-using System.Collections.Concurrent;
+﻿using SCG.Commands;
+using SCG.Data;
+using SCG.Data.App;
+using SCG.Data.View;
+using SCG.FileGen;
+using SCG.Interfaces;
+using SCG.Modules.DOS2.Controls;
+using SCG.Modules.DOS2.Core;
+using SCG.Modules.DOS2.Data.View;
+using SCG.Modules.DOS2.Windows;
+using SCG.Windows;
 
-namespace LL.SCG.Core
+using System;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Globalization;
+using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
+using System.Windows.Controls;
+
+namespace SCG.Core
 {
 	public class DOS2ProjectController : IProjectController
 	{
@@ -46,6 +34,7 @@ namespace LL.SCG.Core
 		private bool saveModuleSettings = false;
 
 		#region Git Generation
+
 		private List<JunctionData> PrepareDirectories(ModProjectData project, List<string> DirectoryLayouts)
 		{
 			var sourceFolders = new List<JunctionData>();
@@ -64,7 +53,7 @@ namespace LL.SCG.Core
 
 		public void OpenGitGeneratorWindow()
 		{
-			if(Data.CanGenerateGit)
+			if (Data.CanGenerateGit)
 			{
 				var selectedProjects = Data.ManagedProjects.Where(p => p.Selected && p.GitGenerated == false).ToList<IProjectData>();
 				projectViewControl.MainWindow.OpenGitGenerationWindow(Data.GitGenerationSettings, selectedProjects, StartGitGeneration);
@@ -73,7 +62,7 @@ namespace LL.SCG.Core
 
 		public void StartGitGeneration()
 		{
-			if(Data.CanGenerateGit)
+			if (Data.CanGenerateGit)
 			{
 				Data.CanGenerateGit = false;
 				AppController.Main.StartProgress($"Generating Git Files... 0/{Data.GitGenerationSettings.ExportProjects.Count}", StartGitGenerationAsync);
@@ -169,8 +158,14 @@ namespace LL.SCG.Core
 				{
 					AppController.Main.UpdateProgress(percentageIncrement, "Initializing git repo...");
 
-					var result = await GitGenerator.InitRepository(gitProjectRootDirectory, modProject.ModuleInfo.Author);
-					if(result)
+					var author = Data.Settings.DefaultAuthor;
+					if(modProject.ModuleInfo != null && !String.IsNullOrWhiteSpace(modProject.ModuleInfo.Author))
+					{
+						author = modProject.ModuleInfo.Author;
+					}
+
+					var result = await GitGenerator.InitRepository(gitProjectRootDirectory, author);
+					if (result)
 					{
 						Log.Here().Activity("Created git repository for project ({0}) at {1}", modProject.ProjectName, gitProjectRootDirectory);
 					}
@@ -190,7 +185,7 @@ namespace LL.SCG.Core
 					var sourceFolders = PrepareDirectories(modProject, Data.Settings.DirectoryLayouts);
 					var result = await GitGenerator.CreateJunctions(modProject.ProjectName, sourceFolders, Data);
 
-					if(result)
+					if (result)
 					{
 						Log.Here().Activity("[{0}] Successfully created junctions.", modProject.ProjectName);
 						commitGit = true;
@@ -231,7 +226,6 @@ namespace LL.SCG.Core
 							}
 						}
 					}
-
 				}
 
 				if (generationSettings.SelectedLicense != LicenseType.None)
@@ -254,9 +248,11 @@ namespace LL.SCG.Core
 							case LicenseType.MIT:
 								outputText = Properties.Resources.License_MIT;
 								break;
+
 							case LicenseType.Apache:
 								outputText = Properties.Resources.License_Apache;
 								break;
+
 							case LicenseType.GNU:
 								outputText = Properties.Resources.License_GNU;
 								break;
@@ -318,8 +314,11 @@ namespace LL.SCG.Core
 			//}
 			return false;
 		}
-		#endregion
+
+		#endregion Git Generation
+
 		#region Backup
+
 		public bool GenerateBackupFolder(ModProjectData modProject = null)
 		{
 			string projectBackupDirectory = Data.Settings.BackupRootDirectory;
@@ -342,7 +341,7 @@ namespace LL.SCG.Core
 
 		public void BackupSelectedProjectsTo()
 		{
-			if(!openFolderDialogOpen)
+			if (!openFolderDialogOpen)
 			{
 				openFolderDialogOpen = true;
 				if (String.IsNullOrWhiteSpace(Data.Settings.LastBackupPath))
@@ -372,7 +371,7 @@ namespace LL.SCG.Core
 			ConcurrentBag<ModProjectData> selectedProjects = new ConcurrentBag<ModProjectData>(Data.ManagedProjects.Where(p => p.Selected));
 
 			var totalSuccess = await BackupSelectedProjectsAsync(selectedProjects);
-			if(totalSuccess >= selectedProjects.Count)
+			if (totalSuccess >= selectedProjects.Count)
 			{
 				if (String.IsNullOrWhiteSpace(targetBackupOutputDirectory))
 				{
@@ -401,7 +400,7 @@ namespace LL.SCG.Core
 				AppController.Main.UpdateProgressMessage("Creating archives...");
 
 				int i = 0;
-				foreach(var project in selectedProjects)
+				foreach (var project in selectedProjects)
 				{
 					AppController.Main.UpdateProgressTitle($"Backing up projects... {i}/{total}");
 
@@ -509,7 +508,7 @@ namespace LL.SCG.Core
 			}
 		}
 
-		#endregion
+		#endregion Backup
 
 		public void AddProjects(List<AvailableProjectViewData> selectedItems)
 		{
@@ -562,7 +561,6 @@ namespace LL.SCG.Core
 #else
 					MainWindow.FooterError($"Error adding project {project.Name} to managed projects: Mod data doesn't exist.");
 #endif
-
 				}
 			}
 
@@ -631,7 +629,7 @@ namespace LL.SCG.Core
 				{
 					Log.Here().Warning("Default DirectoryLayout.default.txt file not found. Using default settings stored in app.");
 
-					layoutFileContents = LL.SCG.DOS2.Properties.Resources.DirectoryLayout;
+					layoutFileContents = SCG.Modules.DOS2.Properties.Resources.DirectoryLayout;
 					FileCommands.WriteToFile(DOS2DefaultPaths.DirectoryLayout(Data), layoutFileContents);
 				}
 
@@ -670,14 +668,14 @@ namespace LL.SCG.Core
 
 		public async void RefreshAllProjects()
 		{
-			if(Data.CanClickRefresh)
+			if (Data.CanClickRefresh)
 			{
 				Data.CanClickRefresh = false;
-				
-				await Task.Run(() => {
+
+				await Task.Run(() =>
+				{
 					DOS2Commands.LoadAll(Data);
 					Data.CanClickRefresh = true;
-					
 				});
 			}
 			else
@@ -688,11 +686,12 @@ namespace LL.SCG.Core
 
 		public async void RefreshModProjects()
 		{
-			if(Data.CanClickRefresh)
+			if (Data.CanClickRefresh)
 			{
 				Data.CanClickRefresh = false;
 
-				await Task.Run(() => {
+				await Task.Run(() =>
+				{
 					DOS2Commands.RefreshManagedProjects(Data);
 					Data.CanClickRefresh = true;
 				});
@@ -896,7 +895,7 @@ namespace LL.SCG.Core
 
 			Data.UpdateManageButtonsText();
 
-			if(saveModuleSettings)
+			if (saveModuleSettings)
 			{
 				FileCommands.Save.SaveModuleSettings(Data);
 				saveModuleSettings = false;
@@ -910,6 +909,5 @@ namespace LL.SCG.Core
 		{
 			MainAppData.MenuBarData.RemoveAllModuleMenus(Data.ModuleName);
 		}
-
 	}
 }

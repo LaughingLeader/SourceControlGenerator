@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace LL.SCG
+namespace SCG
 {
 	public static class StringExtensions
 	{

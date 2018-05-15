@@ -6,10 +6,10 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Data;
 using System.Windows.Media;
-using LL.SCG.Data.View;
-using LL.SCG.Markdown;
+using SCG.Data.View;
+using SCG.Markdown;
 
-namespace LL.SCG.Converters
+namespace SCG.Converters
 {
 	public class FormatterToFormatterDataConverter : IValueConverter
 	{

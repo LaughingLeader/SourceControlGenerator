@@ -7,7 +7,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 
-namespace LL.SCG.Controls.Behavior
+namespace SCG.Controls.Behavior
 {
 	public static class TextBoxEnterKeyBehavior
 	{

@@ -5,10 +5,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Data;
-using LL.SCG.Collections;
+using SCG.Collections;
 using Newtonsoft.Json;
 
-namespace LL.SCG.Data
+namespace SCG.Data
 {
 	public class UserKeywordData : PropertyChangedBase
 	{

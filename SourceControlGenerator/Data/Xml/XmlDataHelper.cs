@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 
-namespace LL.SCG.Data.Xml
+namespace SCG.Data.Xml
 {
 	public static class XmlDataHelper
 	{

@@ -5,12 +5,12 @@ using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using LL.SCG.Collections;
-using LL.SCG.Data;
-using LL.SCG.Data.App;
-using LL.SCG.Data.View;
+using SCG.Collections;
+using SCG.Data;
+using SCG.Data.App;
+using SCG.Data.View;
 
-namespace LL.SCG.Interfaces
+namespace SCG.Interfaces
 {
 	public interface IModuleData
 	{

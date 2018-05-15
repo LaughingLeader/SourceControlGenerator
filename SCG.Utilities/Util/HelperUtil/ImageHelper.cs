@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace LL.SCG.Util.HelperUtil
+namespace SCG.Util.HelperUtil
 {
 	public enum ImageType
 	{

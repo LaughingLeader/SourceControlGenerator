@@ -6,7 +6,7 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{E96F2EEB-E207-4AB6-9B85-F86B3F386117}</ProjectGuid>
     <OutputType>WinExe</OutputType>
-    <RootNamespace>LL.SCG</RootNamespace>
+    <RootNamespace>SCG</RootNamespace>
     <AssemblyName>SourceControlGenerator</AssemblyName>
     <TargetFrameworkVersion>v4.7.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
@@ -213,6 +213,7 @@
     <Compile Include="Extensions\ObservableCollectionExtensions.cs" />
     <Compile Include="FileGen\JsonInterface.cs" />
     <Compile Include="Interfaces\IModuleData.cs" />
+    <Compile Include="Interfaces\IModuleMain.cs" />
     <Compile Include="Interfaces\IProjectData.cs" />
     <Compile Include="Data\App\TemplateFileData.cs" />
     <Compile Include="Core\TooltipText.cs" />
@@ -247,7 +248,9 @@
     <Compile Include="Controls\ListViewLayoutManager\ProportionalColumn.cs" />
     <Compile Include="Controls\ListViewLayoutManager\RangeColumn.cs" />
     <Compile Include="Interfaces\ISaveCommandData.cs" />
-    <Compile Include="Modules\Loader.cs" />
+    <Compile Include="Modules\DefaultModule.cs" />
+    <Compile Include="Core\AssemblyLoader.cs" />
+    <Compile Include="Data\View\BaseProjectData.cs" />
     <Compile Include="ThemeSystem\ThemeController.cs" />
     <Compile Include="Core\AppController.cs" />
     <Compile Include="Windows\AboutWindow.xaml.cs">

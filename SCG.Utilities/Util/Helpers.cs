@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using LL.SCG.Util.HelperUtil;
+using SCG.Util.HelperUtil;
 
-namespace LL.SCG
+namespace SCG
 {
 	public static class Helpers
 	{

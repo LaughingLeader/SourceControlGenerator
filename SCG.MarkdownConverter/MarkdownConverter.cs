@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Markdig;
 
-namespace LL.SCG.Markdown
+namespace SCG.Markdown
 {
 	public class HTMLFormatterInterface : IMarkdownFormatter
 	{

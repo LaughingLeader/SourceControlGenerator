@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 using System.Xml.Linq;
 using System.Xml.Serialization;
 using System.Xml.XPath;
-using LL.SCG.Util;
+using SCG.Util;
 
-namespace LL.SCG.Data.Xml
+namespace SCG.Data.Xml
 {
 	public class ProjectInfo : PropertyChangedBase
 	{

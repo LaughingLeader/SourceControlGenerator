@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using LL.SCG.Interfaces;
+using SCG.Interfaces;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 
-namespace LL.SCG.Data
+namespace SCG.Data
 {
 	public class KeywordData : PropertyChangedBase
 	{

@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace LL.SCG.Data.View
+namespace SCG.Data.View
 {
 	public class MenuBarData : PropertyChangedBase
 	{

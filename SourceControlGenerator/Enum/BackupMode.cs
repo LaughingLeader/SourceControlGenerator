@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel;
 
-namespace LL.SCG
+namespace SCG
 {
 	public enum BackupMode
 	{

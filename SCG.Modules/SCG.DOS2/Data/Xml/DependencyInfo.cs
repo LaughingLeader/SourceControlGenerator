@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using System.Xml.Linq;
 using System.Xml.Serialization;
 
-namespace LL.SCG.Data.Xml
+namespace SCG.Data.Xml
 {
 	public class DependencyInfo
 	{

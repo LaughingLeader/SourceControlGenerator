@@ -10,12 +10,12 @@ using System.Xml;
 using System.Xml.Linq;
 using System.Xml.Serialization;
 using System.Xml.XPath;
-using LL.SCG.Commands;
-using LL.SCG.Data.Xml;
-using LL.SCG.DOS2.Core;
-using LL.SCG.Interfaces;
+using SCG.Commands;
+using SCG.Data.Xml;
+using SCG.Modules.DOS2.Core;
+using SCG.Interfaces;
 
-namespace LL.SCG.Data
+namespace SCG.Data
 {
 	public class ModProjectData : PropertyChangedBase, IProjectData
 	{
@@ -89,11 +89,11 @@ namespace LL.SCG.Data
 			}
 		}
 
+		public string ProjectName { get; set; }
+
 		/// <summary>
 		/// The project folder name. Also used for the repo.
 		/// </summary>
-		public string ProjectName { get; set; }
-
 		public string FolderName
 		{
 			get
@@ -257,8 +257,6 @@ namespace LL.SCG.Data
 
 		public ICommand OpenProjectFolder { get; private set; }
 
-		public ICommand ConvertReadmeCommand { get; private set; }
-
 		private void openBackupFolder()
 		{
 			Log.Here().Activity("Opening backup folder!");
@@ -305,7 +303,7 @@ namespace LL.SCG.Data
 			//RaisePropertyChanged("OpenProjectFolder");
 		}
 
-		private ModProjectData()
+		public ModProjectData()
 		{
 			Init();
 		}

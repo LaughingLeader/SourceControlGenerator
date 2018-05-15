@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace LL.SCG.DOS2.Properties {
+namespace SCG.Modules.DOS2.Properties {
     using System;
     
     
@@ -39,7 +39,7 @@ namespace LL.SCG.DOS2.Properties {
         public static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("LL.SCG.DOS2.Properties.Resources", typeof(Resources).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("SCG.Modules.DOS2.Properties.Resources", typeof(Resources).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -61,10 +61,7 @@ namespace LL.SCG.DOS2.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to .gitignore export-ignore
-        ///LICENSE export-ignore
-        ///README.md export-ignore
-        ///CHANGELOG.md export-ignore.
+        ///   Looks up a localized string similar to .
         /// </summary>
         public static string DefaultAttributes {
             get {
@@ -75,7 +72,7 @@ namespace LL.SCG.DOS2.Properties {
         /// <summary>
         ///   Looks up a localized string similar to $ProjectName Changelog
         ///=======
-        ///# 1.0.0.0
+        ///# $Version
         ///* Initial Release.
         /// </summary>
         public static string DefaultChangelog {
@@ -121,17 +118,16 @@ namespace LL.SCG.DOS2.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to $ProjectName for Divinity: Original Sin 2
+        ///   Looks up a localized string similar to $ProjectName for $ModuleName
         ///=======
         ///
-        ///### Features:
+        ///# Features:
         ///
-        ///
-        ///### Releases
+        ///# Releases
         ///* [Steam Workshop]() 
         ///* [Nexus]()
         ///
-        ///### Attribution
+        ///# Attribution
         ///- [Divinity: Original Sin 2](http://store.steampowered.com/app/435150/Divinity_Original_Sin_2/), a game by [Larian Studios](http://larian.com/).
         /// </summary>
         public static string DefaultReadme {

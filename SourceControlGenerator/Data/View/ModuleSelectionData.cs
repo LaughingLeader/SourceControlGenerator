@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 
-namespace LL.SCG.Data.View
+namespace SCG.Data.View
 {
 	public class ModuleSelectionData : PropertyChangedBase
 	{

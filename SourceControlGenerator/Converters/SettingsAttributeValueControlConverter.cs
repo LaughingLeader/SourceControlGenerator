@@ -7,11 +7,11 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Controls;
 using System.Windows.Data;
-using LL.SCG.Controls;
-using LL.SCG.Data;
-using LL.SCG.Data.View;
+using SCG.Controls;
+using SCG.Data;
+using SCG.Data.View;
 
-namespace LL.SCG.Converters
+namespace SCG.Converters
 {
 	class SettingsAttributeValueControlConverter : IValueConverter
 	{

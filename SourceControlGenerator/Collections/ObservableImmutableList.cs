@@ -7,8 +7,12 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Collections.Immutable;
 
-namespace LL.SCG.Collections
+namespace SCG.Collections
 {
+	/// <summary>
+	/// https://www.codeproject.com/Articles/64936/Threadsafe-ObservableImmutable-Collection
+	/// </summary>
+	/// <typeparam name="T"></typeparam>
 	public class ObservableImmutableList<T> : ObservableCollectionObject, IList, ICollection, IEnumerable, IList<T>, IImmutableList<T>, ICollection<T>, IEnumerable<T>, IReadOnlyList<T>, IReadOnlyCollection<T>, INotifyCollectionChanged, INotifyPropertyChanged
 	{
 		#region Private

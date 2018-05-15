@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace LL.SCG.Data.App
+namespace SCG.Data.App
 {
 	public struct JunctionData
 	{

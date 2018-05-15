@@ -5,7 +5,7 @@ using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Windows.Threading;
 
-namespace LL.SCG.Collections
+namespace SCG.Collections
 {
 	/// <summary>
 	/// https://www.codeproject.com/Articles/64936/Multithreaded-ObservableImmutableCollection

@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SCG.MarkdownConverter", "SC
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SCG.Utilities", "SCG.Utilities\SCG.Utilities.csproj", "{2709C5C0-66AE-49DC-A65B-391163A39602}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SCG.Modules.Default", "SCG.Modules.Default\SCG.Modules.Default.csproj", "{3DA7CC3D-9AFE-4911-9678-8546D490AD73}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -51,6 +53,14 @@ Global
 		{2709C5C0-66AE-49DC-A65B-391163A39602}.Release|Any CPU.Build.0 = Release|Any CPU
 		{2709C5C0-66AE-49DC-A65B-391163A39602}.Release|x86.ActiveCfg = Release|x86
 		{2709C5C0-66AE-49DC-A65B-391163A39602}.Release|x86.Build.0 = Release|x86
+		{3DA7CC3D-9AFE-4911-9678-8546D490AD73}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3DA7CC3D-9AFE-4911-9678-8546D490AD73}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3DA7CC3D-9AFE-4911-9678-8546D490AD73}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{3DA7CC3D-9AFE-4911-9678-8546D490AD73}.Debug|x86.Build.0 = Debug|Any CPU
+		{3DA7CC3D-9AFE-4911-9678-8546D490AD73}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3DA7CC3D-9AFE-4911-9678-8546D490AD73}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3DA7CC3D-9AFE-4911-9678-8546D490AD73}.Release|x86.ActiveCfg = Release|Any CPU
+		{3DA7CC3D-9AFE-4911-9678-8546D490AD73}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

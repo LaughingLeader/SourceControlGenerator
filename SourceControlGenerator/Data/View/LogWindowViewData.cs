@@ -5,10 +5,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Data;
-using LL.SCG.Util;
-using LL.SCG.Windows;
+using SCG.Util;
+using SCG.Windows;
 
-namespace LL.SCG.Data.View
+namespace SCG.Data.View
 {
 	public class LogWindowViewData : PropertyChangedBase
 	{

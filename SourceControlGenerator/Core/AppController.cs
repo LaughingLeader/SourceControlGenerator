@@ -4,28 +4,28 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.IO;
-using LL.SCG.Data;
+using SCG.Data;
 using Newtonsoft.Json;
 using System.Xml.Linq;
 using System.Xml.XPath;
 using System.Xml;
 using System.ComponentModel;
 using System.Collections.ObjectModel;
-using LL.SCG.Data.View;
-using LL.SCG.FileGen;
-using LL.SCG.Windows;
-using LL.SCG.Interfaces;
-using LL.SCG.Data.App;
+using SCG.Data.View;
+using SCG.FileGen;
+using SCG.Windows;
+using SCG.Interfaces;
+using SCG.Data.App;
 using System.Windows;
 using System.Windows.Controls;
-using LL.SCG.Commands;
+using SCG.Commands;
 using System.Globalization;
 using System.Windows.Input;
-using LL.SCG.Util;
+using SCG.Util;
 using System.Windows.Threading;
-using LL.SCG.Controls;
+using SCG.Controls;
 
-namespace LL.SCG.Core
+namespace SCG.Core
 {
    public class AppController : PropertyChangedBase
 	{
@@ -55,6 +55,75 @@ namespace LL.SCG.Core
 		public ICommand SetSetupFoldersToRelativeCommand { get; private set; }
 		public ICommand SetSetupFoldersToMyDocumentsCommand { get; private set; }
 		public ICommand OpenProjectReadmeInMarkdownConverterCommand { get; private set; }
+
+		#region Modules
+		public void InitModules()
+		{
+			var totalLoaded = StartLoadingModules().GetAwaiter().GetResult();
+
+			Log.Here().Important($"Loaded {totalLoaded} project modules.");
+
+			if (!String.IsNullOrWhiteSpace(Data.AppSettings.LastModule) && SetModule(Data.AppSettings.LastModule))
+			{
+				Data.ModuleSelectionVisibility = Visibility.Collapsed;
+			}
+			else
+			{
+				Data.ModuleSelectionVisibility = Visibility.Visible;
+			}
+		}
+
+		private Task<int> StartLoadingModules()
+		{
+			return LoadModules();
+		}
+
+		private async Task<int> LoadModules()
+		{
+			int totalModulesLoaded = 0;
+
+			DirectoryInfo modulesFolder = new DirectoryInfo("Modules");
+			modulesFolder.Create();
+			var modules = modulesFolder.GetFiles("*.dll", SearchOption.AllDirectories);
+
+			if (modules.Length > 0)
+			{
+				var tasks = new List<Task<bool>>();
+				for (var i = 0; i < modules.Length; i++)
+				{
+					var module = modules[i];
+					tasks.Add(LoadModule(module.FullName, module.Name));
+					//Assembly.LoadFrom(module.FullName);
+				}
+
+				foreach (var task in await Task.WhenAll(tasks))
+				{
+					if (task == true)
+					{
+						totalModulesLoaded += 1;
+					}
+				}
+
+				if (totalModulesLoaded <= 0) Log.Here().Important("No modules were loaded.");
+			}
+
+			return totalModulesLoaded;
+		}
+
+		private async Task<bool> LoadModule(string fileName, string Name = "")
+		{
+			try
+			{
+				Log.Here().Important($"Attempting to load module {Name}.");
+				AssemblyLoader.Call(AppDomain.CurrentDomain, fileName, "SCG.Module", "Init");
+				return await Task.FromResult(true);
+			}
+			catch (Exception ex)
+			{
+				Log.Here().Error("Error loading module file {0}: {1}", fileName, ex.ToString());
+			}
+			return await Task.FromResult(false);
+		}
 
 		private IProjectController currentModule;
 
@@ -189,6 +258,7 @@ namespace LL.SCG.Core
 			Data.ModuleIsLoaded = false;
 			Data.ModuleSelectionVisibility = Visibility.Visible;
 		}
+		#endregion
 		#region Progress
 
 		public void StartProgress(string Title, Action StartAction, string StartMessage = "", int StartValue = 0, Action OnCompleted = null)

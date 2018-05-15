@@ -4,10 +4,10 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
-using LL.SCG.Commands;
-using LL.SCG.Enum;
+using SCG.Commands;
+using SCG.Enum;
 
-namespace LL.SCG.Data.View
+namespace SCG.Data.View
 {
 	public class SettingsEntryData : PropertyChangedBase
 	{

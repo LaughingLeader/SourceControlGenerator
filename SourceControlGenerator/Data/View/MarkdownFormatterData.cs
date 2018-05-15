@@ -4,11 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
-using LL.SCG.Commands;
-using LL.SCG.Markdown;
+using SCG.Commands;
+using SCG.Markdown;
 using Newtonsoft.Json;
 
-namespace LL.SCG.Data.View
+namespace SCG.Data.View
 {
 	public class MarkdownFormatterData : PropertyChangedBase
 	{

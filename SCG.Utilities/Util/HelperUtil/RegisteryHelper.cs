@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Win32;
 
-namespace LL.SCG.Util.HelperUtil
+namespace SCG.Util.HelperUtil
 {
 	public class RegisteryHelper
 	{

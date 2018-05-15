@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using LL.SCG.Interfaces;
+using SCG.Interfaces;
 
-namespace LL.SCG.DOS2.Core
+namespace SCG.Modules.DOS2.Core
 {
 	public static class DOS2DefaultPaths
 	{

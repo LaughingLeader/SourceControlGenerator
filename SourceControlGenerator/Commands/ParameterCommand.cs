@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
 
-namespace LL.SCG.Commands
+namespace SCG.Commands
 {
 	/// <summary>
 	/// Executes an action, passing in a parameter.

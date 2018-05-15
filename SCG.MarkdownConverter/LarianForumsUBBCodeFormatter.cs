@@ -8,7 +8,7 @@ using AngleSharp.Html;
 using AngleSharp.Parser.Html;
 using Markdig;
 
-namespace LL.SCG.Markdown
+namespace SCG.Markdown
 {
 	public class LarianForumsUBBCodeFormatter : BBCodeFormatter
 	{

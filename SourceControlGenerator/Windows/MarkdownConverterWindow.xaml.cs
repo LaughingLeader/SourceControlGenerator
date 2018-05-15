@@ -6,13 +6,13 @@ using System.Windows;
 using System.Windows.Documents;
 using System.Windows.Input;
 using System.Xaml;
-using LL.SCG.Commands;
-using LL.SCG.Core;
-using LL.SCG.Data.View;
+using SCG.Commands;
+using SCG.Core;
+using SCG.Data.View;
 using Markdig;
 using XamlReader = System.Windows.Markup.XamlReader;
 
-namespace LL.SCG.Windows
+namespace SCG.Windows
 {
 	/// <summary>
 	/// Interaction logic for MarkdownConverterWindow.xaml

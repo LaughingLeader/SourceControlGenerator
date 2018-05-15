@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace LL.SCG.Util
+namespace SCG.Util
 {
 	public static class ProcessHelper
 	{

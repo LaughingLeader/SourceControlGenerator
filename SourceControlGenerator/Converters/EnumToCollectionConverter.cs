@@ -6,9 +6,9 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Data;
 using System.Windows.Markup;
-using LL.SCG.Util;
+using SCG.Util;
 
-namespace LL.SCG.Converters
+namespace SCG.Converters
 {
 	[ValueConversion(typeof(System.Enum), typeof(IEnumerable<ValueDescription>))]
 	public class EnumToCollectionConverter : MarkupExtension, IValueConverter

@@ -11,10 +11,10 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
-using LL.SCG.Core;
-using LL.SCG.Windows;
+using SCG.Core;
+using SCG.Windows;
 
-namespace LL.SCG.DOS2.Windows
+namespace SCG.Modules.DOS2.Windows
 {
 	/// <summary>
 	/// Interaction logic for SetupWindow.xaml

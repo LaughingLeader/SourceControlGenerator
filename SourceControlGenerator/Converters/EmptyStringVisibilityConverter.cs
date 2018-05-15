@@ -7,7 +7,7 @@ using System.Windows;
 using System.Windows.Data;
 using System.Windows.Media;
 
-namespace LL.SCG.Converters
+namespace SCG.Converters
 {
 	public class EmptyStringVisibilityConverter : IValueConverter
 	{

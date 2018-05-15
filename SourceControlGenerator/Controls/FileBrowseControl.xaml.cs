@@ -10,16 +10,16 @@ using System.Windows;
 using System.Windows.Controls;
 using Microsoft.Win32;
 
-using LL.SCG.Enum;
+using SCG.Enum;
 using System.Windows.Input;
-using LL.SCG.Core;
+using SCG.Core;
 using Microsoft.WindowsAPICodePack.Dialogs;
-using LL.SCG.Data.View;
+using SCG.Data.View;
 using System.Windows.Data;
 using System.Globalization;
 using System.Windows.Threading;
 
-namespace LL.SCG.Controls
+namespace SCG.Controls
 {
 	public enum FileBrowserMode
 	{

@@ -8,7 +8,7 @@ using System.Windows.Data;
 using System.Windows.Media;
 using System.Windows.Controls;
 
-namespace LL.SCG.Converters
+namespace SCG.Converters
 {
 	public class IntToGridLengthConverter : IValueConverter
 	{

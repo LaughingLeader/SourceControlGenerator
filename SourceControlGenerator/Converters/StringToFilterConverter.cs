@@ -7,10 +7,10 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Data;
 using System.Windows.Media;
-using LL.SCG.Controls;
-using LL.SCG.Core;
+using SCG.Controls;
+using SCG.Core;
 
-namespace LL.SCG.Converters
+namespace SCG.Converters
 {
 	public class StringToFilterConverter : IValueConverter
 	{

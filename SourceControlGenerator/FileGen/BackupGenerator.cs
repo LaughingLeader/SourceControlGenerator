@@ -4,21 +4,21 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using LL.SCG.Data;
-using LL.SCG.Data.View;
-using LL.SCG.Interfaces;
-using LL.SCG.Data.App;
-using LL.SCG.Util;
+using SCG.Data;
+using SCG.Data.View;
+using SCG.Interfaces;
+using SCG.Data.App;
+using SCG.Util;
 using System.Windows;
 using SharpCompress.Archives.Zip;
 using SharpCompress.Archives;
 using SharpCompress.Writers;
 using SharpCompress.Writers.Zip;
 using SharpCompress.Common;
-using LL.SCG.Core;
+using SCG.Core;
 using System.Collections.Concurrent;
 
-namespace LL.SCG.FileGen
+namespace SCG.FileGen
 {
 	public static class BackupGenerator
 	{
@@ -156,6 +156,52 @@ namespace LL.SCG.FileGen
 				{
 					Log.Here().Error($"Error writing archive {repoPath} to {archiveFilePath}: {ex.ToString()}");
 				}
+			}
+			return false;
+		}
+
+		public static async Task<bool> CreateArchiveFromDirectory(string directoryPath, string archiveFilePath, int incrementProgressAmount = -1)
+		{
+			try
+			{
+				if (incrementProgressAmount > 0) AppController.Main.UpdateProgressLog($"Searching source folders for files to save...");
+
+				using (var zip = ZipArchive.Create())
+				{
+					if (incrementProgressAmount > 0) AppController.Main.UpdateProgressLog("Adding files to archive...");
+
+					var files = Directory.EnumerateFiles(directoryPath, "*", SearchOption.AllDirectories);
+					if (files != null)
+					{
+						if (incrementProgressAmount > 0)
+						{
+							incrementProgressAmount = incrementProgressAmount / files.Count();
+						}
+
+						foreach (var filePath in files)
+						{
+							if (File.Exists(filePath))
+							{
+								var fileInfo = new FileInfo(filePath);
+								if (fileInfo != null)
+								{
+									zip.AddEntry(fileInfo.FullName.Replace(directoryPath, ""), fileInfo);
+								}
+								if (incrementProgressAmount > 0) AppController.Main.UpdateProgress(incrementProgressAmount);
+							}
+						}
+					}
+
+					if (incrementProgressAmount > 0) AppController.Main.UpdateProgressLog("Saving archive...");
+
+					zip.SaveTo(archiveFilePath, CompressionType.Deflate);
+
+					return true;
+				}
+			}
+			catch (Exception ex)
+			{
+				Log.Here().Error($"Error writing archive {directoryPath} to {archiveFilePath}: {ex.ToString()}");
 			}
 			return false;
 		}

@@ -7,7 +7,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Threading;
 
-namespace LL.SCG.Controls.Behavior
+namespace SCG.Controls.Behavior
 {
 	/// <summary>
 	/// Allows a ComboBox to size to the largest item within.

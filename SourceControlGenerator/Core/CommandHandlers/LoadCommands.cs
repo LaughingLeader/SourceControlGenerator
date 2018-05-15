@@ -9,19 +9,19 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 using System.Xml.Linq;
-using LL.SCG.Collections;
-using LL.SCG.Controls;
-using LL.SCG.Core;
-using LL.SCG.Data;
-using LL.SCG.Data.View;
-using LL.SCG.Interfaces;
-using LL.SCG.Windows;
+using SCG.Collections;
+using SCG.Controls;
+using SCG.Core;
+using SCG.Data;
+using SCG.Data.View;
+using SCG.Interfaces;
+using SCG.Windows;
 using Microsoft.Win32;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using Newtonsoft.Json;
 
 
-namespace LL.SCG.Commands
+namespace SCG.Commands
 {
 	public class LoadCommands
 	{

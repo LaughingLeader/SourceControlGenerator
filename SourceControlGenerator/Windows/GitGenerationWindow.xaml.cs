@@ -12,12 +12,12 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
-using LL.SCG.Collections;
-using LL.SCG.Data;
-using LL.SCG.Data.View;
-using LL.SCG.Interfaces;
+using SCG.Collections;
+using SCG.Data;
+using SCG.Data.View;
+using SCG.Interfaces;
 
-namespace LL.SCG.Windows
+namespace SCG.Windows
 {
 	/// <summary>
 	/// Interaction logic for GitGenerationWindow.xaml

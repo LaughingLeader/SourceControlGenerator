@@ -8,7 +8,7 @@ using System.Windows.Data;
 using System.Windows.Input;
 using Newtonsoft.Json;
 
-namespace LL.SCG.Commands
+namespace SCG.Commands
 {
 	public class SaveFileAsCommand : BaseCommand
 	{

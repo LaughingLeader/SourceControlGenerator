@@ -4,7 +4,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using Microsoft.Win32.SafeHandles;
 
-namespace LL.SCG.Util
+namespace SCG.Util
 {
 	/// <summary>
 	/// Provides access to NTFS junction points in .Net.

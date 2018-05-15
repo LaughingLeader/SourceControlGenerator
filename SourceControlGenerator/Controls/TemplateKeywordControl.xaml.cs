@@ -13,7 +13,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace LL.SCG.Controls
+namespace SCG.Controls
 {
 	/// <summary>
 	/// Interaction logic for TemplateKeywordControl.xaml

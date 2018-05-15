@@ -9,7 +9,7 @@ using System.Windows;
 using System.Windows.Data;
 using System.Windows.Input;
 
-namespace LL.SCG.Data.View
+namespace SCG.Data.View
 {
 	public interface IMenuData
 	{
@@ -86,11 +86,11 @@ namespace LL.SCG.Data.View
 				{
 					if(ShortcutModifiers != null)
 					{
-						return LL.SCG.App.ModifierKeysConverter.ConvertToString(ShortcutModifiers.Value) + "+" + LL.SCG.App.KeyConverter.ConvertToString(ShortcutKey.Value);
+						return SCG.App.ModifierKeysConverter.ConvertToString(ShortcutModifiers.Value) + "+" + SCG.App.KeyConverter.ConvertToString(ShortcutKey.Value);
 					}
 					else
 					{
-						return LL.SCG.App.KeyConverter.ConvertToString(ShortcutKey.Value);
+						return SCG.App.KeyConverter.ConvertToString(ShortcutKey.Value);
 					}
 				}
 				return shortcutText;

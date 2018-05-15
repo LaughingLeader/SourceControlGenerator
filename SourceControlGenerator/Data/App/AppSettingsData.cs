@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using LL.SCG.Enum;
+using SCG.Enum;
 
-namespace LL.SCG.Data.App
+namespace SCG.Data.App
 {
 	public class AppSettingsData : PropertyChangedBase
 	{

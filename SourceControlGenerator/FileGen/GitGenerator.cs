@@ -5,14 +5,14 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using LL.SCG.Data;
-using LL.SCG.Data.App;
-using LL.SCG.Data.View;
-using LL.SCG.Interfaces;
-using LL.SCG.Util;
+using SCG.Data;
+using SCG.Data.App;
+using SCG.Data.View;
+using SCG.Interfaces;
+using SCG.Util;
 using Microsoft.Win32;
 
-namespace LL.SCG.FileGen
+namespace SCG.FileGen
 {
 	public static class GitGenerator
 	{

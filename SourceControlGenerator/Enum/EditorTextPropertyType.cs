@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel;
-using LL.SCG.Converters;
+using SCG.Converters;
 
-namespace LL.SCG.Enum
+namespace SCG.Enum
 {
 	[TypeConverter(typeof(EnumDescriptionConverter))]
 	public enum EditorTextPropertyType

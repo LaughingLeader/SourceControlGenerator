@@ -10,14 +10,14 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Data;
 using System.Windows.Input;
-using LL.SCG.Core;
-using LL.SCG.Data;
-using LL.SCG.Data.View;
-using LL.SCG.Modules;
-using LL.SCG.ThemeSystem;
-using LL.SCG.Util;
+using SCG.Core;
+using SCG.Data;
+using SCG.Data.View;
+using SCG.Modules;
+using SCG.ThemeSystem;
+using SCG.Util;
 
-namespace LL.SCG
+namespace SCG
 {
 	/// <summary>
 	/// Interaction logic for App.xaml
@@ -38,7 +38,7 @@ namespace LL.SCG
 			ModifierKeysConverter = new ModifierKeysConverter();
 
 			ThemeController.Init(this);
-			LL.SCG.Helpers.Init();
+			SCG.Helpers.Init();
 			FileCommands.Init();
 		}
 

@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 
-namespace LL.SCG.FileGen
+namespace SCG.FileGen
 {
 	public static class JsonInterface
 	{

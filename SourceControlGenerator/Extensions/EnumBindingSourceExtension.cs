@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Windows.Markup;
 
-namespace LL.SCG
+namespace SCG
 {
 	public class EnumBindingSourceExtension : MarkupExtension
 	{

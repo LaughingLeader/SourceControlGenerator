@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Data;
 using System.Windows.Media;
-using LL.SCG.Util;
+using SCG.Util;
 
-namespace LL.SCG.Converters
+namespace SCG.Converters
 {
 	public class FooterOutputColorConverter : IValueConverter
 	{

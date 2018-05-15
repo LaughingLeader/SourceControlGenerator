@@ -14,14 +14,14 @@ using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
-using LL.SCG.Commands;
-using LL.SCG.Core;
-using LL.SCG.Interfaces;
-using LL.SCG.Markdown;
-using LL.SCG.Windows;
+using SCG.Commands;
+using SCG.Core;
+using SCG.Interfaces;
+using SCG.Markdown;
+using SCG.Windows;
 using Newtonsoft.Json;
 
-namespace LL.SCG.Data.View
+namespace SCG.Data.View
 {
 	public enum MarkdownConverterMode
 	{

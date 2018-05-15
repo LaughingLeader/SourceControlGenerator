@@ -5,9 +5,9 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace LL.SCG.Modules
+namespace SCG.Core
 {
-	public class Loader : MarshalByRefObject
+	public class AssemblyLoader : MarshalByRefObject
 	{
 		object CallInternal(string dll, string typename, string method, object[] parameters)
 		{
@@ -20,7 +20,7 @@ namespace LL.SCG.Modules
 
 		public static object Call(AppDomain domain, string dll, string typename, string method, params object[] parameters)
 		{
-			Loader ld = (Loader)domain.CreateInstanceAndUnwrap(Assembly.GetExecutingAssembly().FullName, typeof(Loader).FullName);
+			AssemblyLoader ld = (AssemblyLoader)domain.CreateInstanceAndUnwrap(Assembly.GetExecutingAssembly().FullName, typeof(AssemblyLoader).FullName);
 			object result = ld.CallInternal(dll, typename, method, parameters);
 			//AppDomain.Unload(domain);
 			return result;

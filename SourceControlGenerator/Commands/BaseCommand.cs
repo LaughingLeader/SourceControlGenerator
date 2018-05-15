@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
 
-namespace LL.SCG.Commands
+namespace SCG.Commands
 {
 	public class BaseCommand : ICommand
 	{

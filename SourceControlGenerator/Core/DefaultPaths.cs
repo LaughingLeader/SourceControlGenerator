@@ -4,10 +4,10 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using LL.SCG.Data.View;
-using LL.SCG.Interfaces;
+using SCG.Data.View;
+using SCG.Interfaces;
 
-namespace LL.SCG
+namespace SCG
 {
 	public static class DefaultPaths
 	{

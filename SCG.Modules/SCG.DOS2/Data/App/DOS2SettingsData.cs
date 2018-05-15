@@ -4,17 +4,18 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using LL.SCG.Data;
-using LL.SCG.Data.View;
-using LL.SCG.DOS2.Core;
-using LL.SCG.Enum;
-using LL.SCG.Interfaces;
+using SCG.Data;
+using SCG.Data.View;
+using SCG.Modules.DOS2.Core;
+using SCG.Enum;
+using SCG.Interfaces;
 using Newtonsoft.Json;
 
-namespace LL.SCG.DOS2.Data.App
+namespace SCG.Modules.DOS2.Data.App
 {
 	public class DOS2SettingsData : ModuleSettingsData
 	{
+		[JsonIgnore]
 		public static string SteamAppID => "435150";
 
 		[JsonIgnore]

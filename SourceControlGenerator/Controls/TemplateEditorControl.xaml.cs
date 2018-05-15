@@ -13,13 +13,13 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-using LL.SCG.Core;
-using LL.SCG.Data.View;
-using LL.SCG.Util;
-using LL.SCG.Windows;
+using SCG.Core;
+using SCG.Data.View;
+using SCG.Util;
+using SCG.Windows;
 using Ookii.Dialogs.Wpf;
 
-namespace LL.SCG.Controls
+namespace SCG.Controls
 {
 	/// <summary>
 	/// Interaction logic for TemplateEditorControl.xaml
