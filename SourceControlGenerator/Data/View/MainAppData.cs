@@ -49,10 +49,6 @@ namespace SCG.Data.View
 
 		public ObservableCollection<ModuleSelectionData> Modules { get; private set; }
 
-		public object GlobalKeyListLock { get; private set; } = new object();
-		public object DateKeyListLock { get; private set; } = new object();
-		public object AppKeyListLock { get; private set; } = new object();
-
 		private bool portable = false;
 
 		public bool Portable
@@ -62,6 +58,18 @@ namespace SCG.Data.View
 			{
 				portable = value;
 				RaisePropertyChanged("Portable");
+			}
+		}
+
+		private bool clipboardPopulated = false;
+
+		public bool ClipboardPopulated
+		{
+			get { return clipboardPopulated; }
+			set
+			{
+				clipboardPopulated = value;
+				RaisePropertyChanged("ClipboardPopulated");
 			}
 		}
 
@@ -292,9 +300,9 @@ namespace SCG.Data.View
 			DateKeyList = new ObservableImmutableList<KeywordData>();
 			AppKeyList = new ObservableImmutableList<KeywordData>();
 
-			BindingOperations.EnableCollectionSynchronization(GlobalKeyList, GlobalKeyListLock);
-			BindingOperations.EnableCollectionSynchronization(DateKeyList, DateKeyListLock);
-			BindingOperations.EnableCollectionSynchronization(AppKeyList, AppKeyListLock);
+			//BindingOperations.EnableCollectionSynchronization(GlobalKeyList, GlobalKeyList);
+			//BindingOperations.EnableCollectionSynchronization(DateKeyList, DateKeyListLock);
+			//BindingOperations.EnableCollectionSynchronization(AppKeyList, AppKeyListLock);
 
 			ModuleNameKeyword = new KeywordData()
 			{

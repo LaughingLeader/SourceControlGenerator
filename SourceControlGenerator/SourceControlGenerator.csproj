@@ -186,6 +186,7 @@
     <Compile Include="Converters\SettingsAttributeConverter.cs" />
     <Compile Include="Converters\SettingsAttributeValueControlConverter.cs" />
     <Compile Include="Converters\EmptyValueVisibilityConverter.cs" />
+    <Compile Include="Converters\StringToBoolConverter.cs" />
     <Compile Include="Converters\StringToFilterConverter.cs" />
     <Compile Include="Converters\TextWrapToScrollBarVisibilityConverter.cs" />
     <Compile Include="Converters\VisibleLogsConverter.cs" />
@@ -195,6 +196,7 @@
     <Compile Include="Data\App\JunctionData.cs" />
     <Compile Include="Data\App\ManagedProjectsData.cs" />
     <Compile Include="Data\Proxy\AppControllerProxy.cs" />
+    <Compile Include="Data\Proxy\BindingProxy.cs" />
     <Compile Include="Data\Proxy\IconProxy.cs" />
     <Compile Include="Data\View\IconPathData.cs" />
     <Compile Include="Data\View\LogData.cs" />
@@ -256,6 +258,7 @@
     <Compile Include="Windows\AboutWindow.xaml.cs">
       <DependentUpon>AboutWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Windows\ClipboardMonitorWindow.cs" />
     <Compile Include="Windows\MarkdownConverterWindow.xaml.cs">
       <DependentUpon>MarkdownConverterWindow.xaml</DependentUpon>
     </Compile>

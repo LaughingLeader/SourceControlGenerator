@@ -29,6 +29,7 @@
 	<cv:NewlineStringConverter x:Key="NewlineStringConverter"/>
 	<cv:SettingsAttributeConverter x:Key="SettingsAttributeConverter"/>
 	<cv:SettingsAttributeValueControlConverter x:Key="SettingsAttributeValueControlConverter"/>
+	<cv:StringToBoolConverter x:Key="StringToBoolConverter" />
 	<cv:StringToFilterConverter x:Key="StringToFilterConverter" />
 	<cv:StringToFilterListConverter x:Key="StringToFilterListConverter" />
 	<cv:TextWrapToScrollBarVisibilityConverter x:Key="TextWrapToScrollBarVisibilityConverter" />

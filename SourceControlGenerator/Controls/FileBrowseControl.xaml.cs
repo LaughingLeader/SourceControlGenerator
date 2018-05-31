@@ -493,5 +493,56 @@ namespace SCG.Controls
 				ToolTip = "Error: Path is not valid.";
 			}
 		}
+
+		private void ClearFileLocationText(object sender, RoutedEventArgs e)
+		{
+			FileLocationText = "";
+		}
+
+		private void CutSelectedToClipboard(object sender, RoutedEventArgs e)
+		{			
+			if(!String.IsNullOrEmpty(FilePathDisplay.SelectedText))
+			{
+				var index = FilePathDisplay.CaretIndex;
+				Clipboard.SetText(FilePathDisplay.SelectedText);
+				FileLocationText = FileLocationText.Replace(FilePathDisplay.SelectedText, "");
+				FilePathDisplay.SelectedText = "";
+
+				FilePathDisplay.CaretIndex = index;
+			}
+		}
+
+		private void CopySelectedToClipboard(object sender, RoutedEventArgs e)
+		{
+			if (!String.IsNullOrEmpty(FilePathDisplay.SelectedText))
+			{
+				Clipboard.SetText(FilePathDisplay.SelectedText);
+			}
+		}
+
+		private void CopyAllToClipboard(object sender, RoutedEventArgs e)
+		{
+			Clipboard.SetText(FileLocationText);
+		}
+
+		private void PasteFromClipboard(object sender, RoutedEventArgs e)
+		{
+			if (Clipboard.ContainsText())
+			{
+				if(String.IsNullOrEmpty(FilePathDisplay.SelectedText))
+				{
+					FileLocationText = FilePathDisplay.Text.Insert(FilePathDisplay.CaretIndex, Clipboard.GetText());
+				}
+				else
+				{
+					FilePathDisplay.SelectedText = Clipboard.GetText();
+				}
+			}
+		}
+
+		private void ReplaceFromClipboard(object sender, RoutedEventArgs e)
+		{
+			if (Clipboard.ContainsText()) FileLocationText = Clipboard.GetText();
+		}
 	}
 }

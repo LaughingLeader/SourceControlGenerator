@@ -6,6 +6,7 @@
 			 xmlns:local="clr-namespace:SCG.Controls"
 			 xmlns:behavior="clr-namespace:SCG.Controls.Behavior"
 			 xmlns:conv="clr-namespace:SCG.Converters"
+			 xmlns:core="clr-namespace:SCG.Core"
 			 mc:Ignorable="d" 
 			 d:DesignHeight="80" d:DesignWidth="300"
 			 Width="Auto"
@@ -45,7 +46,19 @@
 					 VerticalAlignment="Center" TextAlignment="Right"
 					 Text="{Binding Path=FileLocationText, ElementName=FileBrowser, Mode=TwoWay, FallbackValue='Test'}" Background="{Binding Path=FileValidation, ElementName=FileBrowser, Converter={StaticResource FileValidationColorConverter}}" 
 					 ToolTip="{Binding Path=FileLocationText, ElementName=FileBrowser}"
-			/>
+					 Tag="{Binding RelativeSource={RelativeSource Mode=Self}}"
+			>
+				<TextBox.ContextMenu>
+					<ContextMenu DataContext="{Binding Path=PlacementTarget.Tag, RelativeSource={RelativeSource Self}}" >
+						<MenuItem Header="Cut" IsEnabled="{Binding SelectedText, Converter={StaticResource StringToBoolConverter}}" Click="CutSelectedToClipboard" />
+						<MenuItem Header="Copy Selected" IsEnabled="{Binding SelectedText, Converter={StaticResource StringToBoolConverter}}" Click="CopySelectedToClipboard" />
+						<MenuItem Header="Copy All" IsEnabled="{Binding Text, Converter={StaticResource StringToBoolConverter}}" Click="CopyAllToClipboard" />
+						<MenuItem Header="Paste" IsEnabled="{Binding Source={x:Static core:AppController.Main}, Path=Data.ClipboardPopulated}" Click="PasteFromClipboard" />
+						<MenuItem Header="Paste (Replace)" IsEnabled="{Binding Source={x:Static core:AppController.Main}, Path=Data.ClipboardPopulated}" Click="ReplaceFromClipboard" />
+						<MenuItem Header="Clear" IsEnabled="{Binding Text, Converter={StaticResource StringToBoolConverter}}" Click="ClearFileLocationText" />
+					</ContextMenu>
+				</TextBox.ContextMenu>
+			</TextBox>
 		</Border>
 		<Button Height="{Binding Path=Height, ElementName=FileBrowser}" x:Name="FileBrowseButton" Grid.Column="1" Style="{StaticResource OpenBrowseButton}" BorderThickness="1,1,1,1" ToolTip="{Binding Path=BrowseToolTip, ElementName=FileBrowser}" FontSize="16" TextOptions.TextFormattingMode="Display" FontFamily="Bitter" Click="FileBrowseButton_Click" BorderBrush="{Binding Path=BorderBrush, ElementName=FilePathDisplay}" />
 	</Grid>

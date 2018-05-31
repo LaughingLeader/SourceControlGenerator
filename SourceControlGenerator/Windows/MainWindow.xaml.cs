@@ -36,7 +36,7 @@ namespace SCG.Windows
 	/// <summary>
 	/// Interaction logic for MainWindow.xaml
 	/// </summary>
-	public partial class MainWindow : Window, INotifyPropertyChanged
+	public partial class MainWindow : ClipboardMonitorWindow
 	{
 		private LogWindow logWindow;
 
@@ -92,6 +92,8 @@ namespace SCG.Windows
 
 			_instance = this;
 
+			Start();
+
 			LogWindow = new LogWindow(this);
 			AboutWindow = new AboutWindow(this);
 			MarkdownConverterWindow = new MarkdownConverterWindow();
@@ -116,6 +118,13 @@ namespace SCG.Windows
 			Controller.OnModuleSet += LoadProjectModuleView;
 
 			Controller.InitModules();
+		}
+
+		protected override void OnClipboardUpdate()
+		{
+			base.OnClipboardUpdate();
+
+			Controller.Data.ClipboardPopulated = Clipboard.ContainsText();
 		}
 
 		private void MainAppWindow_Loaded(object sender, RoutedEventArgs e)
