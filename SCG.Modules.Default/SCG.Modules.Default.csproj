@@ -37,6 +37,8 @@
       <HintPath>..\packages\System.Collections.Immutable.1.4.0\lib\netstandard2.0\System.Collections.Immutable.dll</HintPath>
     </Reference>
     <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Xaml" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -46,10 +48,14 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Controls\ProjectViewControl.xaml.cs">
+      <DependentUpon>ProjectViewControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Core\DefaultTooltips.cs" />
     <Compile Include="Data\DefaultModuleData.cs" />
     <Compile Include="Data\DefaultProjectData.cs" />
     <Compile Include="Data\DefaultSettingsData.cs" />
-    <Compile Include="DefaultProjectController.cs" />
+    <Compile Include="Core\DefaultProjectController.cs" />
     <Compile Include="Module.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -66,5 +72,18 @@
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
+  <ItemGroup>
+    <Page Include="Controls\ProjectViewControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>xcopy "$(TargetDir)$(TargetFileName)" "$(SolutionDir)Modules_Export\" /Y
+xcopy "$(TargetDir)$(TargetFileName)" "D:\Projects\_Visual_Studio\SourceControlGenerator\SourceControlGenerator\bin\Debug\Modules\" /Y
+
+xcopy "$(TargetDir)$(TargetFileName)" "$(SolutionDir)Modules_Export\" /Y
+xcopy "$(TargetDir)$(TargetFileName)" "D:\Projects\_Visual_Studio\SourceControlGenerator\SourceControlGenerator\bin\Release\Modules\" /Y</PostBuildEvent>
+  </PropertyGroup>
 </Project>

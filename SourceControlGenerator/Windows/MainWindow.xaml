@@ -15,7 +15,7 @@
 		xmlns:listview="clr-namespace:Itenso.Windows.Controls.ListViewLayout"
 		xmlns:cb="clr-namespace:SCG.Controls.Behavior"
 		mc:Ignorable="d"
-		Title="Source Control Generator" Height="600" Width="1024" Loaded="MainAppWindow_Loaded" Closing="MainAppWindow_Closing"
+		Title="{Binding WindowTitle}" Height="600" Width="1024" Loaded="MainAppWindow_Loaded" Closing="MainAppWindow_Closing"
 		WindowStartupLocation="CenterOwner"
 		
 		>
@@ -449,16 +449,14 @@
 					<GradientStop Color="#FFCBCBCB" Offset="0.967"/>
 				</LinearGradientBrush>
 			</Grid.Background>
-			<Grid>
+			<Grid VerticalAlignment="Center">
 				<Grid.RowDefinitions>
-					<RowDefinition />
 					<RowDefinition Height="Auto" />
-					<RowDefinition MaxHeight="256" Height="128"/>
+					<RowDefinition MaxHeight="512" Height="Auto"/>
 					<RowDefinition Height="Auto" />
-					<RowDefinition />
 				</Grid.RowDefinitions>
-				<TextBlock Text="Project Modules" FontSize="24" TextAlignment="Center" Padding="20" Grid.Row="1"/>
-				<ListView ItemsSource="{Binding Modules}" ScrollViewer.VerticalScrollBarVisibility="Auto" SelectionChanged="ModuleSelection_SelectionChanged" SelectionMode="Single" Grid.Row="2"
+				<TextBlock Text="Project Modules" FontSize="24" TextAlignment="Center" Padding="20" Grid.Row="0"/>
+				<ListView ItemsSource="{Binding Modules}" ScrollViewer.VerticalScrollBarVisibility="Auto" SelectionChanged="ModuleSelection_SelectionChanged" SelectionMode="Single" Grid.Row="1"
 						  HorizontalAlignment="Center" MinWidth="256"
 						  >
 					<ListView.ItemContainerStyle>
@@ -475,13 +473,13 @@
 						<DataTemplate>
 							<StackPanel Orientation="Vertical">
 								<!-- Click="ModuleSelection_ModuleButtonClick"-->
-								<Image MaxWidth="256" MaxHeight="256" Stretch="Uniform" Source="{Binding Logo, TargetNullValue={x:Null}}" Visibility="{Binding LogoExists, FallbackValue=Collapsed}" ToolTip="{Binding ModuleName}" />
+								<Image MaxWidth="256" MaxHeight="256" Stretch="Uniform" Source="{Binding Logo, TargetNullValue='Resources/Logos/Blank.png'}" Visibility="{Binding LogoExists, FallbackValue=Collapsed}" ToolTip="{Binding ModuleName}" />
 								<TextBlock Text="{Binding DisplayName}" TextAlignment="Center" Visibility="{Binding DisplayName, Converter={StaticResource EmptyStringVisibilityConverter}, FallbackValue=Collapsed}" />
 							</StackPanel>
 						</DataTemplate>
 					</ListView.ItemTemplate>
 				</ListView>
-				<Grid Grid.Row="3" HorizontalAlignment="Center" VerticalAlignment="Center">
+				<Grid Grid.Row="2" HorizontalAlignment="Center" VerticalAlignment="Center">
 					<Button Content="Load Module" IsEnabled="{Binding CanLoadModule}" Click="ModuleSelection_LoadModuleClick" />
 				</Grid>
 			</Grid>

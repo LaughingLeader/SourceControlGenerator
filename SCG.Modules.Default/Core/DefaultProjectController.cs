@@ -16,8 +16,10 @@ using System.IO;
 using SCG.FileGen;
 using System.Collections.Concurrent;
 using System.Globalization;
+using SCG.Modules.Default.Controls;
+using System.Windows.Controls;
 
-namespace SCG.Modules.Default
+namespace SCG.Modules.Default.Core
 {
 	public class DefaultProjectController : IProjectController
 	{
@@ -26,7 +28,17 @@ namespace SCG.Modules.Default
 
 		public DefaultModuleData Data { get; set; }
 
-		private MainWindow mainWindow;
+		private ProjectViewControl projectViewControl;
+
+		public void RefreshProjects()
+		{
+
+		}
+
+		public void SelectionChanged()
+		{
+
+		}
 
 		#region Git Generation
 
@@ -35,7 +47,7 @@ namespace SCG.Modules.Default
 			if (Data.CanGenerateGit)
 			{
 				var selectedProjects = Data.ManagedProjects.Where(p => p.Selected && p.GitGenerated == false).ToList<IProjectData>();
-				mainWindow.OpenGitGenerationWindow(Data.GitGenerationSettings, selectedProjects, StartGitGeneration);
+				projectViewControl.MainWindow.OpenGitGenerationWindow(Data.GitGenerationSettings, selectedProjects, StartGitGeneration);
 			}
 		}
 
@@ -470,15 +482,24 @@ namespace SCG.Modules.Default
 			}
 		}
 
-		public System.Windows.Controls.UserControl GetProjectView(MainWindow mainWindow)
+		public UserControl GetProjectView(MainWindow mainWindow)
 		{
-			throw new NotImplementedException();
+			if (projectViewControl == null) projectViewControl = new ProjectViewControl(mainWindow, this);
+
+			return projectViewControl;
 		}
 
 		public void OpenSetup(Action OnSetupFinished)
 		{
-			
+			//if (Data.Settings.FirstTimeSetup)
+			//{
+			//	SetupWindow setupWindow = new SetupWindow(this, OnSetupFinished);
+			//	setupWindow.Owner = App.Current.MainWindow;
+			//	setupWindow.Show();
+			//}
+			OnSetupFinished.Invoke();
 		}
+
 
 		public void Start()
 		{
@@ -487,7 +508,7 @@ namespace SCG.Modules.Default
 
 		public void Unload()
 		{
-			
+			MainAppData.MenuBarData.RemoveAllModuleMenus(Data.ModuleName);
 		}
 
 		private MenuData BackupSelectedMenuData { get; set; }

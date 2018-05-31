@@ -5,16 +5,20 @@ using System.Text;
 using System.Threading.Tasks;
 using SCG.Core;
 using SCG.Interfaces;
+using SCG.Modules.Default.Core;
 
-namespace SCG.Modules.Default
+namespace SCG
 {
 	public class Module : IModuleMain
 	{
-		private DefaultProjectController Controller { get; set; }
+		public DefaultProjectController Controller { get; private set; }
 
 		public void Init()
 		{
-			AppController.RegisterController("Default", Controller, "Resources/Logos/Git.png", "");
+#if DEBUG
+			//Still testing
+			AppController.RegisterController("Default", Controller, "Resources/Logos/Default.png", "");
+#endif
 		}
 
 		public Module()

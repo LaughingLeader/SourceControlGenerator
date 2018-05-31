@@ -73,6 +73,19 @@ namespace SCG.Data.View
 			}
 		}
 
+		private string windowTitle = "Source Control Generator";
+
+		public string WindowTitle
+		{
+			get { return windowTitle; }
+			set
+			{
+				windowTitle = value;
+				RaisePropertyChanged("WindowTitle");
+			}
+		}
+
+
 		public static IconPathData IconData { get; set; }
 
 		private MenuBarData menuBarData;

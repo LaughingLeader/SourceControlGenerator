@@ -10,17 +10,11 @@ namespace SCG
 {
 	public class Module : IModuleMain
 	{
-		private DOS2ProjectController controller;
-
-		public DOS2ProjectController Controller
-		{
-			get { return controller; }
-			set { controller = value; }
-		}
+		public DOS2ProjectController Controller { get; private set; }
 
 		public void Init()
 		{
-			AppController.RegisterController("Divinity: Original Sin 2", controller, "Resources/Logos/DivinityOriginalSin2.png", "");
+			AppController.RegisterController("Divinity: Original Sin 2", Controller, "Resources/Logos/DivinityOriginalSin2.png", "");
 		}
 
 		public Module()

@@ -229,6 +229,8 @@ namespace SCG.Core
 
 			Data.MergeKeyLists();
 
+			Data.WindowTitle = "Source Control Generator - " + CurrentModule.ModuleData.ModuleName;
+
 			return true;
 		}
 
@@ -257,6 +259,8 @@ namespace SCG.Core
 
 			Data.ModuleIsLoaded = false;
 			Data.ModuleSelectionVisibility = Visibility.Visible;
+
+			Data.WindowTitle = "Source Control Generator";
 		}
 		#endregion
 		#region Progress
