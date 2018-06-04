@@ -516,12 +516,12 @@ namespace SCG.Core
 
 		public void MenuAction_OpenIssuesLink()
 		{
-			Helpers.Web.OpenUri("https://github.com/LaughingLeader/SourceControlGenerator/issues/new");
+			Helpers.Web.OpenUri(DefaultPaths.IssuesLink);
 		}
 
-		public void MenuAction_OpenRepoLink()
+		public void MenuAction_OpenReleasesLink()
 		{
-			Helpers.Web.OpenUri("https://github.com/LaughingLeader/SourceControlGenerator");
+			Helpers.Web.OpenUri(DefaultPaths.ReleasesLink);
 		}
 
 		public void MenuAction_NotImplemented() { }
@@ -765,8 +765,8 @@ namespace SCG.Core
 				},
 				new MenuData(MenuID.RepoLink)
 				{
-					Header = "Source Code (Github)...",
-					ClickCommand = new ActionCommand(MenuAction_OpenRepoLink)
+					Header = "Releases (Github)...",
+					ClickCommand = new ActionCommand(MenuAction_OpenReleasesLink)
 				},
 				new MenuData(MenuID.About)
 				{

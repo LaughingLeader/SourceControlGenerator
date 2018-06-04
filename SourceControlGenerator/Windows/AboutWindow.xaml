@@ -4,6 +4,8 @@
 		xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
 		xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 		xmlns:local="clr-namespace:SCG.Windows"
+		xmlns:core="clr-namespace:SCG.Core"
+		xmlns:scg="clr-namespace:SCG"
 		mc:Ignorable="d"
 		Title="About Source Control Generator" Height="250" Width="500"
 		WindowStartupLocation="CenterOwner"
@@ -39,13 +41,13 @@
 
 			<TextBlock Grid.Row="2" Text="Author:" />
 			<TextBlock x:Name="AuthorLink" Grid.Row="2" Grid.Column="1" >
-				<Hyperlink NavigateUri="https://github.com/LaughingLeader" RequestNavigate="Hyperlink_RequestNavigate" ToolTip="{Binding Path=NavigateUri, RelativeSource={RelativeSource Self}}">
+				<Hyperlink NavigateUri="{Binding Source={x:Static scg:DefaultPaths.AuthorLink}}" RequestNavigate="Hyperlink_RequestNavigate" ToolTip="{Binding Path=NavigateUri, RelativeSource={RelativeSource Self}}">
 					LaughingLeader
 				</Hyperlink>
 			</TextBlock>
 			<TextBlock Grid.Row="3" Text="Home Page:" />
 			<TextBlock Grid.Row="3" Grid.Column="1" FontSize="12" TextWrapping="NoWrap" >
-				<Hyperlink NavigateUri="https://github.com/LaughingLeader/SourceControlGenerator" RequestNavigate="Hyperlink_RequestNavigate" ToolTip="{Binding Path=NavigateUri, RelativeSource={RelativeSource Self}}">
+				<Hyperlink NavigateUri="{Binding Source={x:Static scg:DefaultPaths.RepositoryLink}}" RequestNavigate="Hyperlink_RequestNavigate" ToolTip="{Binding Path=NavigateUri, RelativeSource={RelativeSource Self}}">
 					SourceControlGenerator (GitHub)
 				</Hyperlink>
 			</TextBlock>

@@ -24,6 +24,14 @@ namespace SCG
 
 		public static string SourceControlGeneratorDataFile => @"SourceControlGenerator.json";
 
+		public static string RepositoryLink => @"https://github.com/LaughingLeader/SourceControlGenerator";
+
+		public static string ReleasesLink => @"https://github.com/LaughingLeader/SourceControlGenerator/releases";
+
+		public static string IssuesLink => @"https://github.com/LaughingLeader/SourceControlGenerator/issues/new";
+
+		public static string AuthorLink => @"https://github.com/LaughingLeader";
+
 		//Module
 		public static string ModuleRootFolder(IModuleData Data)
 		{
