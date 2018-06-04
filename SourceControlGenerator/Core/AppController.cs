@@ -714,18 +714,16 @@ namespace SCG.Core
 
 		private void InitDefaultMenus()
 		{
+			/*
 			Data.MenuBarData.File.Register("Base",
+				Disabled for now (WIP)
 				new MenuData(MenuID.CreateTemplate)
 				{
 					Header = "Create Template...",
 					ClickCommand = new ActionCommand(MenuAction_AddNewTemplate)
 				},
-				new MenuData(MenuID.SelectModule)
-				{
-					Header = "Select Module...",
-					ClickCommand = new ActionCommand(MenuAction_OpenModuleSelectScreen)
-				}
 			);
+			*/
 
 			LogMenuData = new MenuData(MenuID.OpenLog)
 			{
@@ -737,6 +735,11 @@ namespace SCG.Core
 			//LogMenuData.SetHeaderBinding(mainWindow.LogWindow.Data, "LogVisibleText");
 
 			Data.MenuBarData.Options.Register("Base",
+				new MenuData(MenuID.SelectModule)
+				{
+					Header = "Select Module...",
+					ClickCommand = new ActionCommand(MenuAction_OpenModuleSelectScreen)
+				},
 				LogMenuData,
 				new MenuData(MenuID.SaveLog)
 				{

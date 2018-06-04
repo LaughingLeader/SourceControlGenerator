@@ -11,7 +11,7 @@
 			 xmlns:theme="clr-namespace:SCG.ThemeSystem"
 			 xmlns:Themes="clr-namespace:Microsoft.Windows.Themes;assembly=PresentationFramework.Aero2" x:Name="AddTemplateMain" x:Class="SCG.Controls.AddTemplateControl"
 			 mc:Ignorable="d" 
-			 d:DesignHeight="300" d:DesignWidth="500" IsVisibleChanged="AddTemplateMain_IsVisibleChanged"
+			 d:DesignHeight="300" d:DesignWidth="500" IsVisibleChanged="AddTemplateMain_IsVisibleChanged" Background="{DynamicResource {x:Static SystemColors.ControlLightBrushKey}}"
 			 >
 
 	<UserControl.Resources>

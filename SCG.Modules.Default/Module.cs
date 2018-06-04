@@ -16,7 +16,7 @@ namespace SCG
 		public void Init()
 		{
 #if DEBUG
-			//Still testing
+			//Not ready for release yet (still testing)
 			AppController.RegisterController("Default", Controller, "Resources/Logos/Default.png", "");
 #endif
 		}

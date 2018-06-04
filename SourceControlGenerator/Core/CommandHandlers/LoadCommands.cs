@@ -217,8 +217,6 @@ namespace SCG.Commands
 					if (data != null)
 					{
 						data.FilePath = templateFile.FilePath;
-
-						
 					}
 				}
 			}

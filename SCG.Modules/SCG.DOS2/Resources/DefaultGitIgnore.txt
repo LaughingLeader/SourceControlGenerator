@@ -1,31 +1,35 @@
-#SourceControlGenerator
-######################
+# SourceControlGenerator #
+##########################
 SourceControlGenerator.json
 
-#Levels
+# Levels
 ######################
 Mods/$ModFolderName/Levels/*
 Mods/$ModFolderName/Globals/*
 Editor/Mods/$ModFolderName/Levels/*
 
-#Compiled Story files
+# Story files        #
 ######################
 *.div
 *.raw
+story_orphanqueries_ignore.txt
 
-#Assets
-######################*
+# Asset Folders      #
+######################
 Public/$ModFolderName/Assets/*
 #Public/$ModFolderName/GUI/*
 
-#Editor files
+# Editor files       #
 ######################
 StatsEditorConfig.xml
 EffectEditorConfig.xml
 DockPanel.config
-EditorBrowserMetadata.*
+EditorBrowserMetadata_*
+EditorBrowserMetadata.xml
+Autosave/
+Recovered/
 
-#Assets
+# Assets             #
 ######################
 *.gr2
 *.dae
@@ -42,7 +46,7 @@ EditorBrowserMetadata.*
 *.lsx
 *.lsmg
 
-# Logs #
+# Logs               #
 ######################
 *.log
 *.ailog
@@ -51,7 +55,7 @@ errors.txt
 dialoglog.txt
 personallog.txt
 
-#Binary Files
+# Binary Files       #
 ######################
 *.dat
 *.data
@@ -66,7 +70,7 @@ personallog.txt
 *.patch
 *.tmpl
 
-# Dump files
+# Dump files         #
 ######################
 *.stackdump
 *.dmp

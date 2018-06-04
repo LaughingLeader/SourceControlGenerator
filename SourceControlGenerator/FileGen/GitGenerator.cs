@@ -171,7 +171,8 @@ namespace SCG.FileGen
 
 				if (mainAppData.DateKeyList != null)
 				{
-					var tasks = mainAppData.DateKeyList.Where(keywordData => KeywordIsValid(keywordData) && replacedText.Contains(keywordData.KeywordName)).Select(keywordData => Task.Run(() =>
+					//Reverse so $Date is replace after all the other variations
+					var tasks = mainAppData.DateKeyList.Where(keywordData => KeywordIsValid(keywordData) && replacedText.Contains(keywordData.KeywordName)).Reverse().Select(keywordData => Task.Run(() =>
 					{
 						replacedText = keywordData.ReplaceText(replacedText, projectData);
 					}));
