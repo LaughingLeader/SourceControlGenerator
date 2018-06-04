@@ -60,11 +60,11 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\SCG.Utilities\SCG.Utilities.csproj">
+    <ProjectReference Include="..\..\SCG.Utilities\SCG.Utilities.csproj">
       <Project>{2709c5c0-66ae-49dc-a65b-391163a39602}</Project>
       <Name>SCG.Utilities</Name>
     </ProjectReference>
-    <ProjectReference Include="..\SourceControlGenerator\SourceControlGenerator.csproj">
+    <ProjectReference Include="..\..\SourceControlGenerator\SourceControlGenerator.csproj">
       <Project>{e96f2eeb-e207-4ab6-9b85-f86b3f386117}</Project>
       <Name>SourceControlGenerator</Name>
     </ProjectReference>
