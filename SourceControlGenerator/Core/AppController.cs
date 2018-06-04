@@ -516,12 +516,12 @@ namespace SCG.Core
 
 		public void MenuAction_OpenIssuesLink()
 		{
-			Helpers.Web.OpenUri("https://github.com/LaughingLeader-DOS2-Mods/LeaderLib/issues/new");
+			Helpers.Web.OpenUri("https://github.com/LaughingLeader/SourceControlGenerator/issues/new");
 		}
 
 		public void MenuAction_OpenRepoLink()
 		{
-			Helpers.Web.OpenUri("https://github.com/LaughingLeader-DOS2-Mods/LeaderLib");
+			Helpers.Web.OpenUri("https://github.com/LaughingLeader/SourceControlGenerator");
 		}
 
 		public void MenuAction_NotImplemented() { }
