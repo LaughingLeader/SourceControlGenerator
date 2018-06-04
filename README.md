@@ -17,6 +17,8 @@ Source Control Generator is a program designed to ease effort in creating git re
 * Markdown Converter
 	* SCG contains a built-in Markdown converter, for converting markdown to various formats, such as BBcode and HTML.
 	
+*Note that the "Divinity Original Sin 2" module is the only one currently available, as SCG was created with that game in mind initially.*
+	
 ## Contributing to this project:
 
 Anyone and everyone is welcome to contribute. Please take a moment to
