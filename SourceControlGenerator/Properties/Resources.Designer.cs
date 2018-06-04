@@ -99,9 +99,9 @@ namespace SCG.Properties {
         ///  The licenses for most software and other practical works are designed
         ///to take away your free [rest of string was truncated]&quot;;.
         /// </summary>
-        public static string License_GNU {
+        public static string License_GPL {
             get {
-                return ResourceManager.GetString("License_GNU", resourceCulture);
+                return ResourceManager.GetString("License_GPL", resourceCulture);
             }
         }
         

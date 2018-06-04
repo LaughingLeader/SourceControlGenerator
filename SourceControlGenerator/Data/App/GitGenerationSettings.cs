@@ -20,8 +20,8 @@ namespace SCG.Data
 		MIT,
 		[Description("Apache")]
 		Apache,
-		[Description("GNU")]
-		GNU,
+		[Description("GPL")]
+		GPL,
 		[Description("Custom")]
 		Custom
 	}

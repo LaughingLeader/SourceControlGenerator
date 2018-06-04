@@ -219,8 +219,8 @@ namespace SCG.Modules.Default.Core
 								outputText = Properties.Resources.License_Apache;
 								break;
 
-							case LicenseType.GNU:
-								outputText = Properties.Resources.License_GNU;
+							case LicenseType.GPL:
+								outputText = Properties.Resources.License_GPL;
 								break;
 						}
 					}

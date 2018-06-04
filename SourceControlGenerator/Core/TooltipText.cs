@@ -16,7 +16,7 @@ namespace SCG.Core
 		static public string GitAttributes => "This file is used to give attributes to pathnames.\nBy default, ignore attributes are added to the git-related files, so they are ignored when creating backups.";
 		static public string Readme => "A basic readme file, detailing relevant information about the project.\nDisplays on the repository main page.";
 		static public string Changelog => "A changelog file with details on each update.";
-		static public string CustomLicense => "A custom license to use instead of the more common three (MIT, Apache, GNU).";
+		static public string CustomLicense => "A custom license to use instead of the more common three (MIT, Apache, GPL).";
 		static public string TemplateKeywords => "Words that get replaced when generating templates.";
 		static public string Generation_Templates => "These files are created when generating the repository files.\nKeywords will be replaced with the appropriate values.";
 		static public string Generation_License => "Select a license to generate.";

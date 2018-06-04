@@ -253,6 +253,11 @@
     <Compile Include="Modules\DefaultModule.cs" />
     <Compile Include="Core\AssemblyLoader.cs" />
     <Compile Include="Data\View\BaseProjectData.cs" />
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
     <Compile Include="ThemeSystem\ThemeController.cs" />
     <Compile Include="Core\AppController.cs" />
     <Compile Include="Windows\AboutWindow.xaml.cs">
@@ -346,11 +351,6 @@
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Properties\Resources.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Resources.resx</DependentUpon>
-    </Compile>
     <Compile Include="Properties\Settings.Designer.cs">
       <AutoGen>True</AutoGen>
       <DependentUpon>Settings.settings</DependentUpon>
@@ -358,8 +358,8 @@
     </Compile>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
       <SubType>Designer</SubType>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
     <None Include="App.config" />
     <None Include="packages.config" />
@@ -414,7 +414,7 @@
     <None Include="Resources\License_Apache.txt" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\License_GNU.txt" />
+    <None Include="Resources\License_GPL.txt" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\License_MIT.txt" />
