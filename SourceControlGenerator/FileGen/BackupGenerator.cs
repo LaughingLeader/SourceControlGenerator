@@ -45,7 +45,6 @@ namespace SCG.FileGen
 								}
 							}
 						}
-
 					}));
 
 					if (incrementProgressAmount > 0) AppController.Main.UpdateProgressLog($"Searching source folders for files to save...");

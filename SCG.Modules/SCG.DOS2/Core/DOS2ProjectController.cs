@@ -42,6 +42,11 @@ namespace SCG.Core
 			{
 				var projectSubdirectoryName = directoryBaseName.Replace("ProjectName", project.ProjectName).Replace("ProjectGUID", project.ModuleInfo.UUID);
 				var junctionSourceDirectory = Path.Combine(Data.Settings.DOS2DataDirectory, projectSubdirectoryName);
+				if (!Directory.Exists(junctionSourceDirectory))
+				{
+					Directory.CreateDirectory(junctionSourceDirectory);
+					Log.Here().Important($"Directory {projectSubdirectoryName} doesn't exist. Created directory.");
+				}
 				sourceFolders.Add(new JunctionData()
 				{
 					SourcePath = junctionSourceDirectory,
