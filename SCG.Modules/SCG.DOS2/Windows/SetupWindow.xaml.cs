@@ -67,6 +67,8 @@ namespace SCG.Modules.DOS2.Windows
 
 			onConfirmed?.Invoke();
 			Close();
+
+			controller.RefreshAllProjects();
 		}
 	}
 }

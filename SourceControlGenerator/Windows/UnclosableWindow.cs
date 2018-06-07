@@ -42,6 +42,12 @@ namespace SCG.Windows
 		{
 			Loaded += UnclosableWindow_Loaded;
 			SourceInitialized += UnclosableWindow_SourceInitialized;
+			Closing += UnclosableWindow_Closing;
+		}
+
+		private void UnclosableWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+		{
+			if (Owner != null) Owner.Focus();
 		}
 
 		void UnclosableWindow_Loaded(object sender, RoutedEventArgs e)

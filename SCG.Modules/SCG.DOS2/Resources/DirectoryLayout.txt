@@ -1,5 +1,5 @@
 #Keywords
-# ProjectName = The name of the project, without the GUID.
+# ProjectName = The folder name of the project, without the GUID.
 # ProjectGUID = The GUID(UUID) of the project.
 
 #Directories to scan

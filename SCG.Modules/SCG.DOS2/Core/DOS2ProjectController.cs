@@ -41,6 +41,7 @@ namespace SCG.Core
 			foreach (var directoryBaseName in DirectoryLayouts)
 			{
 				var projectSubdirectoryName = directoryBaseName.Replace("ProjectName", project.ProjectName).Replace("ProjectGUID", project.ModuleInfo.UUID);
+
 				var junctionSourceDirectory = Path.Combine(Data.Settings.DOS2DataDirectory, projectSubdirectoryName);
 				if (!Directory.Exists(junctionSourceDirectory))
 				{
@@ -588,10 +589,14 @@ namespace SCG.Core
 		{
 			if (!FileCommands.IsValidPath(Data.Settings.DOS2DataDirectory))
 			{
-				Log.Here().Warning("DOS2 data directory not found. Reverting to default.");
 				if (Data.Settings.FindDOS2DataDirectory())
 				{
+					Log.Here().Warning("DOS2 data directory found via the registry.");
 					saveModuleSettings = true;
+				}
+				else
+				{
+					Log.Here().Warning("DOS2 data directory not found.");
 				}
 			}
 			else
