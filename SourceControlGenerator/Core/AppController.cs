@@ -458,7 +458,7 @@ namespace SCG.Core
 			}
 			else
 			{
-				mainWindow.LogWindow.Owner = mainWindow;
+				//mainWindow.LogWindow.Owner = mainWindow;
 				mainWindow.LogWindow.Show();
 			}
 

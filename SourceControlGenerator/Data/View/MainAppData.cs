@@ -328,7 +328,7 @@ namespace SCG.Data.View
 			DateKeyList.Add(new KeywordData()
 			{
 				KeywordName = "$Date",
-				KeywordValue = "Current Date (Short Format = mm/dd/yyyy)",
+				KeywordValue =  DateTime.Now.ToString("d"),
 				Replace = (o) => { return DateTime.Now.ToString("d"); }
 			});
 			DateKeyList.Add(new KeywordData()

@@ -44,8 +44,8 @@ namespace SCG.Core
 				var junctionSourceDirectory = Path.Combine(Data.Settings.DOS2DataDirectory, projectSubdirectoryName);
 				if (!Directory.Exists(junctionSourceDirectory))
 				{
+					Log.Here().Important($"Directory {projectSubdirectoryName} doesn't exist. Creating directory.");
 					Directory.CreateDirectory(junctionSourceDirectory);
-					Log.Here().Important($"Directory {projectSubdirectoryName} doesn't exist. Created directory.");
 				}
 				sourceFolders.Add(new JunctionData()
 				{
@@ -760,8 +760,8 @@ namespace SCG.Core
 			Data.KeyList.Add(new KeywordData()
 			{
 				KeywordName = "$ModFolderName",
-				KeywordValue = "Mod Data: Name_UUID",
-				Replace = (o) => { return ReplaceKeywordAction(o)?.ProjectName + "_" + ReplaceKeywordAction(o)?.ModuleInfo.UUID; }
+				KeywordValue = "Mod Data: Folder",
+				Replace = (o) => { return ReplaceKeywordAction(o)?.ModuleInfo.Folder; }
 			});
 			Data.KeyList.Add(new KeywordData()
 			{

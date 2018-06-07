@@ -140,7 +140,8 @@ namespace SCG.Windows
 					toolWindow.Init(Controller);
 				}
 
-				window.Owner = this;
+				//window.Owner = this;
+				window.Topmost = false;
 			}
 		}
 
