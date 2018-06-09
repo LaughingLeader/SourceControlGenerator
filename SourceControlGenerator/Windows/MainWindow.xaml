@@ -513,7 +513,7 @@
 				<TextBlock Text="{Binding ProgressMessage, FallbackValue=Running tasks...}" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="20" Padding="10" />
 			</StackPanel>
 			<ProgressBar Grid.Row="1" Minimum="0" Maximum="{Binding ProgressValueMax, FallbackValue=100}" Value="{Binding ProgressValue, FallbackValue=75}" Margin="50" HorizontalAlignment="Stretch" VerticalAlignment="Center" MinHeight="40" />
-			<c:AutoScrollingTextbox Grid.Row="2" Text="{Binding ProgressLog, FallbackValue='Creating junctions...'}" HorizontalAlignment="Center" Padding="10,0" VerticalAlignment="Top" FontSize="12" IsReadOnly="True" VerticalScrollBarVisibility="Visible" Height="100" Width="400" />
+			<c:AutoScrollingTextbox Grid.Row="2" Text="{Binding ProgressLog, FallbackValue='Creating junctions...'}" HorizontalAlignment="Stretch" Padding="10,0" VerticalAlignment="Stretch" FontSize="12" IsReadOnly="True" VerticalScrollBarVisibility="Visible" Margin="150,20" />
 		</Grid>
 	</Grid>
 </windows:ClipboardMonitorWindow>

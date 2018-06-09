@@ -186,6 +186,19 @@ namespace SCG.Data.View
 
 		#region ProgressBar
 
+		private bool progressActive = false;
+
+		public bool ProgressActive
+		{
+			get { return progressActive; }
+			set
+			{
+				progressActive = value;
+				RaisePropertyChanged("ProgressActive");
+			}
+		}
+
+
 		private string progressTitle = "Processing...";
 
 		public string ProgressTitle

@@ -13,6 +13,7 @@ using SCG.Windows;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Collections.ObjectModel;
 using System.Globalization;
 using System.IO;
@@ -100,6 +101,13 @@ namespace SCG.Core
 			AppController.Main.UpdateProgressMessage("Parsing selected projects...");
 
 			var totalSuccess = 0;
+
+			var sortedProjects = Data.GitGenerationSettings.ExportProjects.OrderBy(p => p.ProjectName).ToImmutableList();
+
+			if(Data.GitGenerationSettings.ExportProjects.TryOperation(c => c.Clear()))
+			{
+				Data.GitGenerationSettings.ExportProjects.DoOperation(c => c.AddRange(sortedProjects));
+			}
 
 			for (var i = 0; i < total; i++)
 			{
@@ -369,12 +377,14 @@ namespace SCG.Core
 		public void BackupSelectedProjects(string OutputDirectory = "")
 		{
 			targetBackupOutputDirectory = OutputDirectory;
-			AppController.Main.StartProgress($"Backing up projects...", StartBackupSelectedProjectsAsync, "Creating archive...");
+			AppController.Main.StartProgress($"Backing up projects...", StartBackupSelectedProjectsAsync, "");
 		}
 
 		public async void StartBackupSelectedProjectsAsync()
 		{
-			ConcurrentBag<ModProjectData> selectedProjects = new ConcurrentBag<ModProjectData>(Data.ManagedProjects.Where(p => p.Selected));
+			var sortedProjects = Data.ManagedProjects.Where(p => p.Selected).OrderBy(p => p.DisplayName);
+
+			ConcurrentBag<ModProjectData> selectedProjects = new ConcurrentBag<ModProjectData>(sortedProjects);
 
 			var totalSuccess = await BackupSelectedProjectsAsync(selectedProjects);
 			if (totalSuccess >= selectedProjects.Count)
@@ -403,23 +413,21 @@ namespace SCG.Core
 
 			if (selectedProjects != null)
 			{
-				AppController.Main.UpdateProgressMessage("Creating archives...");
-
 				int i = 0;
 				foreach (var project in selectedProjects)
 				{
-					AppController.Main.UpdateProgressTitle($"Backing up projects... {i}/{total}");
+					AppController.Main.UpdateProgressTitle((selectedProjects.Count > 1 ? "Backing up projects..." : $"Backing up project... ") + $"{i}/{total}");
 
 					int targetPercentage = amountPerTick * (i + 1);
 					int totalPercentageAmount = targetPercentage - AppController.Main.Data.ProgressValue;
 
 					//Log.Here().Activity($"[Progress-Backup] Target percentage for this backup iteration is {targetPercentage} => {totalPercentageAmount}. Amount per tick is {amountPerTick}.");
 
-					AppController.Main.UpdateProgressLog("Creating archive...");
+					AppController.Main.UpdateProgressMessage($"Creating archive for project {project.ProjectName}...");
 
 					var backupSuccess = await BackupProjectAsync(project, targetBackupOutputDirectory, Data.Settings.BackupMode, totalPercentageAmount);
 
-					if (backupSuccess)
+					if (backupSuccess == BackupResult.Success)
 					{
 						totalSuccess += 1;
 						Log.Here().Activity("Successfully created archive for {0}.", project.ProjectName);
@@ -429,20 +437,25 @@ namespace SCG.Core
 
 						AppController.Main.UpdateProgressLog("Archive created.");
 					}
-					else
+					else if (backupSuccess == BackupResult.Error)
 					{
 						Log.Here().Error("Failed to create archive for {0}.", project.ProjectName);
 						AppController.Main.UpdateProgressLog("Archive creation failed.");
 					}
+					else
+					{
+						totalSuccess += 1;
+						Log.Here().Activity("Skipped archive creation for {0}.", project.ProjectName);
+					}
 
-					AppController.Main.UpdateProgressTitle($"Backing up projects... {i + 1}/{total}");
+					AppController.Main.UpdateProgressTitle((selectedProjects.Count > 1 ? "Backing up projects..." : $"Backing up project... ") + $"{i + 1}/{total}");
 					AppController.Main.SetProgress(targetPercentage);
 
 					i++;
 				}
 			}
 
-			AppController.Main.UpdateProgressTitle($"Backing up projects... {total}/{total}");
+			AppController.Main.UpdateProgressTitle((selectedProjects.Count > 1 ? "Backing up projects..." : $"Backing up project... ") + $"{total}/{total}");
 			AppController.Main.UpdateProgressMessage("Finishing up...");
 			AppController.Main.UpdateProgressLog("Backup quest complete. +5 XP");
 			AppController.Main.FinishProgress();
@@ -452,7 +465,7 @@ namespace SCG.Core
 			return totalSuccess;
 		}
 
-		public async Task<bool> BackupProjectAsync(ModProjectData modProject, string OutputDirectory = "", BackupMode mode = BackupMode.Zip, int totalPercentageAmount = -1)
+		public async Task<BackupResult> BackupProjectAsync(ModProjectData modProject, string OutputDirectory = "", BackupMode mode = BackupMode.Zip, int totalPercentageAmount = -1)
 		{
 			if (String.IsNullOrWhiteSpace(OutputDirectory))
 			{
@@ -502,7 +515,8 @@ namespace SCG.Core
 				if (mode == BackupMode.GitArchive)
 				{
 					AppController.Main.UpdateProgressLog("Running git archive command...");
-					return await GitGenerator.Archive(gitProjectDirectory, archivePath).ConfigureAwait(false);
+					var success = await GitGenerator.Archive(gitProjectDirectory, archivePath).ConfigureAwait(false);
+					return success ? BackupResult.Success : BackupResult.Error;
 				}
 				else
 				{
@@ -678,6 +692,8 @@ namespace SCG.Core
 
 		public async void RefreshAllProjects()
 		{
+			if (MainAppData.ProgressActive) return;
+
 			if (Data.CanClickRefresh)
 			{
 				Data.CanClickRefresh = false;
@@ -696,6 +712,8 @@ namespace SCG.Core
 
 		public async void RefreshModProjects()
 		{
+			if (MainAppData.ProgressActive) return;
+
 			if (Data.CanClickRefresh)
 			{
 				Data.CanClickRefresh = false;

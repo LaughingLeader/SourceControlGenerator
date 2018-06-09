@@ -267,17 +267,22 @@ namespace SCG.Core
 
 		public void StartProgress(string Title, Action StartAction, string StartMessage = "", int StartValue = 0, Action OnCompleted = null)
 		{
-			Data.ProgressTitle = Title;
-			Data.ProgressMessage = StartMessage;
-			Data.ProgressValue = StartValue;
-			Data.ProgressLog = "";
-			Data.ProgressVisiblity = System.Windows.Visibility.Visible;
-			mainWindow.IsEnabled = false;
-			
-			Application.Current.Dispatcher.Invoke(new Action(() =>
+			if(!Data.ProgressActive)
 			{
-				StartAction();
-			}), DispatcherPriority.ApplicationIdle);
+				Data.ProgressTitle = Title;
+				Data.ProgressMessage = StartMessage;
+				Data.ProgressValue = StartValue;
+				Data.ProgressLog = "";
+				Data.ProgressVisiblity = System.Windows.Visibility.Visible;
+				//mainWindow.IsEnabled = false;
+
+				Application.Current.Dispatcher.Invoke(new Action(() =>
+				{
+					StartAction();
+				}), DispatcherPriority.ApplicationIdle);
+
+				Data.ProgressActive = true;
+			}
 		}
 
 		public void UpdateProgress(int Value = 1, string Message = null)
@@ -342,6 +347,7 @@ namespace SCG.Core
 		private void OnProgressComplete()
 		{
 			HideProgressBar();
+			Data.ProgressActive = false;
 		}
 
 		private void HideProgressBar()
@@ -422,6 +428,8 @@ namespace SCG.Core
 
 		public void MenuAction_AddNewTemplate()
 		{
+			if (Data.ProgressActive) return;
+
 			if (CurrentModule != null)
 			{
 				var data = CurrentModule.ModuleData;
@@ -442,6 +450,8 @@ namespace SCG.Core
 
 		public void MenuAction_OpenModuleSelectScreen()
 		{
+			if (Data.ProgressActive) return;
+
 			UnloadCurrentModule();
 			var projectsGrid = (Grid)mainWindow.FindName("ProjectsViewGrid");
 			if (projectsGrid != null)
@@ -503,7 +513,9 @@ namespace SCG.Core
 
 		public void MenuAction_OpenAbout()
 		{
-			if(!mainWindow.AboutWindow.IsVisible)
+			if (Data.ProgressActive) return;
+
+			if (!mainWindow.AboutWindow.IsVisible)
 			{
 				mainWindow.AboutWindow.Owner = mainWindow;
 				mainWindow.AboutWindow.Show();

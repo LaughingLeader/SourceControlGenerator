@@ -20,57 +20,63 @@ using System.Collections.Concurrent;
 
 namespace SCG.FileGen
 {
+	public enum BackupResult
+	{
+		Success,
+		Skipped,
+		Error
+	}
+
 	public static class BackupGenerator
 	{
-		public static async Task<bool> CreateArchiveFromRoot(string rootPath, List<JunctionData> sourceFolders, string archiveFilePath, int incrementProgressAmount = -1)
+		public static async Task<BackupResult> CreateArchiveFromRoot(string rootPath, List<JunctionData> sourceFolders, string archiveFilePath, int incrementProgressAmount = -1)
 		{
 			if (sourceFolders != null && sourceFolders.Count > 0)
 			{
 				try
 				{
 					var foldersToParse = sourceFolders.Where(folderData => Directory.Exists(folderData.SourcePath));
-					ConcurrentBag<FileInfo> targetFiles = new ConcurrentBag<FileInfo>();
-
-					var tasks = foldersToParse.Select(f => Task.Run(() =>
-					{
-						var files = Directory.EnumerateFiles(f.SourcePath, "*", SearchOption.AllDirectories);
-						if (files != null)
-						{
-							foreach (var filePath in files)
-							{
-								if (File.Exists(filePath))
-								{
-									var fileInfo = new FileInfo(filePath);
-									if (fileInfo != null) targetFiles.Add(fileInfo);
-								}
-							}
-						}
-					}));
+					//ConcurrentBag<FileInfo> targetFiles = new ConcurrentBag<FileInfo>();
+					var targetFiles = new ConcurrentBag<string>();
 
 					if (incrementProgressAmount > 0) AppController.Main.UpdateProgressLog($"Searching source folders for files to save...");
 
+					var tasks = foldersToParse.Select(f => Task.Run(() =>
+					{
+						foreach (var file in Directory.EnumerateFiles(f.SourcePath, "*", SearchOption.AllDirectories))
+						{
+							if (!String.IsNullOrEmpty(file)) targetFiles.Add(file);
+						}
+					}));
+
 					await Task.WhenAll(tasks).ConfigureAwait(false);
 
-					if (incrementProgressAmount > 0)
+					if(targetFiles.Count > 0)
 					{
-						incrementProgressAmount = incrementProgressAmount / targetFiles.Count;
-					}
-
-					using (var zip = ZipArchive.Create())
-					{
-						if (incrementProgressAmount > 0) AppController.Main.UpdateProgressLog("Adding files to archive...");
-
-						foreach(var f in targetFiles) 
+						if (incrementProgressAmount > 0)
 						{
-							zip.AddEntry(f.FullName.Replace(rootPath, ""), f);
-							if (incrementProgressAmount > 0) AppController.Main.UpdateProgress(incrementProgressAmount);
+							incrementProgressAmount = incrementProgressAmount / targetFiles.Count;
 						}
 
-						if (incrementProgressAmount > 0) AppController.Main.UpdateProgressLog("Saving archive...");
+						using (var zip = File.OpenWrite(archiveFilePath))
+						using (var zipWriter = WriterFactory.Open(zip, ArchiveType.Zip, CompressionType.Deflate))
+						{
+							if (incrementProgressAmount > 0) AppController.Main.UpdateProgressLog("Saving archive...");
+							foreach (var f in targetFiles)
+							{
+								//Disabled for now, since it seems to slow the process down.
+								//if (incrementProgressAmount > 0) AppController.Main.UpdateProgressLog($"Adding \"{f.Replace(rootPath, "").Replace(@"\", "/").Substring(1)}\" to archive...");
+								zipWriter.Write(f.Replace(rootPath, ""), f);
+								if (incrementProgressAmount > 0) AppController.Main.UpdateProgress(incrementProgressAmount);
+							}
 
-						zip.SaveTo(archiveFilePath, CompressionType.Deflate);
-
-						return true;
+							return BackupResult.Success;
+						}
+					}
+					else
+					{
+						if (incrementProgressAmount > 0) AppController.Main.UpdateProgress(incrementProgressAmount, "No files found. Skipping.");
+						return BackupResult.Skipped; // Gracefully skip
 					}
 				}
 				catch(Exception ex)
@@ -78,50 +84,33 @@ namespace SCG.FileGen
 					Log.Here().Error($"Error writing archive {rootPath} to {archiveFilePath}: {ex.ToString()}");
 				}
 			}
-			return false;
+			return BackupResult.Error;
 		}
 
-		public static async Task<bool> CreateArchiveFromRepo(string repoPath, string rootPath, List<JunctionData> sourceFolders, string archiveFilePath, int incrementProgressAmount = -1)
+		public static async Task<BackupResult> CreateArchiveFromRepo(string repoPath, string rootPath, List<JunctionData> sourceFolders, string archiveFilePath, int incrementProgressAmount = -1)
 		{
 			if (sourceFolders != null && sourceFolders.Count > 0)
 			{
 				try
 				{
 					var foldersToParse = sourceFolders.Where(folderData => Directory.Exists(folderData.SourcePath)).ToList();
-					ConcurrentBag<FileInfo> targetFiles = new ConcurrentBag<FileInfo>();
+					var targetFiles = new ConcurrentBag<string>();
 
 					var tasks = foldersToParse.Select(f => Task.Run(() =>
 					{
-						var files = Directory.EnumerateFiles(f.SourcePath, "*", SearchOption.AllDirectories);
-						if (files != null)
+						foreach (var file in Directory.EnumerateFiles(f.SourcePath, "*", SearchOption.AllDirectories))
 						{
-							foreach (var filePath in files)
-							{
-								if (File.Exists(filePath))
-								{
-									var fileInfo = new FileInfo(filePath);
-									if (fileInfo != null) targetFiles.Add(fileInfo);
-								}
-							}
+							if (!String.IsNullOrEmpty(file)) targetFiles.Add(file);
 						}
-
 					}));
 
 					tasks.Append(Task.Run(() =>
 					{
-						var files = Directory.EnumerateFiles(repoPath, "*", SearchOption.TopDirectoryOnly);
-						if (files != null)
+						if (incrementProgressAmount > 0) AppController.Main.UpdateProgressLog($"Searching repository for files to save.");
+
+						foreach (var file in Directory.EnumerateFiles(repoPath, "*", SearchOption.TopDirectoryOnly))
 						{
-							if (incrementProgressAmount > 0) AppController.Main.UpdateProgressLog($"Searching repository for files to save.");
-							foreach (var filePath in files)
-							{
-								//Log.Here().Important($"Checking file: {filePath}");
-								if (File.Exists(filePath))
-								{
-									var fileInfo = new FileInfo(filePath);
-									if (fileInfo != null) targetFiles.Add(fileInfo);
-								}
-							}
+							if (!String.IsNullOrEmpty(file)) targetFiles.Add(file);
 						}
 					}));
 
@@ -129,26 +118,31 @@ namespace SCG.FileGen
 
 					await Task.WhenAll(tasks).ConfigureAwait(false);
 
-					if (incrementProgressAmount > 0)
+					if (targetFiles.Count > 0)
 					{
-						incrementProgressAmount = incrementProgressAmount / targetFiles.Count;
-					}
-
-					using (var zip = ZipArchive.Create())
-					{
-						if (incrementProgressAmount > 0) AppController.Main.UpdateProgressLog("Adding files to archive...");
-
-						foreach(var f in targetFiles)
+						if (incrementProgressAmount > 0)
 						{
-							zip.AddEntry(f.FullName.Replace(rootPath, "").Replace(repoPath, ""), f);
-							if (incrementProgressAmount > 0) AppController.Main.UpdateProgress(incrementProgressAmount);
+							incrementProgressAmount = incrementProgressAmount / targetFiles.Count;
 						}
 
-						if (incrementProgressAmount > 0) AppController.Main.UpdateProgressLog("Saving archive...");
+						using (var zip = File.OpenWrite(archiveFilePath))
+						using (var zipWriter = WriterFactory.Open(zip, ArchiveType.Zip, CompressionType.Deflate))
+						{
+							if (incrementProgressAmount > 0) AppController.Main.UpdateProgressLog("Saving archive...");
+							foreach (var f in targetFiles)
+							{
+								//if (incrementProgressAmount > 0) AppController.Main.UpdateProgressLog($"Adding \"{f.Replace(rootPath, "").Replace(repoPath, "").Replace(@"\", "/").Substring(1)}\" to archive...");
+								zipWriter.Write(f.Replace(rootPath, "").Replace(repoPath, ""), f);
+								if (incrementProgressAmount > 0) AppController.Main.UpdateProgress(incrementProgressAmount);
+							}
 
-						zip.SaveTo(archiveFilePath, CompressionType.Deflate);
-
-						return true;
+							return BackupResult.Success;
+						}
+					}
+					else
+					{
+						if (incrementProgressAmount > 0) AppController.Main.UpdateProgress(incrementProgressAmount, "No files found. Skipping.");
+						return BackupResult.Skipped;
 					}
 				}
 				catch (Exception ex)
@@ -156,53 +150,54 @@ namespace SCG.FileGen
 					Log.Here().Error($"Error writing archive {repoPath} to {archiveFilePath}: {ex.ToString()}");
 				}
 			}
-			return false;
+			return BackupResult.Error;
 		}
 
-		public static async Task<bool> CreateArchiveFromDirectory(string directoryPath, string archiveFilePath, int incrementProgressAmount = -1)
+		public static async Task<BackupResult> CreateArchiveFromDirectory(string directoryPath, string archiveFilePath, int incrementProgressAmount = -1)
 		{
 			try
 			{
-				if (incrementProgressAmount > 0) AppController.Main.UpdateProgressLog($"Searching source folders for files to save...");
+				var targetFiles = new ConcurrentBag<string>();
 
-				using (var zip = ZipArchive.Create())
+				if (incrementProgressAmount > 0) AppController.Main.UpdateProgressLog($"Searching folder for files to save.");
+
+				foreach (var file in Directory.EnumerateFiles(directoryPath, "*", SearchOption.AllDirectories))
 				{
-					if (incrementProgressAmount > 0) AppController.Main.UpdateProgressLog("Adding files to archive...");
+					if (!String.IsNullOrEmpty(file)) targetFiles.Add(file);
+				}
 
-					var files = Directory.EnumerateFiles(directoryPath, "*", SearchOption.AllDirectories);
-					if (files != null)
+				if (targetFiles.Count > 0)
+				{
+					if (incrementProgressAmount > 0)
 					{
-						if (incrementProgressAmount > 0)
-						{
-							incrementProgressAmount = incrementProgressAmount / files.Count();
-						}
-
-						foreach (var filePath in files)
-						{
-							if (File.Exists(filePath))
-							{
-								var fileInfo = new FileInfo(filePath);
-								if (fileInfo != null)
-								{
-									zip.AddEntry(fileInfo.FullName.Replace(directoryPath, ""), fileInfo);
-								}
-								if (incrementProgressAmount > 0) AppController.Main.UpdateProgress(incrementProgressAmount);
-							}
-						}
+						incrementProgressAmount = incrementProgressAmount / targetFiles.Count;
 					}
 
-					if (incrementProgressAmount > 0) AppController.Main.UpdateProgressLog("Saving archive...");
+					using (var zip = File.OpenWrite(archiveFilePath))
+					using (var zipWriter = WriterFactory.Open(zip, ArchiveType.Zip, CompressionType.Deflate))
+					{
+						if (incrementProgressAmount > 0) AppController.Main.UpdateProgressLog("Saving archive...");
+						foreach (var f in targetFiles)
+						{
+							//if (incrementProgressAmount > 0) AppController.Main.UpdateProgressLog($"Adding \"{f.Replace(directoryPath, "").Replace(@"\", "/").Substring(1)}\" to archive...");
+							zipWriter.Write(f.Replace(directoryPath, ""), f);
+							if (incrementProgressAmount > 0) AppController.Main.UpdateProgress(incrementProgressAmount);
+						}
 
-					zip.SaveTo(archiveFilePath, CompressionType.Deflate);
-
-					return true;
+						return BackupResult.Success;
+					}
+				}
+				else
+				{
+					if (incrementProgressAmount > 0) AppController.Main.UpdateProgress(incrementProgressAmount, "No files found. Skipping.");
+					return BackupResult.Skipped;
 				}
 			}
 			catch (Exception ex)
 			{
 				Log.Here().Error($"Error writing archive {directoryPath} to {archiveFilePath}: {ex.ToString()}");
 			}
-			return false;
+			return BackupResult.Error;
 		}
 	}
 }

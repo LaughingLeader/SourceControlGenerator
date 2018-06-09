@@ -379,7 +379,7 @@ namespace SCG.Modules.Default.Core
 
 					var backupSuccess = await BackupProjectAsync(project, targetBackupOutputDirectory, Data.Settings.BackupMode, totalPercentageAmount);
 
-					if (backupSuccess)
+					if (backupSuccess == BackupResult.Success)
 					{
 						totalSuccess += 1;
 						Log.Here().Activity("Successfully created archive for {0}.", project.ProjectName);
@@ -389,10 +389,15 @@ namespace SCG.Modules.Default.Core
 
 						AppController.Main.UpdateProgressLog("Archive created.");
 					}
-					else
+					else if (backupSuccess == BackupResult.Error)
 					{
 						Log.Here().Error("Failed to create archive for {0}.", project.ProjectName);
 						AppController.Main.UpdateProgressLog("Archive creation failed.");
+					}
+					else
+					{
+						totalSuccess += 1;
+						Log.Here().Activity("Skipped archive creation for {0}.", project.ProjectName);
 					}
 
 					AppController.Main.UpdateProgressTitle($"Backing up projects... {i + 1}/{total}");
@@ -412,7 +417,7 @@ namespace SCG.Modules.Default.Core
 			return totalSuccess;
 		}
 
-		public async Task<bool> BackupProjectAsync(DefaultProjectData modProject, string OutputDirectory = "", BackupMode mode = BackupMode.Zip, int totalPercentageAmount = -1)
+		public async Task<BackupResult> BackupProjectAsync(DefaultProjectData modProject, string OutputDirectory = "", BackupMode mode = BackupMode.Zip, int totalPercentageAmount = -1)
 		{
 			if (String.IsNullOrWhiteSpace(OutputDirectory))
 			{
@@ -460,7 +465,8 @@ namespace SCG.Modules.Default.Core
 				if (mode == BackupMode.GitArchive)
 				{
 					AppController.Main.UpdateProgressLog("Running git archive command...");
-					return await GitGenerator.Archive(gitProjectDirectory, archivePath).ConfigureAwait(false);
+					var success = await GitGenerator.Archive(gitProjectDirectory, archivePath).ConfigureAwait(false);
+					return success ? BackupResult.Success : BackupResult.Error;
 				}
 				else
 				{

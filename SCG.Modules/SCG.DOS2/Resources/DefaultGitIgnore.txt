@@ -21,13 +21,15 @@ Public/$ModFolderName/Assets/*
 
 # Editor files       #
 ######################
+RootTemplateSelectorConfig_*
+ResourceSelectorConfig_*
 StatsEditorConfig.xml
 EffectEditorConfig.xml
 DockPanel.config
 EditorBrowserMetadata_*
 EditorBrowserMetadata.xml
-Autosave/
-Recovered/
+Autosave/*
+Recovered/*
 
 # Assets             #
 ######################
