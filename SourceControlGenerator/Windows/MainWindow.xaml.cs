@@ -242,11 +242,14 @@ namespace SCG.Windows
 		{
 			if (_instance != null)
 			{
-				Message = String.Format(Message, Vars);
-				_instance.FooterOutputText = Message;
-				_instance.FooterOutputType = LogType.Important;
-				_instance.FooterOutputDate = DateTime.Now.ToShortTimeString();
-				Log.AllCallback?.Invoke(Message, LogType.Important);
+				_instance.Dispatcher.BeginInvoke((Action)(() => {
+					Message = String.Format(Message, Vars);
+					_instance.FooterOutputText = Message;
+					_instance.FooterOutputType = LogType.Important;
+					_instance.FooterOutputDate = DateTime.Now.ToShortTimeString();
+					Log.AllCallback?.Invoke(Message, LogType.Important);
+				}),
+				DispatcherPriority.Background);
 			}
 		}
 
@@ -254,15 +257,17 @@ namespace SCG.Windows
 		{
 			if (_instance != null)
 			{
-				Message = String.Format(Message, Vars);
-				_instance.FooterOutputText = Message;
-				_instance.FooterOutputType = LogType.Error;
-				_instance.FooterOutputDate = DateTime.Now.ToShortTimeString();
-				Log.AllCallback?.Invoke(Message, LogType.Error);
+				_instance.Dispatcher.BeginInvoke((Action)(() => {
+					Message = String.Format(Message, Vars);
+					_instance.FooterOutputText = Message;
+					_instance.FooterOutputType = LogType.Error;
+					_instance.FooterOutputDate = DateTime.Now.ToShortTimeString();
+					Log.AllCallback?.Invoke(Message, LogType.Error);
+				}),
+				DispatcherPriority.Background);
 			}
 		}
 		
-
 		private void HandleColumnHeaderSizeChanged(object sender, SizeChangedEventArgs sizeChangedEventArgs)
 		{
 			if (sizeChangedEventArgs.NewSize.Width <= 60)

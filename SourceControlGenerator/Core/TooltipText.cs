@@ -30,6 +30,12 @@ namespace SCG.Core
 		static public string Log_Checkbox_Warning => "Show Warning Logs";
 		static public string Log_Checkbox_Error => "Show Error Logs";
 
+		//Log Buttons
+		static public string Log_Button_Copy => "Copy to clipboard.";
+		static public string Log_Button_SaveAs => "Save log as file...";
+		static public string Log_Button_Clear => "Clear log.";
+		static public string Log_Button_Restore => "Restore the last cleared log.";
+
 		//Settings
 		static public string DOS2DataDirectory => "The Divinity: Original Sin 2 data directory. This is used to scan for mods to add.";
 		static public string GitDetection => "Git is used to create repositories, enabling you to track and backup changes in your projects.";

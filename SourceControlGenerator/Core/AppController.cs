@@ -276,7 +276,7 @@ namespace SCG.Core
 				Data.ProgressVisiblity = System.Windows.Visibility.Visible;
 				//mainWindow.IsEnabled = false;
 
-				Application.Current.Dispatcher.Invoke(new Action(() =>
+				mainWindow.Dispatcher.Invoke(new Action(() =>
 				{
 					StartAction();
 				}), DispatcherPriority.ApplicationIdle);
@@ -287,7 +287,7 @@ namespace SCG.Core
 
 		public void UpdateProgress(int Value = 1, string Message = null)
 		{
-			Application.Current.Dispatcher.Invoke(new Action(() =>
+			mainWindow.Dispatcher.Invoke(new Action(() =>
 			{
 				if (Message != null) Data.ProgressLog += Environment.NewLine + Message;
 				Data.ProgressValue += Value;
@@ -298,7 +298,7 @@ namespace SCG.Core
 
 		public void SetProgress(int Value = 1, string Message = null)
 		{
-			Application.Current.Dispatcher.Invoke(new Action(() =>
+			mainWindow.Dispatcher.Invoke(new Action(() =>
 			{
 				//Log.Here().Activity($"Setting progress to {Value}.");
 				if (Message != null) Data.ProgressMessage = Message;
@@ -308,7 +308,7 @@ namespace SCG.Core
 
 		public void UpdateProgressMessage(string Message)
 		{
-			Application.Current.Dispatcher.Invoke(new Action(() =>
+			mainWindow.Dispatcher.Invoke(new Action(() =>
 			{
 				Data.ProgressMessage = Message;
 			}), DispatcherPriority.ApplicationIdle);
@@ -316,7 +316,7 @@ namespace SCG.Core
 
 		public void UpdateProgressLog(string Message)
 		{
-			Application.Current.Dispatcher.Invoke(new Action(() =>
+			mainWindow.Dispatcher.Invoke(new Action(() =>
 			{
 				Data.ProgressLog += Environment.NewLine + Message;
 			}), DispatcherPriority.ApplicationIdle);
@@ -326,7 +326,7 @@ namespace SCG.Core
 		{
 			if(Data.ProgressTitle != Title)
 			{
-				Application.Current.Dispatcher.Invoke(new Action(() =>
+				mainWindow.Dispatcher.Invoke(new Action(() =>
 				{
 					Data.ProgressTitle = Title;
 				}), DispatcherPriority.ContextIdle);
@@ -337,7 +337,7 @@ namespace SCG.Core
 		{
 			Data.ProgressValue = Data.ProgressValueMax;
 			await Task.Delay(500);
-			await Application.Current.Dispatcher.BeginInvoke(new Action(() =>
+			await mainWindow.Dispatcher.BeginInvoke(new Action(() =>
 			{
 				Data.ProgressValue = Data.ProgressValueMax;
 				OnProgressComplete();
@@ -584,11 +584,12 @@ namespace SCG.Core
 		public void AddLogMessage(string LogMessage, LogType logType)
 		{
 			AddLogMessageAsync(LogMessage, logType);
+
 		}
 
 		public async void AddLogMessageAsync(string LogMessage, LogType logType)
 		{
-			await Dispatcher.CurrentDispatcher.BeginInvoke(DispatcherPriority.Background, (Action)(() =>
+			await mainWindow.Dispatcher.BeginInvoke(DispatcherPriority.Background, (Action)(() =>
 			{
 				var log = new LogData()
 				{

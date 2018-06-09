@@ -57,6 +57,19 @@ namespace SCG.Windows
 			}
 		}
 
+		private void CopyButton_Click(object sender, RoutedEventArgs e)
+		{
+			if(Data.Logs.Count > 0)
+			{
+				string logContent = "";
+				foreach (var data in mainWindow.LogWindow.Data.Logs)
+				{
+					logContent += data.Output + Environment.NewLine;
+				}
+				Clipboard.SetText(logContent);
+			}
+		}
+
 		private void ClearButton_Click(object sender, RoutedEventArgs e)
 		{
 			Data.Clear();

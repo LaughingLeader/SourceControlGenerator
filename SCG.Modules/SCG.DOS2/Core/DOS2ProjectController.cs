@@ -117,6 +117,8 @@ namespace SCG.Core
 				int targetPercentage = amountPerTick * (i + 1);
 				int totalPercentageAmount = targetPercentage - AppController.Main.Data.ProgressValue;
 
+				AppController.Main.UpdateProgressMessage($"Generating git files for project {project.ProjectName}...");
+
 				//Log.Here().Activity($"[Progress] Target percentage for this iteration is {targetPercentage}, work should increase it by {totalPercentageAmount}");
 
 				ModProjectData modProjectData = (ModProjectData)project;

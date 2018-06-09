@@ -45,7 +45,7 @@ namespace SCG.FileGen
 					{
 						foreach (var file in Directory.EnumerateFiles(f.SourcePath, "*", SearchOption.AllDirectories))
 						{
-							if (!String.IsNullOrEmpty(file)) targetFiles.Add(file);
+							if (!String.IsNullOrEmpty(file) && File.Exists(file)) targetFiles.Add(file);
 						}
 					}));
 
@@ -75,6 +75,7 @@ namespace SCG.FileGen
 					}
 					else
 					{
+						Log.Here().Important("No files found while attempting to back up project.");
 						if (incrementProgressAmount > 0) AppController.Main.UpdateProgress(incrementProgressAmount, "No files found. Skipping.");
 						return BackupResult.Skipped; // Gracefully skip
 					}
@@ -83,6 +84,10 @@ namespace SCG.FileGen
 				{
 					Log.Here().Error($"Error writing archive {rootPath} to {archiveFilePath}: {ex.ToString()}");
 				}
+			}
+			else
+			{
+				Log.Here().Error($"Source folders for project are empty.");
 			}
 			return BackupResult.Error;
 		}
@@ -100,7 +105,7 @@ namespace SCG.FileGen
 					{
 						foreach (var file in Directory.EnumerateFiles(f.SourcePath, "*", SearchOption.AllDirectories))
 						{
-							if (!String.IsNullOrEmpty(file)) targetFiles.Add(file);
+							if (!String.IsNullOrEmpty(file) && File.Exists(file)) targetFiles.Add(file);
 						}
 					}));
 
@@ -110,7 +115,7 @@ namespace SCG.FileGen
 
 						foreach (var file in Directory.EnumerateFiles(repoPath, "*", SearchOption.TopDirectoryOnly))
 						{
-							if (!String.IsNullOrEmpty(file)) targetFiles.Add(file);
+							if (!String.IsNullOrEmpty(file) && File.Exists(file)) targetFiles.Add(file);
 						}
 					}));
 
@@ -150,6 +155,10 @@ namespace SCG.FileGen
 					Log.Here().Error($"Error writing archive {repoPath} to {archiveFilePath}: {ex.ToString()}");
 				}
 			}
+			else
+			{
+				Log.Here().Error($"Source folders for project are null or empty.");
+			}
 			return BackupResult.Error;
 		}
 
@@ -163,7 +172,7 @@ namespace SCG.FileGen
 
 				foreach (var file in Directory.EnumerateFiles(directoryPath, "*", SearchOption.AllDirectories))
 				{
-					if (!String.IsNullOrEmpty(file)) targetFiles.Add(file);
+					if (!String.IsNullOrEmpty(file) && File.Exists(file)) targetFiles.Add(file);
 				}
 
 				if (targetFiles.Count > 0)
