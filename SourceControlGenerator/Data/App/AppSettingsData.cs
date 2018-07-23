@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using SCG.Core;
 using SCG.Enum;
 
 namespace SCG.Data.App
@@ -42,6 +44,7 @@ namespace SCG.Data.App
 			set
 			{
 				gitInstallPath = value;
+				AppController.Main.GitDetected = FileCommands.IsValidPath(gitInstallPath);
 				RaisePropertyChanged("GitInstallPath");
 			}
 		}

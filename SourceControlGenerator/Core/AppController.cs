@@ -197,41 +197,49 @@ namespace SCG.Core
 
 		public bool SetModule(IProjectController projectController)
 		{
-			CurrentModule = projectController;
-			CurrentModule.Initialize(Data);
-			FileCommands.Load.LoadAll(CurrentModule.ModuleData);
-			CurrentModule.Start();
-
-			Data.CurrentModuleData = CurrentModule.ModuleData;
-			Data.ModuleIsLoaded = true;
-
-			Log.Here().Activity("Module set to {0}", CurrentModule.ModuleData.ModuleName);
-
-			if(Data.AppSettings.LastModule != CurrentModule.ModuleData.ModuleName)
+			try
 			{
-				Data.AppSettings.LastModule = CurrentModule.ModuleData.ModuleName;
-				SaveAppSettings();
-			}
+				Log.Here().Activity("Module set to [{0}]. Starting...", projectController.ModuleData.ModuleName);
 
-			OnModuleSet?.Invoke(this, EventArgs.Empty);
+				CurrentModule = projectController;
+				CurrentModule.Initialize(Data);
+				FileCommands.Load.LoadAll(CurrentModule.ModuleData);
+				CurrentModule.Start();
 
-			RegisterMenuShortcuts();
+				Data.CurrentModuleData = CurrentModule.ModuleData;
+				Data.ModuleIsLoaded = true;
 
-			if(CurrentModule.ModuleData != null)
-			{
-				CurrentModule.ModuleData.OnSettingsReverted += OnSettingsReverted;
-
-				if(mainWindow.IsLoaded)
+				if (Data.AppSettings.LastModule != CurrentModule.ModuleData.ModuleName)
 				{
-					OnAppLoaded();
+					Data.AppSettings.LastModule = CurrentModule.ModuleData.ModuleName;
+					SaveAppSettings();
 				}
+
+				OnModuleSet?.Invoke(this, EventArgs.Empty);
+
+				RegisterMenuShortcuts();
+
+				if (CurrentModule.ModuleData != null)
+				{
+					CurrentModule.ModuleData.OnSettingsReverted += OnSettingsReverted;
+
+					if (mainWindow.IsLoaded)
+					{
+						OnAppLoaded();
+					}
+				}
+
+				Data.MergeKeyLists();
+
+				Data.WindowTitle = "Source Control Generator - " + CurrentModule.ModuleData.ModuleName;
+
+				return true;
 			}
-
-			Data.MergeKeyLists();
-
-			Data.WindowTitle = "Source Control Generator - " + CurrentModule.ModuleData.ModuleName;
-
-			return true;
+			catch(Exception ex)
+			{
+				Log.Here().Error($"Error loading module: {ex.ToString()}");
+				return false;
+			}
 		}
 
 		private void OnSetupComplete()

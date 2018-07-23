@@ -72,7 +72,7 @@ namespace SCG.Modules.Default.Controls
 			}
 
 			Controller.Data.ProjectSelected = projectSelected;
-			Controller.Data.CanGenerateGit = canGitGenerate;
+			Controller.Data.CanGenerateGit = canGitGenerate && AppController.Main.GitDetected;
 			Controller.SelectionChanged();
 		}
 
