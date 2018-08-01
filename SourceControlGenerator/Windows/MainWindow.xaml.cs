@@ -70,6 +70,8 @@ namespace SCG.Windows
 			set { gitGenerationWindow = value; }
 		}
 
+		public DebugWindow DebugWindow { get; set; }
+
 		public List<Window> SubWindows { get; set; }
 
 		private UserControl lastModuleView;

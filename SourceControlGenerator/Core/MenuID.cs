@@ -12,6 +12,7 @@ namespace SCG.Core
 		public static string SelectModule => "Base.SelectModule";
 		public static string OpenLog => "Base.OpenLog";
 		public static string SaveLog => "Base.SaveLog";
+		public static string ToggleDebugWindow => "Base.ToggleDebugWindow";
 		public static string IssuesLink => "Base.IssuesLink";
 		public static string RepoLink => "Base.RepoLink";
 		public static string About => "Base.About";

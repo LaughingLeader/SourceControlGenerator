@@ -18,6 +18,7 @@ using System.Collections.ObjectModel;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Controls;
 
@@ -94,9 +95,9 @@ namespace SCG.Core
 		{
 			Log.Here().Important("Generating git repositories for selected projects.");
 			int total = Data.GitGenerationSettings.ExportProjects.Count;
-			int amountPerTick = AppController.Main.Data.ProgressValueMax / total;
+			AppController.Main.Data.ProgressValueMax = total;
 
-			Log.Here().Activity($"[Progress] Amount per tick set to {amountPerTick}");
+			//Log.Here().Activity($"[Progress] Amount per tick set to {amountPerTick}");
 
 			AppController.Main.UpdateProgressMessage("Parsing selected projects...");
 
@@ -114,8 +115,6 @@ namespace SCG.Core
 				AppController.Main.UpdateProgressTitle($"Generating Git Files... {(i)}/{total}");
 
 				var project = Data.GitGenerationSettings.ExportProjects[i];
-				int targetPercentage = amountPerTick * (i + 1);
-				int totalPercentageAmount = targetPercentage - AppController.Main.Data.ProgressValue;
 
 				AppController.Main.UpdateProgressMessage($"Generating git files for project {project.ProjectName}...");
 
@@ -123,7 +122,7 @@ namespace SCG.Core
 
 				ModProjectData modProjectData = (ModProjectData)project;
 
-				var success = await GenerateGitFilesAsync(modProjectData, Data.GitGenerationSettings, totalPercentageAmount).ConfigureAwait(false);
+				var success = await GenerateGitFilesAsync(modProjectData, Data.GitGenerationSettings).ConfigureAwait(false);
 
 				if (success)
 				{
@@ -137,7 +136,7 @@ namespace SCG.Core
 					Log.Here().Error("Error generating git repository for {0}.", project.DisplayName);
 				}
 
-				AppController.Main.SetProgress(targetPercentage);
+				AppController.Main.UpdateProgress(1);
 
 				AppController.Main.UpdateProgressTitle($"Generating Git Files... {(i + 1)}/{total}");
 			}
@@ -149,19 +148,16 @@ namespace SCG.Core
 			return totalSuccess;
 		}
 
-		private async Task<bool> GenerateGitFilesAsync(ModProjectData modProject, GitGenerationSettings generationSettings, int endPercentage)
+		private async Task<bool> GenerateGitFilesAsync(ModProjectData modProject, GitGenerationSettings generationSettings)
 		{
 			if (modProject == null) return false;
-
-			int percentageIncrement = endPercentage / 9;
-
-			Log.Here().Activity($"[Progress] percentageIncrement is {percentageIncrement} / {endPercentage}");
+			//Log.Here().Activity($"[Progress] percentageIncrement is {percentageIncrement} / {endPercentage}");
 
 			if (!string.IsNullOrEmpty(Data.Settings.GitRootDirectory))
 			{
 				string gitProjectRootDirectory = Path.Combine(Data.Settings.GitRootDirectory, modProject.ProjectName);
 
-				AppController.Main.UpdateProgress(percentageIncrement, "Creating git project directory...");
+				AppController.Main.UpdateProgressAndMax(1, "Creating git project directory...");
 
 				var rootRepoDirectory = Directory.CreateDirectory(gitProjectRootDirectory);
 
@@ -172,7 +168,7 @@ namespace SCG.Core
 
 				if (generationSettings.InitGit)
 				{
-					AppController.Main.UpdateProgress(percentageIncrement, "Initializing git repo...");
+					AppController.Main.UpdateProgressAndMax(1, "Initializing git repo...");
 
 					var author = Data.Settings.DefaultAuthor;
 					if(modProject.ModuleInfo != null && !String.IsNullOrWhiteSpace(modProject.ModuleInfo.Author))
@@ -196,7 +192,7 @@ namespace SCG.Core
 
 				if (generationSettings.CreateJunctions)
 				{
-					AppController.Main.UpdateProgress(percentageIncrement, "Creating junctions...");
+					AppController.Main.UpdateProgressAndMax(1, "Creating junctions...");
 
 					var sourceFolders = PrepareDirectories(modProject, Data.Settings.DirectoryLayouts);
 					var result = await GitGenerator.CreateJunctions(modProject.ProjectName, sourceFolders, Data);
@@ -215,7 +211,7 @@ namespace SCG.Core
 
 				if (generationSettings.TemplateSettings != null && generationSettings.TemplateSettings.Count > 0)
 				{
-					AppController.Main.UpdateProgress(percentageIncrement, "Generating templates...");
+					AppController.Main.UpdateProgressAndMax(1, "Generating templates...");
 
 					foreach (var templateSetting in generationSettings.TemplateSettings)
 					{
@@ -246,7 +242,7 @@ namespace SCG.Core
 
 				if (generationSettings.SelectedLicense != LicenseType.None)
 				{
-					AppController.Main.UpdateProgress(percentageIncrement, "Generating license...");
+					AppController.Main.UpdateProgressAndMax(1, "Generating license...");
 
 					string outputText = "";
 					if (generationSettings.SelectedLicense == LicenseType.Custom)
@@ -295,7 +291,7 @@ namespace SCG.Core
 
 				if (generationSettings.InitGit && commitGit)
 				{
-					AppController.Main.UpdateProgress(percentageIncrement, "Committing new files...");
+					AppController.Main.UpdateProgressAndMax(1, "Committing new files...");
 					var result = await GitGenerator.Commit(gitProjectRootDirectory, commitMessage);
 					if (result)
 					{
@@ -307,7 +303,7 @@ namespace SCG.Core
 					}
 				}
 
-				AppController.Main.UpdateProgress(percentageIncrement, "Generating source control data file...");
+				AppController.Main.UpdateProgressAndMax(1, "Generating source control data file...");
 
 				SourceControlData sourceControlData = new SourceControlData()
 				{
@@ -319,7 +315,7 @@ namespace SCG.Core
 
 				FileCommands.Save.SaveSourceControlData(sourceControlData, gitProjectRootDirectory);
 
-				AppController.Main.UpdateProgress(percentageIncrement);
+				AppController.Main.UpdateProgressAndMax(1);
 
 				return true;
 			}
@@ -375,11 +371,23 @@ namespace SCG.Core
 		}
 
 		private string targetBackupOutputDirectory = "";
+		private CancellationTokenSource cancellationTokenSource;
+
+		private void CancelBackupProgress()
+		{
+			if(cancellationTokenSource != null)
+			{
+				Log.Here().Warning("Cancelling backup progress...");
+				cancellationTokenSource.Cancel();
+			}
+		}
 
 		public void BackupSelectedProjects(string OutputDirectory = "")
 		{
+			cancellationTokenSource = new CancellationTokenSource();
+
 			targetBackupOutputDirectory = OutputDirectory;
-			AppController.Main.StartProgress($"Backing up projects...", StartBackupSelectedProjectsAsync, "");
+			AppController.Main.StartProgress($"Backing up projects...", StartBackupSelectedProjectsAsync, "", 0, true, CancelBackupProgress);
 		}
 
 		public async void StartBackupSelectedProjectsAsync()
@@ -408,8 +416,7 @@ namespace SCG.Core
 
 		private async Task<int> BackupSelectedProjectsAsync(ConcurrentBag<ModProjectData> selectedProjects)
 		{
-			var total = selectedProjects.Count;
-			int amountPerTick = AppController.Main.Data.ProgressValueMax / total;
+			AppController.Main.Data.ProgressValueMax = selectedProjects.Count;
 
 			int totalSuccess = 0;
 
@@ -418,16 +425,13 @@ namespace SCG.Core
 				int i = 0;
 				foreach (var project in selectedProjects)
 				{
-					AppController.Main.UpdateProgressTitle((selectedProjects.Count > 1 ? "Backing up projects..." : $"Backing up project... ") + $"{i}/{total}");
-
-					int targetPercentage = amountPerTick * (i + 1);
-					int totalPercentageAmount = targetPercentage - AppController.Main.Data.ProgressValue;
+					AppController.Main.UpdateProgressTitle((selectedProjects.Count > 1 ? "Backing up projects..." : $"Backing up project... ") + $"{i}/{selectedProjects.Count}");
 
 					//Log.Here().Activity($"[Progress-Backup] Target percentage for this backup iteration is {targetPercentage} => {totalPercentageAmount}. Amount per tick is {amountPerTick}.");
 
 					AppController.Main.UpdateProgressMessage($"Creating archive for project {project.ProjectName}...");
 
-					var backupSuccess = await BackupProjectAsync(project, targetBackupOutputDirectory, Data.Settings.BackupMode, totalPercentageAmount);
+					var backupSuccess = await BackupProjectAsync(project, targetBackupOutputDirectory, Data.Settings.BackupMode);
 
 					if (backupSuccess == BackupResult.Success)
 					{
@@ -450,14 +454,12 @@ namespace SCG.Core
 						Log.Here().Activity("Skipped archive creation for {0}.", project.ProjectName);
 					}
 
-					AppController.Main.UpdateProgressTitle((selectedProjects.Count > 1 ? "Backing up projects..." : $"Backing up project... ") + $"{i + 1}/{total}");
-					AppController.Main.SetProgress(targetPercentage);
-
+					AppController.Main.UpdateProgressTitle((selectedProjects.Count > 1 ? "Backing up projects..." : $"Backing up project... ") + $"{i + 1}/{selectedProjects.Count}");
 					i++;
 				}
 			}
 
-			AppController.Main.UpdateProgressTitle((selectedProjects.Count > 1 ? "Backing up projects..." : $"Backing up project... ") + $"{total}/{total}");
+			AppController.Main.UpdateProgressTitle((selectedProjects.Count > 1 ? "Backing up projects..." : $"Backing up project... ") + $"{selectedProjects.Count}/{selectedProjects.Count}");
 			AppController.Main.UpdateProgressMessage("Finishing up...");
 			AppController.Main.UpdateProgressLog("Backup quest complete. +5 XP");
 			AppController.Main.FinishProgress();
@@ -467,7 +469,7 @@ namespace SCG.Core
 			return totalSuccess;
 		}
 
-		public async Task<BackupResult> BackupProjectAsync(ModProjectData modProject, string OutputDirectory = "", BackupMode mode = BackupMode.Zip, int totalPercentageAmount = -1)
+		public async Task<BackupResult> BackupProjectAsync(ModProjectData modProject, string OutputDirectory = "", BackupMode mode = BackupMode.Zip)
 		{
 			if (String.IsNullOrWhiteSpace(OutputDirectory))
 			{
@@ -508,7 +510,7 @@ namespace SCG.Core
 			{
 				AppController.Main.UpdateProgressLog("Creating zip archive from project folders...");
 				//Log.Here().Activity($"Git project not found. Archiving project {modProject.ProjectName} from project folders directly.");
-				return await BackupGenerator.CreateArchiveFromRoot(Data.Settings.DOS2DataDirectory.Replace("/", "\\\\"), sourceFolders, archivePath, totalPercentageAmount).ConfigureAwait(false);
+				return await BackupGenerator.CreateArchiveFromRoot(Data.Settings.DOS2DataDirectory.Replace("/", "\\\\"), sourceFolders, archivePath, true, cancellationTokenSource.Token).ConfigureAwait(false);
 			}
 			else
 			{
@@ -523,7 +525,7 @@ namespace SCG.Core
 				else
 				{
 					AppController.Main.UpdateProgressLog("Creating zip archive...");
-					return await BackupGenerator.CreateArchiveFromRepo(gitProjectDirectory, Data.Settings.DOS2DataDirectory.Replace("/", "\\\\"), sourceFolders, archivePath, totalPercentageAmount).ConfigureAwait(false);
+					return await BackupGenerator.CreateArchiveFromRepo(gitProjectDirectory, Data.Settings.DOS2DataDirectory.Replace("/", "\\\\"), sourceFolders, archivePath, true, cancellationTokenSource.Token).ConfigureAwait(false);
 				}
 				//Seems to have a problem with junctions and long paths
 				//return BackupGenerator.CreateArchiveFromRepo(gitProjectDirectory, archivePath);

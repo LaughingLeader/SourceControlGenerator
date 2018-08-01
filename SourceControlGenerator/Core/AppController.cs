@@ -273,7 +273,7 @@ namespace SCG.Core
 		#endregion
 		#region Progress
 
-		public void StartProgress(string Title, Action StartAction, string StartMessage = "", int StartValue = 0, Action OnCompleted = null)
+		public void StartProgress(string Title, Action StartAction, string StartMessage = "", int StartValue = 0, bool ShowCancelButton = false, Action CancelAction = null)
 		{
 			if(!Data.ProgressActive)
 			{
@@ -282,6 +282,8 @@ namespace SCG.Core
 				Data.ProgressValue = StartValue;
 				Data.ProgressLog = "";
 				Data.ProgressVisiblity = System.Windows.Visibility.Visible;
+				Data.ProgressCancelCommand.SetCallback(CancelAction);
+				Data.ProgressCancelButtonVisibility = ShowCancelButton ? Visibility.Visible : Visibility.Collapsed;
 				//mainWindow.IsEnabled = false;
 
 				mainWindow.Dispatcher.Invoke(new Action(() =>
@@ -297,6 +299,18 @@ namespace SCG.Core
 		{
 			mainWindow.Dispatcher.Invoke(new Action(() =>
 			{
+				if (Message != null) Data.ProgressLog += Environment.NewLine + Message;
+				Data.ProgressValue += Value;
+
+				//Log.Here().Activity($"Updated progress to {Value}.");
+			}), DispatcherPriority.Background);
+		}
+
+		public void UpdateProgressAndMax(int Value = 1, string Message = null)
+		{
+			mainWindow.Dispatcher.Invoke(new Action(() =>
+			{
+				Data.ProgressValueMax += Value;
 				if (Message != null) Data.ProgressLog += Environment.NewLine + Message;
 				Data.ProgressValue += Value;
 
@@ -507,6 +521,24 @@ namespace SCG.Core
 			}, fileName);
 		}
 
+		public void MenuAction_ToggleDebugWindow()
+		{
+			if (mainWindow.DebugWindow == null)
+			{
+				mainWindow.DebugWindow = new DebugWindow();
+				mainWindow.DebugWindow.Topmost = false;
+				DebugWindowMenuData.Header = "Close Debug Window";
+				mainWindow.DebugWindow.Init(DebugWindowMenuData, () => { DebugWindowMenuData.Header = "Open Debug Window"; });
+				mainWindow.DebugWindow.Show();
+			}
+			else
+			{
+				mainWindow.DebugWindow.Close();
+				mainWindow.DebugWindow = null;
+				DebugWindowMenuData.Header = "Open Debug Window";
+			}
+		}
+
 		public void MenuAction_ToggleMarkdownWindow()
 		{
 			if(!mainWindow.MarkdownConverterWindow.IsVisible)
@@ -613,6 +645,7 @@ namespace SCG.Core
 		}
 
 		public MenuData LogMenuData { get; set; }
+		public MenuData DebugWindowMenuData { get; set; }
 
 		#endregion
 
@@ -753,6 +786,14 @@ namespace SCG.Core
 				ShortcutKey = Key.F8
 			};
 
+			DebugWindowMenuData = new MenuData(MenuID.ToggleDebugWindow)
+			{
+				Header = "Open Debug Window",
+				ClickCommand = new ActionCommand(MenuAction_ToggleDebugWindow),
+				ShortcutKey = Key.F8,
+				ShortcutModifiers = ModifierKeys.Alt
+			};
+
 			//LogMenuData.SetHeaderBinding(mainWindow.LogWindow.Data, "LogVisibleText");
 
 			Data.MenuBarData.Options.Register("Base",
@@ -766,7 +807,8 @@ namespace SCG.Core
 				{
 					Header = "Save Log...",
 					ClickCommand = new ActionCommand(MenuAction_SaveLog)
-				}
+				},
+				DebugWindowMenuData
 			);
 
 			Data.MenuBarData.Tools.Register("Base",

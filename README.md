@@ -3,9 +3,10 @@ Source Control Generator
 
 Source Control Generator is a program designed to ease effort in creating git repositories and backing up projects.
 
-# [Download](https://github.com/LaughingLeader/SourceControlGenerator/releases)
+## Links
 
-Check the [releases](https://github.com/LaughingLeader/SourceControlGenerator/releases) page to dowload the latest version.
+* [Download](https://github.com/LaughingLeader/SourceControlGenerator/releases)
+* [Changelog](CHANGELOG.md)
 
 ## Features:
 * Easy Git Repository Creation

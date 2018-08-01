@@ -45,7 +45,7 @@ Recovered/*
 *.lsf
 *.lsfx
 *.lsefx
-*.lsx
+#*.lsx
 *.lsmg
 
 # Logs               #

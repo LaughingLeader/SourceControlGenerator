@@ -273,6 +273,30 @@ namespace SCG.Data.View
 			}
 		}
 
+		private Visibility progressCancelButtonVisibility = Visibility.Collapsed;
+
+		public Visibility ProgressCancelButtonVisibility
+		{
+			get { return progressCancelButtonVisibility; }
+			set
+			{
+				progressCancelButtonVisibility = value;
+				RaisePropertyChanged("ProgressCancelButtonVisibility");
+			}
+		}
+
+		private ActionCommand progressCancelCommand;
+
+		public ActionCommand ProgressCancelCommand
+		{
+			get { return progressCancelCommand; }
+			set
+			{
+				progressCancelCommand = value;
+				RaisePropertyChanged("ProgressCancelCommand");
+			}
+		}
+
 		#endregion
 
 		private Visibility moduleSelectionVisibility = Visibility.Visible;
@@ -317,6 +341,8 @@ namespace SCG.Data.View
 
 			IconData = new IconPathData();
 			MenuBarData = new MenuBarData();
+
+			ProgressCancelCommand = new ActionCommand();
 
 			//ThemeColorData = ThemeColorData.Default();
 			//ThemeColorData.RefreshTheme();

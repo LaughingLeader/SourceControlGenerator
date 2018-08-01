@@ -456,7 +456,7 @@ namespace SCG.Modules.Default.Core
 			{
 				AppController.Main.UpdateProgressLog("Creating zip archive from project folders...");
 				//Log.Here().Activity($"Git project not found. Archiving project {modProject.ProjectName} from project folders directly.");
-				return await BackupGenerator.CreateArchiveFromDirectory(modProject.Directory, archivePath, totalPercentageAmount).ConfigureAwait(false);
+				return await BackupGenerator.CreateArchiveFromDirectory(modProject.Directory, archivePath, true).ConfigureAwait(false);
 			}
 			else
 			{
@@ -471,7 +471,7 @@ namespace SCG.Modules.Default.Core
 				else
 				{
 					AppController.Main.UpdateProgressLog("Creating zip archive...");
-					return await BackupGenerator.CreateArchiveFromDirectory(modProject.Directory, archivePath, totalPercentageAmount).ConfigureAwait(false);
+					return await BackupGenerator.CreateArchiveFromDirectory(modProject.Directory, archivePath, true).ConfigureAwait(false);
 				}
 				//Seems to have a problem with junctions and long paths
 				//return BackupGenerator.CreateArchiveFromRepo(gitProjectDirectory, archivePath);
