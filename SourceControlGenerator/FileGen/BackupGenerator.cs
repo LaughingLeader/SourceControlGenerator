@@ -122,18 +122,12 @@ namespace SCG.FileGen
 					if (updateProgress) AppController.Main.UpdateProgressLog($"Searching repository for files to save.");
 					await CrawlDirectoryAsync(targetFiles, repoPath, "*", SearchOption.TopDirectoryOnly, token.Value);
 
-					Log.Here().Important($"File crawling done.");
-
 					if (targetFiles.Count > 0)
 					{
 						if (updateProgress)
 						{
 							AppController.Main.Data.ProgressValueMax += targetFiles.Count;
 						}
-
-						Log.Here().Important($"Starting zip archiving process...");
-
-						//return await StartArchivingRepo(targetFiles, rootPath, repoPath, archiveFilePath, incrementProgressAmount, token.Value);
 
 						using (var zip = File.OpenWrite(archiveFilePath))
 						using (var zipWriter = WriterFactory.Open(zip, ArchiveType.Zip, CompressionType.Deflate))
@@ -201,8 +195,6 @@ namespace SCG.FileGen
 					}
 				});
 
-				Log.Here().Important($"Enumating files in directory.");
-
 				await Task.WhenAll(task).ConfigureAwait(false);
 
 				if (targetFiles.Count > 0)
@@ -211,8 +203,6 @@ namespace SCG.FileGen
 					{
 						AppController.Main.Data.ProgressValueMax += targetFiles.Count;
 					}
-
-					Log.Here().Important($"Starting archive creation.");
 
 					using (var zip = File.OpenWrite(archiveFilePath))
 					using (var zipWriter = WriterFactory.Open(zip, ArchiveType.Zip, CompressionType.Deflate))
@@ -225,8 +215,6 @@ namespace SCG.FileGen
 							await WriteZipAsync(zipWriter, f.Replace(directoryPath, ""), f, token.Value);
 							if (updateProgress) AppController.Main.UpdateProgress(1);
 						}
-
-						Log.Here().Important($"Archive finished.");
 
 						return BackupResult.Success;
 					}
