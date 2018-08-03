@@ -72,6 +72,11 @@ namespace SCG.Windows
 			{
 				isBackingUp = value;
 				RaisePropertyChanged("IsBackingUp");
+
+				if (IsBackingUp)
+				{
+					CanBackupFolder = false;
+				}
 			}
 		}
 
@@ -137,6 +142,9 @@ namespace SCG.Windows
 		private async void StartBackup()
 		{
 			Log.Here().Important("Starting backup test...");
+
+			debugWindowData.TotalBackupTimeText = $"Total Backup Time:";
+
 			Stopwatch timer = new Stopwatch();
 			timer.Start();
 
@@ -149,6 +157,7 @@ namespace SCG.Windows
 			debugWindowData.TotalBackupTimeText = $"Total Backup Time: {elapsedTime} | {result.ToString()}";
 
 			debugWindowData.IsBackingUp = false;
+			debugWindowData.CanBackupFolder = FileCommands.IsValidDirectoryPath(debugWindowData.BackupFolderPath);
 		}
 
 		private async Task<BackupResult> BackupTest()
