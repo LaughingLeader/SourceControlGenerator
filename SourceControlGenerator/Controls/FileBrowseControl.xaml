@@ -17,7 +17,7 @@
 			 >
 	<UserControl.Resources>
 		<conv:FileValidationColorConverter x:Key="FileValidationColorConverter" />
-		
+		<conv:StringToBoolConverter x:Key="StringToBoolConverter" />
 	</UserControl.Resources>
 	<Grid Width="Auto" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" >
 		<Grid.ColumnDefinitions>

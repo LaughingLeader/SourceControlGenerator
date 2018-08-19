@@ -35,6 +35,13 @@ namespace SCG.Core
 
 		private MainWindow mainWindow;
 
+		public MainWindow MainWindow
+		{
+			get { return mainWindow; }
+			private set { mainWindow = value; }
+		}
+
+
 		public MainAppData Data { get; set; }
 
 		public Dictionary<string, IProjectController> ProjectControllers { get; set; }
@@ -551,6 +558,18 @@ namespace SCG.Core
 			}
 		}
 
+		public void MenuAction_ToggleTextCreatorWindow()
+		{
+			if (!mainWindow.TextCreatorWindow.IsVisible)
+			{
+				mainWindow.TextCreatorWindow.Show();
+			}
+			else
+			{
+				mainWindow.TextCreatorWindow.Hide();
+			}
+		}
+
 		public void MenuAction_OpenAbout()
 		{
 			if (Data.ProgressActive) return;
@@ -817,6 +836,12 @@ namespace SCG.Core
 					Header = "Open Markdown Converter",
 					ClickCommand = new ActionCommand(MenuAction_ToggleMarkdownWindow),
 					ShortcutKey = Key.F3
+				},
+				new MenuData(MenuID.TextCreator)
+				{
+					Header = "Open Text Creator",
+					ClickCommand = new ActionCommand(MenuAction_ToggleTextCreatorWindow),
+					ShortcutKey = Key.F4
 				}
 			);
 

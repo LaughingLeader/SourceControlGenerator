@@ -14,17 +14,17 @@ using SCG.Collections;
 using SCG.Controls;
 using SCG.Data;
 using SCG.Data.View;
-using SCG.Modules.DOS2.Data.App;
-using SCG.Modules.DOS2.Data.View;
+using SCG.Modules.DOS2DE.Data.App;
+using SCG.Modules.DOS2DE.Data.View;
 using SCG.FileGen;
 using SCG.Windows;
 using Microsoft.Win32;
 
-namespace SCG.Modules.DOS2.Core
+namespace SCG.Modules.DOS2DE.Core
 {
-	public static class DOS2Commands
+	public static class DOS2DECommands
 	{
-		public static void LoadAll(DOS2ModuleData Data)
+		public static void LoadAll(DOS2DEModuleData Data)
 		{
 			LoadModProjects(Data);
 			LoadManagedProjects(Data);
@@ -32,7 +32,7 @@ namespace SCG.Modules.DOS2.Core
 			LoadAvailableProjects(Data);
 		}
 
-		public static void LoadManagedProjects(DOS2ModuleData Data, bool ClearExisting = true)
+		public static void LoadManagedProjects(DOS2DEModuleData Data, bool ClearExisting = true)
 		{
 			if (Data.ManagedProjects == null)
 			{
@@ -61,13 +61,13 @@ namespace SCG.Modules.DOS2.Core
 				try
 				{
 					Data.ManagedProjectsData = JsonInterface.DeserializeObject<ManagedProjectsData>(projectsAppDataPath);
+					Data.ManagedProjectsData.Projects = Data.ManagedProjectsData.Projects.OrderBy(p => p.Name).ToList();
 				}
 				catch (Exception ex)
 				{
 					Log.Here().Error("Error deserializing managed projects data at {0}: {1}", projectsAppDataPath, ex.ToString());
 				}
 			}
-
 
 			if (Data.ManagedProjectsData == null)
 			{
@@ -117,7 +117,7 @@ namespace SCG.Modules.DOS2.Core
 			}
 		}
 
-		public static void LoadAvailableProjects(DOS2ModuleData Data, bool ClearExisting = false)
+		public static void LoadAvailableProjects(DOS2DEModuleData Data, bool ClearExisting = false)
 		{
 			if (Data.NewProjects == null)
 			{
@@ -132,8 +132,6 @@ namespace SCG.Modules.DOS2.Core
 					BindingOperations.EnableCollectionSynchronization(Data.NewProjects, Data.NewProjectsLock);
 				}
 			}
-
-			Data.NewProjectsAvailable = false;
 
 			if (Data.ModProjects != null)
 			{
@@ -161,18 +159,18 @@ namespace SCG.Modules.DOS2.Core
 									Tooltip = project.Tooltip
 								};
 								Data.NewProjects.DoOperation(data => data.Add(availableProject));
-								Data.NewProjectsAvailable = true;
 							}
 						}
 					}
 				}
 			}
 
+			Data.NewProjectsAvailable = Data.NewProjects != null && Data.NewProjects.Count > 0;
 		}
 
 		private static string[] ignoredFolders = new string[7] { "Origins", "DivinityOrigins_1301db3d-1f54-4e98-9be5-5094030916e4", "Shared", "Arena", "DOS2_Arena", "Game_Master", "GameMaster" };
 
-		public static void LoadModProjects(DOS2ModuleData Data, bool ClearPrevious = true)
+		public static void LoadModProjects(DOS2DEModuleData Data, bool ClearPrevious = true)
 		{
 			if (Data.ModProjects == null)
 			{
@@ -188,12 +186,12 @@ namespace SCG.Modules.DOS2.Core
 				}
 			}
 
-			if (Data.Settings != null && !String.IsNullOrEmpty(Data.Settings.DOS2DataDirectory))
+			if (Data.Settings != null && !String.IsNullOrEmpty(Data.Settings.DOS2DEDataDirectory))
 			{
-				if (Directory.Exists(Data.Settings.DOS2DataDirectory))
+				if (Directory.Exists(Data.Settings.DOS2DEDataDirectory))
 				{
-					string projectsPath = Path.Combine(Data.Settings.DOS2DataDirectory, "Projects");
-					string modsPath = Path.Combine(Data.Settings.DOS2DataDirectory, "Mods");
+					string projectsPath = Path.Combine(Data.Settings.DOS2DEDataDirectory, "Projects");
+					string modsPath = Path.Combine(Data.Settings.DOS2DEDataDirectory, "Mods");
 
 					if (Directory.Exists(modsPath))
 					{
@@ -242,12 +240,12 @@ namespace SCG.Modules.DOS2.Core
 				}
 				else
 				{
-					Log.Here().Error("Loading available projects failed. DOS2 data directory not found at {0}", Data.Settings.DOS2DataDirectory);
+					Log.Here().Error("Loading available projects failed. DOS2 data directory not found at {0}", Data.Settings.DOS2DEDataDirectory);
 				}
 			}
 		}
 
-		public static bool LoadSourceControlData(DOS2ModuleData Data)
+		public static bool LoadSourceControlData(DOS2DEModuleData Data)
 		{
 			if (Directory.Exists(Data.Settings.GitRootDirectory))
 			{
@@ -284,23 +282,23 @@ namespace SCG.Modules.DOS2.Core
 
 		#region Refresh
 
-		public static void RefreshAvailableProjects(DOS2ModuleData Data)
+		public static void RefreshAvailableProjects(DOS2DEModuleData Data)
 		{
 			LoadModProjects(Data, true);
 			LoadAvailableProjects(Data, true);
 			LoadManagedProjects(Data, true);
 		}
 
-		public static void RefreshManagedProjects(DOS2ModuleData Data)
+		public static void RefreshManagedProjects(DOS2DEModuleData Data)
 		{
 			if (Data.ManagedProjects != null && Data.ManagedProjects.Count > 0)
 			{
-				if (Data.Settings != null && !String.IsNullOrEmpty(Data.Settings.DOS2DataDirectory))
+				if (Data.Settings != null && !String.IsNullOrEmpty(Data.Settings.DOS2DEDataDirectory))
 				{
-					if (Directory.Exists(Data.Settings.DOS2DataDirectory))
+					if (Directory.Exists(Data.Settings.DOS2DEDataDirectory))
 					{
-						string projectsPath = Path.Combine(Data.Settings.DOS2DataDirectory, "Projects");
-						string modsPath = Path.Combine(Data.Settings.DOS2DataDirectory, "Mods");
+						string projectsPath = Path.Combine(Data.Settings.DOS2DEDataDirectory, "Projects");
+						string modsPath = Path.Combine(Data.Settings.DOS2DEDataDirectory, "Mods");
 
 						if (Directory.Exists(modsPath))
 						{
@@ -319,7 +317,7 @@ namespace SCG.Modules.DOS2.Core
 					}
 					else
 					{
-						Log.Here().Error("Loading available projects failed. DOS2 data directory not found at {0}", Data.Settings.DOS2DataDirectory);
+						Log.Here().Error("Loading available projects failed. DOS2 data directory not found at {0}", Data.Settings.DOS2DEDataDirectory);
 					}
 				}
 			}
@@ -328,12 +326,14 @@ namespace SCG.Modules.DOS2.Core
 		#endregion
 
 
-		public static bool SaveManagedProjects(DOS2ModuleData Data)
+		public static bool SaveManagedProjects(DOS2DEModuleData Data)
 		{
 			Log.Here().Important("Saving Managed Projects data to {0}", Data.Settings.AddedProjectsFile);
 
 			if (Data.ManagedProjectsData != null && Data.ManagedProjectsData.Projects.Count > 0 && Data.Settings != null && FileCommands.IsValidPath(Data.Settings.AddedProjectsFile))
 			{
+				Data.ManagedProjectsData.Projects.RemoveAll(p => Data.ModProjects.Where(mp => mp.ProjectName == p.Name).FirstOrDefault() == null);
+				Data.ManagedProjectsData.Projects = Data.ManagedProjectsData.Projects.OrderBy(p => p.Name).ToList();
 				string json = JsonInterface.SerializeObject(Data.ManagedProjectsData);
 				return FileCommands.WriteToFile(Data.Settings.AddedProjectsFile, json);
 			}
@@ -341,9 +341,9 @@ namespace SCG.Modules.DOS2.Core
 			return false;
 		}
 
-		private static DOS2ModuleData MainData { get; set; }
+		private static DOS2DEModuleData MainData { get; set; }
 
-		public static void SetData(DOS2ModuleData moduleData)
+		public static void SetData(DOS2DEModuleData moduleData)
 		{
 			MainData = moduleData;
 		}
@@ -392,7 +392,7 @@ namespace SCG.Modules.DOS2.Core
 
 			if (MainData != null)
 			{
-				string startPath = Path.Combine(MainData.Settings.DOS2DataDirectory, "Mods");
+				string startPath = Path.Combine(MainData.Settings.DOS2DEDataDirectory, "Mods");
 				string directory = Path.Combine(Path.GetFullPath(startPath), modProjectData.FolderName);
 
 				Log.Here().Activity($"Attempting to open directory {directory}");
@@ -419,7 +419,7 @@ namespace SCG.Modules.DOS2.Core
 		{
 			if (MainData != null)
 			{
-				string startPath = Path.Combine(MainData.Settings.DOS2DataDirectory, "Public");
+				string startPath = Path.Combine(MainData.Settings.DOS2DEDataDirectory, "Public");
 				string directory = Path.Combine(Path.GetFullPath(startPath), modProjectData.FolderName);
 				if (Directory.Exists(directory))
 				{
@@ -443,7 +443,7 @@ namespace SCG.Modules.DOS2.Core
 		{
 			if (MainData != null)
 			{
-				string startPath = Path.Combine(MainData.Settings.DOS2DataDirectory, "Editor/Mods");
+				string startPath = Path.Combine(MainData.Settings.DOS2DEDataDirectory, "Editor/Mods");
 				string directory = Path.Combine(Path.GetFullPath(startPath), modProjectData.FolderName);
 				if (Directory.Exists(directory))
 				{
@@ -467,8 +467,12 @@ namespace SCG.Modules.DOS2.Core
 		{
 			if (MainData != null)
 			{
-				string startPath = Path.Combine(MainData.Settings.DOS2DataDirectory, "Projects");
+				string startPath = Path.Combine(MainData.Settings.DOS2DEDataDirectory, "Projects");
 				string directory = Path.Combine(Path.GetFullPath(startPath), modProjectData.ProjectName);
+				if(!Directory.Exists(directory))
+				{
+					directory = Path.Combine(Path.GetFullPath(startPath), modProjectData.ModuleInfo.Folder); // Imported projects
+				}
 				if (Directory.Exists(directory))
 				{
 					Process.Start(directory);

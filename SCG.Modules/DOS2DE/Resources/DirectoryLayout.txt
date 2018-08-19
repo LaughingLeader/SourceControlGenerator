@@ -1,0 +1,12 @@
+### Keywords ###
+# ProjectName = The name of the project, without the GUID.
+# ProjectFolder = The folder name of the project. Typically just the project name, though imported projects may differ.
+# ModUUID = The UUID of the mod.
+# ModFolder = The folder value for the mod. Typically ProjectName_ModUUID
+
+### Directories to use for junctions ###
+
+Editor/Mods/ModFolder
+Mods/ModFolder
+Projects/ProjectFolder
+Public/ModFolder

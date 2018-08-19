@@ -96,10 +96,10 @@
 		</ItemsControl>
 		<Grid Grid.Row="2" Margin="0,2">
 			<StackPanel Orientation="Horizontal" Grid.Column="1" HorizontalAlignment="Center" behavior:MarginSetter.Margin="2,0" >
-				<Button x:Name="CopyButton" Content="Copy" Click="CopyButton_Click" ToolTip="{Binding x:Static core:TooltipText.Log_Button_Copy}" />
-				<Button x:Name="SaveButton" Content="Save As..." Click="SaveButton_Click" ToolTip="{Binding x:Static core:TooltipText.Log_Button_SaveAs}" />
-				<Button x:Name="ClearButton" Content="Clear" Click="ClearButton_Click" IsEnabled="{Binding CanClear}" ToolTip="{Binding x:Static core:TooltipText.Log_Button_Clear}" />
-				<Button x:Name="RestoreButton" Content="Restore" Click="RestoreButton_Click" IsEnabled="{Binding CanRestore}" ToolTip="{Binding x:Static core:TooltipText.Log_Button_Restore}" />
+				<Button x:Name="CopyButton" Content="Copy" Click="CopyButton_Click" ToolTip="{Binding Source={x:Static core:TooltipText.Log_Button_Copy}}" />
+				<Button x:Name="SaveButton" Content="Save As..." Click="SaveButton_Click" ToolTip="{Binding Source={x:Static core:TooltipText.Log_Button_SaveAs}}" />
+				<Button x:Name="ClearButton" Content="Clear" Click="ClearButton_Click" IsEnabled="{Binding CanClear}" ToolTip="{Binding Source={x:Static core:TooltipText.Log_Button_Clear}}" />
+				<Button x:Name="RestoreButton" Content="Restore" Click="RestoreButton_Click" IsEnabled="{Binding CanRestore}" ToolTip="{Binding Source={x:Static core:TooltipText.Log_Button_Restore}}" />
 			</StackPanel>
 		</Grid>
 	</Grid>

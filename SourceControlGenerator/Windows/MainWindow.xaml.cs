@@ -62,6 +62,14 @@ namespace SCG.Windows
 			set { markdownConverterWindow = value; }
 		}
 
+		private BatchTextCreator textCreatorWindow;
+
+		public BatchTextCreator TextCreatorWindow
+		{
+			get { return textCreatorWindow; }
+			set { textCreatorWindow = value; }
+		}
+
 		private GitGenerationWindow gitGenerationWindow;
 
 		public GitGenerationWindow GitGenerationWindow
@@ -99,6 +107,7 @@ namespace SCG.Windows
 			LogWindow = new LogWindow(this);
 			AboutWindow = new AboutWindow(this);
 			MarkdownConverterWindow = new MarkdownConverterWindow();
+			TextCreatorWindow = new BatchTextCreator();
 			GitGenerationWindow = new GitGenerationWindow();
 
 			SubWindows = new List<Window>()
@@ -106,6 +115,7 @@ namespace SCG.Windows
 				LogWindow,
 				AboutWindow,
 				MarkdownConverterWindow,
+				TextCreatorWindow,
 				GitGenerationWindow
 			};
 
