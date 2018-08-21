@@ -63,6 +63,16 @@ namespace SCG
 			return RootFolder + Data.ModuleFolderName + @"\Templates\";
 		}
 
+		public static string ModuleTextGeneratorFolder(IModuleData Data)
+		{
+			return RootFolder + Data.ModuleFolderName + @"\TextGenerator\";
+		}
+
+		public static string ModuleTextGeneratorDataFile(IModuleData Data)
+		{
+			return ModuleTextGeneratorFolder(Data) + @"TextGenerator.json";
+		}
+
 		public static string ModuleSettingsFile(IModuleData Data)
 		{
 			return ModuleSettingsFolder(Data) + @"ModuleSettings.json";

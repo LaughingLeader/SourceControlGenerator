@@ -454,6 +454,8 @@ namespace SCG.Core
 						Log.Here().Activity("Skipped archive creation for {0}.", project.ProjectName);
 					}
 
+					AppController.Main.UpdateProgress(1);
+
 					AppController.Main.UpdateProgressTitle((selectedProjects.Count > 1 ? "Backing up projects..." : $"Backing up project... ") + $"{i + 1}/{selectedProjects.Count}");
 					i++;
 				}
@@ -510,7 +512,7 @@ namespace SCG.Core
 			{
 				AppController.Main.UpdateProgressLog("Creating zip archive from project folders...");
 				//Log.Here().Activity($"Git project not found. Archiving project {modProject.ProjectName} from project folders directly.");
-				return await BackupGenerator.CreateArchiveFromRoot(Data.Settings.DOS2DataDirectory.Replace("/", "\\\\"), sourceFolders, archivePath, true, cancellationTokenSource.Token).ConfigureAwait(false);
+				return await BackupGenerator.CreateArchiveFromRoot(Data.Settings.DOS2DataDirectory.Replace("/", "\\\\"), sourceFolders, archivePath, false, cancellationTokenSource.Token).ConfigureAwait(false);
 			}
 			else
 			{
@@ -525,7 +527,7 @@ namespace SCG.Core
 				else
 				{
 					AppController.Main.UpdateProgressLog("Creating zip archive...");
-					return await BackupGenerator.CreateArchiveFromRepo(gitProjectDirectory, Data.Settings.DOS2DataDirectory.Replace("/", "\\\\"), sourceFolders, archivePath, true, cancellationTokenSource.Token).ConfigureAwait(false);
+					return await BackupGenerator.CreateArchiveFromRepo(gitProjectDirectory, Data.Settings.DOS2DataDirectory.Replace("/", "\\\\"), sourceFolders, archivePath, false, cancellationTokenSource.Token).ConfigureAwait(false);
 				}
 				//Seems to have a problem with junctions and long paths
 				//return BackupGenerator.CreateArchiveFromRepo(gitProjectDirectory, archivePath);

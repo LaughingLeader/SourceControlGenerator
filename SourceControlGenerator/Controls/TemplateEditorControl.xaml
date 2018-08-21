@@ -11,8 +11,8 @@
 		
 	</UserControl.Resources>
 	<UserControl.InputBindings>
-		<KeyBinding Command="{Binding SaveCommand}" CommandParameter="{Binding SaveCommandParameter}" Gesture="CTRL+S" />
-		<KeyBinding Command="{Binding SaveAsCommand}" CommandParameter="{Binding SaveCommandParameter}" Gesture="CTRL+Alt+S" />
+		<KeyBinding Command="{Binding SaveCommand}" CommandParameter="{Binding SaveCommandParameters}" Gesture="CTRL+S" />
+		<KeyBinding Command="{Binding SaveAsCommand}" CommandParameter="{Binding SaveCommandParameters}" Gesture="CTRL+Alt+S" />
 	</UserControl.InputBindings>
 	<Grid x:Name="Editor_ParentGrid">
 		<Grid.RowDefinitions>
@@ -51,8 +51,8 @@
 							<Setter Property="Padding" Value="4,2" />
 						</Style>
 					</StackPanel.Resources>
-					<Button x:Name="SaveButton" Content="Save" Command="{Binding SaveCommand}" CommandParameter="{Binding SaveCommandParameter}" Height="{Binding Path=Height, ElementName=TemplateFileBrowser, FallbackValue=22}" BorderThickness="1" BorderBrush="#FFABADB3" Margin="4,2,0,2" Click="SaveButton_Click" />
-					<Button x:Name="SaveAsButton" Content="Save As..." Command="{Binding SaveAsCommand}" CommandParameter="{Binding SaveCommandParameter}" Height="{Binding Path=Height, ElementName=TemplateFileBrowser, FallbackValue=20}" BorderThickness="1" BorderBrush="#FFABADB3" Margin="4,0,1,0" />
+					<Button x:Name="SaveButton" Content="Save" Command="{Binding SaveCommand}" CommandParameter="{Binding SaveCommandParameters}" Height="{Binding Path=Height, ElementName=TemplateFileBrowser, FallbackValue=22}" BorderThickness="1" BorderBrush="#FFABADB3" Margin="4,2,0,2" Click="SaveButton_Click" />
+					<Button x:Name="SaveAsButton" Content="Save As..." Command="{Binding SaveAsCommand}" CommandParameter="{Binding SaveCommandParameters}" Height="{Binding Path=Height, ElementName=TemplateFileBrowser, FallbackValue=20}" BorderThickness="1" BorderBrush="#FFABADB3" Margin="4,0,1,0" />
 				</StackPanel>
 			</Grid>
 		</Grid>

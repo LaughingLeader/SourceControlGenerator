@@ -50,5 +50,9 @@ namespace SCG.Core
 		static public string MarkdownConverterSingleModeInputFileBrowser => "Select Input File Location...";
 		static public string MarkdownConverterBatchModeExportFileBrowser => "Select Export File Location...";
 		static public string MarkdownConverterSaveInputFile => "Save Changes (Overwrite Input File)";
+
+		//Text Generator
+		static public string TextGeneratorInputText => "The text that gets generated. Use keywords to control the output.";
+		static public string TextGeneratorRemoveKeywordButton => "Remove Keyword";
 	}
 }

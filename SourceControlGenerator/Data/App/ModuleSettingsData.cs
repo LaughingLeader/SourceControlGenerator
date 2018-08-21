@@ -9,7 +9,7 @@ using SCG.Data.App;
 using SCG.Data.View;
 using SCG.Interfaces;
 using Newtonsoft.Json;
-using SCG.Enum;
+using SCG.SCGEnum;
 
 namespace SCG.Data
 {

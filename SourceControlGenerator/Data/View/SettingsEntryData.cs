@@ -5,7 +5,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using SCG.Commands;
-using SCG.Enum;
+using SCG.SCGEnum;
 
 namespace SCG.Data.View
 {

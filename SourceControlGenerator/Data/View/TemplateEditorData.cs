@@ -13,7 +13,7 @@ using System.Xml.Linq;
 using SCG.Data.Xml;
 using System.ComponentModel;
 using SCG.Converters;
-using SCG.Enum;
+using SCG.SCGEnum;
 using SCG.Interfaces;
 
 namespace SCG.Data.View
@@ -173,7 +173,7 @@ namespace SCG.Data.View
 			}
 		}
 
-
+		public FileBrowserFilter FileTypes { get; set; } = CommonFileFilters.All;
 
 		private SaveFileCommand saveCommand;
 
@@ -223,7 +223,7 @@ namespace SCG.Data.View
 			}
 		}
 
-		public ISaveCommandData SaveCommandParameter => this;
+		public ISaveCommandData SaveCommandParameters => this;
 
 		//ISaveCommandData
 		public string Content => EditorText;

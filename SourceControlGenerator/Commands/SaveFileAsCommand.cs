@@ -50,7 +50,7 @@ namespace SCG.Commands
 				if (String.IsNullOrEmpty(data.SaveAsText)) data.SaveAsText = "Save File As";
 				if (data.Content != null)
 				{
-					FileCommands.Save.OpenDialogAndSave(App.Current.MainWindow, data.SaveAsText, data.FilePath, data.Content, OnSaveAs, data.Filename, data.DefaultFilePath);
+					FileCommands.Save.OpenDialogAndSave(App.Current.MainWindow, data.SaveAsText, data.FilePath, data.Content, OnSaveAs, data.Filename, data.DefaultFilePath, data.FileTypes);
 				}
 			}
 		}

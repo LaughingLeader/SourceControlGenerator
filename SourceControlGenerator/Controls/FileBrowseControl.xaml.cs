@@ -10,7 +10,7 @@ using System.Windows;
 using System.Windows.Controls;
 using Microsoft.Win32;
 
-using SCG.Enum;
+using SCG.SCGEnum;
 using System.Windows.Input;
 using SCG.Core;
 using Microsoft.WindowsAPICodePack.Dialogs;

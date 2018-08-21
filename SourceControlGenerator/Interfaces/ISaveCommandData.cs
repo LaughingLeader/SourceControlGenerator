@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SCG.Core;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -13,5 +14,7 @@ namespace SCG
 		string DefaultFilePath { get; set; }
 		string Content { get; }
 		string SaveAsText { get; set; }
+
+		FileBrowserFilter FileTypes { get; set; }
 	}
 }

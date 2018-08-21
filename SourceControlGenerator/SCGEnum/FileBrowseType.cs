@@ -1,4 +1,4 @@
-﻿namespace SCG.Enum
+﻿namespace SCG.SCGEnum
 {
 	public enum FileBrowseType
 	{

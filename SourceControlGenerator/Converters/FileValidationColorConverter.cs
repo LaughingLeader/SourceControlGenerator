@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Data;
 using System.Windows.Media;
-using SCG.Enum;
+using SCG.SCGEnum;
 
 namespace SCG.Converters
 {

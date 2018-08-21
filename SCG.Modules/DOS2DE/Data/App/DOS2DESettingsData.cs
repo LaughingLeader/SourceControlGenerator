@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using SCG.Data;
 using SCG.Data.View;
 using SCG.Modules.DOS2DE.Core;
-using SCG.Enum;
+using SCG.SCGEnum;
 using SCG.Interfaces;
 using Newtonsoft.Json;
 

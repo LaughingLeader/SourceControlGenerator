@@ -185,6 +185,7 @@
     <Compile Include="Converters\FormatterToFormatterDataConverter.cs" />
     <Compile Include="Converters\IntToGridLengthConverter.cs" />
     <Compile Include="Converters\IntToVisibilityConverter.cs" />
+    <Compile Include="Converters\Json\TextGeneratorJsonKeywordConverter.cs" />
     <Compile Include="Converters\ListViewStarWidthConverter.cs" />
     <Compile Include="Converters\LogTypeColorConverter.cs" />
     <Compile Include="Controls\TemplateEditorControl.xaml.cs">
@@ -220,8 +221,9 @@
     <Compile Include="Data\View\ModuleData.cs" />
     <Compile Include="Data\View\ModuleSelectionData.cs" />
     <Compile Include="Data\View\SettingsEntryData.cs" />
-    <Compile Include="Enum\BackupMode.cs" />
-    <Compile Include="Enum\FileValidation.cs" />
+    <Compile Include="Data\View\TextGeneratorData.cs" />
+    <Compile Include="SCGEnum\BackupMode.cs" />
+    <Compile Include="SCGEnum\FileValidation.cs" />
     <Compile Include="Extensions\AttributeExtensions.cs" />
     <Compile Include="Extensions\ComboBoxExtensionMethods.cs" />
     <Compile Include="Extensions\ObservableCollectionExtensions.cs" />
@@ -245,8 +247,8 @@
     <Compile Include="Data\App\UserKeywordData.cs" />
     <Compile Include="Data\PropertyChangedBase.cs" />
     <Compile Include="Data\View\TemplateEditorData.cs" />
-    <Compile Include="Enum\EditorTextPropertyType.cs" />
-    <Compile Include="Enum\FileBrowseType.cs" />
+    <Compile Include="SCGEnum\EditorTextPropertyType.cs" />
+    <Compile Include="SCGEnum\FileBrowseType.cs" />
     <Compile Include="Extensions\EnumBindingSourceExtension.cs" />
     <Compile Include="FileGen\BackupGenerator.cs" />
     <Compile Include="FileGen\GitGenerator.cs" />
@@ -275,8 +277,8 @@
     <Compile Include="Windows\AboutWindow.xaml.cs">
       <DependentUpon>AboutWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Windows\BatchTextCreator.xaml.cs">
-      <DependentUpon>BatchTextCreator.xaml</DependentUpon>
+    <Compile Include="Windows\TextGenerator.xaml.cs">
+      <DependentUpon>TextGenerator.xaml</DependentUpon>
     </Compile>
     <Compile Include="Windows\ClipboardMonitorWindow.cs" />
     <Compile Include="Windows\DebugWindow.xaml.cs">
@@ -340,7 +342,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Windows\BatchTextCreator.xaml">
+    <Page Include="Windows\TextGenerator.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

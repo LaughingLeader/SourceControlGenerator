@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using SCG.Core;
-using SCG.Enum;
+using SCG.SCGEnum;
 
 namespace SCG.Data.App
 {

@@ -6,7 +6,7 @@
 			 xmlns:local="clr-namespace:SCG.Controls"
 			 xmlns:scg="clr-namespace:SCG"
 			 xmlns:data="clr-namespace:SCG.Data.View"
-			 xmlns:enum="clr-namespace:SCG.Enum"
+			 xmlns:enum="clr-namespace:SCG.SCGEnum"
 			 xmlns:cv="clr-namespace:SCG.Converters"
 			 xmlns:theme="clr-namespace:SCG.ThemeSystem"
 			 xmlns:Themes="clr-namespace:Microsoft.Windows.Themes;assembly=PresentationFramework.Aero2" x:Name="AddTemplateMain" x:Class="SCG.Controls.AddTemplateControl"

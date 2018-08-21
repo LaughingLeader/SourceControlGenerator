@@ -412,7 +412,7 @@ namespace SCG.Core
 			try
 			{
 				Log.Here().Activity($"Saving main app settings to {DefaultPaths.MainAppSettingsFile}");
-				var json = JsonConvert.SerializeObject(Data.AppSettings);
+				var json = JsonConvert.SerializeObject(Data.AppSettings, Newtonsoft.Json.Formatting.Indented);
 				if (FileCommands.WriteToFile(DefaultPaths.MainAppSettingsFile, json))
 				{
 					Log.Here().Activity($"Main app settings saved.");
@@ -560,13 +560,13 @@ namespace SCG.Core
 
 		public void MenuAction_ToggleTextCreatorWindow()
 		{
-			if (!mainWindow.TextCreatorWindow.IsVisible)
+			if (!mainWindow.TextGeneratorWindow.IsVisible)
 			{
-				mainWindow.TextCreatorWindow.Show();
+				mainWindow.TextGeneratorWindow.Show();
 			}
 			else
 			{
-				mainWindow.TextCreatorWindow.Hide();
+				mainWindow.TextGeneratorWindow.Hide();
 			}
 		}
 
@@ -771,6 +771,101 @@ namespace SCG.Core
 			}
 		}
 
+		public void LoadTextGeneratorData()
+		{
+			bool loaded = false;
+			try
+			{
+				if (CurrentModule != null)
+				{
+					var dataFilePath = DefaultPaths.ModuleTextGeneratorDataFile(CurrentModule.ModuleData);
+					if (File.Exists(dataFilePath))
+					{
+						MainWindow.TextGeneratorWindow.Data = JsonConvert.DeserializeObject<TextGeneratorData>(File.ReadAllText(dataFilePath));
+						loaded = true;
+					}
+
+					if (!loaded)
+					{
+						MainWindow.TextGeneratorWindow.InitData();
+						loaded = true;
+
+						var json = JsonConvert.SerializeObject(MainWindow.TextGeneratorWindow.Data, Newtonsoft.Json.Formatting.Indented);
+						if (FileCommands.WriteToFile(dataFilePath, json))
+						{
+							Log.Here().Activity($"TextGenerator settings were created and saved.");
+						}
+						else
+						{
+							Log.Here().Error($"Error saving TextGenerator settings to {dataFilePath}.");
+						}
+					}
+				}
+				else
+				{
+					string defaultDataFile = Path.Combine(DefaultPaths.RootFolder, "Default", "TextGenerator", "TextGenerator.json");
+					if (File.Exists(defaultDataFile))
+					{
+						MainWindow.TextGeneratorWindow.Data = JsonConvert.DeserializeObject<TextGeneratorData>(File.ReadAllText(defaultDataFile));
+						loaded = true;
+					}
+
+					if (!loaded)
+					{
+						MainWindow.TextGeneratorWindow.InitData();
+						loaded = true;
+
+						var json = JsonConvert.SerializeObject(MainWindow.TextGeneratorWindow.Data, Newtonsoft.Json.Formatting.Indented);
+						if (FileCommands.WriteToFile(defaultDataFile, json))
+						{
+							Log.Here().Activity($"TextGenerator settings were created and saved.");
+						}
+						else
+						{
+							Log.Here().Error($"Error saving TextGenerator settings to {defaultDataFile}.");
+						}
+					}
+				}
+			}
+			catch(Exception ex)
+			{
+				Log.Here().Error($"Error loading TextGenerator data file: {ex.ToString()}");
+			}
+
+			if(loaded)
+			{
+				MainWindow.TextGeneratorWindow.OnDataLoaded();
+			}
+		}
+
+		public void SaveTextGeneratorData()
+		{
+			try
+			{
+				var json = JsonConvert.SerializeObject(MainWindow.TextGeneratorWindow.Data, Newtonsoft.Json.Formatting.Indented);
+				var outputDataPath = Path.Combine(DefaultPaths.RootFolder, "Default", "TextGenerator", "TextGenerator.json");
+
+				if (CurrentModule != null)
+				{
+					outputDataPath = DefaultPaths.ModuleTextGeneratorDataFile(CurrentModule.ModuleData);
+
+				}
+
+				if (FileCommands.WriteToFile(outputDataPath, json))
+				{
+					//Log.Here().Activity($"TextGenerator settings were saved.");
+				}
+				else
+				{
+					Log.Here().Error($"Error saving TextGenerator settings to {outputDataPath}.");
+				}
+			}
+			catch (Exception ex)
+			{
+				Log.Here().Error($"Error loading TextGenerator data file: {ex.ToString()}");
+			}
+		}
+
 		public void OnAppLoaded()
 		{
 			if(CurrentModule != null && CurrentModule.ModuleData != null)
@@ -783,6 +878,8 @@ namespace SCG.Core
 
 				mainWindow.MarkdownConverterWindow.SetData(FileCommands.Load.LoadModuleMarkdownConverterSettings(CurrentModule.ModuleData));
 			}
+
+			LoadTextGeneratorData();
 		}
 
 		private void InitDefaultMenus()
@@ -839,7 +936,7 @@ namespace SCG.Core
 				},
 				new MenuData(MenuID.TextCreator)
 				{
-					Header = "Open Text Creator",
+					Header = "Open Text Generator",
 					ClickCommand = new ActionCommand(MenuAction_ToggleTextCreatorWindow),
 					ShortcutKey = Key.F4
 				}

@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 using System.Windows.Data;
 using SCG.Data;
 using SCG.Data.View;
-using SCG.Enum;
+using SCG.SCGEnum;
 
 namespace SCG.Converters
 {
