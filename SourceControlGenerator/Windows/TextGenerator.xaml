@@ -12,7 +12,7 @@
 		xmlns:convert="clr-namespace:SCG.Converters"
 		xmlns:listview="clr-namespace:Itenso.Windows.Controls.ListViewLayout"
 		mc:Ignorable="d"
-		Title="TextGenerator" Height="900" Width="800">
+		Title="Text Generator" Height="900" Width="800">
 	<local:HideWindowBase.Resources>
 		<ResourceDictionary>
 			<ResourceDictionary.MergedDictionaries>

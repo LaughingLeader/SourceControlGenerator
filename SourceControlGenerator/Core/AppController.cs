@@ -558,7 +558,7 @@ namespace SCG.Core
 			}
 		}
 
-		public void MenuAction_ToggleTextCreatorWindow()
+		public void MenuAction_ToggleTextGeneratorWindow()
 		{
 			if (!mainWindow.TextGeneratorWindow.IsVisible)
 			{
@@ -937,7 +937,7 @@ namespace SCG.Core
 				new MenuData(MenuID.TextCreator)
 				{
 					Header = "Open Text Generator",
-					ClickCommand = new ActionCommand(MenuAction_ToggleTextCreatorWindow),
+					ClickCommand = new ActionCommand(MenuAction_ToggleTextGeneratorWindow),
 					ShortcutKey = Key.F4
 				}
 			);
