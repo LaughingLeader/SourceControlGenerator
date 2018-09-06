@@ -320,6 +320,7 @@ namespace SCG.Modules.DOS2.Core
 						Log.Here().Error("Loading available projects failed. DOS2 data directory not found at {0}", Data.Settings.DOS2DataDirectory);
 					}
 				}
+				LoadSourceControlData(Data);
 			}
 		}
 

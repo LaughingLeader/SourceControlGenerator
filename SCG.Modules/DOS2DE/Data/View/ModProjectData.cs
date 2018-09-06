@@ -67,7 +67,7 @@ namespace SCG.Modules.DOS2DE.Data.View
 			set
 			{
 				gitData = value;
-				RaisePropertyChanged("GitGenerated");
+				GitGenerated = gitData != null;
 			}
 		}
 
@@ -146,13 +146,18 @@ namespace SCG.Modules.DOS2DE.Data.View
 			}
 		}
 
+		private bool gitGenerated = false;
+
 		public bool GitGenerated
 		{
-			get
+			get { return gitGenerated; }
+			set
 			{
-				return GitData != null;
+				gitGenerated = value;
+				RaisePropertyChanged("GitGenerated");
 			}
 		}
+
 
 		private string version;
 

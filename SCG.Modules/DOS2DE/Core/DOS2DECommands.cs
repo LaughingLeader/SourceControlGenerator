@@ -265,14 +265,7 @@ namespace SCG.Modules.DOS2DE.Core
 						}
 					}
 
-					if (success)
-					{
-						//Log.Here().Important($"Source control file found in git repo for project {project.ProjectName}.");
-					}
-					else
-					{
-						//Log.Here().Warning($"Source control file not found for project {project.ProjectName}.");
-					}
+					project.GitGenerated = success;
 				}
 
 				return overallSuccess;
@@ -320,6 +313,9 @@ namespace SCG.Modules.DOS2DE.Core
 						Log.Here().Error("Loading available projects failed. DOS2 data directory not found at {0}", Data.Settings.DOS2DEDataDirectory);
 					}
 				}
+
+				//Reload settings like if a git project actually exists
+				LoadSourceControlData(Data);
 			}
 		}
 
