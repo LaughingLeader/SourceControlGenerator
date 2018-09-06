@@ -172,12 +172,19 @@ namespace SCG.FileGen
 				if (mainAppData.DateKeyList != null)
 				{
 					//Reverse so $Date is replace after all the other variations
+					var keywords = mainAppData.DateKeyList.Where(keywordData => KeywordIsValid(keywordData) && replacedText.Contains(keywordData.KeywordName)).Reverse();
+					foreach (var keywordData in keywords)
+					{
+						replacedText = keywordData.ReplaceText(replacedText, projectData);
+					}
+					/*
 					var tasks = mainAppData.DateKeyList.Where(keywordData => KeywordIsValid(keywordData) && replacedText.Contains(keywordData.KeywordName)).Reverse().Select(keywordData => Task.Run(() =>
 					{
 						replacedText = keywordData.ReplaceText(replacedText, projectData);
 					}));
 
 					await Task.WhenAll(tasks);
+					*/
 				}
 				else
 				{
@@ -186,6 +193,12 @@ namespace SCG.FileGen
 
 				if (mainAppData.AppKeyList != null)
 				{
+					var keywords = mainAppData.AppKeyList.Where(keywordData => KeywordIsValid(keywordData) && replacedText.Contains(keywordData.KeywordName));
+					foreach (var keywordData in keywords)
+					{
+						replacedText = keywordData.ReplaceText(replacedText, projectData);
+					}
+					/*
 					var tasks = mainAppData.AppKeyList.Where(keywordData => KeywordIsValid(keywordData) && replacedText.Contains(keywordData.KeywordName)).Select(keywordData => Task.Run(() =>
 					{
 						Log.Here().Activity($"Replacing {keywordData.KeywordName} with {keywordData.KeywordValue}");
@@ -193,6 +206,7 @@ namespace SCG.FileGen
 					}));
 
 					await Task.WhenAll(tasks);
+					*/
 				}
 				else
 				{
@@ -201,12 +215,19 @@ namespace SCG.FileGen
 
 				if (moduleData.UserKeywords != null && moduleData.UserKeywords.Keywords != null)
 				{
+					var keywords = moduleData.UserKeywords.Keywords.Where(keywordData => KeywordIsValid(keywordData) && replacedText.Contains(keywordData.KeywordName));
+					foreach (var keywordData in keywords)
+					{
+						replacedText = keywordData.ReplaceText(replacedText, projectData);
+					}
+					/*
 					var tasks = moduleData.UserKeywords.Keywords.Where(keywordData => KeywordIsValid(keywordData) && replacedText.Contains(keywordData.KeywordName)).Select(keywordData => Task.Run(() =>
 					{
 						replacedText = keywordData.ReplaceText(replacedText, projectData);
 					}));
 
 					await Task.WhenAll(tasks);
+					*/
 				}
 				else
 				{
