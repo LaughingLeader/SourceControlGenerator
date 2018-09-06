@@ -46,11 +46,12 @@ namespace SCG.Commands
 		{
 			if (parameter != null && parameter is ISaveCommandData data)
 			{
+				if (data.TargetWindow == null) data.TargetWindow = App.Current.MainWindow;
 				Log.Here().Important("Attempting to save file: {0}", data.FilePath);
 				if (String.IsNullOrEmpty(data.SaveAsText)) data.SaveAsText = "Save File As";
 				if (data.Content != null)
 				{
-					FileCommands.Save.OpenDialogAndSave(App.Current.MainWindow, data.SaveAsText, data.FilePath, data.Content, OnSaveAs, data.Filename, data.DefaultFilePath, data.FileTypes);
+					FileCommands.Save.OpenDialogAndSave(data.TargetWindow, data.SaveAsText, data.FilePath, data.Content, OnSaveAs, data.DefaultFileName, data.InitialDirectory, data.FileTypes);
 				}
 			}
 		}

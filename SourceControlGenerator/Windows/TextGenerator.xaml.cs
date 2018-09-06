@@ -72,6 +72,16 @@ namespace SCG.Windows
 			Data.RemoveCommand = new ParameterCommand(RemoveKeyword);
 
 			Data.Init();
+			Data.OnFileLoaded = SaveDataIfPathChanged;
+			Data.SaveDataEvent += OnSaveData;
+
+			Data.InputData.TargetWindow = this;
+			Data.OutputData.TargetWindow = this;
+		}
+
+		private void OnSaveData(object sender, EventArgs e)
+		{
+			SaveData();
 		}
 
 		public void Init(AppController controller)
@@ -117,7 +127,7 @@ namespace SCG.Windows
 
 		public void Generate()
 		{
-			if(!String.IsNullOrWhiteSpace(Data.InputText) && Data.Keywords.Count > 0 && Data.GenerationAmount > 0)
+			if (!String.IsNullOrWhiteSpace(Data.InputText) && Data.Keywords.Count > 0 && Data.GenerationAmount > 0)
 			{
 				Data.OutputText = "";
 
@@ -154,11 +164,27 @@ namespace SCG.Windows
 			}
 		}
 
+		private string LastInputPath = "";
+		private string LastOutputPath = "";
+
+		private void SaveDataIfPathChanged()
+		{
+			if(LastInputPath != Data.InputData.FilePath || LastOutputPath != Data.OutputData.FilePath)
+			{
+				LastInputPath = Data.InputData.FilePath;
+				LastOutputPath = Data.OutputData.FilePath;
+
+				SaveData();
+			}
+		}
+
 		private async void SaveData()
 		{
 			await AppController.Main.MainWindow.Dispatcher.BeginInvoke((Action)(() => {
 				AppController.Main.SaveTextGeneratorData();
 			}), DispatcherPriority.Background);
+
+			//Activate();
 		}
 	}
 }

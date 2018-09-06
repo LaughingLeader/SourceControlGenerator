@@ -365,9 +365,12 @@ namespace SCG.Data
 			if (File.Exists(ProjectMetaFilePath))
 			{
 				FileInfo projectMetaFile = new FileInfo(ProjectMetaFilePath);
-				var projectMetaXml = XDocument.Load(projectMetaFile.OpenRead());
+				var stream = projectMetaFile.OpenRead();
+				var projectMetaXml = XDocument.Load(stream);
+				stream.Close();
 
 				this.ProjectInfo.LoadFromXml(projectMetaXml);
+
 				LoadThumbnail(projectMetaFile.Directory.FullName);
 				ProjectInfo.RaisePropertyChanged(String.Empty);
 			}
@@ -438,7 +441,9 @@ namespace SCG.Data
 				XDocument modMetaXml = null;
 				try
 				{
-					modMetaXml = XDocument.Load(ModMetaFile.OpenRead());
+					var stream = ModMetaFile.OpenRead();
+					modMetaXml = XDocument.Load(stream);
+					stream.Close();
 				}
 				catch (Exception ex)
 				{
@@ -475,8 +480,11 @@ namespace SCG.Data
 
 				if (projectMetaFile != null)
 				{
-					var projectMetaXml = XDocument.Load(projectMetaFile.OpenRead());
-					this.ProjectInfo.LoadFromXml(projectMetaXml);
+					var stream = projectMetaFile.OpenRead();
+					var projectMetaXml = XDocument.Load(stream);
+					stream.Close();
+
+					this.ProjectInfo.LoadFromXml(projectMetaXml);	
 
 					LoadThumbnail(projectDirectory);
 				}

@@ -285,6 +285,19 @@ namespace SCG.Data.View
 			}
 		}
 
+		private bool isIndeterminate = false;
+
+		public bool IsIndeterminate
+		{
+			get { return isIndeterminate; }
+			set
+			{
+				isIndeterminate = value;
+				RaisePropertyChanged("IsIndeterminate");
+			}
+		}
+
+
 		private ActionCommand progressCancelCommand;
 
 		public ActionCommand ProgressCancelCommand

@@ -15,6 +15,7 @@ using SCG.Data.Xml;
 using SCG.Modules.DOS2DE.Core;
 using SCG.Interfaces;
 using SCG.Data;
+using SCG.Data.App;
 
 namespace SCG.Modules.DOS2DE.Data.View
 {
@@ -231,6 +232,19 @@ namespace SCG.Modules.DOS2DE.Data.View
 			}
 		}
 
+		private CachedImageSource cachedImageSource;
+
+		public CachedImageSource ThumbnailSource
+		{
+			get { return cachedImageSource; }
+			set
+			{
+				cachedImageSource = value;
+				RaisePropertyChanged("ThumbnailSource");
+			}
+		}
+
+
 		private string modMetaFilePath;
 
 		public string ModMetaFilePath
@@ -376,11 +390,15 @@ namespace SCG.Modules.DOS2DE.Data.View
 			if (File.Exists(ProjectMetaFilePath))
 			{
 				FileInfo projectMetaFile = new FileInfo(ProjectMetaFilePath);
-				var projectMetaXml = XDocument.Load(projectMetaFile.OpenRead());
 
+				var stream = projectMetaFile.OpenRead();
+				var projectMetaXml = XDocument.Load(stream);
 				this.ProjectInfo.LoadFromXml(projectMetaXml);
+				stream.Close();
+
 				LoadThumbnail(projectMetaFile.Directory.FullName);
 				ProjectInfo.RaisePropertyChanged(String.Empty);
+				
 			}
 		}
 
@@ -427,6 +445,14 @@ namespace SCG.Modules.DOS2DE.Data.View
 				if (FileCommands.IsValidImage(thumbpath))
 				{
 					ThumbnailPath = thumbpath;
+
+					if(ThumbnailSource == null)
+					{
+						ThumbnailSource = new CachedImageSource();
+					}
+
+					ThumbnailSource.Init(ThumbnailPath);
+
 					ThumbnailExists = Visibility.Visible;
 
 					Log.Here().Activity($"Set thumbnail path to {thumbpath}");
@@ -449,7 +475,9 @@ namespace SCG.Modules.DOS2DE.Data.View
 				XDocument modMetaXml = null;
 				try
 				{
-					modMetaXml = XDocument.Load(ModMetaFile.OpenRead());
+					var stream = ModMetaFile.OpenRead();
+					modMetaXml = XDocument.Load(stream);
+					stream.Close();
 				}
 				catch (Exception ex)
 				{

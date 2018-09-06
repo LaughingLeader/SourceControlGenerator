@@ -140,7 +140,7 @@ namespace SCG.Core
 					Log.Here().Error("Error generating git repository for {0}.", project.DisplayName);
 				}
 
-				AppController.Main.UpdateProgress(1);
+				AppController.Main.UpdateProgress();
 
 				AppController.Main.UpdateProgressTitle($"Generating Git Files... {(i + 1)}/{total}");
 			}
@@ -161,7 +161,7 @@ namespace SCG.Core
 			{
 				string gitProjectRootDirectory = Path.Combine(Data.Settings.GitRootDirectory, modProject.ProjectName);
 
-				AppController.Main.UpdateProgressAndMax(1, "Creating git project directory...");
+				AppController.Main.UpdateProgressLog("Creating git project directory...");
 
 				var rootRepoDirectory = Directory.CreateDirectory(gitProjectRootDirectory);
 
@@ -172,7 +172,7 @@ namespace SCG.Core
 
 				if (generationSettings.InitGit)
 				{
-					AppController.Main.UpdateProgressAndMax(1, "Initializing git repo...");
+					AppController.Main.UpdateProgressLog("Initializing git repo...");
 
 					var author = Data.Settings.DefaultAuthor;
 					if(modProject.ModuleInfo != null && !String.IsNullOrWhiteSpace(modProject.ModuleInfo.Author))
@@ -196,7 +196,7 @@ namespace SCG.Core
 
 				if (generationSettings.CreateJunctions)
 				{
-					AppController.Main.UpdateProgressAndMax(1, "Creating junctions...");
+					AppController.Main.UpdateProgressLog("Creating junctions...");
 
 					var sourceFolders = PrepareDirectories(modProject, Data.Settings.DirectoryLayouts);
 					var result = await GitGenerator.CreateJunctions(modProject.ProjectName, sourceFolders, Data);
@@ -215,7 +215,7 @@ namespace SCG.Core
 
 				if (generationSettings.TemplateSettings != null && generationSettings.TemplateSettings.Count > 0)
 				{
-					AppController.Main.UpdateProgressAndMax(1, "Generating templates...");
+					AppController.Main.UpdateProgressLog("Generating templates...");
 
 					foreach (var templateSetting in generationSettings.TemplateSettings)
 					{
@@ -246,7 +246,7 @@ namespace SCG.Core
 
 				if (generationSettings.SelectedLicense != LicenseType.None)
 				{
-					AppController.Main.UpdateProgressAndMax(1, "Generating license...");
+					AppController.Main.UpdateProgressLog("Generating license...");
 
 					string outputText = "";
 					if (generationSettings.SelectedLicense == LicenseType.Custom)
@@ -295,7 +295,7 @@ namespace SCG.Core
 
 				if (generationSettings.InitGit && commitGit)
 				{
-					AppController.Main.UpdateProgressAndMax(1, "Committing new files...");
+					AppController.Main.UpdateProgressLog("Committing new files...");
 					var result = await GitGenerator.Commit(gitProjectRootDirectory, commitMessage);
 					if (result)
 					{
@@ -307,7 +307,7 @@ namespace SCG.Core
 					}
 				}
 
-				AppController.Main.UpdateProgressAndMax(1, "Generating source control data file...");
+				AppController.Main.UpdateProgressLog("Generating source control data file...");
 
 				SourceControlData sourceControlData = new SourceControlData()
 				{
@@ -318,8 +318,6 @@ namespace SCG.Core
 				modProject.GitData = sourceControlData;
 
 				FileCommands.Save.SaveSourceControlData(sourceControlData, gitProjectRootDirectory);
-
-				AppController.Main.UpdateProgressAndMax(1);
 
 				return true;
 			}
@@ -420,7 +418,11 @@ namespace SCG.Core
 
 		private async Task<int> BackupSelectedProjectsAsync(ConcurrentBag<ModProjectData> selectedProjects)
 		{
-			AppController.Main.Data.ProgressValueMax = selectedProjects.Count;
+			//+1 progress when done searching for files, +1 when done.
+			AppController.Main.Data.ProgressValueMax = selectedProjects.Count * 2;
+
+			//AppController.Main.Data.IsIndeterminate = true;
+			
 
 			int totalSuccess = 0;
 
@@ -516,7 +518,7 @@ namespace SCG.Core
 			{
 				AppController.Main.UpdateProgressLog("Creating zip archive from project folders...");
 				//Log.Here().Activity($"Git project not found. Archiving project {modProject.ProjectName} from project folders directly.");
-				return await BackupGenerator.CreateArchiveFromRoot(Data.Settings.DOS2DEDataDirectory.Replace("/", "\\\\"), sourceFolders, archivePath, false, cancellationTokenSource.Token).ConfigureAwait(false);
+				return await BackupGenerator.CreateArchiveFromRoot(Data.Settings.DOS2DEDataDirectory.Replace("/", "\\\\"), sourceFolders, archivePath, true, cancellationTokenSource.Token).ConfigureAwait(false);
 			}
 			else
 			{
@@ -531,7 +533,7 @@ namespace SCG.Core
 				else
 				{
 					AppController.Main.UpdateProgressLog("Creating zip archive...");
-					return await BackupGenerator.CreateArchiveFromRepo(gitProjectDirectory, Data.Settings.DOS2DEDataDirectory.Replace("/", "\\\\"), sourceFolders, archivePath, false, cancellationTokenSource.Token).ConfigureAwait(false);
+					return await BackupGenerator.CreateArchiveFromRepo(gitProjectDirectory, Data.Settings.DOS2DEDataDirectory.Replace("/", "\\\\"), sourceFolders, archivePath, true, cancellationTokenSource.Token).ConfigureAwait(false);
 				}
 				//Seems to have a problem with junctions and long paths
 				//return BackupGenerator.CreateArchiveFromRepo(gitProjectDirectory, archivePath);

@@ -165,7 +165,9 @@
     <Compile Include="Controls\Behavior\ComboBoxWidthFromItemsBehavior.cs" />
     <Compile Include="Controls\Behavior\ListBoxSelectionBehavior.cs" />
     <Compile Include="Controls\Behavior\MarginSetter.cs" />
+    <Compile Include="Controls\Behavior\ProgressBarAnimationBehavior.cs" />
     <Compile Include="Controls\Behavior\TextBoxEnterKeyBehavior.cs" />
+    <Compile Include="Data\App\CachedImageSource.cs" />
     <Compile Include="Controls\CrossButton.cs" />
     <Compile Include="Controls\MenuItemContainerTemplateSelector.cs" />
     <Compile Include="Controls\NumericUpDown.cs" />

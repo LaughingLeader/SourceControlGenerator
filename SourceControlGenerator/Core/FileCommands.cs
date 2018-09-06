@@ -218,6 +218,8 @@ namespace SCG
 			if (Path.GetInvalidPathChars().Any(x => path.Contains(x)))
 				return false;
 
+			if(path[path.Length - 1] != '\\') return false;
+
 			return true;
 
 			//return directoryRegex.IsMatch(path);

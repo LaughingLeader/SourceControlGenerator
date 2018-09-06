@@ -30,7 +30,7 @@ namespace SCG.FileGen
 
 	public static class BackupGenerator
 	{
-		public static async Task<BackupResult> CreateArchiveFromRoot(string rootPath, List<JunctionData> sourceFolders, string archiveFilePath, bool updateProgress = false, CancellationToken? token = null)
+		public static async Task<BackupResult> CreateArchiveFromRoot(string rootPath, List<JunctionData> sourceFolders, string archiveFilePath, bool updateProgress = false, CancellationToken? token = null, int updateValue = 1)
 		{
 			if (sourceFolders != null && sourceFolders.Count > 0)
 			{
@@ -54,12 +54,11 @@ namespace SCG.FileGen
 
 					await Task.WhenAll(tasks).ConfigureAwait(false);
 
-					if(targetFiles.Count > 0)
+					if (updateProgress) AppController.Main.UpdateProgress(updateValue);
+
+					if (targetFiles.Count > 0)
 					{
-						if (updateProgress)
-						{
-							AppController.Main.Data.ProgressValueMax += targetFiles.Count;
-						}
+						//if (updateProgress) AppController.Main.Data.ProgressValueMax += targetFiles.Count;
 
 						using (var zip = File.OpenWrite(archiveFilePath))
 						using (var zipWriter = WriterFactory.Open(zip, ArchiveType.Zip, CompressionType.Deflate))
@@ -70,7 +69,6 @@ namespace SCG.FileGen
 								//Disabled for now, since it seems to slow the process down.
 								//if (updateProgress) AppController.Main.UpdateProgressLog($"Adding \"{f.Replace(rootPath, "").Replace(@"\", "/").Substring(1)}\" to archive...");
 								await WriteZipAsync(zipWriter, f.Replace(rootPath, ""), f, token.Value);
-								if (updateProgress) AppController.Main.UpdateProgress(1);
 							}
 
 							return BackupResult.Success;
@@ -102,7 +100,7 @@ namespace SCG.FileGen
 			return BackupResult.Error;
 		}
 
-		public static async Task<BackupResult> CreateArchiveFromRepo(string repoPath, string rootPath, List<JunctionData> sourceFolders, string archiveFilePath, bool updateProgress = false, CancellationToken? token = null)
+		public static async Task<BackupResult> CreateArchiveFromRepo(string repoPath, string rootPath, List<JunctionData> sourceFolders, string archiveFilePath, bool updateProgress = false, CancellationToken? token = null, int updateValue = 1)
 		{
 			if (sourceFolders != null && sourceFolders.Count > 0)
 			{
@@ -122,12 +120,11 @@ namespace SCG.FileGen
 					if (updateProgress) AppController.Main.UpdateProgressLog($"Searching repository for files to save.");
 					await CrawlDirectoryAsync(targetFiles, repoPath, "*", SearchOption.TopDirectoryOnly, token.Value);
 
+					if (updateProgress) AppController.Main.UpdateProgress(updateValue);
+
 					if (targetFiles.Count > 0)
 					{
-						if (updateProgress)
-						{
-							AppController.Main.Data.ProgressValueMax += targetFiles.Count;
-						}
+						//if (updateProgress) AppController.Main.Data.ProgressValueMax += targetFiles.Count;
 
 						using (var zip = File.OpenWrite(archiveFilePath))
 						using (var zipWriter = WriterFactory.Open(zip, ArchiveType.Zip, CompressionType.Deflate))
@@ -142,11 +139,6 @@ namespace SCG.FileGen
 								}
 								//Log.Here().Important($"Adding file {f} to archive.");
 								await WriteZipAsync(zipWriter, f.Replace(rootPath, "").Replace(repoPath, ""), f, token.Value);
-
-								if (updateProgress)
-								{
-									AppController.Main.UpdateProgress(1);
-								}
 							}
 
 							return BackupResult.Success;
@@ -177,7 +169,7 @@ namespace SCG.FileGen
 			return BackupResult.Error;
 		}
 
-		public static async Task<BackupResult> CreateArchiveFromDirectory(string directoryPath, string archiveFilePath, bool updateProgress = false, CancellationToken? token = null)
+		public static async Task<BackupResult> CreateArchiveFromDirectory(string directoryPath, string archiveFilePath, bool updateProgress = true, CancellationToken? token = null, int updateValue = 1)
 		{
 			try
 			{
@@ -197,6 +189,8 @@ namespace SCG.FileGen
 
 				await Task.WhenAll(task).ConfigureAwait(false);
 
+				if (updateProgress) AppController.Main.UpdateProgress(updateValue);
+
 				if (targetFiles.Count > 0)
 				{
 					if (updateProgress)
@@ -213,7 +207,6 @@ namespace SCG.FileGen
 							//Log.Here().Important($"Adding file {f} to archive.");
 
 							await WriteZipAsync(zipWriter, f.Replace(directoryPath, ""), f, token.Value);
-							if (updateProgress) AppController.Main.UpdateProgress(1);
 						}
 
 						return BackupResult.Success;
@@ -270,7 +263,7 @@ namespace SCG.FileGen
 				var awaiter = childTask.GetAwaiter();
 				while (!awaiter.IsCompleted)
 				{
-					await Task.Delay(1, token);
+					await Task.Delay(0, token);
 				}
 			}, token);
 
@@ -304,7 +297,7 @@ namespace SCG.FileGen
 				var awaiter = childTask.GetAwaiter();
 				while (!awaiter.IsCompleted)
 				{
-					await Task.Delay(1, token);
+					await Task.Delay(0, token);
 				}
 			}, token);
 

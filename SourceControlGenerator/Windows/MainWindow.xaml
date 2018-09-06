@@ -1,5 +1,6 @@
 ﻿<windows:ClipboardMonitorWindow x:Name="MainAppWindow" x:Class="SCG.Windows.MainWindow"
 		xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+		xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
 		xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 		xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
 		xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -485,7 +486,7 @@
 				</Grid>
 			</Grid>
 		</Grid>
-		<Grid Name="LockProgressScreen" Grid.Row="0" Grid.RowSpan="3" Visibility="{Binding ProgressVisiblity, FallbackValue=Visible}">
+		<Grid Name="LockProgressScreen" Grid.Row="0" Grid.RowSpan="3" Visibility="{Binding ProgressVisiblity, FallbackValue=Collapsed}">
 			<Grid.Background>
 				<SolidColorBrush Color="{DynamicResource {x:Static SystemColors.ActiveBorderColorKey}}"/>
 			</Grid.Background>
@@ -513,7 +514,11 @@
 				<TextBlock Text="{Binding ProgressMessage, FallbackValue=Running tasks...}" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="20" Padding="10" />
 			</StackPanel>
 			<StackPanel Grid.Row="1" Orientation="Vertical" VerticalAlignment="Center" Margin="50" >
-				<ProgressBar Minimum="0" Maximum="{Binding ProgressValueMax, FallbackValue=100}" Value="{Binding ProgressValue, FallbackValue=75}" HorizontalAlignment="Stretch" MinHeight="40" />
+				<ProgressBar Minimum="0" Maximum="{Binding ProgressValueMax, FallbackValue=100}" Value="{Binding ProgressValue, FallbackValue=75}" HorizontalAlignment="Stretch" MinHeight="40" IsIndeterminate="{Binding IsIndeterminate, FallbackValue=False}">
+					<i:Interaction.Behaviors>
+						<cb:ProgressBarAnimationBehavior />
+					</i:Interaction.Behaviors>
+				</ProgressBar>
 				<Button Name="ProgressCancelButton" Content="Cancel" HorizontalAlignment="Center" Margin="20" Visibility="{Binding ProgressCancelButtonVisibility, FallbackValue=Collapsed}" Command="{Binding ProgressCancelCommand}" />
 			</StackPanel>
 			<c:AutoScrollingTextbox Grid.Row="2" Text="{Binding ProgressLog, FallbackValue='Creating junctions...'}" HorizontalAlignment="Stretch" Padding="10,0" VerticalAlignment="Stretch" FontSize="12" IsReadOnly="True" VerticalScrollBarVisibility="Visible" Margin="150,20" />

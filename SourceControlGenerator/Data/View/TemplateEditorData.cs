@@ -15,6 +15,7 @@ using System.ComponentModel;
 using SCG.Converters;
 using SCG.SCGEnum;
 using SCG.Interfaces;
+using System.Windows;
 
 namespace SCG.Data.View
 {
@@ -151,7 +152,7 @@ namespace SCG.Data.View
 
 		private string filename;
 
-		public string Filename
+		public string DefaultFileName
 		{
 			get { return filename; }
 			set
@@ -213,7 +214,7 @@ namespace SCG.Data.View
 
 		private string defaultFilePath;
 
-		public string DefaultFilePath
+		public string InitialDirectory
 		{
 			get { return defaultFilePath; }
 			set
@@ -232,13 +233,15 @@ namespace SCG.Data.View
 		{
 			get
 			{
-				if(!String.IsNullOrWhiteSpace(ID) && !String.IsNullOrWhiteSpace(Name) && !String.IsNullOrWhiteSpace(Filename))
+				if(!String.IsNullOrWhiteSpace(ID) && !String.IsNullOrWhiteSpace(Name) && !String.IsNullOrWhiteSpace(DefaultFileName))
 				{
 					return true;
 				}
 				return false;
 			}
 		}
+
+		public Window TargetWindow { get; set; }
 
 		public void SetToDefault()
 		{
@@ -344,7 +347,7 @@ namespace SCG.Data.View
 					ID = ID,
 					Name = GetPropertyValueFromXml(moduleData, xmlData, "TabName"),
 					LabelText = GetPropertyValueFromXml(moduleData, xmlData, "LabelText"),
-					Filename = GetPropertyValueFromXml(moduleData, xmlData, "DefaultTemplateFilename"),
+					DefaultFileName = GetPropertyValueFromXml(moduleData, xmlData, "DefaultTemplateFilename"),
 					ExportPath = GetPropertyValueFromXml(moduleData, xmlData, "ExportPath"),
 					DefaultEditorText = GetPropertyValueFromXml(moduleData, xmlData, "DefaultEditorText"),
 					ToolTipText = ReplaceNewlineSymbols(GetPropertyValueFromXml(moduleData, xmlData, "ToolTip"))
@@ -369,18 +372,21 @@ namespace SCG.Data.View
 			}
 			*/
 
-			if (!String.IsNullOrWhiteSpace(Filename)) DefaultFilePath = Path.Combine(DefaultPaths.ModuleTemplatesFolder(parentData), Filename);
-
-			if (String.IsNullOrWhiteSpace(FilePath) && !String.IsNullOrWhiteSpace(DefaultFilePath))
+			if (String.IsNullOrWhiteSpace(FilePath))
 			{
-				FilePath = DefaultFilePath;
+				InitialDirectory = DefaultPaths.ModuleTemplatesFolder(parentData);
+				FilePath = Path.Combine(InitialDirectory, DefaultFileName);
+			}
+			else
+			{
+				InitialDirectory = Directory.GetParent(FilePath).FullName + @"\";
 			}
 
 			if (DefaultEditorText == null) DefaultEditorText = "";
 
-			if (String.IsNullOrEmpty(Name) && !String.IsNullOrEmpty(Filename))
+			if (String.IsNullOrEmpty(Name) && !String.IsNullOrEmpty(DefaultFileName))
 			{
-				Name = Filename;
+				Name = DefaultFileName;
 			}
 
 			if (File.Exists(FilePath))

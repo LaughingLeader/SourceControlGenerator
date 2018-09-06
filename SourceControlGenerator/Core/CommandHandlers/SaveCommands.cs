@@ -32,68 +32,77 @@ namespace SCG.Commands
 		}
 		*/
 
-		public void OpenDialogAndSave(Window ParentWindow, string Title, string FilePath, string FileContent, Action<bool, string> OnSave = null, string DefaultFileName = "", string DefaultFilePath="", params FileBrowserFilter[] Filters)
+		public void OpenDialogAndSave(Window ParentWindow, string Title, string FilePath, string FileContent, Action<bool, string> OnSave = null, string DefaultFileName = "", string InitialDirectory="", params FileBrowserFilter[] Filters)
 		{
-			var fileDialog = new CommonSaveFileDialog();
-			fileDialog.Title = Title;
-
-			fileDialog.AlwaysAppendDefaultExtension = false;
-			fileDialog.OverwritePrompt = true;
-
-			if (!String.IsNullOrEmpty(DefaultFileName)) fileDialog.DefaultFileName = DefaultFileName;
-
-			if (!String.IsNullOrEmpty(FilePath))
+			try
 			{
-				FileAttributes fileAttributes = File.GetAttributes(FilePath);
+				var fileDialog = new CommonSaveFileDialog();
+				fileDialog.Title = Title;
 
-				if ((fileAttributes & FileAttributes.Directory) != FileAttributes.Directory)
+				fileDialog.AlwaysAppendDefaultExtension = false;
+				fileDialog.OverwritePrompt = true;
+
+				//Log.Here().Important($"Initial directory: {InitialDirectory} | Default FileName: {DefaultFileName} | FilePath: {FilePath}");
+
+				if (!String.IsNullOrEmpty(DefaultFileName)) fileDialog.DefaultFileName = DefaultFileName;
+
+				//if (FileCommands.IsValidFilePath(InitialDirectory) && !FileCommands.IsValidDirectoryPath(InitialDirectory)) InitialDirectory = Directory.GetParent(InitialDirectory).FullName + @"\";
+
+				if(!String.IsNullOrWhiteSpace(InitialDirectory) && FileCommands.IsValidDirectoryPath(InitialDirectory))
 				{
-					/*
-					if (String.IsNullOrEmpty(DefaultFilePath) || (!String.IsNullOrEmpty(DefaultFilePath) && FilePath != DefaultFilePath))
-					{
-						//Override the file name with the incoming path, unless that file name matches a default file path.
-						//This is to suggest to the user to make a new file instead of overwriting application defaults.
-
-						fileDialog.FileName = Path.GetFileName(FilePath);
-					}
-					*/
-					fileDialog.InitialDirectory = Directory.GetParent(FilePath).FullName;
+					fileDialog.InitialDirectory = Path.GetFullPath(InitialDirectory);
 				}
 				else
 				{
-					fileDialog.InitialDirectory = Path.GetFullPath(FilePath);
+					if (FileCommands.IsValidPath(FilePath))
+					{
+						if (FileCommands.IsValidDirectoryPath(FilePath))
+						{
+							fileDialog.InitialDirectory = Path.GetFullPath(FilePath);
+						}
+						else
+						{
+							fileDialog.InitialDirectory = Directory.GetParent(FilePath).FullName;
+						}
+					}
+					else
+					{
+						fileDialog.InitialDirectory = Directory.GetCurrentDirectory();
+					}
 				}
-			}
-			else
-			{
-				fileDialog.InitialDirectory = Directory.GetCurrentDirectory();
-			}
 
-			if (Filters != null)
-			{
-				if (Filters.Length <= 0)
+				//Log.Here().Important($"Initial directory set to {fileDialog.InitialDirectory}");
+
+				if (Filters != null)
+				{
+					if (Filters.Length <= 0)
+					{
+						fileDialog.Filters.Add(new CommonFileDialogFilter(CommonFileFilters.All.Name, CommonFileFilters.All.Values));
+					}
+					else
+					{
+						foreach (var filter in Filters)
+						{
+							fileDialog.Filters.Add(new CommonFileDialogFilter(filter.Name, filter.Values));
+						}
+					}
+				}
+				else
 				{
 					fileDialog.Filters.Add(new CommonFileDialogFilter(CommonFileFilters.All.Name, CommonFileFilters.All.Values));
 				}
-				else
+
+				var result = fileDialog.ShowDialog(ParentWindow);
+
+				if (result == CommonFileDialogResult.Ok)
 				{
-					foreach (var filter in Filters)
-					{
-						fileDialog.Filters.Add(new CommonFileDialogFilter(filter.Name, filter.Values));
-					}
+					bool success = FileCommands.WriteToFile(fileDialog.FileName, FileContent);
+					OnSave?.Invoke(success, fileDialog.FileName);
 				}
 			}
-			else
+			catch(Exception ex)
 			{
-				fileDialog.Filters.Add(new CommonFileDialogFilter(CommonFileFilters.All.Name, CommonFileFilters.All.Values));
-			}
-
-			var result = fileDialog.ShowDialog(ParentWindow);
-
-			if (result == CommonFileDialogResult.Ok)
-			{
-				bool success = FileCommands.WriteToFile(fileDialog.FileName, FileContent);
-				OnSave?.Invoke(success, fileDialog.FileName);
+				Log.Here().Error($"Error opening dialog window: {ex.ToString()}");
 			}
 		}
 

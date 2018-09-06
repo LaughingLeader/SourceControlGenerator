@@ -309,7 +309,7 @@ namespace SCG.Core
 				if (Message != null) Data.ProgressLog += Environment.NewLine + Message;
 				Data.ProgressValue += Value;
 
-				//Log.Here().Activity($"Updated progress to {Value}.");
+				//Log.Here().Activity($"Updated progress to {Data.ProgressValue}/{Data.ProgressValueMax}.");
 			}), DispatcherPriority.Background);
 		}
 
@@ -377,6 +377,7 @@ namespace SCG.Core
 		{
 			HideProgressBar();
 			Data.ProgressActive = false;
+			Data.ProgressValue = 0;
 		}
 
 		private void HideProgressBar()
@@ -750,7 +751,9 @@ namespace SCG.Core
 
 				var filename = Path.GetFileName(Data.CurrentModuleData.ModuleSettings.UserKeywordsFile);
 
-				FileCommands.Save.OpenDialogAndSave(mainWindow, "Save Keywords As...", Data.CurrentModuleData.ModuleSettings.UserKeywordsFile, json, OnKeywordsSaveAs, filename, "", CommonFileFilters.Json);
+				var initialDirectory = Directory.GetParent(Data.CurrentModuleData.ModuleSettings.UserKeywordsFile).FullName;
+
+				FileCommands.Save.OpenDialogAndSave(mainWindow, "Save Keywords As...", Data.CurrentModuleData.ModuleSettings.UserKeywordsFile, json, OnKeywordsSaveAs, filename, initialDirectory, CommonFileFilters.Json);
 			}
 		}
 
@@ -784,22 +787,6 @@ namespace SCG.Core
 						MainWindow.TextGeneratorWindow.Data = JsonConvert.DeserializeObject<TextGeneratorData>(File.ReadAllText(dataFilePath));
 						loaded = true;
 					}
-
-					if (!loaded)
-					{
-						MainWindow.TextGeneratorWindow.InitData();
-						loaded = true;
-
-						var json = JsonConvert.SerializeObject(MainWindow.TextGeneratorWindow.Data, Newtonsoft.Json.Formatting.Indented);
-						if (FileCommands.WriteToFile(dataFilePath, json))
-						{
-							Log.Here().Activity($"TextGenerator settings were created and saved.");
-						}
-						else
-						{
-							Log.Here().Error($"Error saving TextGenerator settings to {dataFilePath}.");
-						}
-					}
 				}
 				else
 				{
@@ -809,22 +796,6 @@ namespace SCG.Core
 						MainWindow.TextGeneratorWindow.Data = JsonConvert.DeserializeObject<TextGeneratorData>(File.ReadAllText(defaultDataFile));
 						loaded = true;
 					}
-
-					if (!loaded)
-					{
-						MainWindow.TextGeneratorWindow.InitData();
-						loaded = true;
-
-						var json = JsonConvert.SerializeObject(MainWindow.TextGeneratorWindow.Data, Newtonsoft.Json.Formatting.Indented);
-						if (FileCommands.WriteToFile(defaultDataFile, json))
-						{
-							Log.Here().Activity($"TextGenerator settings were created and saved.");
-						}
-						else
-						{
-							Log.Here().Error($"Error saving TextGenerator settings to {defaultDataFile}.");
-						}
-					}
 				}
 			}
 			catch(Exception ex)
@@ -832,10 +803,13 @@ namespace SCG.Core
 				Log.Here().Error($"Error loading TextGenerator data file: {ex.ToString()}");
 			}
 
-			if(loaded)
+			if (!loaded)
 			{
-				MainWindow.TextGeneratorWindow.OnDataLoaded();
+				MainWindow.TextGeneratorWindow.InitData();
+				loaded = true;
 			}
+
+			MainWindow.TextGeneratorWindow.OnDataLoaded();
 		}
 
 		public void SaveTextGeneratorData()

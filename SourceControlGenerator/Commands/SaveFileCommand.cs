@@ -19,9 +19,9 @@ namespace SCG.Commands
 		{
 			if (parameter != null && parameter is ISaveCommandData data)
 			{
-				if(OpenSaveAsOnDefault && data.DefaultFilePath == data.FilePath)
+				if(OpenSaveAsOnDefault && data.InitialDirectory == data.FilePath)
 				{
-					FileCommands.Save.OpenDialogAndSave(App.Current.MainWindow, data.SaveAsText, data.FilePath, data.Content, this.OnSaveAs, data.Filename, data.DefaultFilePath);
+					FileCommands.Save.OpenDialogAndSave(App.Current.MainWindow, data.SaveAsText, data.FilePath, data.Content, this.OnSaveAs, data.DefaultFileName, data.InitialDirectory);
 				}
 				else
 				{

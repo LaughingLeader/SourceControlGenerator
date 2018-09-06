@@ -34,7 +34,7 @@ namespace SCG.Data.View
 	{
 		public string InputText
 		{
-			get { return inputData.Content; }
+			get { return inputData != null ? inputData.Content : ""; }
 			set
 			{
 				inputData.Content = value;
@@ -44,7 +44,7 @@ namespace SCG.Data.View
 
 		public string OutputText
 		{
-			get { return outputData.Content; }
+			get { return outputData != null ? outputData.Content : ""; }
 			set
 			{
 				outputData.Content = value;
@@ -60,8 +60,11 @@ namespace SCG.Data.View
 			get { return generationAmount; }
 			set
 			{
+				bool bSaveData = generationAmount != value;
 				generationAmount = value;
 				RaisePropertyChanged("GenerationAmount");
+
+				if (bSaveData) SaveDataEvent?.Invoke(this, new EventArgs());
 			}
 		}
 
@@ -73,8 +76,11 @@ namespace SCG.Data.View
 			get { return nextKeywordType; }
 			set
 			{
+				bool bSaveData = nextKeywordType != value;
 				nextKeywordType = value;
 				RaisePropertyChanged("NextKeywordType");
+
+				if(bSaveData) SaveDataEvent?.Invoke(this, new EventArgs());
 			}
 		}
 
@@ -113,40 +119,66 @@ namespace SCG.Data.View
 		[DataMember]
 		public ObservableCollection<ITextGeneratorInputData> Keywords { get; set; }
 
+		public Action OnFileLoaded { get; set; }
+
+		public event EventHandler SaveDataEvent;
+
+		private void OnInputTextChanged()
+		{
+			RaisePropertyChanged("InputText");
+		}
+
+		private void OnOutputTextChanged()
+		{
+			RaisePropertyChanged("OutputText");
+		}
+
+		private void OnDataFileLoaded()
+		{
+			OnFileLoaded.Invoke();
+		}
+
 		public void Init()
 		{
-			if(InputData != null)
-			{
-				InputData.Init();
-			}
-			else
+			if(InputData == null)
 			{
 				InputData = new TextGeneratorSaveFileData();
 			}
 
-			if (OutputData != null)
-			{
-				OutputData.Init();
-			}
-			else
+			if (OutputData == null)
 			{
 				OutputData = new TextGeneratorSaveFileData();
-			}
-
-			if (String.IsNullOrWhiteSpace(InputData.Filename))
-			{
-				InputData.Filename = "TextGenerator_Input1.txt";
-
-			}
-			if (String.IsNullOrWhiteSpace(OutputData.Filename))
-			{
-				OutputData.Filename = "TextGenerator_Output1.txt";
 			}
 
 			InputData.SaveAsText = "Save Input As...";
 			InputData.OpenText = "Open Input...";
 			OutputData.SaveAsText = "Save Output As...";
 			OutputData.OpenText = "Open Output...";
+
+			InputData.Init(OnInputTextChanged, OnDataFileLoaded);
+			OutputData.Init(OnOutputTextChanged, OnDataFileLoaded);
+
+			string initialDirectory = AppController.Main.CurrentModule != null ? DefaultPaths.ModuleTextGeneratorFolder(AppController.Main.CurrentModule.ModuleData) : DefaultPaths.RootFolder + @"Default\TextGenerator\";
+
+			if (!InputData.Open() || String.IsNullOrWhiteSpace(InputData.DefaultFileName))
+			{
+				InputData.InitialDirectory = initialDirectory;
+				InputData.DefaultFileName = "TextGenerator_Input1.txt";
+
+				if (!FileCommands.IsValidFilePath(InputData.FilePath))
+				{
+					InputData.FilePath = Path.Combine(InputData.InitialDirectory, InputData.DefaultFileName);
+				}
+			}
+			if (!OutputData.Open() || String.IsNullOrWhiteSpace(OutputData.DefaultFileName))
+			{
+				OutputData.InitialDirectory = initialDirectory;
+				OutputData.DefaultFileName = "TextGenerator_Output1.txt";
+				if (!FileCommands.IsValidFilePath(OutputData.FilePath))
+				{
+					OutputData.FilePath = Path.Combine(OutputData.InitialDirectory, OutputData.DefaultFileName);
+				}
+			}
 		}
 
 		public TextGeneratorData()
@@ -158,15 +190,15 @@ namespace SCG.Data.View
 	[DataContract]
 	public class TextGeneratorSaveFileData : PropertyChangedBase, ISaveCommandData
 	{
-		private string filename;
+		private string defaultFileName;
 
-		public string Filename
+		public string DefaultFileName
 		{
-			get { return filename; }
+			get { return defaultFileName; }
 			set
 			{
-				filename = value;
-				RaisePropertyChanged("Filename");
+				defaultFileName = value;
+				RaisePropertyChanged("DefaultFileName");
 			}
 		}
 
@@ -185,7 +217,7 @@ namespace SCG.Data.View
 
 		private string defaultFilePath;
 
-		public string DefaultFilePath
+		public string InitialDirectory
 		{
 			get { return defaultFilePath; }
 			set
@@ -204,6 +236,7 @@ namespace SCG.Data.View
 			{
 				content = value;
 				RaisePropertyChanged("Content");
+				OnContentChanged?.Invoke();
 			}
 		}
 
@@ -241,13 +274,21 @@ namespace SCG.Data.View
 
 		public ISaveCommandData SaveParameters => this;
 
-		public void Open()
+		public Window TargetWindow { get; set; }
+
+		public Action OnContentChanged;
+		public Action OnFileLoaded;
+
+		public bool Open()
 		{
 			if (FileCommands.IsValidFilePath(FilePath))
 			{
 				Content = FileCommands.ReadFile(FilePath);
-				Filename = Path.GetFileName(FilePath);
+				DefaultFileName = Path.GetFileName(FilePath);
+				InitialDirectory = Directory.GetParent(FilePath).FullName;
+				return true;
 			}
+			return false;
 		}
 
 		private void OnSave(bool success)
@@ -259,7 +300,8 @@ namespace SCG.Data.View
 		{
 			if (success)
 			{
-				
+				FilePath = path;
+				DefaultFileName = Path.GetFileName(FilePath);
 			}
 			else
 			{
@@ -267,29 +309,29 @@ namespace SCG.Data.View
 			}
 		}
 
-		public void Init()
+		public void Init(Action OnContentChangedAction, Action OnFileLoadedAction = null)
 		{
-			Open();
+			OnContentChanged = OnContentChangedAction;
 
-			if(String.IsNullOrWhiteSpace(DefaultFilePath))
-			{
-				DefaultFilePath = DefaultPaths.RootFolder;
-			}
-		}
+			if (OnFileLoadedAction != null) OnFileLoaded = OnFileLoadedAction;
 
-		public TextGeneratorSaveFileData()
-		{
 			OpenCommand = new ParameterCommand((object param) =>
 			{
 				if (param is string FileLocationText)
 				{
 					FilePath = FileLocationText;
 					Content = FileCommands.ReadFile(FilePath);
+					OnFileLoaded?.Invoke();
 				}
 			});
 
 			SaveCommand = new SaveFileCommand(OnSave, OnSaveAs);
 			SaveAsCommand = new SaveFileAsCommand(OnSaveAs);
+		}
+
+		public TextGeneratorSaveFileData()
+		{
+			
 		}
 	}
 
