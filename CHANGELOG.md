@@ -1,5 +1,12 @@
 Source Control Generator Changelog
 =======
+# 1.2.0.0
+* New Divinity: Original Sin 2 - Definitive Edition module.
+	* Works separately from the previous DOS2 module, so to be sure to copy over relevant project files you'd like to preserve, such as your Readme, Changelog, .git folder, etc.
+* New "Text Generator" Tool
+	* Allows you to generate text with a series of keywords that are dynamically replaced, saving time when you need similar text with incremental values.
+* Fixes and improvements in archival speed.
+* Thumbnails and meta files should no longer get "locked".
 
 # 1.1.1.0
 * Backup Support
