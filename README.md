@@ -8,6 +8,10 @@ Source Control Generator is a program designed to ease effort in creating git re
 * [Download](https://github.com/LaughingLeader/SourceControlGenerator/releases)
 * [Changelog](CHANGELOG.md)
 
+### Recommended Reading
+
+* [git - the simple guide](https://rogerdudler.github.io/git-guide/)
+
 ## Features:
 * Easy Git Repository Creation
 	* Git repositories for projects can be created with a minimal amount of clicks.
