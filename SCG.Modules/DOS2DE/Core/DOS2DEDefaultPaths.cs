@@ -14,6 +14,6 @@ namespace SCG.Modules.DOS2DE.Core
 			return DefaultPaths.ModuleSettingsFolder(Data) + @"\DirectoryLayout.txt";
 		}
 
-		public static string DataDirectory_Debug => @"DefEd\Data";
+		public static string DataDirectory_DefEd => @"\DefEd\Data";
 	}
 }

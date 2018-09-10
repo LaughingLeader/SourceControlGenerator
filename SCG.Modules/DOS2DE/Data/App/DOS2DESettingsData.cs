@@ -10,6 +10,7 @@ using SCG.Modules.DOS2DE.Core;
 using SCG.SCGEnum;
 using SCG.Interfaces;
 using Newtonsoft.Json;
+using System.IO;
 
 namespace SCG.Modules.DOS2DE.Data.App
 {
@@ -52,9 +53,12 @@ namespace SCG.Modules.DOS2DE.Data.App
 			string dataDirectory = Helpers.Registry.GetAppInstallPath("Divinity: Original Sin 2");
 			if (!String.IsNullOrEmpty(dataDirectory))
 			{
-				dataDirectory = dataDirectory + DOS2DEDefaultPaths.DataDirectory_Debug;
-				DOS2DEDataDirectory = dataDirectory;
-				return true;
+				dataDirectory = Path.Combine(dataDirectory, DOS2DEDefaultPaths.DataDirectory_DefEd);
+				if(Directory.Exists(dataDirectory))
+				{
+					DOS2DEDataDirectory = dataDirectory;
+					return true;
+				}
 			}
 			return false;
 		}
