@@ -11,6 +11,7 @@ Source Control Generator is a program designed to ease effort in creating git re
 ## Features:
 * Easy Git Repository Creation
 	* Git repositories for projects can be created with a minimal amount of clicks.
+		* _Note_: Binary files are ignored by default in the gitignore template, so either use the backup tool to fully back up your projects, or tweak this template to include binaries (not recommended for large projects).
 
 * Backup Projects in Bulk
 	* Projects can be archived with one click and saved to a specific directory.
@@ -26,10 +27,10 @@ Source Control Generator is a program designed to ease effort in creating git re
 * Markdown Converter
 	* SCG contains a built-in Markdown converter, for converting markdown to various formats, such as BBcode and HTML.
 	
-*Note that the "Divinity Original Sin 2" module is the only one currently available, as SCG was initially created with that game in mind.*
+*Note that the "Divinity Original Sin 2 / Definitive Edition" modules are the only ones currently available, as SCG was initially created with that game in mind.*
 
-### Divinity: Original Sin 2 Features
-Features added by the Divinity: Original Sin 2 module can be found here: [Divinity: Original Sin 2 Features (wiki)](https://github.com/LaughingLeader/SourceControlGenerator/wiki/Divinity:-Original-Sin-2-Features)
+### Divinity: Original Sin 2 & Definitive Edition Features
+Features added by the Divinity: Original Sin 2 & Definitive Edition modules can be found here: [Divinity: Original Sin 2 Features (wiki)](https://github.com/LaughingLeader/SourceControlGenerator/wiki/Divinity:-Original-Sin-2-Features)
 	
 ## Contributing to this project:
 
