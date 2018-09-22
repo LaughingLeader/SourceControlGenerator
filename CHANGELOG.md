@@ -1,5 +1,10 @@
 Source Control Generator Changelog
 =======
+# 1.2.0.2
+* Divinity: Original Sin 2 - Definitive Edition Module
+	* Switched the modified/created dates for projects to the creation date of the project meta.lsx, and the modified date of the mod meta.lsx.
+	* Made the refresh button above the project list refresh all, so it can be used to reload project data (F5 also has the same functionality).
+
 # 1.2.0.1
 * Small fix in the automatic data directory path created for the DOS2 DefEd module when running setup for the first time (+1 backslash).
 
