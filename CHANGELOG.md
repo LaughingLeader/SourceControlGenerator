@@ -1,5 +1,8 @@
 Source Control Generator Changelog
 =======
+# 1.2.0.1
+* Small fix in the automatic data directory path created for the DOS2 DefEd module when running setup for the first time (+1 backslash).
+
 # 1.2.0.0
 * New Divinity: Original Sin 2 - Definitive Edition module.
 	* Works separately from the previous DOS2 module, so to be sure to copy over relevant project files you'd like to preserve, such as your Readme, Changelog, .git folder, etc.
