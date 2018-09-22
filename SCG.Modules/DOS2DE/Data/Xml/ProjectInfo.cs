@@ -61,6 +61,7 @@ namespace SCG.Data.Xml
 			}
 
 			//<header version="2" time="1523634729" />
+			/* This value was removed from the xml in a recent version.
 			var timeStampXml = projectMetaXml.XPathSelectElement("save/header");
 			if(timeStampXml != null && timeStampXml.HasAttributes)
 			{
@@ -74,6 +75,7 @@ namespace SCG.Data.Xml
 					}
 				}
 			}
+			*/
 		}
 	}
 }

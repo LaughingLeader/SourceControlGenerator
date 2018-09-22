@@ -328,7 +328,8 @@ namespace SCG.Modules.DOS2DE.Controls
 
 		private void Btn_ModProjects_Refresh_Click(object sender, RoutedEventArgs e)
 		{
-			Controller.RefreshModProjects();
+			//Controller.RefreshModProjects();
+			Controller.RefreshAllProjects();
 		}
 
 		private void Btn_AvailableProjects_Refresh_Click(object sender, RoutedEventArgs e)

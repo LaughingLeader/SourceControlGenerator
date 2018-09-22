@@ -100,6 +100,7 @@ namespace SCG.Data.Xml
 			//	Log.Here().Error("Error parsing mod meta.lsx: {0}", ex.ToString());
 			//}
 
+			/* The timestamp was removed from the xml in a recent version.
 			try
 			{
 				var timeStampXml = modMetaXml.XPathSelectElement("save/header");
@@ -121,6 +122,7 @@ namespace SCG.Data.Xml
 			{
 				Log.Here().Error("Error getting timestamp from meta.lsx: {0}", ex.ToString());
 			}
+			*/
 
 			if (moduleInfoLoaded)
 			{

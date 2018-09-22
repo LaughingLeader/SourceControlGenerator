@@ -295,7 +295,8 @@ namespace SCG.Modules.DOS2DE.Data.View
 
 		public bool DataIsNewer(ModProjectData OtherData)
 		{
-			if (OtherData.ModuleInfo.Timestamp > this.ModuleInfo.Timestamp || OtherData.ProjectInfo.Timestamp > this.ProjectInfo.Timestamp) return true;
+			//if (OtherData.ModuleInfo.Timestamp > this.ModuleInfo.Timestamp || OtherData.ProjectInfo.Timestamp > this.ProjectInfo.Timestamp) return true;
+			if (OtherData.ModuleInfo.ModifiedDate.Ticks > this.ModuleInfo.ModifiedDate.Ticks || OtherData.ProjectInfo.CreationDate.Ticks > this.ProjectInfo.CreationDate.Ticks) return true;
 			return false;
 		}
 
@@ -497,11 +498,15 @@ namespace SCG.Modules.DOS2DE.Data.View
 					LoadDependencies(modMetaXml);
 
 					Log.Here().Important("[{0}] All mod data loaded.", this.ModuleInfo.Name);
+
+					ModuleInfo.ModifiedDate = ModMetaFile.LastWriteTime;
 				}
 				else
 				{
 					Log.Here().Error("Error loading mod meta.lsx: modMetaXml is null. Is this an xml file?");
 				}
+
+
 			}
 
 			if(ModuleInfo.Folder.Contains(ModuleInfo.UUID))
@@ -558,6 +563,8 @@ namespace SCG.Modules.DOS2DE.Data.View
 					this.ProjectInfo.LoadFromXml(projectMetaXml);
 
 					LoadThumbnail(projectDirectory);
+
+					ProjectInfo.CreationDate = projectMetaFile.CreationTime;
 				}
 			}
 			catch (Exception ex)
