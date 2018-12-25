@@ -357,14 +357,14 @@
 										<Style TargetType="DataGridCell" BasedOn="{StaticResource DataGrid_NoHighlight}">
 											<Setter Property="ToolTip">
 												<Setter.Value>
-													<Image MaxWidth="256" MaxHeight="256" Stretch="Uniform" Source="{Binding ThumbnailPath, TargetNullValue={x:Null}}" Visibility="{Binding ThumbnailExists, FallbackValue=Collapsed}" />
+													<Image MaxWidth="256" MaxHeight="256" Stretch="Uniform" Source="{Binding ThumbnailPath, Converter={StaticResource StringToCachedImageConverter}}" Visibility="{Binding ThumbnailExists, FallbackValue=Collapsed}" />
 												</Setter.Value>
 											</Setter>
 										</Style>
 									</DataGridTemplateColumn.CellStyle>
 									<DataGridTemplateColumn.CellTemplate>
 										<DataTemplate>
-											<Image MaxWidth="16" MaxHeight="16" Stretch="Uniform" Source="{Binding ThumbnailPath, TargetNullValue={x:Null}}" Visibility="{Binding ThumbnailExists, FallbackValue=Collapsed}" />
+											<Image MaxWidth="16" MaxHeight="16" Stretch="Uniform" Source="{Binding ThumbnailPath, Converter={StaticResource StringToCachedImageConverter}}" Visibility="{Binding ThumbnailExists, FallbackValue=Collapsed}" />
 										</DataTemplate>
 									</DataGridTemplateColumn.CellTemplate>
 								</DataGridTemplateColumn>

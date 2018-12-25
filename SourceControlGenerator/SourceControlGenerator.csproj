@@ -167,6 +167,7 @@
     <Compile Include="Controls\Behavior\MarginSetter.cs" />
     <Compile Include="Controls\Behavior\ProgressBarAnimationBehavior.cs" />
     <Compile Include="Controls\Behavior\TextBoxEnterKeyBehavior.cs" />
+    <Compile Include="Converters\StringToCachedImageConverter.cs" />
     <Compile Include="Data\App\CachedImageSource.cs" />
     <Compile Include="Controls\CrossButton.cs" />
     <Compile Include="Controls\MenuItemContainerTemplateSelector.cs" />

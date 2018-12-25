@@ -37,6 +37,7 @@
 	<cv:IntToVisibilityConverter x:Key="IntToVisibilityConverter"/>
 	<cv:VisibleLogsConverter x:Key="VisibleLogsConverter"/>
 	<cv:LogTypeColorConverter x:Key="LogTypeColorConverter"/>
+	<cv:StringToCachedImageConverter x:Key="StringToCachedImageConverter"/>
 
 	<Style TargetType="{x:Type c:TemplateKeywordControl}"/>
 	<Style TargetType="{x:Type ListViewItem}" />

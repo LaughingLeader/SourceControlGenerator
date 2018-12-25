@@ -237,6 +237,7 @@ namespace SCG.Modules.DOS2DE.Data.View
 			}
 		}
 
+		/*
 		private CachedImageSource cachedImageSource;
 
 		public CachedImageSource ThumbnailSource
@@ -248,7 +249,7 @@ namespace SCG.Modules.DOS2DE.Data.View
 				RaisePropertyChanged("ThumbnailSource");
 			}
 		}
-
+		*/
 
 		private string modMetaFilePath;
 
@@ -452,12 +453,14 @@ namespace SCG.Modules.DOS2DE.Data.View
 				{
 					ThumbnailPath = thumbpath;
 
+					/*
 					if(ThumbnailSource == null)
 					{
 						ThumbnailSource = new CachedImageSource();
 					}
 
 					ThumbnailSource.Init(ThumbnailPath);
+					*/
 
 					ThumbnailExists = Visibility.Visible;
 

@@ -37,21 +37,19 @@ namespace SCG.Data.App
 			}
 		}
 
-		private Uri UriSource { get; set; }
-
 		public void Init(string imagePath)
 		{
 			AppController.Main.MainWindow.Dispatcher.BeginInvoke(new Action(() =>
 			{
 				SourcePath = imagePath;
-				UriSource = new Uri(SourcePath, UriKind.Absolute);
 
 				Source = new BitmapImage();
 				Source.BeginInit();
 				Source.CacheOption = BitmapCacheOption.OnLoad;
-				Source.CreateOptions = BitmapCreateOptions.IgnoreImageCache;
-				Source.UriSource = UriSource;
+				//Source.CreateOptions = BitmapCreateOptions.IgnoreImageCache;
+				Source.UriSource = new Uri(SourcePath, UriKind.Absolute);
 				Source.EndInit();
+
 			}), DispatcherPriority.Background);
 		}
 	}
