@@ -88,6 +88,9 @@
     <Reference Include="ControlzEx, Version=3.0.2.4, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\ControlzEx.3.0.2.4\lib\net462\ControlzEx.dll</HintPath>
     </Reference>
+    <Reference Include="LSLib">
+      <HintPath>..\..\..\..\Files\_Shared\_Visual_Studio\lslib\LSLib\bin\Release\LSLib.dll</HintPath>
+    </Reference>
     <Reference Include="Markdig, Version=0.15.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Markdig.0.15.0\lib\net40\Markdig.dll</HintPath>
     </Reference>
@@ -225,6 +228,7 @@
     <Compile Include="Data\View\ModuleSelectionData.cs" />
     <Compile Include="Data\View\SettingsEntryData.cs" />
     <Compile Include="Data\View\TextGeneratorData.cs" />
+    <Compile Include="Extensions\StringExtensions.cs" />
     <Compile Include="SCGEnum\BackupMode.cs" />
     <Compile Include="SCGEnum\FileValidation.cs" />
     <Compile Include="Extensions\AttributeExtensions.cs" />

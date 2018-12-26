@@ -321,6 +321,11 @@
 														CommandParameter="{Binding}" >
 													<Image Source="{Binding Source={StaticResource IconProxy}, Path=Data.Convert, FallbackValue={x:Null}}" Stretch="UniformToFill"/>
 												</Button>
+												<!--<Button x:Name="Btn_PackageMod" ToolTip="{x:Static core:DOS2DETooltips.Button_PackageMod}" IsEnabled="{Binding DataContext.Settings.DivinePathSet, ElementName=ProjectViewControlMain}" Command="{Binding DataContext.PackageProjectCommand, ElementName=ProjectViewControlMain}"
+														CommandParameter="{Binding}" >
+													<Image Source="{Binding Source={StaticResource IconProxy}, Path=Data.Convert, FallbackValue={x:Null}}" Stretch="UniformToFill"/>
+												</Button>
+												-->
 											</StackPanel>
 										</DataTemplate>
 									</DataGridTemplateColumn.CellTemplate>
@@ -451,6 +456,7 @@
 							<Button x:Name="BackupSeletedButton" Content="Backup To..." Click="BackupSelectedButton_Click" IsEnabled="{Binding ProjectSelected}" ToolTip="{x:Static core:DOS2DETooltips.Button_BackupSelectedTo}" />
 						</StackPanel>
 						<StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right" >
+							<Button x:Name="PackageCreateButton" Content="Create Packages..." IsEnabled="{Binding CanCreatePackages, FallbackValue='False'}" ToolTip="{x:Static core:DOS2DETooltips.Button_PackageMod}" Click="PackageCreateButton_Click" />
 							<Button x:Name="GitGenerationButton" Content="Start Git Generator..." Click="GitGenerationButton_Click" IsEnabled="{Binding CanGenerateGit}" ToolTip="{x:Static core:DOS2DETooltips.Button_StartGitGenerator}" />
 						</StackPanel>
 						

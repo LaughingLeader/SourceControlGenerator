@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Data;
+using System.Windows.Input;
 using SCG.Collections;
 using SCG.Commands;
 using SCG.Data;
@@ -41,6 +42,33 @@ namespace SCG.Modules.DOS2DE.Data.View
 			}
 		}
 
+		/*
+		public override void OnProjectsSelected()
+		{
+			base.OnProjectsSelected();
+
+			CanCreatePackages = Settings.DivinePathSet;
+		}
+
+		public override void OnProjectsDeselected()
+		{
+			base.OnProjectsDeselected();
+
+			CanCreatePackages = false;
+		}
+		*/
+
+		private bool canCreatePackages = false;
+
+		public bool CanCreatePackages
+		{
+			get { return canCreatePackages; }
+			set
+			{
+				canCreatePackages = value;
+				RaisePropertyChanged("CanCreatePackages");
+			}
+		}
 
 		private string availableProjectsToggleText;
 

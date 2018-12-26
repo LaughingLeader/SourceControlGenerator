@@ -552,7 +552,7 @@ namespace SCG.Modules.DOS2DE.Data.View
 
 			try
 			{
-				string projectMetaFilePath = Path.Combine(projectDirectory, "meta.lsx");
+				string projectMetaFilePath = Path.ChangeExtension(Path.Combine(projectDirectory, "meta"), "lsx");
 
 				Log.Here().Activity("Attempting to load project meta.lsx at {0}", projectMetaFilePath);
 

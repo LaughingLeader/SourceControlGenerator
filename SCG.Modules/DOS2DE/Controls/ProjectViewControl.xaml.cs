@@ -11,7 +11,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
-using System.Windows.Shapes;
+
 using SCG.Core;
 using SCG.Data;
 using SCG.Data.View;
@@ -22,6 +22,10 @@ using SCG.Modules.DOS2DE.Core;
 using System.ComponentModel;
 using SCG.Modules.DOS2DE.Windows;
 using SCG.Modules.DOS2DE.Data.View;
+using SCG.Commands;
+using System.IO;
+using System.Windows.Threading;
+using SCG.Util;
 
 namespace SCG.Modules.DOS2DE.Controls
 {
@@ -146,6 +150,7 @@ namespace SCG.Modules.DOS2DE.Controls
 		{
 			bool canGitGenerate = false;
 			bool projectSelected = false;
+
 			DataGrid managedGrid = (DataGrid)this.FindName("ManagedProjectsDataGrid");
 
 			if (managedGrid != null)
@@ -156,7 +161,11 @@ namespace SCG.Modules.DOS2DE.Controls
 					{
 						if (data.Selected)
 						{
-							if (!data.GitGenerated) canGitGenerate = true;
+							if (!data.GitGenerated)
+							{
+								canGitGenerate = true;
+							}
+
 							projectSelected = true;
 						}
 					}
@@ -165,6 +174,7 @@ namespace SCG.Modules.DOS2DE.Controls
 
 			Controller.Data.ProjectSelected = projectSelected;
 			Controller.Data.CanGenerateGit = canGitGenerate && AppController.Main.GitDetected;
+			Controller.Data.CanCreatePackages = projectSelected;
 			Controller.SelectionChanged();
 		}
 
@@ -239,6 +249,11 @@ namespace SCG.Modules.DOS2DE.Controls
 		private void BackupSelectedButton_Click(object sender, RoutedEventArgs e)
 		{
 			Controller.BackupSelectedProjectsTo();
+		}
+
+		private void PackageCreateButton_Click(object sender, RoutedEventArgs e)
+		{
+			Controller.PackageSelectedProjects();
 		}
 
 		private void GitGenerationButton_Click(object sender, RoutedEventArgs e)

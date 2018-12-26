@@ -12,6 +12,9 @@ Editor/Mods/$ModFolderName/Levels/*
 ######################
 *.div
 *.raw
+story_orphanqueries_ignore.txt
+Mods/$ModFolderName/Story/Dialogs/Autosave/*
+Mods/$ModFolderName/Story/Dialogs/Recovered/*
 
 # Asset Folders      #
 ######################
@@ -29,6 +32,8 @@ EditorBrowserMetadata_*
 EditorBrowserMetadata.xml
 Autosave/*
 Recovered/*
+ReConHistory.txt
+story.debugInfo
 
 # Assets             #
 ######################
@@ -95,6 +100,10 @@ personallog.txt
 *.rar
 *.tar
 *.zip
+
+# VS Code #
+############
+launch.json
 
 # OS generated files #
 ######################

@@ -20,6 +20,7 @@ namespace SCG.Modules.DOS2DE.Core
 		public static string Button_ManageProjects_Multi = "Manage Selected Projects";
 		public static string Button_ManageProjects_None = "Select a Project";
 		public static string Button_MarkdownConverter = "Convert Readme with Markdown Converter...";
+		public static string Button_PackageMod = "Export selected projects as packages to the Local Mods folder.";
 		public static string Button_BackupFolder = "Open Backup Folder...";
 		public static string Button_GitFolder = "Open Git Repo Folder...";
 		public static string Button_GitFolderDisabled = "Git Repo Not Detected";

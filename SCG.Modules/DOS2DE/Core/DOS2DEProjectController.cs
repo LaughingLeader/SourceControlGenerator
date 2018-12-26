@@ -7,7 +7,9 @@ using SCG.Interfaces;
 using SCG.Modules.DOS2DE.Controls;
 using SCG.Modules.DOS2DE.Core;
 using SCG.Modules.DOS2DE.Data.View;
+using SCG.Modules.DOS2DE.Utilities;
 using SCG.Modules.DOS2DE.Windows;
+using SCG.Util;
 using SCG.Windows;
 
 using System;
@@ -15,6 +17,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -542,6 +545,166 @@ namespace SCG.Core
 
 		#endregion Backup
 
+		#region PackageCreation
+
+		private void CancelPackageProgress()
+		{
+			if (packageCancellationTokenSource != null)
+			{
+				Log.Here().Warning("Canceling package progress...");
+				packageCancellationTokenSource.Cancel();
+			}
+		}
+
+		private CancellationTokenSource packageCancellationTokenSource;
+
+		public void PackageSelectedProjects()
+		{
+			packageCancellationTokenSource = new CancellationTokenSource();
+			AppController.Main.StartProgress($"Packaging projects...", StartPackageSelectedProjectsAsync, "", 0, true, CancelPackageProgress);
+		}
+
+		public async void StartPackageSelectedProjectsAsync()
+		{
+			var sortedProjects = Data.ManagedProjects.Where(p => p.Selected).OrderBy(p => p.DisplayName);
+
+			ConcurrentBag<ModProjectData> selectedProjects = new ConcurrentBag<ModProjectData>(sortedProjects);
+
+			string localModsFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), @"Larian Studios\Divinity Original Sin 2 Definitive Edition\Local Mods");
+
+			var totalSuccess = await PackageSelectedProjectsAsync(selectedProjects, localModsFolder);
+			if (totalSuccess >= selectedProjects.Count)
+			{
+				MainWindow.FooterLog($"Successfully packaged all selected projects to {localModsFolder}");
+			}
+			else
+			{
+				MainWindow.FooterError($"Problem occured when packaging selected projects. Check the log. {totalSuccess}/{selectedProjects.Count} packages were created.");
+			}
+		}
+
+		private async Task<int> PackageSelectedProjectsAsync(ConcurrentBag<ModProjectData> selectedProjects, string targetFolder)
+		{
+			//+1 progress when done searching for files, +1 when done.
+			AppController.Main.Data.ProgressValueMax = selectedProjects.Count * 2;
+
+			//AppController.Main.Data.IsIndeterminate = true;
+
+			List<string> exportDirectories = new List<string>();
+			exportDirectories.Add(Path.Combine(Data.Settings.DOS2DEDataDirectory, @"Mods\ModFolder"));
+			exportDirectories.Add(Path.Combine(Data.Settings.DOS2DEDataDirectory, @"Public\ModFolder"));
+
+			int totalSuccess = 0;
+
+			if (selectedProjects != null)
+			{
+				int i = 0;
+				foreach (var project in selectedProjects)
+				{
+					AppController.Main.UpdateProgressTitle((selectedProjects.Count > 1 ? "Packaging projects..." : $"Packaging project... ") + $"{i}/{selectedProjects.Count}");
+
+					//Log.Here().Activity($"[Progress-Backup] Target percentage for this backup iteration is {targetPercentage} => {totalPercentageAmount}. Amount per tick is {amountPerTick}.");
+
+					AppController.Main.UpdateProgressMessage($"Creating package for project {project.ProjectName}...");
+
+					var backupSuccess = await PackageProjectAsync(project, targetFolder, exportDirectories);
+
+					if (backupSuccess == BackupResult.Success)
+					{
+						totalSuccess += 1;
+						Log.Here().Activity("Successfully created package for {0}.", project.ProjectName);
+						project.LastBackup = DateTime.Now;
+						var d = Data.ManagedProjectsData.Projects.Where(p => p.Name == project.ProjectName && p.UUID == project.UUID).FirstOrDefault();
+						if (d != null) d.LastBackupUTC = project.LastBackup?.ToUniversalTime().ToString();
+
+						AppController.Main.UpdateProgressLog("Package created.");
+					}
+					else if (backupSuccess == BackupResult.Error)
+					{
+						Log.Here().Error("Failed to create package for {0}.", project.ProjectName);
+						AppController.Main.UpdateProgressLog("Package creation failed.");
+					}
+					else
+					{
+						totalSuccess += 1;
+						Log.Here().Activity("Skipped package creation for {0}.", project.ProjectName);
+					}
+
+					AppController.Main.UpdateProgress();
+
+					AppController.Main.UpdateProgressTitle((selectedProjects.Count > 1 ? "Packaging projects..." : $"Packaging project... ") + $"{i + 1}/{selectedProjects.Count}");
+					i++;
+				}
+			}
+
+			AppController.Main.UpdateProgressTitle((selectedProjects.Count > 1 ? "Packaging projects..." : $"Packaging project... ") + $"{selectedProjects.Count}/{selectedProjects.Count}");
+			AppController.Main.UpdateProgressMessage("Finishing up...");
+			AppController.Main.UpdateProgressLog("Packaging complete. +5 XP");
+			AppController.Main.FinishProgress();
+
+			if (totalSuccess > 0) DOS2DECommands.SaveManagedProjects(this.Data);
+
+			return totalSuccess;
+		}
+
+		public List<string> IgnoredExportFiles { get; set; }
+
+		public async Task<BackupResult> PackageProjectAsync(ModProjectData modProject, string outputDirectory, List<string> exportDirectories)
+		{
+			if (!Directory.Exists(outputDirectory))
+			{
+				Directory.CreateDirectory(outputDirectory);
+			}
+
+			//string inputDirectory = Path.Combine(Path.GetFullPath(Data.Settings.GitRootDirectory), modProject.ProjectName);
+			string outputPackage = Path.ChangeExtension(Path.Combine(outputDirectory, modProject.FolderName), "pak");
+			try
+			{
+				var sourceFolders = new List<string>();
+				foreach (var directoryBaseName in exportDirectories)
+				{
+					var subdirectoryName = directoryBaseName.Replace("ProjectName", modProject.ProjectName).Replace("ProjectFolder", modProject.ProjectFolder);
+					if (modProject.ModuleInfo != null) subdirectoryName = subdirectoryName.Replace("ModUUID", modProject.ModuleInfo.UUID).Replace("ModFolder", modProject.ModuleInfo.Folder);
+
+					var sourceDirectory = Path.Combine(Data.Settings.DOS2DEDataDirectory, subdirectoryName).Replace("/", "\\");
+					if (!sourceDirectory.EndsWith(Path.DirectorySeparatorChar.ToString())) sourceDirectory += Path.DirectorySeparatorChar.ToString();
+					if (Directory.Exists(sourceDirectory))
+					{
+						Log.Here().Important($"Adding source folder {directoryBaseName} => {sourceDirectory}");
+						sourceFolders.Add(sourceDirectory);
+					}
+				}
+
+				var result = await DOS2DEPackageCreator.CreatePackage(Data.Settings.DOS2DEDataDirectory.Replace("/", "\\"), sourceFolders, outputPackage, IgnoredExportFiles);
+				if (result)
+				{
+					return BackupResult.Success;
+				}
+				else
+				{
+					return BackupResult.Error;
+				}
+
+				//await ProcessHelper.RunCommandLineAsync(RepoPath, "git add -A");
+				/*
+				string command = $"divine -a create-package -g dos2 -s \"{inputDirectory}\" -d \"{outputPackage}\"";
+				AppController.Main.UpdateProgressLog($"Running command [{command}]...");
+				Log.Here().Activity($"Running command [{command}]...");
+				var exitCode = await ProcessHelper.RunCommandLineAsync(divineFolder, command);
+				if (exitCode == 0)
+				{
+					return BackupResult.Success;
+				}
+				*/
+			}
+			catch (Exception ex)
+			{
+				Log.Here().Error("Error creating package: {0}", ex.ToString());
+				return BackupResult.Error;
+			}
+		}
+		#endregion
+
 		public void AddProjects(List<AvailableProjectViewData> selectedItems)
 		{
 			bool bSaveData = false;
@@ -841,6 +1004,19 @@ namespace SCG.Core
 		public DOS2DEProjectController()
 		{
 			Data = new DOS2DEModuleData();
+
+			IgnoredExportFiles = new List<string>();
+			//IgnoredExportFiles.Add(".ailog");
+			IgnoredExportFiles.Add("ReConHistory.txt");
+			IgnoredExportFiles.Add("dialoglog.txt");
+			IgnoredExportFiles.Add("errors.txt");
+			IgnoredExportFiles.Add("gold.log");
+			IgnoredExportFiles.Add("log.txt");
+			IgnoredExportFiles.Add("network.log");
+			IgnoredExportFiles.Add("osirislog.log");
+			IgnoredExportFiles.Add("personallog.txt");
+			IgnoredExportFiles.Add("story.debugInfo");
+			IgnoredExportFiles.Add("story_orphanqueries_found.txt");
 		}
 
 		public void SelectionChanged()
@@ -849,9 +1025,18 @@ namespace SCG.Core
 			StartGitGenerationMenuData.IsEnabled = Data.CanGenerateGit;
 		}
 
+		public void OpenFolder(string folderPath)
+		{
+			if (Directory.Exists(folderPath))
+			{
+				Process.Start(folderPath);
+			}
+		}
+
 		private MenuData BackupSelectedMenuData { get; set; }
 		private MenuData BackupSelectedToMenuData { get; set; }
 		private MenuData StartGitGenerationMenuData { get; set; }
+		private MenuData OpenLocalModsFolderMenuData { get; set; }
 
 		public void Initialize(MainAppData mainAppData)
 		{
@@ -878,6 +1063,15 @@ namespace SCG.Core
 				IsEnabled = false
 			};
 
+			OpenLocalModsFolderMenuData = new MenuData("DOS2.OpenLocalModsFolder")
+			{
+				Header = "Open Local Mods Folder...",
+				ClickCommand = new ActionCommand(() => {
+					OpenFolder(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), @"Larian Studios\Divinity Original Sin 2 Definitive Edition\Local Mods"));
+				}),
+				IsEnabled = true
+			};
+
 			MainAppData.MenuBarData.File.Register(Data.ModuleName,
 				new SeparatorData(),
 				new MenuData("DOS2.RefreshProjects")
@@ -892,7 +1086,9 @@ namespace SCG.Core
 				new SeparatorData(),
 				BackupSelectedMenuData,
 				BackupSelectedToMenuData,
-				StartGitGenerationMenuData
+				StartGitGenerationMenuData,
+				new SeparatorData(),
+				OpenLocalModsFolderMenuData
 			);
 		}
 

@@ -96,8 +96,20 @@ namespace SCG.Data.View
 			{
 				projectSelected = value;
 				RaisePropertyChanged("ProjectSelected");
+				if (projectSelected)
+				{
+					OnProjectsSelected();
+				}
+				else
+				{
+					OnProjectsDeselected();
+				}
 			}
 		}
+
+		public virtual void OnProjectsSelected() { }
+
+		public virtual void OnProjectsDeselected() { }
 
 		private bool canGenerateGit;
 
