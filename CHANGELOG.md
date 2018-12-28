@@ -1,7 +1,8 @@
 Source Control Generator Changelog
 =======
 # 1.3.0.1
-* Minor update to get the cancel button working properly for backup and packaging progress screens.
+* Divinity: Original Sin 2 - Definitive Edition Module
+	* Minor update to get the cancel button working properly for backup and packaging progress screens.
 
 # 1.3.0.0
 * Divinity: Original Sin 2 - Definitive Edition Module
