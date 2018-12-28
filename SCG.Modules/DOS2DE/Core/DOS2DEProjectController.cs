@@ -626,7 +626,7 @@ namespace SCG.Core
 				int i = 0;
 				foreach (var project in selectedProjects)
 				{
-					if (cancellationTokenSource.IsCancellationRequested) break;
+					if (cancellationTokenSource.IsCancellationRequested) return totalSuccess;
 
 					AppController.Main.UpdateProgressTitle((selectedProjects.Count > 1 ? "Packaging projects..." : $"Packaging project... ") + $"{i}/{selectedProjects.Count}");
 
@@ -698,6 +698,8 @@ namespace SCG.Core
 				var sourceFolders = new List<string>();
 				foreach (var directoryBaseName in exportDirectories)
 				{
+					if (cancellationTokenSource.IsCancellationRequested) return BackupResult.Skipped;
+
 					var subdirectoryName = directoryBaseName.Replace("ProjectName", modProject.ProjectName).Replace("ProjectFolder", modProject.ProjectFolder);
 					if (modProject.ModuleInfo != null) subdirectoryName = subdirectoryName.Replace("ModUUID", modProject.ModuleInfo.UUID).Replace("ModFolder", modProject.ModuleInfo.Folder);
 
@@ -734,8 +736,16 @@ namespace SCG.Core
 			}
 			catch (Exception ex)
 			{
-				Log.Here().Error("Error creating package: {0}", ex.ToString());
-				return BackupResult.Error;
+				if (!cancellationTokenSource.IsCancellationRequested)
+				{
+					Log.Here().Error("Error creating package: {0}", ex.ToString());
+					return BackupResult.Error;
+				}
+				else
+				{
+					Log.Here().Important("Cancelling package creation: {0}", ex.ToString());
+					return BackupResult.Skipped;
+				}
 			}
 		}
 		#endregion

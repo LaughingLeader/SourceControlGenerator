@@ -8,6 +8,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using LSLib.LS;
 using LSLib.LS.Enums;
+using SCG.Core;
 using SCG.Data.App;
 
 namespace SCG.Modules.DOS2DE.Utilities
@@ -34,10 +35,16 @@ namespace SCG.Modules.DOS2DE.Utilities
 
 				var package = new Package();
 
+				AppController.Main.UpdateProgressLog("Parsing project folders...");
+
 				foreach (var f in inputPaths)
 				{
+					if (token.Value.IsCancellationRequested) throw new TaskCanceledException("Cancelled package creation.");
+					AppController.Main.UpdateProgressLog($"Searching folder \"{f}\" for files to add to package.");
 					await AddFilesToPackage(package, f, dataRootPath, outputPath, ignoredFiles, token.Value);
 				}
+
+				AppController.Main.UpdateProgressLog($"Writing package to \"{outputPath}\"");
 
 				await WritePackage(package, outputPath, token.Value);
 
@@ -46,53 +53,50 @@ namespace SCG.Modules.DOS2DE.Utilities
 			}
 			catch(Exception ex)
 			{
-				Log.Here().Error($"Error creating package: {ex.ToString()}");
+				if (!token.Value.IsCancellationRequested)
+				{
+					Log.Here().Error($"Error creating package: {ex.ToString()}");
+				}
+				else
+				{
+					Log.Here().Important($"Cancelled creating package: {ex.ToString()}");
+				}
 				return false;
 			}
 		}
 
 		private static Task AddFilesToPackage(Package package, string path, string dataRootPath, string outputPath, List<string>ignoredFiles, CancellationToken token)
 		{
-			using (var writer = new PackageWriter(package, outputPath))
+			Task task = null;
+
+			task = Task.Run(() =>
 			{
-				var task = Task.Run(async () =>
+				if (!path.EndsWith(Path.DirectorySeparatorChar.ToString()))
 				{
-					var childTask = Task.Factory.StartNew(() =>
+					path += Path.DirectorySeparatorChar;
+				}
+
+				AppController.Main.UpdateProgressLog("Enumerating files...");
+
+				Dictionary<string, string> files = Alphaleonis.Win32.Filesystem.Directory.EnumerateFiles(path, "*.*", SearchOption.AllDirectories)
+				.ToDictionary(k => k.Replace(dataRootPath, String.Empty), v => v);
+
+				foreach (KeyValuePair<string, string> file in files)
+				{
+					if (token.IsCancellationRequested)
 					{
-						try
-						{
-							if (!path.EndsWith(Path.DirectorySeparatorChar.ToString()))
-							{
-								path += Path.DirectorySeparatorChar;
-							}
-
-							Dictionary<string, string> files = Alphaleonis.Win32.Filesystem.Directory.EnumerateFiles(path, "*.*", SearchOption.AllDirectories)
-							.ToDictionary(k => k.Replace(dataRootPath, String.Empty), v => v);
-
-							foreach (KeyValuePair<string, string> file in files)
-							{
-								if (!ignoredFiles.Contains(Path.GetFileName(file.Value)))
-								{
-									FilesystemFileInfo fileInfo = FilesystemFileInfo.CreateFromEntry(file.Value, file.Key);
-									package.Files.Add(fileInfo);
-								}
-							}
-						}
-						catch (Exception)
-						{
-
-						}
-					}, TaskCreationOptions.AttachedToParent);
-
-					var awaiter = childTask.GetAwaiter();
-					while (!awaiter.IsCompleted)
-					{
-						await Task.Delay(0, token);
+						throw new TaskCanceledException(task);
 					}
-				}, token);
 
-				return task;
-			}
+					if (!ignoredFiles.Contains(Path.GetFileName(file.Value)))
+					{
+						FilesystemFileInfo fileInfo = FilesystemFileInfo.CreateFromEntry(file.Value, file.Key);
+						package.Files.Add(fileInfo);
+					}
+				}
+			}, token);
+
+			return task;
 		}
 
 		private static Task WritePackage(Package package, string outputPath, CancellationToken token)
