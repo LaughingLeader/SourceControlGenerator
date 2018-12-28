@@ -514,7 +514,7 @@
 				<TextBlock Text="{Binding ProgressMessage, FallbackValue=Running tasks...}" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="20" Padding="10" />
 			</StackPanel>
 			<StackPanel Grid.Row="1" Orientation="Vertical" VerticalAlignment="Center" Margin="50" >
-				<ProgressBar Minimum="0" Maximum="{Binding ProgressValueMax, FallbackValue=100}" Value="{Binding ProgressValue, FallbackValue=75}" HorizontalAlignment="Stretch" MinHeight="40" IsIndeterminate="{Binding IsIndeterminate, FallbackValue=False}">
+				<ProgressBar x:Name="ProgressScreenBar" Minimum="0" Maximum="{Binding ProgressValueMax, FallbackValue=100}" Value="{Binding ProgressValue, FallbackValue=75}" HorizontalAlignment="Stretch" MinHeight="40" IsIndeterminate="{Binding IsIndeterminate, FallbackValue=False}">
 					<i:Interaction.Behaviors>
 						<cb:ProgressBarAnimationBehavior />
 					</i:Interaction.Behaviors>

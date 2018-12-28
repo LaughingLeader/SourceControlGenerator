@@ -39,6 +39,8 @@ namespace SCG.Core
 
 		private bool saveModuleSettings = false;
 
+		private CancellationTokenSource cancellationTokenSource;
+
 		#region Git Generation
 
 		private List<JunctionData> PrepareDirectories(ModProjectData project, List<string> DirectoryLayouts)
@@ -376,7 +378,6 @@ namespace SCG.Core
 		}
 
 		private string targetBackupOutputDirectory = "";
-		private CancellationTokenSource cancellationTokenSource;
 
 		private void CancelBackupProgress()
 		{
@@ -384,6 +385,7 @@ namespace SCG.Core
 			{
 				Log.Here().Warning("Cancelling backup progress...");
 				cancellationTokenSource.Cancel();
+				AppController.Main.CancelProgress();
 			}
 		}
 
@@ -415,7 +417,14 @@ namespace SCG.Core
 			}
 			else
 			{
-				MainWindow.FooterError($"Problem occured when backing up selected projects. Check the log. {totalSuccess}/{selectedProjects.Count} archives were created.");
+				if (!cancellationTokenSource.IsCancellationRequested)
+				{
+					MainWindow.FooterError($"Problem occured when backing up selected projects. Check the log. {totalSuccess}/{selectedProjects.Count} archives were created.");
+				}
+				else
+				{
+					MainWindow.FooterLog($"Cancelled backup process. {totalSuccess}/{selectedProjects.Count} archives were created.");
+				}
 			}
 		}
 
@@ -434,6 +443,8 @@ namespace SCG.Core
 				int i = 0;
 				foreach (var project in selectedProjects)
 				{
+					if (cancellationTokenSource.IsCancellationRequested) break;
+
 					AppController.Main.UpdateProgressTitle((selectedProjects.Count > 1 ? "Backing up projects..." : $"Backing up project... ") + $"{i}/{selectedProjects.Count}");
 
 					//Log.Here().Activity($"[Progress-Backup] Target percentage for this backup iteration is {targetPercentage} => {totalPercentageAmount}. Amount per tick is {amountPerTick}.");
@@ -441,6 +452,11 @@ namespace SCG.Core
 					AppController.Main.UpdateProgressMessage($"Creating archive for project {project.ProjectName}...");
 
 					var backupSuccess = await BackupProjectAsync(project, targetBackupOutputDirectory, Data.Settings.BackupMode);
+
+					if (cancellationTokenSource.IsCancellationRequested)
+					{
+						backupSuccess = BackupResult.Skipped;
+					}
 
 					if (backupSuccess == BackupResult.Success)
 					{
@@ -470,10 +486,13 @@ namespace SCG.Core
 				}
 			}
 
-			AppController.Main.UpdateProgressTitle((selectedProjects.Count > 1 ? "Backing up projects..." : $"Backing up project... ") + $"{selectedProjects.Count}/{selectedProjects.Count}");
-			AppController.Main.UpdateProgressMessage("Finishing up...");
-			AppController.Main.UpdateProgressLog("Backup quest complete. +5 XP");
-			AppController.Main.FinishProgress();
+			if (!cancellationTokenSource.IsCancellationRequested)
+			{
+				AppController.Main.UpdateProgressTitle((selectedProjects.Count > 1 ? "Backing up projects..." : $"Backing up project... ") + $"{selectedProjects.Count}/{selectedProjects.Count}");
+				AppController.Main.UpdateProgressMessage("Finishing up...");
+				AppController.Main.UpdateProgressLog("Backup quest complete. +5 XP");
+				AppController.Main.FinishProgress();
+			}
 
 			if (totalSuccess > 0) DOS2DECommands.SaveManagedProjects(this.Data);
 
@@ -549,18 +568,17 @@ namespace SCG.Core
 
 		private void CancelPackageProgress()
 		{
-			if (packageCancellationTokenSource != null)
+			if (cancellationTokenSource != null)
 			{
-				Log.Here().Warning("Canceling package progress...");
-				packageCancellationTokenSource.Cancel();
+				Log.Here().Warning("Cancelling package creation...");
+				cancellationTokenSource.Cancel();
+				AppController.Main.CancelProgress();
 			}
 		}
 
-		private CancellationTokenSource packageCancellationTokenSource;
-
 		public void PackageSelectedProjects()
 		{
-			packageCancellationTokenSource = new CancellationTokenSource();
+			cancellationTokenSource = new CancellationTokenSource();
 			AppController.Main.StartProgress($"Packaging projects...", StartPackageSelectedProjectsAsync, "", 0, true, CancelPackageProgress);
 		}
 
@@ -579,7 +597,14 @@ namespace SCG.Core
 			}
 			else
 			{
-				MainWindow.FooterError($"Problem occured when packaging selected projects. Check the log. {totalSuccess}/{selectedProjects.Count} packages were created.");
+				if (!cancellationTokenSource.IsCancellationRequested)
+				{
+					MainWindow.FooterError($"Problem occured when packaging selected projects. Check the log. {totalSuccess}/{selectedProjects.Count} packages were created.");
+				}
+				else
+				{
+					MainWindow.FooterLog($"Packaging was cancelled. {totalSuccess}/{selectedProjects.Count} packages were created.");
+				}
 			}
 		}
 
@@ -601,6 +626,8 @@ namespace SCG.Core
 				int i = 0;
 				foreach (var project in selectedProjects)
 				{
+					if (cancellationTokenSource.IsCancellationRequested) break;
+
 					AppController.Main.UpdateProgressTitle((selectedProjects.Count > 1 ? "Packaging projects..." : $"Packaging project... ") + $"{i}/{selectedProjects.Count}");
 
 					//Log.Here().Activity($"[Progress-Backup] Target percentage for this backup iteration is {targetPercentage} => {totalPercentageAmount}. Amount per tick is {amountPerTick}.");
@@ -608,6 +635,11 @@ namespace SCG.Core
 					AppController.Main.UpdateProgressMessage($"Creating package for project {project.ProjectName}...");
 
 					var backupSuccess = await PackageProjectAsync(project, targetFolder, exportDirectories);
+
+					if (cancellationTokenSource.IsCancellationRequested)
+					{
+						backupSuccess = BackupResult.Skipped;
+					}
 
 					if (backupSuccess == BackupResult.Success)
 					{
@@ -637,12 +669,15 @@ namespace SCG.Core
 				}
 			}
 
-			AppController.Main.UpdateProgressTitle((selectedProjects.Count > 1 ? "Packaging projects..." : $"Packaging project... ") + $"{selectedProjects.Count}/{selectedProjects.Count}");
-			AppController.Main.UpdateProgressMessage("Finishing up...");
-			AppController.Main.UpdateProgressLog("Packaging complete. +5 XP");
-			AppController.Main.FinishProgress();
+			if(!cancellationTokenSource.IsCancellationRequested)
+			{
+				AppController.Main.UpdateProgressTitle((selectedProjects.Count > 1 ? "Packaging projects..." : $"Packaging project... ") + $"{selectedProjects.Count}/{selectedProjects.Count}");
+				AppController.Main.UpdateProgressMessage("Finishing up...");
+				AppController.Main.UpdateProgressLog("Packaging complete. +5 XP");
+				AppController.Main.FinishProgress();
+			}
 
-			if (totalSuccess > 0) DOS2DECommands.SaveManagedProjects(this.Data);
+			//if (totalSuccess > 0) DOS2DECommands.SaveManagedProjects(this.Data);
 
 			return totalSuccess;
 		}
@@ -675,7 +710,7 @@ namespace SCG.Core
 					}
 				}
 
-				var result = await DOS2DEPackageCreator.CreatePackage(Data.Settings.DOS2DEDataDirectory.Replace("/", "\\"), sourceFolders, outputPackage, IgnoredExportFiles);
+				var result = await DOS2DEPackageCreator.CreatePackage(Data.Settings.DOS2DEDataDirectory.Replace("/", "\\"), sourceFolders, outputPackage, IgnoredExportFiles, cancellationTokenSource.Token);
 				if (result)
 				{
 					return BackupResult.Success;

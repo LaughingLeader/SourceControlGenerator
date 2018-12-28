@@ -373,6 +373,14 @@ namespace SCG.Core
 			}), DispatcherPriority.Background);
 		}
 
+		public void CancelProgress()
+		{
+			HideProgressBar();
+			Data.ProgressValue = 0;
+			Data.ProgressActive = false;
+			//mainWindow.ProgressScreenBar.BeginAnimation(ProgressBar.ValueProperty, null);
+		}
+
 		private void OnProgressComplete()
 		{
 			HideProgressBar();

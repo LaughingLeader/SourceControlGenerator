@@ -15,7 +15,7 @@ namespace SCG.Controls.Behavior
 	/// </summary>
 	public class ProgressBarAnimationBehavior : Behavior<ProgressBar>
 	{
-		bool _IsAnimating = false;
+		private bool _IsAnimating = false;
 
 		protected override void OnAttached()
 		{
@@ -26,13 +26,15 @@ namespace SCG.Controls.Behavior
 
 		private void ProgressBar_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
 		{
-			if (_IsAnimating)
+			//Don't animate backwards
+			if (_IsAnimating || e.NewValue < e.OldValue)
+			{
 				return;
+			}
 
 			_IsAnimating = true;
 
-			DoubleAnimation doubleAnimation = new DoubleAnimation
-				(e.OldValue, e.NewValue, new Duration(TimeSpan.FromSeconds(0.3)), FillBehavior.Stop);
+			DoubleAnimation doubleAnimation = new DoubleAnimation(e.OldValue, e.NewValue, new Duration(TimeSpan.FromSeconds(0.3)), FillBehavior.Stop);
 			doubleAnimation.Completed += Db_Completed;
 
 			((ProgressBar)sender).BeginAnimation(ProgressBar.ValueProperty, doubleAnimation);
