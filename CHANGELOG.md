@@ -1,5 +1,8 @@
 Source Control Generator Changelog
 =======
+# 1.3.0.1
+* Minor update to get the cancel button working properly for backup and packaging progress screens.
+
 # 1.3.0.0
 * Divinity: Original Sin 2 - Definitive Edition Module
 	* Added a Package Publisher (via [lslib](https://github.com/Norbyte/lslib)) - Create paks from selected projects with the click of a button. Simply select some projects and click "Create Packages...". The paks will be created in your Definitive Edition Local Mods folder.
