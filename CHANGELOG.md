@@ -2,7 +2,7 @@ Source Control Generator Changelog
 =======
 # 1.3.0.0
 * Divinity: Original Sin 2 - Definitive Edition Module
-	* Added Pak Publisher (via [lslib](https://github.com/Norbyte/lslib)) - Create paks from selected projects with the click of a button. Simply select some projects and click "Create Packages...". The paks will be created in your Definitive Edition Local Mods folder.
+	* Added a Package Publisher (via [lslib](https://github.com/Norbyte/lslib)) - Create paks from selected projects with the click of a button. Simply select some projects and click "Create Packages...". The paks will be created in your Definitive Edition Local Mods folder.
 	* New shortcut for opening the Local Mods folder (File -> Open Local Mods Folder...)
 	* Small fix to prevent thumbnails from being locked.
 # 1.2.0.2
