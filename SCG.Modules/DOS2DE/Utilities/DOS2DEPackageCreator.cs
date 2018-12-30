@@ -46,7 +46,10 @@ namespace SCG.Modules.DOS2DE.Utilities
 
 				AppController.Main.UpdateProgressLog($"Writing package to \"{outputPath}\"");
 
-				await WritePackage(package, outputPath, token.Value);
+				using (var writer = new PackageWriter(package, outputPath))
+				{
+					await WritePackage(writer, package, outputPath, token.Value);
+				}
 
 				Log.Here().Activity($"Package successfully created at {outputPath}");
 				return true;
@@ -99,39 +102,36 @@ namespace SCG.Modules.DOS2DE.Utilities
 			return task;
 		}
 
-		private static Task WritePackage(Package package, string outputPath, CancellationToken token)
+		private static Task WritePackage(PackageWriter writer, Package package, string outputPath, CancellationToken token)
 		{
-			using (var writer = new PackageWriter(package, outputPath))
+			var task = Task.Run(async () =>
 			{
-				var task = Task.Run(async () =>
+				// execute actual operation in child task
+				var childTask = Task.Factory.StartNew(() =>
 				{
-					// execute actual operation in child task
-					var childTask = Task.Factory.StartNew(() =>
+					try
 					{
-						try
-						{
-							//writer.WriteProgress += WriteProgressUpdate;
-							writer.Version = PackageVersion.V13;
-							writer.Compression = CompressionMethod.LZ4;
-							writer.CompressionLevel = CompressionLevel.MaxCompression;
-							writer.Write();
-						}
-						catch (Exception)
-						{
-							// ignored because an exception on a cancellation request 
-							// cannot be avoided if the stream gets disposed afterwards 
-						}
-					}, TaskCreationOptions.AttachedToParent);
-
-					var awaiter = childTask.GetAwaiter();
-					while (!awaiter.IsCompleted)
-					{
-						await Task.Delay(0, token);
+						//writer.WriteProgress += WriteProgressUpdate;
+						writer.Version = PackageVersion.V13;
+						writer.Compression = CompressionMethod.LZ4;
+						writer.CompressionLevel = CompressionLevel.MaxCompression;
+						writer.Write();
 					}
-				}, token);
+					catch (Exception)
+					{
+						// ignored because an exception on a cancellation request 
+						// cannot be avoided if the stream gets disposed afterwards 
+					}
+				}, TaskCreationOptions.AttachedToParent);
 
-				return task;
-			}
+				var awaiter = childTask.GetAwaiter();
+				while (!awaiter.IsCompleted)
+				{
+					await Task.Delay(0, token);
+				}
+			}, token);
+
+			return task;
 		}
 	}
 }
