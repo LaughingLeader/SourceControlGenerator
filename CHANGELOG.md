@@ -2,6 +2,10 @@ Source Control Generator Changelog
 =======
 # 1.3.0.1
 * Divinity: Original Sin 2 - Definitive Edition Module
+	* Projects that are imported from classic should now have the proper naming convention when exported with the pak generator (ModName_OldUUID_NewUUID). This is to stay consistent with the published Steam version.
+
+# 1.3.0.1
+* Divinity: Original Sin 2 - Definitive Edition Module
 	* Minor update to get the cancel button working properly for backup and packaging progress screens.
 
 # 1.3.0.0
