@@ -692,7 +692,7 @@ namespace SCG.Core
 			}
 
 			//string inputDirectory = Path.Combine(Path.GetFullPath(Data.Settings.GitRootDirectory), modProject.ProjectName);
-			string outputPackage = Path.ChangeExtension(Path.Combine(outputDirectory, modProject.FolderName), "pak");
+			string outputPackage = Path.ChangeExtension(Path.Combine(outputDirectory, modProject.ProjectName + "_" + modProject.ModuleInfo.UUID), "pak");
 			try
 			{
 				var sourceFolders = new List<string>();
