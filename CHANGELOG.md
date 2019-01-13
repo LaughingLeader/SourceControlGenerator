@@ -1,5 +1,8 @@
 Source Control Generator Changelog
 =======
+# 1.3.1.0
+* Added long path support to all modules and the main program.
+
 # 1.3.0.3
 * Divinity: Original Sin 2 - Definitive Edition Module
 	* Projects that are imported from classic should now have the proper naming convention when exported with the pak generator (ModName_OldUUID_NewUUID). This is to stay consistent with the published Steam version.
