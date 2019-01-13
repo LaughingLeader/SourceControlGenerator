@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
+using Alphaleonis.Win32.Filesystem;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -32,7 +32,14 @@ namespace SCG
 			var contents = "";
 			try
 			{
-				contents = File.ReadAllText(filePath);
+				if (File.Exists(filePath))
+				{
+					contents = File.ReadAllText(filePath);
+				}
+				else
+				{
+					Log.Here().Warning("File \"{0}\" does not exist.", filePath);
+				}
 			}
 			catch (Exception e)
 			{
@@ -165,6 +172,10 @@ namespace SCG
 
 			if (path.Length < 3) return false;
 
+			string validLongPathPrefix = @"\\?\";
+
+			path = path.Replace(validLongPathPrefix, "");
+
 			Regex driveCheck = new Regex(@"^[a-zA-Z]:\\$");
 
 			if (!driveCheck.IsMatch(path.Substring(0, 3)))
@@ -173,7 +184,8 @@ namespace SCG
 			}
 
 			var x1 = (path.Substring(3, path.Length - 3));
-			string strTheseAreInvalidFileNameChars = new string(Path.GetInvalidPathChars());
+			string strTheseAreInvalidFileNameChars = new string(Path.GetInvalidPathChars());;
+
 			strTheseAreInvalidFileNameChars += @":?*";
 			Regex containsABadCharacter = new Regex("[" + Regex.Escape(strTheseAreInvalidFileNameChars) + "]");
 
