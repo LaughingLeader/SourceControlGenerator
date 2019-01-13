@@ -1,5 +1,5 @@
 ﻿using System;
-using System.IO;
+using Alphaleonis.Win32.Filesystem;
 using System.Runtime.InteropServices;
 using System.Text;
 using Microsoft.Win32.SafeHandles;
@@ -195,17 +195,17 @@ namespace SCG.Util
 		/// <param name="targetDir">The target directory to create</param>
 		/// <param name="sourceDir">The source directory to alias</param>
 		/// <param name="overwrite">If true overwrites an existing reparse point or empty directory</param>
-		/// <exception cref="IOException">Thrown when the junction point could not be created or when
+		/// <exception cref="System.IO.IOException">Thrown when the junction point could not be created or when
 		/// an existing directory was found and <paramref name="overwrite" /> if false</exception>
 		public static void Create(string sourceDir, string targetDir, bool overwrite)
 		{
 			sourceDir = Path.GetFullPath(sourceDir);
 
 			if (!Directory.Exists(sourceDir))
-				throw new IOException($"Source path does not exist or is not a directory.");
+				throw new System.IO.IOException($"Source path does not exist or is not a directory.");
 
 			if (Directory.Exists(targetDir))
-				throw new IOException($"Directory '{targetDir}' already exists.");
+				throw new System.IO.IOException($"Directory '{targetDir}' already exists.");
 
 			Directory.CreateDirectory(targetDir);
 
@@ -258,7 +258,7 @@ namespace SCG.Util
 			if (!Directory.Exists(junctionPoint))
 			{
 				if (File.Exists(junctionPoint))
-					throw new IOException("Path is not a junction point.");
+					throw new System.IO.IOException("Path is not a junction point.");
 
 				return;
 			}
@@ -293,9 +293,9 @@ namespace SCG.Util
 				{
 					Directory.Delete(junctionPoint);
 				}
-				catch (IOException ex)
+				catch (System.IO.IOException ex)
 				{
-					throw new IOException("Unable to delete junction point.", ex);
+					throw new System.IO.IOException("Unable to delete junction point.", ex);
 				}
 			}
 		}
@@ -305,7 +305,7 @@ namespace SCG.Util
 		/// </summary>
 		/// <param name="path">The junction point path</param>
 		/// <returns>True if the specified path represents a junction point</returns>
-		/// <exception cref="IOException">Thrown if the specified path is invalid
+		/// <exception cref="System.IO.IOException">Thrown if the specified path is invalid
 		/// or some other error occurs</exception>
 		public static bool Exists(string path)
 		{
@@ -327,7 +327,7 @@ namespace SCG.Util
 		/// </remarks>
 		/// <param name="junctionPoint">The junction point path</param>
 		/// <returns>The target of the junction point</returns>
-		/// <exception cref="IOException">Thrown when the specified path does not
+		/// <exception cref="System.IO.IOException">Thrown when the specified path does not
 		/// exist, is invalid, is not a junction point, or some other error occurs</exception>
 		public static string GetTarget(string junctionPoint)
 		{
@@ -335,7 +335,7 @@ namespace SCG.Util
 			{
 				string target = InternalGetTarget(handle);
 				if (target == null)
-					throw new IOException("Path is not a junction point.");
+					throw new System.IO.IOException("Path is not a junction point.");
 
 				return target;
 			}
@@ -396,7 +396,7 @@ namespace SCG.Util
 
 		private static void ThrowLastWin32Error(string message)
 		{
-			throw new IOException(message, Marshal.GetExceptionForHR(Marshal.GetHRForLastWin32Error()));
+			throw new System.IO.IOException(message, Marshal.GetExceptionForHR(Marshal.GetHRForLastWin32Error()));
 		}
 	}
 }

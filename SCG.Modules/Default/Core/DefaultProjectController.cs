@@ -12,7 +12,7 @@ using System.Collections.ObjectModel;
 using SCG.Data.App;
 using SCG.Core;
 using SCG.Data;
-using System.IO;
+using Alphaleonis.Win32.Filesystem;
 using SCG.FileGen;
 using System.Collections.Concurrent;
 using System.Globalization;

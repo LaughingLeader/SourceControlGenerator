@@ -10,7 +10,7 @@ using SCG.Modules.DOS2DE.Core;
 using SCG.SCGEnum;
 using SCG.Interfaces;
 using Newtonsoft.Json;
-using System.IO;
+using Alphaleonis.Win32.Filesystem;
 
 namespace SCG.Modules.DOS2DE.Data.App
 {

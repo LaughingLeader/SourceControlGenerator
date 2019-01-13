@@ -1,5 +1,5 @@
 ﻿using System.Runtime.CompilerServices;
-using System.IO;
+using Alphaleonis.Win32.Filesystem;
 using System.Diagnostics;
 using SCG.Util;
 using System;

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.IO;
+using Alphaleonis.Win32.Filesystem;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -81,8 +81,7 @@ namespace SCG.Modules.DOS2DE.Utilities
 
 				AppController.Main.UpdateProgressLog("Enumerating files...");
 
-				Dictionary<string, string> files = Alphaleonis.Win32.Filesystem.Directory.EnumerateFiles(path, "*.*", SearchOption.AllDirectories)
-				.ToDictionary(k => k.Replace(dataRootPath, String.Empty), v => v);
+				Dictionary<string, string> files = Directory.EnumerateFiles(path, "*.*", System.IO.SearchOption.AllDirectories).ToDictionary(k => k.Replace(dataRootPath, String.Empty), v => v);
 
 				foreach (KeyValuePair<string, string> file in files)
 				{

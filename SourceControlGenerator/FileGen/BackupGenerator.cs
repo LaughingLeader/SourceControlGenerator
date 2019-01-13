@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
+using Alphaleonis.Win32.Filesystem;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -46,7 +46,7 @@ namespace SCG.FileGen
 
 					var tasks = foldersToParse.Select(f => Task.Run(() =>
 					{
-						foreach (var file in Directory.EnumerateFiles(f.SourcePath, "*", SearchOption.AllDirectories))
+						foreach (var file in Directory.EnumerateFiles(f.SourcePath, "*", System.IO.SearchOption.AllDirectories))
 						{
 							if (!String.IsNullOrEmpty(file) && File.Exists(file)) targetFiles.Add(file);
 						}
@@ -114,11 +114,11 @@ namespace SCG.FileGen
 					foreach(var f in foldersToParse)
 					{
 						if (updateProgress) AppController.Main.UpdateProgressLog($"Searching source folder \"{Path.GetDirectoryName(f.SourcePath)}\" for files to save.");
-						await CrawlDirectoryAsync(targetFiles, f.SourcePath, "*", SearchOption.AllDirectories, token.Value);
+						await CrawlDirectoryAsync(targetFiles, f.SourcePath, "*", System.IO.SearchOption.AllDirectories, token.Value);
 					}
 
 					if (updateProgress) AppController.Main.UpdateProgressLog($"Searching repository for files to save.");
-					await CrawlDirectoryAsync(targetFiles, repoPath, "*", SearchOption.TopDirectoryOnly, token.Value);
+					await CrawlDirectoryAsync(targetFiles, repoPath, "*", System.IO.SearchOption.TopDirectoryOnly, token.Value);
 
 					if (updateProgress) AppController.Main.UpdateProgress(updateValue);
 
@@ -181,7 +181,7 @@ namespace SCG.FileGen
 
 				var task = Task.Factory.StartNew(() =>
 				{
-					foreach (var file in Directory.EnumerateFiles(directoryPath, "*", SearchOption.AllDirectories))
+					foreach (var file in Directory.EnumerateFiles(directoryPath, "*", System.IO.SearchOption.AllDirectories))
 					{
 						if (!String.IsNullOrEmpty(file) && File.Exists(file)) targetFiles.Add(file);
 					}
@@ -232,7 +232,7 @@ namespace SCG.FileGen
 			return BackupResult.Error;
 		}
 
-		private static Task CrawlDirectoryAsync(ConcurrentBag<string> outputBag, string baseDirectory, string searchPattern, SearchOption searchOptions, CancellationToken token)
+		private static Task CrawlDirectoryAsync(ConcurrentBag<string> outputBag, string baseDirectory, string searchPattern, System.IO.SearchOption searchOptions, CancellationToken token)
 		{
 			if (token.IsCancellationRequested)
 			{

@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
+using Alphaleonis.Win32.Filesystem;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -445,7 +445,7 @@ namespace SCG.Modules.DOS2DE.Data.View
 		{
 			Log.Here().Activity($"Checking {projectDirectory} for thumnails.");
 
-			var thumbnail = Directory.GetFiles(projectDirectory, "thumbnail.*", SearchOption.TopDirectoryOnly);
+			var thumbnail = Directory.GetFiles(projectDirectory, "thumbnail.*", System.IO.SearchOption.TopDirectoryOnly);
 			if (thumbnail.Length > 0)
 			{
 				var thumbpath = thumbnail.FirstOrDefault();

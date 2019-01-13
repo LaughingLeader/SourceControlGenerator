@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
+using Alphaleonis.Win32.Filesystem;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -43,7 +43,7 @@ namespace SCG.Util.HelperUtil
 			byte[] buf = new byte[2];
 			try
 			{
-				using (StreamReader sr = new StreamReader(path))
+				using (System.IO.StreamReader sr = new System.IO.StreamReader(path))
 				{
 					int i = sr.BaseStream.Read(buf, 0, buf.Length);
 					if (i != buf.Length)

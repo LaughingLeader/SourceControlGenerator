@@ -16,7 +16,7 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Collections.ObjectModel;
 using System.Globalization;
-using System.IO;
+using Alphaleonis.Win32.Filesystem;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -675,7 +675,7 @@ namespace SCG.Core
 
 			if (layoutFileContents != "")
 			{
-				using (var reader = new StringReader(layoutFileContents))
+				using (var reader = new System.IO.StringReader(layoutFileContents))
 				{
 					for (string line = reader.ReadLine(); line != null; line = reader.ReadLine())
 					{

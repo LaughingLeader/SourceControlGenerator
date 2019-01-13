@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.IO;
+using Alphaleonis.Win32.Filesystem;
 using SCG.Data;
 using Newtonsoft.Json;
 using System.Xml.Linq;
@@ -91,7 +91,7 @@ namespace SCG.Core
 
 			DirectoryInfo modulesFolder = new DirectoryInfo("Modules");
 			modulesFolder.Create();
-			var modules = modulesFolder.GetFiles("*.dll", SearchOption.AllDirectories);
+			var modules = modulesFolder.GetFiles("*.dll", System.IO.SearchOption.AllDirectories);
 
 			if (modules.Length > 0)
 			{

@@ -23,7 +23,7 @@ using System.ComponentModel;
 using SCG.Modules.DOS2DE.Windows;
 using SCG.Modules.DOS2DE.Data.View;
 using SCG.Commands;
-using System.IO;
+using Alphaleonis.Win32.Filesystem;
 using System.Windows.Threading;
 using SCG.Util;
 

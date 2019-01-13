@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
+using Alphaleonis.Win32.Filesystem;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -49,7 +49,7 @@ namespace SCG.Util
 			{
 				if(commands != null && commands.Length > 0)
 				{
-					StreamWriter stream = process.StandardInput;
+					System.IO.StreamWriter stream = process.StandardInput;
 
 					for(var i = 0; i < commands.Length; i++)
 					{
@@ -110,7 +110,7 @@ namespace SCG.Util
 			{
 				if (commands != null && commands.Length > 0)
 				{
-					StreamWriter stream = process.StandardInput;
+					System.IO.StreamWriter stream = process.StandardInput;
 
 					for (var i = 0; i < commands.Length; i++)
 					{
