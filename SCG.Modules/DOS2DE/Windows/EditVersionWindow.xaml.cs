@@ -13,6 +13,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using System.Xml;
 using System.Xml.Linq;
 
 namespace SCG.Modules.DOS2DE.Windows
@@ -61,7 +62,10 @@ namespace SCG.Modules.DOS2DE.Windows
 							versionNode.Attribute("value").Value = versionIntString;
 							Log.Here().Important($"Updated project {SelectedProject.ProjectName} version to {versionIntString} ({SelectedProject.VersionData.ToString()})");
 
-							metaDoc.Save(SelectedProject.ModMetaFilePath, SaveOptions.DisableFormatting);
+							using (var writer = new XmlTextWriter(SelectedProject.ModMetaFilePath, new UTF8Encoding(false)))
+							{
+								metaDoc.Save(writer);
+							}
 
 							Log.Here().Important($"Saved meta.lsx at \"{SelectedProject.ModMetaFilePath}\"");
 						}

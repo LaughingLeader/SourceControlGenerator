@@ -14,6 +14,10 @@
 		mc:Ignorable="d"
 		Title="Edit Project Version" Height="150" Width="600"
 		d:DataContext="{x:Static local:TestProjectData.Data}"
+					   
+		WindowStartupLocation="CenterOwner"
+		SizeToContent="Height"
+		ResizeMode="NoResize"
 		>
 	<scgwin:HideWindowBase.Resources>
 		<ResourceDictionary>
@@ -28,7 +32,7 @@
 			<RowDefinition Height="Auto"/>
 			<RowDefinition Height="Auto"/>
 		</Grid.RowDefinitions>
-		<TextBlock Text="{Binding DisplayName, StringFormat='Modify the version number of {0}', FallbackValue='Modify the version number of Project'}" Margin="4" TextAlignment="Center" FontSize="16" />
+		<TextBlock Text="{Binding DisplayName, StringFormat='\{0\} Version Number', FallbackValue='Project Version Number'}" Margin="4" TextAlignment="Center" FontSize="16" />
 		<StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center" DataContext="{Binding VersionData}" Grid.Row="1" >
 			<StackPanel.Resources>
 				<Style TargetType="{x:Type c:NumericUpDown}" BasedOn="{StaticResource {x:Type c:NumericUpDown}}">

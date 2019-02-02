@@ -125,6 +125,7 @@ namespace SCG.Modules.DOS2DE.Controls
 		public static void EditProjectVersion(ModProjectData projectData)
 		{
 			_instance.EditVersionWindow.LoadData(projectData);
+			_instance.EditVersionWindow.Owner = _instance.MainWindow;
 			_instance.EditVersionWindow.Show();
 		}
 
