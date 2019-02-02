@@ -90,6 +90,7 @@
     <Reference Include="PresentationFramework" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Data\View\ProjectVersionData.cs" />
     <Compile Include="Module.cs" />
     <Compile Include="Controls\ProjectViewControl.xaml.cs">
       <DependentUpon>ProjectViewControl.xaml</DependentUpon>
@@ -118,6 +119,9 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
     <Compile Include="Utilities\DOS2DEPackageCreator.cs" />
+    <Compile Include="Windows\EditVersionWindow.xaml.cs">
+      <DependentUpon>EditVersionWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Windows\SetupWindow.xaml.cs">
       <DependentUpon>SetupWindow.xaml</DependentUpon>
     </Compile>
@@ -160,6 +164,10 @@
   </ItemGroup>
   <ItemGroup>
     <Page Include="Controls\ProjectViewControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Windows\EditVersionWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

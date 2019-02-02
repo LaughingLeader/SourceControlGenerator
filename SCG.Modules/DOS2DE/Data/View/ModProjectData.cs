@@ -16,6 +16,7 @@ using SCG.Modules.DOS2DE.Core;
 using SCG.Interfaces;
 using SCG.Data;
 using SCG.Data.App;
+using SCG.Modules.DOS2DE.Controls;
 
 namespace SCG.Modules.DOS2DE.Data.View
 {
@@ -158,18 +159,20 @@ namespace SCG.Modules.DOS2DE.Data.View
 			}
 		}
 
+		private ProjectVersionData projectVersionData;
 
-		private string version;
-
-		public string Version
+		public ProjectVersionData VersionData
 		{
-			get { return version; }
+			get { return projectVersionData; }
 			set
 			{
-				version = value;
+				projectVersionData = value;
+				RaisePropertyChanged("VersionData");
 				RaisePropertyChanged("Version");
 			}
 		}
+
+		public string Version => VersionData != null ? VersionData.Version : "0.0.0.0";
 
 		private DateTime? lastBackup = null;
 
@@ -288,6 +291,8 @@ namespace SCG.Modules.DOS2DE.Data.View
 
 		public ICommand OpenProjectFolder { get; private set; }
 
+		public ICommand EditProjectVersion { get; private set; }
+
 		private void openBackupFolder()
 		{
 			Log.Here().Activity("Opening backup folder!");
@@ -327,6 +332,8 @@ namespace SCG.Modules.DOS2DE.Data.View
 			OpenPublicFolder = new ActionCommand(() => { DOS2DECommands.OpenPublicFolder(this); });
 			OpenEditorFolder = new ActionCommand(() => { DOS2DECommands.OpenEditorFolder(this); });
 			OpenProjectFolder = new ActionCommand(() => { DOS2DECommands.OpenProjectFolder(this); });
+
+			EditProjectVersion = new ActionCommand(() => { ProjectViewControl.EditProjectVersion(this); });
 
 			//RaisePropertyChanged("OpenBackupFolder");
 			//RaisePropertyChanged("OpenModsFolder");
@@ -374,14 +381,15 @@ namespace SCG.Modules.DOS2DE.Data.View
 
 		public void SetVersion()
 		{
-			//(major version << 28) | (minor version << 24) | (revision << 16) | (build << 0)
+			/*
 			var major = (ModuleInfo.Version >> 28);
 			var minor = (ModuleInfo.Version >> 24) & 0x0F;
 			var revision = (ModuleInfo.Version >> 16) & 0xFF;
 			var build = (ModuleInfo.Version & 0xFFFF);
-			//var version = ((ModuleInfo.Version << 28) | (ModuleInfo.Version << 24) | (ModuleInfo.Version << 16) | (ModuleInfo.Version << 0)).ToString("X");
-			//Log.Here().Important("[{5}] Bitshift test: {6} = {4} = {0}.{1}.{2}.{3}", major, minor, revision, build, version, ModuleInfo.Name, ModuleInfo.Version);
 			Version = String.Format("{0}.{1}.{2}.{3}", major, minor, revision, build);
+			*/
+			if(VersionData == null) VersionData = new ProjectVersionData();
+			VersionData.ParseInt(ModuleInfo.Version);
 		}
 
 		public void ReloadData()

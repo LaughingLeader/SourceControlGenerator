@@ -399,7 +399,7 @@ namespace SCG.Core
 
 		public async void StartBackupSelectedProjectsAsync()
 		{
-			var sortedProjects = Data.ManagedProjects.Where(p => p.Selected).OrderBy(p => p.DisplayName);
+			var sortedProjects = Data.ManagedProjects.Where(p => p.Selected).OrderByDescending(p => p.ProjectName);
 
 			ConcurrentBag<ModProjectData> selectedProjects = new ConcurrentBag<ModProjectData>(sortedProjects);
 
@@ -584,7 +584,8 @@ namespace SCG.Core
 
 		public async void StartPackageSelectedProjectsAsync()
 		{
-			var sortedProjects = Data.ManagedProjects.Where(p => p.Selected).OrderBy(p => p.DisplayName);
+			//Order by descending order, since it gets reversed in the bag
+			var sortedProjects = Data.ManagedProjects.Where(p => p.Selected).OrderByDescending(p => p.ProjectName);
 
 			ConcurrentBag<ModProjectData> selectedProjects = new ConcurrentBag<ModProjectData>(sortedProjects);
 

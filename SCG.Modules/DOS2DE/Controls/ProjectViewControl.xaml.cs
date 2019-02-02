@@ -26,6 +26,7 @@ using SCG.Commands;
 using Alphaleonis.Win32.Filesystem;
 using System.Windows.Threading;
 using SCG.Util;
+using SCG.Collections;
 
 namespace SCG.Modules.DOS2DE.Controls
 {
@@ -36,15 +37,76 @@ namespace SCG.Modules.DOS2DE.Controls
 	{
 		public DOS2DEProjectController Controller { get; private set; }
 		public MainWindow MainWindow { get; private set; }
+		public EditVersionWindow EditVersionWindow { get; private set; }
 
 		//private bool gridSplitterMoving = false;
+
+		public static DOS2DEModuleData TestData { get; private set; } = createTestData();
+
+		private static DOS2DEModuleData createTestData()
+		{
+			DOS2DEModuleData testData = new DOS2DEModuleData();
+
+			testData.ModProjects = createTestProjects();
+			
+			foreach(var project in testData.ModProjects)
+			{
+				testData.ManagedProjects.Add(project);
+			}
+
+			return testData;
+		}
+
+		private static ObservableImmutableList<ModProjectData> createTestProjects()
+		{
+			ObservableImmutableList<ModProjectData> projects = new ObservableImmutableList<ModProjectData>();
+
+			var dataDirectory = @"G:\Divinity Original Sin 2\DefEd\Data";
+
+			if (Directory.Exists(dataDirectory))
+			{
+				string projectsPath = Path.Combine(dataDirectory, "Projects");
+				string modsPath = Path.Combine(dataDirectory, "Mods");
+
+				if (Directory.Exists(modsPath))
+				{
+					DirectoryInfo modsRoot = new DirectoryInfo(modsPath);
+					var modFolders = modsRoot.GetDirectories().Where(s => !DOS2DECommands.IgnoredFolders.Contains(s.Name));
+
+					if (modFolders != null)
+					{
+						foreach (DirectoryInfo modFolderInfo in modFolders)
+						{
+							var modFolderName = modFolderInfo.Name;
+							Log.Here().Activity("Checking project mod folder: {0}", modFolderName);
+
+							var metaFile = modFolderInfo.GetFiles("meta.lsx").FirstOrDefault();
+							if (metaFile != null)
+							{
+								ModProjectData modProjectData = new ModProjectData(metaFile, projectsPath);
+								projects.DoOperation(data => data.Add(modProjectData));
+							}
+						}
+					}
+				}
+			}
+
+			return projects;
+		}
+
+		private static ProjectViewControl _instance { get; set; }
 
 		public ProjectViewControl(MainWindow mainAppWindow, DOS2DEProjectController controller)
 		{
 			InitializeComponent();
 
+			_instance = this;
+
 			Controller = controller;
 			MainWindow = mainAppWindow;
+
+			EditVersionWindow = new EditVersionWindow();
+			EditVersionWindow.Hide();
 
 			DataContext = Controller.Data;
 
@@ -58,6 +120,12 @@ namespace SCG.Modules.DOS2DE.Controls
 				gridSplitter.DragCompleted += (s, e) => { gridSplitterMoving = false; };
 			}
 			*/
+		}
+
+		public static void EditProjectVersion(ModProjectData projectData)
+		{
+			_instance.EditVersionWindow.LoadData(projectData);
+			_instance.EditVersionWindow.Show();
 		}
 
 		private void ProjectViewControlMain_Loaded(object sender, RoutedEventArgs e)

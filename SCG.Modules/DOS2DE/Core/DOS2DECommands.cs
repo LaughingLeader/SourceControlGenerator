@@ -168,7 +168,7 @@ namespace SCG.Modules.DOS2DE.Core
 			Data.NewProjectsAvailable = Data.NewProjects != null && Data.NewProjects.Count > 0;
 		}
 
-		private static string[] ignoredFolders = new string[7] { "Origins", "DivinityOrigins_1301db3d-1f54-4e98-9be5-5094030916e4", "Shared", "Arena", "DOS2_Arena", "Game_Master", "GameMaster" };
+		public static string[] IgnoredFolders { get; private set; } = new string[7] { "Origins", "DivinityOrigins_1301db3d-1f54-4e98-9be5-5094030916e4", "Shared", "Arena", "DOS2_Arena", "Game_Master", "GameMaster" };
 
 		public static void LoadModProjects(DOS2DEModuleData Data, bool ClearPrevious = true)
 		{
@@ -198,7 +198,7 @@ namespace SCG.Modules.DOS2DE.Core
 						Log.Here().Activity("Loading DOS2 projects from mods directory at: {0}", modsPath);
 
 						DirectoryInfo modsRoot = new DirectoryInfo(modsPath);
-						var modFolders = modsRoot.GetDirectories().Where(s => !ignoredFolders.Contains(s.Name));
+						var modFolders = modsRoot.GetDirectories().Where(s => !IgnoredFolders.Contains(s.Name));
 
 						if (modFolders != null)
 						{

@@ -16,6 +16,7 @@
 			 xmlns:proxy="clr-namespace:SCG.Data.Proxy;assembly=SourceControlGenerator"
 			 mc:Ignorable="d" 
 			 d:DesignHeight="500" d:DesignWidth="900"
+			 d:DataContext="{x:Static local:ProjectViewControl.TestData}"
 			 KeyDown="ProjectViewControlMain_KeyDown" KeyUp="ProjectViewControlMain_KeyUp" Foreground="{x:Null}" Loaded="ProjectViewControlMain_Loaded"
 			 >
 	<UserControl.Resources>
@@ -338,7 +339,19 @@
 									</DataGridTextColumn.CellStyle>
 								</DataGridTextColumn>
 								<DataGridTextColumn Header="Author" Binding="{Binding ModuleInfo.Author}" ElementStyle="{StaticResource ColumnElementStyle}" MinWidth="50" HeaderStyle="{StaticResource ProjectsHeaderStyle}" />
-								<DataGridTextColumn Header="Version" Binding="{Binding Version}" ElementStyle="{StaticResource ColumnElementStyle}"  MinWidth="50" HeaderStyle="{StaticResource ProjectsHeaderStyle}" />
+								<DataGridTextColumn Header="Version" Binding="{Binding Version}" ElementStyle="{StaticResource ColumnElementStyle}"  MinWidth="50" HeaderStyle="{StaticResource ProjectsHeaderStyle}">
+									<DataGridTextColumn.CellStyle>
+										<Style TargetType="DataGridCell">
+											<Setter Property="ContextMenu">
+												<Setter.Value>
+													<ContextMenu>
+														<MenuItem Header="Edit Version" Command="{Binding EditProjectVersion}" />
+													</ContextMenu>
+												</Setter.Value>
+											</Setter>
+										</Style>
+									</DataGridTextColumn.CellStyle>
+								</DataGridTextColumn>
 								<DataGridTextColumn Header="Type" Binding="{Binding ModuleInfo.Type}"  ElementStyle="{StaticResource ColumnElementStyle}" MinWidth="40" HeaderStyle="{StaticResource ProjectsHeaderStyle}" />
 								<DataGridTextColumn Header="Description" x:Name="DescriptionColumn" Binding="{Binding ModuleInfo.Description}"  ElementStyle="{StaticResource ColumnElementStyle}" Width="70" HeaderStyle="{StaticResource ProjectsHeaderStyle}">
 									<DataGridTextColumn.CellStyle>
