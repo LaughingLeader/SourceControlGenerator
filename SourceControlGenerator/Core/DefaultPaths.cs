@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using SCG.Data.View;
 using SCG.Interfaces;
+using System.Reflection;
 
 namespace SCG
 {
@@ -31,6 +32,13 @@ namespace SCG
 		public static string IssuesLink => @"https://github.com/LaughingLeader/SourceControlGenerator/issues/new";
 
 		public static string AuthorLink => @"https://github.com/LaughingLeader";
+
+		public static string Version => GetVersion();
+
+		private static string GetVersion()
+		{
+			return Assembly.GetExecutingAssembly().GetName().Version.ToString();
+		}
 
 		//Module
 		public static string ModuleRootFolder(IModuleData Data)

@@ -36,8 +36,8 @@
 				<ColumnDefinition />
 				<ColumnDefinition />
 			</Grid.ColumnDefinitions>
-			
-			<TextBlock Text="Source Control Generator v1.0.0.0" Grid.ColumnSpan="2" TextAlignment="Center" />
+
+			<TextBlock Text="{Binding Source={x:Static scg:DefaultPaths.Version}, StringFormat='Source Control Generator v{0}'}" Grid.ColumnSpan="2" TextAlignment="Center" />
 
 			<TextBlock Grid.Row="2" Text="Author:" />
 			<TextBlock x:Name="AuthorLink" Grid.Row="2" Grid.Column="1" >
