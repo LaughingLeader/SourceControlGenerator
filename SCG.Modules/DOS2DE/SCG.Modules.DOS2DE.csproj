@@ -91,6 +91,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Data\View\ProjectVersionData.cs" />
+    <Compile Include="Data\View\DOS2DEStringKeyFileData.cs" />
     <Compile Include="Module.cs" />
     <Compile Include="Controls\ProjectViewControl.xaml.cs">
       <DependentUpon>ProjectViewControl.xaml</DependentUpon>
@@ -118,6 +119,7 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
+    <Compile Include="Utilities\DOS2DELocalizationEditor.cs" />
     <Compile Include="Utilities\DOS2DEPackageCreator.cs" />
     <Compile Include="Windows\EditVersionWindow.xaml.cs">
       <DependentUpon>EditVersionWindow.xaml</DependentUpon>
