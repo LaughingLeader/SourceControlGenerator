@@ -1126,6 +1126,13 @@ namespace SCG.Core
 				IsEnabled = true
 			};
 
+			var Debug_LocalizationTest = new MenuData("DOS2.ParseLocalizationLSB")
+			{
+				Header = "[Debug] Parse Localization",
+				ClickCommand = new ActionCommand(() => { var f = DOS2DELocalizationEditor.LoadLSBAsync(@"G:\Divinity Original Sin 2\DefEd\Data\Mods\Nemesis_627c8d3a-7e6b-4fd2-8ce5-610d553fdbe9\Localization\LLMIME_MiscText.lsb"); }),
+				IsEnabled = true
+			};
+
 			MainAppData.MenuBarData.File.Register(Data.ModuleName,
 				new SeparatorData(),
 				new MenuData("DOS2.RefreshProjects")
@@ -1143,6 +1150,11 @@ namespace SCG.Core
 				StartGitGenerationMenuData,
 				new SeparatorData(),
 				OpenLocalModsFolderMenuData
+#if DEBUG
+				,
+				new SeparatorData(),
+				Debug_LocalizationTest
+#endif
 			);
 		}
 

@@ -20,7 +20,7 @@ namespace SCG.Modules.DOS2DE.Utilities
 {
 	public class DOS2DELocalizationEditor
 	{
-		public static async Task<DOS2DELocalizationViewData> LoadStringKeyData(string dataRootPath, ModProjectData modProjectData, CancellationToken? token = null)
+		public static async Task<DOS2DELocalizationViewData> LoadStringKeyDataAsync(string dataRootPath, ModProjectData modProjectData, CancellationToken? token = null)
 		{
 			DOS2DELocalizationViewData localizationData = new DOS2DELocalizationViewData();
 			try
@@ -53,14 +53,14 @@ namespace SCG.Modules.DOS2DE.Utilities
 				if(modsExists)
 				{
 					Log.Here().Activity($"Loading localization data from '{modsLocalePath}'.");
-					var modsLocaleData = await LoadLSBFiles(modsLocalePath, token);
+					var modsLocaleData = await LoadLSBFilesAsync(modsLocalePath, token);
 					localizationData.ModsLocalization = new ObservableCollection<DOS2DEStringKeyFileData>(modsLocaleData);
 				}
 
 				if (publicExists)
 				{
 					Log.Here().Activity($"Loading localization data from '{publicLocalePath}'.");
-					var publicLocaleData = await LoadLSBFiles(publicLocalePath, token);
+					var publicLocaleData = await LoadLSBFilesAsync(publicLocalePath, token);
 					localizationData.PublicLocalization = new ObservableCollection<DOS2DEStringKeyFileData>(publicLocaleData);
 				}
 
@@ -80,7 +80,7 @@ namespace SCG.Modules.DOS2DE.Utilities
 			}
 		}
 
-		private static async Task<List<DOS2DEStringKeyFileData>> LoadLSBFiles(string directoryPath, CancellationToken? token = null)
+		private static async Task<List<DOS2DEStringKeyFileData>> LoadLSBFilesAsync(string directoryPath, CancellationToken? token = null)
 		{
 			List<DOS2DEStringKeyFileData> stringKeyData = new List<DOS2DEStringKeyFileData>();
 
@@ -111,13 +111,13 @@ namespace SCG.Modules.DOS2DE.Utilities
 			var targetFiles = new ConcurrentBag<string>(lsbFiles);
 			foreach (var filePath in targetFiles)
 			{
-				var data = await LoadLSB(filePath);
+				var data = await LoadLSBAsync(filePath);
 				stringKeyData.Add(data);
 			}
 			return stringKeyData;
 		}
 
-		public static async Task<DOS2DEStringKeyFileData> LoadLSB(string path, CancellationToken? token = null)
+		public static async Task<DOS2DEStringKeyFileData> LoadLSBAsync(string path, CancellationToken? token = null)
 		{
 			return await Task.Run(() =>
 			{
@@ -132,6 +132,11 @@ namespace SCG.Modules.DOS2DE.Utilities
 
 				return data;
 			});
+		}
+
+		public static string NewHandle()
+		{
+			return Guid.NewGuid().ToString().Replace('-', 'g').Insert(0, "h");
 		}
 	}
 }

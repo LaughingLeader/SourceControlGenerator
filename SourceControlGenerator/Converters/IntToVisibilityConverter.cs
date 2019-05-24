@@ -21,27 +21,18 @@ namespace SCG.Converters
 				{
 					int.TryParse(param, out paramval);
 				}
-				if(paramval == 1)
+				else if (parameter is int paramint)
 				{
-					if (count > 0)
-					{
-						return Visibility.Visible;
-					}
-					else
-					{
-						return Visibility.Collapsed;
-					}
+					paramval = paramint;
+				}
+
+				if (count >= paramval)
+				{
+					return Visibility.Visible;
 				}
 				else
 				{
-					if (count > 0)
-					{
-						return Visibility.Collapsed;
-					}
-					else
-					{
-						return Visibility.Visible;
-					}
+					return Visibility.Collapsed;
 				}
 			}
 
