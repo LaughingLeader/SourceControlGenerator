@@ -54,21 +54,23 @@ namespace SCG.Modules.DOS2DE.Utilities
 				{
 					Log.Here().Activity($"Loading localization data from '{modsLocalePath}'.");
 					var modsLocaleData = await LoadLSBFilesAsync(modsLocalePath, token);
-					localizationData.Groups[1].Data = new ObservableCollection<DOS2DEStringKeyFileData>(modsLocaleData);
+					localizationData.ModsGroup.DataFiles = new ObservableCollection<DOS2DEStringKeyFileData>(modsLocaleData);
+					localizationData.ModsGroup.UpdateCombinedData();
 				}
 
 				if (publicExists)
 				{
 					Log.Here().Activity($"Loading localization data from '{publicLocalePath}'.");
 					var publicLocaleData = await LoadLSBFilesAsync(publicLocalePath, token);
-					localizationData.Groups[2].Data = new ObservableCollection<DOS2DEStringKeyFileData>(publicLocaleData);
+					localizationData.PublicGroup.DataFiles = new ObservableCollection<DOS2DEStringKeyFileData>(publicLocaleData);
+					localizationData.PublicGroup.UpdateCombinedData();
 				}
 				else
 				{
-					localizationData.Groups[2].Visibility = false;
+					localizationData.PublicGroup.Visibility = false;
 				}
 
-				localizationData.UpdateAll();
+				localizationData.UpdateCombinedGroup();
 
 				Log.Here().Activity($"Localization loaded.");
 

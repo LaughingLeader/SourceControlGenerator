@@ -5,6 +5,7 @@ using SCG.Data;
 using System.Collections.ObjectModel;
 using System.Windows.Input;
 using SCG.Commands;
+using SCG.Modules.DOS2DE.Utilities;
 
 namespace SCG.Modules.DOS2DE.Data.View
 {
@@ -12,47 +13,120 @@ namespace SCG.Modules.DOS2DE.Data.View
 	{
 		public ObservableCollection<DOS2DELocalizationGroup> Groups { get; set; }
 
-		private DOS2DELocalizationGroup selected;
+		private int selectedGroupIndex = 0;
 
-		public DOS2DELocalizationGroup SelectedGroup
+		public int SelectedGroupIndex
 		{
-			get { return selected; }
+			get { return selectedGroupIndex; }
 			set
 			{
-				selected = value;
+				selectedGroupIndex = value;
+				RaisePropertyChanged("SelectedGroupIndex");
 				RaisePropertyChanged("SelectedGroup");
 			}
 		}
 
+		private DOS2DELocalizationGroup modsGroup;
 
-		public void UpdateAll()
+		public DOS2DELocalizationGroup ModsGroup
 		{
-			Groups.First().Data.Clear();
-			Groups.First().Data = new ObservableCollection<DOS2DEStringKeyFileData>(Groups[1].Data.Union(Groups[2].Data).ToList());
+			get { return modsGroup; }
+			set
+			{
+				modsGroup = value;
+				RaisePropertyChanged("ModsGroup");
+			}
+		}
 
+		private DOS2DELocalizationGroup publicGroup;
+
+		public DOS2DELocalizationGroup PublicGroup
+		{
+			get { return publicGroup; }
+			set
+			{
+				publicGroup = value;
+				RaisePropertyChanged("PublicGroup");
+			}
+		}
+
+		private DOS2DELocalizationGroup combinedGroup;
+
+		public DOS2DELocalizationGroup CombinedGroup
+		{
+			get { return combinedGroup; }
+			private set
+			{
+				combinedGroup = value;
+				RaisePropertyChanged("CombinedGroup");
+			}
+		}
+
+		public DOS2DELocalizationGroup SelectedGroup
+		{
+			get
+			{
+				return SelectedGroupIndex > -1 ? Groups[SelectedGroupIndex] : null;
+			}
+		}
+
+		public ICommand GenerateHandlesCommands { get; set; }
+
+		public void GenerateHandles()
+		{
+			Log.Here().Activity("Generating handles");
+			if (SelectedGroup != null && SelectedGroup.SelectedFile != null)
+			{
+				foreach (var entry in SelectedGroup.SelectedFile.Entries.Where(e => e.Selected))
+				{
+					if(entry.Handle.Equals("ls::TranslatedStringRepository::s_HandleUnknown", StringComparison.OrdinalIgnoreCase))
+					{
+						entry.Handle = DOS2DELocalizationEditor.NewHandle();
+						Log.Here().Activity($"[{entry.Key}] New handle generated. [{entry.Handle}]");
+					}
+				}
+			}
+		}
+
+		public void UpdateCombinedGroup(bool updateCombinedEntries = false)
+		{
+			CombinedGroup.DataFiles = new ObservableCollection<DOS2DEStringKeyFileData>(ModsGroup.DataFiles.Union(PublicGroup.DataFiles).ToList());
+			CombinedGroup.Visibility = (publicGroup.DataFiles.Count > 0 && modsGroup.DataFiles.Count > 0);
+			RaisePropertyChanged("CombinedGroup");
 			RaisePropertyChanged("Groups");
 
-			for(var i = 1; i < Groups.Count;i++)
+			if(!CombinedGroup.Visibility)
 			{
-				Groups[i].Visibility = Groups[i].Data.Count > 0;
+				if (PublicGroup.Visibility)
+				{
+					SelectedGroupIndex = 1;
+				}
+				else if(ModsGroup.Visibility)
+				{
+					SelectedGroupIndex = 2;
+				}
 			}
 
-			var visibleGroups = Groups.Count(g => g.Name != "All" && g.Visibility == true);
-			var showAllGroup = visibleGroups != 1;
-			Groups.First().Visibility = showAllGroup;
-
-			if (!showAllGroup)
+			if(updateCombinedEntries)
 			{
-				SelectedGroup = Groups.First(g => g.Visibility);
+				foreach(var g in Groups)
+				{
+					g.UpdateCombinedData();
+				}
 			}
 		}
 
 		public DOS2DELocalizationViewData()
 		{
+			ModsGroup = new DOS2DELocalizationGroup("Mods");
+			PublicGroup = new DOS2DELocalizationGroup("Public");
+			CombinedGroup = new DOS2DELocalizationGroup("All");
 			Groups = new ObservableCollection<DOS2DELocalizationGroup>();
-			Groups.Add(new DOS2DELocalizationGroup("All"));
-			Groups.Add(new DOS2DELocalizationGroup("Mods"));
-			Groups.Add(new DOS2DELocalizationGroup("Public"));
+			Groups.Add(CombinedGroup);
+			Groups.Add(ModsGroup);
+			Groups.Add(PublicGroup);
+
+			GenerateHandlesCommands = new ActionCommand(GenerateHandles);
 		}
 	}
 
@@ -70,35 +144,53 @@ namespace SCG.Modules.DOS2DE.Data.View
 			}
 		}
 
-		private ObservableCollection<DOS2DEStringKeyFileData> data;
+		private ObservableCollection<DOS2DEStringKeyFileData> dataFiles;
 
-		public ObservableCollection<DOS2DEStringKeyFileData> Data
+		public ObservableCollection<DOS2DEStringKeyFileData> DataFiles
 		{
-			get { return data; }
+			get { return dataFiles; }
 			set
 			{
-				data = value;
-				RaisePropertyChanged("Data");
-				UpdateAll();
+				dataFiles = value;
+				UpdateCombinedData();
 			}
 		}
 
-		public DOS2DEStringKeyFileData All { get; set; }
+		public ObservableCollection<DOS2DEStringKeyFileData> Tabs { get; set; }
 
-		public void UpdateAll()
+		private DOS2DEStringKeyFileData combinedEntries;
+
+		public DOS2DEStringKeyFileData CombinedEntries
 		{
-			All.Entries.Clear();
-			foreach (var obj in Data)
+			get { return combinedEntries; }
+			private set
 			{
-				All.Entries.AddRange(obj.Entries);
+				combinedEntries = value;
+				RaisePropertyChanged("CombinedEntries");
 			}
-			All.Entries.OrderBy(e => e.Key);
-			RaisePropertyChanged("All");
-			AllData = new ObservableCollection<DOS2DEStringKeyFileData>(Data.Prepend(All));
-			RaisePropertyChanged("AllData");
 		}
 
-		public ObservableCollection<DOS2DEStringKeyFileData> AllData { get; set; }
+
+		private int selectedfileIndex = 0;
+
+		public int SelectedFileIndex
+		{
+			get { return selectedfileIndex; }
+			set
+			{
+				selectedfileIndex = value;
+				RaisePropertyChanged("SelectedFileIndex");
+				RaisePropertyChanged("SelectedFile");
+			}
+		}
+
+		public DOS2DEStringKeyFileData SelectedFile
+		{
+			get
+			{
+				return SelectedFileIndex > -1 ? Tabs[SelectedFileIndex] : null;
+			}
+		}
 
 		public ICommand UpdateAllCommand { get; set; }
 
@@ -114,14 +206,29 @@ namespace SCG.Modules.DOS2DE.Data.View
 			}
 		}
 
+		public void UpdateCombinedData()
+		{
+			Tabs = new ObservableCollection<DOS2DEStringKeyFileData>(DataFiles);
+			Tabs.Insert(0, CombinedEntries);
+
+			CombinedEntries.Entries.Clear();
+			foreach (var obj in DataFiles)
+			{
+				CombinedEntries.Entries.AddRange(obj.Entries);
+			}
+			CombinedEntries.Entries.OrderBy(e => e.Key);
+			RaisePropertyChanged("CombinedEntries");
+			RaisePropertyChanged("Tabs");
+		}
+
 		public DOS2DELocalizationGroup(string name="")
 		{
 			Name = name;
-			All = new DOS2DEStringKeyFileData(null, "All");
-			Data = new ObservableCollection<DOS2DEStringKeyFileData>();
-			AllData = new ObservableCollection<DOS2DEStringKeyFileData>();
+			CombinedEntries = new DOS2DEStringKeyFileData(null, "All");
+			DataFiles = new ObservableCollection<DOS2DEStringKeyFileData>();
+			Tabs = new ObservableCollection<DOS2DEStringKeyFileData>();
 
-			UpdateAllCommand = new ActionCommand(UpdateAll);
+			UpdateAllCommand = new ActionCommand(UpdateCombinedData);
 		}
 	}
 

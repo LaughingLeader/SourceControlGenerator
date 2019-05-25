@@ -31,148 +31,29 @@ namespace SCG.Modules.DOS2DE.Data.View
 			//Name = result.Error;
 
 			Name = "Test";
-			Data.Groups[1].Data = new ObservableCollection<DOS2DEStringKeyFileData>();
-			Data.Groups[1].Data.Add(new DOS2DEStringKeyFileData(null, "Skills"));
-			Data.Groups[1].Data.Add(new DOS2DEStringKeyFileData(null, "Statuses"));
-			Data.Groups[1].Data.Add(new DOS2DEStringKeyFileData(null, "Potions"));
+			Data.ModsGroup.DataFiles = new ObservableCollection<DOS2DEStringKeyFileData>();
+			Data.ModsGroup.DataFiles.Add(new DOS2DEStringKeyFileData(null, "Skills"));
+			Data.ModsGroup.DataFiles.Add(new DOS2DEStringKeyFileData(null, "Statuses"));
+			Data.ModsGroup.DataFiles.Add(new DOS2DEStringKeyFileData(null, "Potions"));
 
-			Data.Groups[2].Data = new ObservableCollection<DOS2DEStringKeyFileData>();
-			Data.Groups[2].Data.Add(new DOS2DEStringKeyFileData(null, "Skills"));
-			Data.Groups[2].Data.Add(new DOS2DEStringKeyFileData(null, "Statuses"));
-			Data.Groups[2].Data.Add(new DOS2DEStringKeyFileData(null, "Potions"));
+			Data.PublicGroup.DataFiles = new ObservableCollection<DOS2DEStringKeyFileData>();
+			Data.PublicGroup.DataFiles.Add(new DOS2DEStringKeyFileData(null, "Skills"));
+			Data.PublicGroup.DataFiles.Add(new DOS2DEStringKeyFileData(null, "Statuses"));
+			Data.PublicGroup.DataFiles.Add(new DOS2DEStringKeyFileData(null, "Potions"));
 
-			foreach(var d in Data.Groups[1].Data)
+			foreach(var d in Data.ModsGroup.DataFiles)
 			{
 				d.Debug_TestEntries();
 			}
 
-			foreach (var d in Data.Groups[2].Data)
+			foreach (var d in Data.PublicGroup.DataFiles)
 			{
 				d.Debug_TestEntries();
 			}
 
-			Data.UpdateAll();
+			Data.UpdateCombinedGroup(true);
 
 			Groups = Data.Groups;
-		}
-
-		public struct DesignResult<T>
-		{
-			public T Data;
-			public string Error;
-		}
-
-		public DesignResult<T> NewResult<T>(T data, string error = "")
-		{
-			return new DesignResult<T>()
-			{
-				Data = data,
-				Error = error
-			};
-		}
-
-		public DesignResult<DOS2DELocalizationViewData> LoadStringKeyData(string dataRootPath, ModProjectData modProjectData)
-		{
-			DOS2DELocalizationViewData localizationData = new DOS2DELocalizationViewData();
-
-			string error = "";
-
-			try
-			{
-				
-				if (!dataRootPath.EndsWith(Path.DirectorySeparatorChar.ToString()))
-				{
-					dataRootPath += Path.DirectorySeparatorChar;
-				}
-
-				string modsLocalePath = Path.Combine(Path.GetFullPath(Path.Combine(dataRootPath, "Mods")), modProjectData.FolderName, "Localization");
-				string publicLocalePath = Path.Combine(Path.GetFullPath(Path.Combine(dataRootPath, "Public")), modProjectData.FolderName, "Localization");
-
-				bool modsExists = Directory.Exists(modsLocalePath);
-				bool publicExists = Directory.Exists(publicLocalePath);
-
-				if (!modsExists && !publicExists)
-				{
-					return NewResult(localizationData, $"Failed to find localization folders for mod {modProjectData.DisplayName} at path '{modsLocalePath}' and '{publicLocalePath}'.");
-				}
-
-				if (modsExists)
-				{
-					Log.Here().Activity($"Loading localization data from '{modsLocalePath}'.");
-					var modsLocaleData = LoadLSBFiles(modsLocalePath);
-					error += modsLocaleData.Error;
-					localizationData.Groups[1].Data = new ObservableCollection<DOS2DEStringKeyFileData>(modsLocaleData.Data);
-				}
-
-				if (publicExists)
-				{
-					Log.Here().Activity($"Loading localization data from '{publicLocalePath}'.");
-					var publicLocaleData = LoadLSBFiles(publicLocalePath);
-					error += publicLocaleData.Error;
-					localizationData.Groups[2].Data = new ObservableCollection<DOS2DEStringKeyFileData>(publicLocaleData.Data);
-				}
-
-				localizationData.UpdateAll();
-
-				return NewResult(localizationData, error);
-			}
-			catch (Exception ex)
-			{
-				error += $"Error creating package: {ex.ToString()}";
-				return NewResult(localizationData, error);
-			}
-		}
-
-		private DesignResult<List<DOS2DEStringKeyFileData>> LoadLSBFiles(string directoryPath)
-		{
-			List<DOS2DEStringKeyFileData> stringKeyData = new List<DOS2DEStringKeyFileData>();
-
-			string error = "";
-
-			var filters = new DirectoryEnumerationFilters()
-			{
-				InclusionFilter = f =>
-				{
-					return Path.GetExtension(f.FileName).Equals("lsb", StringComparison.OrdinalIgnoreCase);
-				},
-				ErrorFilter = delegate (int errorCode, string errorMessage, string pathProcessed)
-				{
-					var gotException = errorCode == 5;
-
-					if (gotException)
-					{
-						error += $"Error reading file at '{pathProcessed}': [{errorCode}]({errorMessage})";
-					}
-
-					return gotException;
-				},
-				RecursionFilter = f =>
-				{
-					return true;
-				}
-			};
-			var lsbFiles = Directory.EnumerateFiles(directoryPath, Alphaleonis.Win32.Filesystem.DirectoryEnumerationOptions.Recursive, filters);
-
-			foreach (var filePath in lsbFiles)
-			{
-				var data = LoadLSB(filePath);
-				stringKeyData.Add(data);
-			}
-			return NewResult(stringKeyData, error);
-		}
-
-		public DOS2DEStringKeyFileData LoadLSB(string path)
-		{
-			var resource = LSLib.LS.ResourceUtils.LoadResource(path, ResourceFormat.LSB);
-
-			var data = new DOS2DEStringKeyFileData(resource);
-
-			foreach (var entry in data.Entries)
-			{
-				Log.Here().Activity($"Entry: Key[{entry.Key}] = '{entry.Content}'");
-			}
-
-			return data;
 		}
 	}
 }

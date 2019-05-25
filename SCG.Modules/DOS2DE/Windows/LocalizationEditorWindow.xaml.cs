@@ -34,8 +34,20 @@ namespace SCG.Modules.DOS2DE.Windows
 
 		public void LoadData(DOS2DELocalizationViewData data)
 		{
-			Data = data;
-			DataContext = Data;
+			//Data = data;
+			//DataContext = Data;
+
+			if(DataContext is DOS2DELocalizationViewData currentdata)
+			{
+				currentdata.Groups = new System.Collections.ObjectModel.ObservableCollection<DOS2DELocalizationGroup>(data.Groups);
+				currentdata.UpdateCombinedGroup(true);
+				Log.Here().Important($"DataContext is {DataContext.GetType()}");
+				Log.Here().Important($"Count {currentdata.Groups.Count}");
+			}
+			else
+			{
+				Log.Here().Error($"DataContext is {DataContext.GetType()}");
+			}
 		}
 
 		private void Entries_SelectAll(object sender, RoutedEventArgs e)

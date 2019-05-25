@@ -114,9 +114,9 @@
     <Reference Include="PresentationFramework" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Data\View\DOS2DELocalizationViewData.cs" />
     <Compile Include="Data\View\LocalizationEditorDesignData.cs" />
     <Compile Include="Data\View\ProjectVersionData.cs" />
-    <Compile Include="Data\View\DOS2DEStringKeyFileData.cs" />
     <Compile Include="Module.cs" />
     <Compile Include="Controls\ProjectViewControl.xaml.cs">
       <DependentUpon>ProjectViewControl.xaml</DependentUpon>

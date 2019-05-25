@@ -20,6 +20,8 @@
 
 			<dgx:RegexContentFilterFactory x:Key="RegexContentFilterFactory" />
 
+			<data:DOS2DELocalizationViewData x:Key="LocaleMainData" />
+
 			<Style x:Key="DataGrid_NoHighlight" TargetType="DataGridCell">
 				<Style.Triggers>
 					<Trigger  Property="IsSelected" Value="true">
@@ -70,9 +72,10 @@
 			<DataTemplate x:Key="LocaleFileTabs">
 				<Grid>
 					<TabControl
-						ItemsSource="{Binding AllData}"
+						ItemsSource="{Binding Tabs}"
 						DisplayMemberPath="Name" TabStripPlacement="Left" 
 						ContentTemplate="{Binding Source={StaticResource LocaleEntryGrid}}" 
+						SelectedIndex="{Binding SelectedFileIndex}"
 					>
 					</TabControl>
 				</Grid>
@@ -105,7 +108,7 @@
 								<StackPanel Grid.Column="0" Grid.Row="0" Background="Transparent" Margin="2,2,2,0" Panel.ZIndex="1" Orientation="Horizontal">
 									<TabPanel x:Name="headerPanel" Background="Transparent" IsItemsHost="true" KeyboardNavigation.TabIndex="1"/>
 									<StackPanel Background="Transparent" Margin="0" Orientation="Horizontal">
-										<Button Content="Generate Handles" HorizontalAlignment="Right" />
+										<Button Content="Generate Handles" HorizontalAlignment="Right" Command="{Binding Source={StaticResource LocaleMainData}, Path=GenerateHandlesCommands}" />
 									</StackPanel>
 								</StackPanel>
 								<Border x:Name="contentPanel" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{TemplateBinding Background}" Grid.Column="0" KeyboardNavigation.DirectionalNavigation="Contained" Grid.Row="1" KeyboardNavigation.TabIndex="2" KeyboardNavigation.TabNavigation="Local">
@@ -152,9 +155,12 @@
 			</Style>
 		</ResourceDictionary>
 	</win:HideWindowBase.Resources>
+	<win:HideWindowBase.DataContext>
+		<StaticResource ResourceKey="LocaleMainData"/>
+	</win:HideWindowBase.DataContext>
 	<Grid>
 		<TabControl ItemsSource="{Binding Groups}" ContentTemplate="{Binding Source={StaticResource LocaleFileTabs}}"
-					SelectedItem="{Binding SelectedGroup}" Style="{DynamicResource LocaleGroupTabControl}"
+					SelectedIndex="{Binding SelectedGroupIndex}" Style="{DynamicResource LocaleGroupTabControl}"
 			>
 			<TabControl.ItemContainerStyle>
 				<Style TargetType="TabItem">
