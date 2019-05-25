@@ -8,13 +8,84 @@ namespace SCG.Modules.DOS2DE.Data.View
 {
 	public class DOS2DELocalizationViewData : PropertyChangedBase
 	{
-		public ObservableCollection<DOS2DEStringKeyFileData> ModsLocalization { get; set; }
-		public ObservableCollection<DOS2DEStringKeyFileData> PublicLocalization { get; set; }
+		public ObservableCollection<DOS2DELocalizationGroup> Groups { get; set; }
+
+		private DOS2DELocalizationGroup selected;
+
+		public DOS2DELocalizationGroup SelectedGroup
+		{
+			get { return selected; }
+			set
+			{
+				selected = value;
+				RaisePropertyChanged("SelectedGroup");
+			}
+		}
+
+
+		public void UpdateAll()
+		{
+			Groups.First().Data.Clear();
+			Groups.First().Data = new ObservableCollection<DOS2DEStringKeyFileData>(Groups[1].Data.Union(Groups[2].Data).ToList());
+
+			RaisePropertyChanged("Groups");
+
+			for(var i = 1; i < Groups.Count;i++)
+			{
+				Groups[i].Visibility = Groups[i].Data.Count > 0;
+			}
+
+			var visibleGroups = Groups.Count(g => g.Name != "All" && g.Visibility == true);
+			var showAllGroup = visibleGroups != 1;
+			Groups.First().Visibility = showAllGroup;
+
+			if (!showAllGroup)
+			{
+				SelectedGroup = Groups.First(g => g.Visibility);
+			}
+		}
 
 		public DOS2DELocalizationViewData()
 		{
-			ModsLocalization = new ObservableCollection<DOS2DEStringKeyFileData>();
-			PublicLocalization = new ObservableCollection<DOS2DEStringKeyFileData>();
+			Groups = new ObservableCollection<DOS2DELocalizationGroup>();
+			Groups.Add(new DOS2DELocalizationGroup("All"));
+			Groups.Add(new DOS2DELocalizationGroup("Mods"));
+			Groups.Add(new DOS2DELocalizationGroup("Public"));
+		}
+	}
+
+	public class DOS2DELocalizationGroup : PropertyChangedBase
+	{
+		private string name;
+
+		public string Name
+		{
+			get { return name; }
+			set
+			{
+				name = value;
+				RaisePropertyChanged("Name");
+			}
+		}
+
+		public ObservableCollection<DOS2DEStringKeyFileData> Data { get; set; }
+
+		private bool visibility = true;
+
+		public bool Visibility
+		{
+			get { return visibility; }
+			set
+			{
+				visibility = value;
+				RaisePropertyChanged("Visibility");
+			}
+		}
+
+		public DOS2DELocalizationGroup(string name="")
+		{
+			Name = name;
+			Data = new ObservableCollection<DOS2DEStringKeyFileData>();
 		}
 	}
 
@@ -35,6 +106,19 @@ namespace SCG.Modules.DOS2DE.Data.View
 				RaisePropertyChanged("Name");
 			}
 		}
+
+		private bool active = false;
+
+		public bool Active
+		{
+			get { return active; }
+			set
+			{
+				active = value;
+				RaisePropertyChanged("Active");
+			}
+		}
+
 
 		public DOS2DEStringKeyFileData(LSLib.LS.Resource res = null, string name = "")
 		{
@@ -173,7 +257,6 @@ namespace SCG.Modules.DOS2DE.Data.View
 				RaisePropertyChanged("Selected");
 			}
 		}
-
 
 		public DOS2DEKeyEntry(LSLib.LS.Node resNode)
 		{

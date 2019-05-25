@@ -17,9 +17,7 @@ namespace SCG.Modules.DOS2DE.Data.View
 
 		public string Name { get; set; } = "Test";
 
-		public Visibility ModsVisible { get; set; } = Visibility.Hidden;
-
-		public Visibility PublicVisible { get; set; } = Visibility.Hidden;
+		public ObservableCollection<DOS2DELocalizationGroup> Groups { get; set; }
 
 		public LocalizationEditorDesignData()
 		{
@@ -32,30 +30,30 @@ namespace SCG.Modules.DOS2DE.Data.View
 			//Data = result.Data;
 			//Name = result.Error;
 
-			Data = new DOS2DELocalizationViewData();
-			Name = testData.DisplayName;
-			Data.ModsLocalization = new ObservableCollection<DOS2DEStringKeyFileData>();
-			Data.ModsLocalization.Add(new DOS2DEStringKeyFileData(null, "Skills"));
-			Data.ModsLocalization.Add(new DOS2DEStringKeyFileData(null, "Statuses"));
-			Data.ModsLocalization.Add(new DOS2DEStringKeyFileData(null, "Potions"));
+			Name = "Test";
+			Data.Groups[1].Data = new ObservableCollection<DOS2DEStringKeyFileData>();
+			Data.Groups[1].Data.Add(new DOS2DEStringKeyFileData(null, "Skills"));
+			Data.Groups[1].Data.Add(new DOS2DEStringKeyFileData(null, "Statuses"));
+			Data.Groups[1].Data.Add(new DOS2DEStringKeyFileData(null, "Potions"));
 
-			Data.PublicLocalization = new ObservableCollection<DOS2DEStringKeyFileData>();
-			Data.PublicLocalization.Add(new DOS2DEStringKeyFileData(null, "Skills"));
-			Data.PublicLocalization.Add(new DOS2DEStringKeyFileData(null, "Statuses"));
-			Data.PublicLocalization.Add(new DOS2DEStringKeyFileData(null, "Potions"));
+			Data.Groups[2].Data = new ObservableCollection<DOS2DEStringKeyFileData>();
+			Data.Groups[2].Data.Add(new DOS2DEStringKeyFileData(null, "Skills"));
+			Data.Groups[2].Data.Add(new DOS2DEStringKeyFileData(null, "Statuses"));
+			Data.Groups[2].Data.Add(new DOS2DEStringKeyFileData(null, "Potions"));
 
-			foreach(var d in Data.ModsLocalization)
+			foreach(var d in Data.Groups[1].Data)
 			{
 				d.Debug_TestEntries();
 			}
 
-			foreach (var d in Data.PublicLocalization)
+			foreach (var d in Data.Groups[2].Data)
 			{
 				d.Debug_TestEntries();
 			}
 
-			ModsVisible = Data.ModsLocalization.Count > 0 ? Visibility.Visible : Visibility.Hidden;
-			PublicVisible = Data.ModsLocalization.Count > 0 ? Visibility.Visible : Visibility.Hidden;
+			Data.UpdateAll();
+
+			Groups = Data.Groups;
 		}
 
 		public struct DesignResult<T>
@@ -103,7 +101,7 @@ namespace SCG.Modules.DOS2DE.Data.View
 					Log.Here().Activity($"Loading localization data from '{modsLocalePath}'.");
 					var modsLocaleData = LoadLSBFiles(modsLocalePath);
 					error += modsLocaleData.Error;
-					localizationData.ModsLocalization = new ObservableCollection<DOS2DEStringKeyFileData>(modsLocaleData.Data);
+					localizationData.Groups[1].Data = new ObservableCollection<DOS2DEStringKeyFileData>(modsLocaleData.Data);
 				}
 
 				if (publicExists)
@@ -111,8 +109,10 @@ namespace SCG.Modules.DOS2DE.Data.View
 					Log.Here().Activity($"Loading localization data from '{publicLocalePath}'.");
 					var publicLocaleData = LoadLSBFiles(publicLocalePath);
 					error += publicLocaleData.Error;
-					localizationData.PublicLocalization = new ObservableCollection<DOS2DEStringKeyFileData>(publicLocaleData.Data);
+					localizationData.Groups[2].Data = new ObservableCollection<DOS2DEStringKeyFileData>(publicLocaleData.Data);
 				}
+
+				localizationData.UpdateAll();
 
 				return NewResult(localizationData, error);
 			}

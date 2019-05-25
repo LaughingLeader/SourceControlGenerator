@@ -32,6 +32,8 @@ namespace SCG.Core
 	{
 		private ProjectViewControl projectViewControl;
 
+		private LocalizationEditorWindow localizationEditorWindow;
+
 		public MainAppData MainAppData { get; set; }
 		public DOS2DEModuleData Data { get; set; }
 
@@ -1087,6 +1089,28 @@ namespace SCG.Core
 			}
 		}
 
+		public void OpenLocalizationEditor()
+		{
+			if (localizationEditorWindow == null)
+			{
+				localizationEditorWindow = new LocalizationEditorWindow();
+			}
+
+			if(!localizationEditorWindow.IsVisible)
+			{
+				AppController.Main.MainWindow.Dispatcher.BeginInvoke(new Action(async () =>
+				{
+					var data = await DOS2DELocalizationEditor.LoadLocalizationDataAsync(Data.Settings.DOS2DEDataDirectory, Data.ManagedProjects.First());
+					localizationEditorWindow.LoadData(data);
+					localizationEditorWindow.Show();
+				}), DispatcherPriority.Background);
+			}
+			else
+			{
+				localizationEditorWindow.Hide();
+			}
+		}
+
 		private MenuData BackupSelectedMenuData { get; set; }
 		private MenuData BackupSelectedToMenuData { get; set; }
 		private MenuData StartGitGenerationMenuData { get; set; }
@@ -1156,6 +1180,15 @@ namespace SCG.Core
 				Debug_LocalizationTest
 #endif
 			);
+
+			MainAppData.MenuBarData.Tools.Register(Data.ModuleName,
+				new SeparatorData(),
+				new MenuData("DOS2.LocalizationEditor")
+				{
+					Header = "Localization Editor",
+					ClickCommand = new ActionCommand(OpenLocalizationEditor),
+					ShortcutKey = System.Windows.Input.Key.F7
+				});
 		}
 
 		public void Start()

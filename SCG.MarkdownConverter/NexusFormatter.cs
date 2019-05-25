@@ -3,9 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using AngleSharp.Dom.Html;
+using AngleSharp.Dom;
 using AngleSharp.Html;
-using AngleSharp.Parser.Html;
+using AngleSharp.Html.Dom;
+using AngleSharp.Html.Parser;
 using Markdig;
 
 namespace SCG.Markdown
@@ -60,7 +61,7 @@ namespace SCG.Markdown
 			try
 			{
 				var parser = new HtmlParser(new HtmlParserOptions() { IsStrictMode = false });
-				var doc = parser.Parse(input);
+				var doc = parser.ParseDocument(input);
 
 				doc = BBCodeConversion(doc);
 				doc = NexusBBCodeConversion(doc);

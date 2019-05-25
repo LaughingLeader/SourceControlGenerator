@@ -20,7 +20,7 @@ namespace SCG.Modules.DOS2DE.Utilities
 {
 	public class DOS2DELocalizationEditor
 	{
-		public static async Task<DOS2DELocalizationViewData> LoadStringKeyDataAsync(string dataRootPath, ModProjectData modProjectData, CancellationToken? token = null)
+		public static async Task<DOS2DELocalizationViewData> LoadLocalizationDataAsync(string dataRootPath, ModProjectData modProjectData, CancellationToken? token = null)
 		{
 			DOS2DELocalizationViewData localizationData = new DOS2DELocalizationViewData();
 			try
@@ -54,15 +54,23 @@ namespace SCG.Modules.DOS2DE.Utilities
 				{
 					Log.Here().Activity($"Loading localization data from '{modsLocalePath}'.");
 					var modsLocaleData = await LoadLSBFilesAsync(modsLocalePath, token);
-					localizationData.ModsLocalization = new ObservableCollection<DOS2DEStringKeyFileData>(modsLocaleData);
+					localizationData.Groups[1].Data = new ObservableCollection<DOS2DEStringKeyFileData>(modsLocaleData);
 				}
 
 				if (publicExists)
 				{
 					Log.Here().Activity($"Loading localization data from '{publicLocalePath}'.");
 					var publicLocaleData = await LoadLSBFilesAsync(publicLocalePath, token);
-					localizationData.PublicLocalization = new ObservableCollection<DOS2DEStringKeyFileData>(publicLocaleData);
+					localizationData.Groups[2].Data = new ObservableCollection<DOS2DEStringKeyFileData>(publicLocaleData);
 				}
+				else
+				{
+					localizationData.Groups[2].Visibility = false;
+				}
+
+				localizationData.UpdateAll();
+
+				Log.Here().Activity($"Localization loaded.");
 
 				return localizationData;
 			}
@@ -88,7 +96,7 @@ namespace SCG.Modules.DOS2DE.Utilities
 			{
 				InclusionFilter = f =>
 				{
-					return Path.GetExtension(f.FileName).Equals("lsb", StringComparison.OrdinalIgnoreCase);
+					return Path.GetExtension(f.FileName).Equals(".lsb", StringComparison.OrdinalIgnoreCase);
 				},
 				ErrorFilter = delegate (int errorCode, string errorMessage, string pathProcessed)
 				{
@@ -114,6 +122,7 @@ namespace SCG.Modules.DOS2DE.Utilities
 				var data = await LoadLSBAsync(filePath);
 				stringKeyData.Add(data);
 			}
+			stringKeyData = stringKeyData.OrderBy(f => f.Name).ToList();
 			return stringKeyData;
 		}
 
@@ -123,12 +132,12 @@ namespace SCG.Modules.DOS2DE.Utilities
 			{
 				var resource = LSLib.LS.ResourceUtils.LoadResource(path, ResourceFormat.LSB);
 
-				var data = new DOS2DEStringKeyFileData(resource);
-
-				foreach (var entry in data.Entries)
-				{
-					Log.Here().Activity($"Entry: Key[{entry.Key}] = '{entry.Content}'");
-				}
+				var data = new DOS2DEStringKeyFileData(resource, Path.GetFileName(path));
+				data.Entries = data.Entries.OrderBy(e => e.Key).ToList();
+				//foreach (var entry in data.Entries)
+				//{
+				//	Log.Here().Activity($"Entry: Key[{entry.Key}] = '{entry.Content}'");
+				//}
 
 				return data;
 			});
