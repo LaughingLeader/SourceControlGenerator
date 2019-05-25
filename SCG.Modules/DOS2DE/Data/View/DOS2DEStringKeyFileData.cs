@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using SCG.Data;
 using System.Collections.ObjectModel;
+using System.Windows.Input;
+using SCG.Commands;
 
 namespace SCG.Modules.DOS2DE.Data.View
 {
@@ -68,7 +70,37 @@ namespace SCG.Modules.DOS2DE.Data.View
 			}
 		}
 
-		public ObservableCollection<DOS2DEStringKeyFileData> Data { get; set; }
+		private ObservableCollection<DOS2DEStringKeyFileData> data;
+
+		public ObservableCollection<DOS2DEStringKeyFileData> Data
+		{
+			get { return data; }
+			set
+			{
+				data = value;
+				RaisePropertyChanged("Data");
+				UpdateAll();
+			}
+		}
+
+		public DOS2DEStringKeyFileData All { get; set; }
+
+		public void UpdateAll()
+		{
+			All.Entries.Clear();
+			foreach (var obj in Data)
+			{
+				All.Entries.AddRange(obj.Entries);
+			}
+			All.Entries.OrderBy(e => e.Key);
+			RaisePropertyChanged("All");
+			AllData = new ObservableCollection<DOS2DEStringKeyFileData>(Data.Prepend(All));
+			RaisePropertyChanged("AllData");
+		}
+
+		public ObservableCollection<DOS2DEStringKeyFileData> AllData { get; set; }
+
+		public ICommand UpdateAllCommand { get; set; }
 
 		private bool visibility = true;
 
@@ -85,7 +117,11 @@ namespace SCG.Modules.DOS2DE.Data.View
 		public DOS2DELocalizationGroup(string name="")
 		{
 			Name = name;
+			All = new DOS2DEStringKeyFileData(null, "All");
 			Data = new ObservableCollection<DOS2DEStringKeyFileData>();
+			AllData = new ObservableCollection<DOS2DEStringKeyFileData>();
+
+			UpdateAllCommand = new ActionCommand(UpdateAll);
 		}
 	}
 
@@ -93,7 +129,7 @@ namespace SCG.Modules.DOS2DE.Data.View
 	{
 		public LSLib.LS.Resource Source { get; private set; }
 
-		public List<DOS2DEKeyEntry> Entries { get; set; }
+		public ObservableRangeCollection<DOS2DEKeyEntry> Entries { get; set; }
 
 		private string name;
 
@@ -119,10 +155,36 @@ namespace SCG.Modules.DOS2DE.Data.View
 			}
 		}
 
+		public void SelectAll()
+		{
+			foreach (var entry in Entries) { entry.Selected = true; }
+		}
+
+		public void SelectNone()
+		{
+			foreach (var entry in Entries) { entry.Selected = false; }
+		}
+
+		private bool allSelected;
+
+		public bool AllSelected
+		{
+			get { return allSelected; }
+			set
+			{
+				allSelected = value;
+				RaisePropertyChanged("AllSelected");
+				if (allSelected)
+					SelectAll();
+				else
+					SelectNone();
+			}
+		}
+
 
 		public DOS2DEStringKeyFileData(LSLib.LS.Resource res = null, string name = "")
 		{
-			Entries = new List<DOS2DEKeyEntry>();
+			Entries = new ObservableRangeCollection<DOS2DEKeyEntry>();
 
 			Name = name;
 

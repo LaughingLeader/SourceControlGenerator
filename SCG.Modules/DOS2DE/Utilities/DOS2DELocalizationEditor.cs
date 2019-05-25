@@ -133,7 +133,7 @@ namespace SCG.Modules.DOS2DE.Utilities
 				var resource = LSLib.LS.ResourceUtils.LoadResource(path, ResourceFormat.LSB);
 
 				var data = new DOS2DEStringKeyFileData(resource, Path.GetFileName(path));
-				data.Entries = data.Entries.OrderBy(e => e.Key).ToList();
+				data.Entries = new ObservableRangeCollection<DOS2DEKeyEntry>(data.Entries.OrderBy(e => e.Key).ToList());
 				//foreach (var entry in data.Entries)
 				//{
 				//	Log.Here().Activity($"Entry: Key[{entry.Key}] = '{entry.Content}'");
