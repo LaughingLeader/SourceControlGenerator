@@ -1,5 +1,11 @@
 Source Control Generator Changelog
 =======
+# 1.4.0.0
+* The "About" window now shows the proper program version.
+* Divinity: Original Sin 2 - Definitive Edition Module
+	* Added the ability to change a project's version number.
+	* Packaging and backing up mods now do so in the correct alphabetical order (previously this was reversed, Z-A etc.).
+
 # 1.3.1.0
 * Added long path support to all modules and the main program.
 
