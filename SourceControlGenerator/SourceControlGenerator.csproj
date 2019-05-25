@@ -187,6 +187,7 @@
     <Compile Include="Collections\ObservableCollectionObject.cs" />
     <Compile Include="Collections\ObservableImmutableDictionary.cs" />
     <Compile Include="Collections\ObservableImmutableList.cs" />
+    <Compile Include="Collections\ObservableRangeCollection.cs" />
     <Compile Include="Commands\BaseCommand.cs" />
     <Compile Include="Commands\TaskCommand.cs" />
     <Compile Include="Controls\AddTemplateControl.xaml.cs">
@@ -333,6 +334,7 @@
     <Compile Include="Windows\LogWindow.xaml.cs">
       <DependentUpon>LogWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Controls\Behavior\DataContextSpy.cs" />
     <Page Include="Controls\AddTemplateControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
