@@ -390,5 +390,39 @@ namespace SCG.Modules.DOS2DE.Utilities
 		{
 			return Guid.NewGuid().ToString().Replace('-', 'g').Insert(0, "h");
 		}
+
+		public static string ExportData(DOS2DELocalizationViewData data)
+		{
+			string output = "<contentList>\n{0}</contentList>";
+			string entriesStr = "";
+			foreach(var g in data.Groups)
+			{
+				if(g != data.CombinedGroup)
+				{
+					foreach(var f in g.DataFiles)
+					{
+						string sourcePath = "";
+						if (f is DOS2DEStringKeyFileData fileData)
+						{
+							sourcePath = Path.GetFileName(fileData.SourcePath);
+						}
+
+						foreach (var e in f.Entries)
+						{
+							if (!String.IsNullOrWhiteSpace(e.Key) && e.Key != "None")
+							{
+								entriesStr += "\t" + $"<content contentuid=\"{e.Handle}\" Source=\"{sourcePath}\" Key=\"{e.Key}\">{e.Content}</content>" + Environment.NewLine;
+							}
+							else
+							{
+								entriesStr += "\t" + $"<content contentuid=\"{e.Handle}\" Source=\"{sourcePath}\">{e.Content}</content>" + Environment.NewLine;
+							}
+						}
+					}
+				}
+			}
+
+			return String.Format(output, entriesStr);
+		}
 	}
 }

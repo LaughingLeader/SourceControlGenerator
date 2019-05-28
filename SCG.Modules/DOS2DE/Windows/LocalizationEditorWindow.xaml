@@ -122,10 +122,12 @@
 												<Setter Property="Margin" Value="2,0,0,0" />
 											</Style>
 										</StackPanel.Resources>
-										<Button ToolTip="{x:Static core:DOS2DETooltips.Button_GenerateHandles}" HorizontalAlignment="Right" Command="{Binding Source={StaticResource LocaleMainData}, Path=GenerateHandlesCommands}">
+										<Button ToolTip="{x:Static core:DOS2DETooltips.Button_GenerateHandles}" HorizontalAlignment="Right" 
+												Command="{Binding Source={StaticResource LocaleMainData}, Path=GenerateHandlesCommands}">
 											<Image Source="{Binding Source={StaticResource IconProxy}, Path=Data.WriteToDatabase, FallbackValue={x:Null}}" Stretch="UniformToFill" />
 										</Button>
-										<Button ToolTip="{x:Static core:DOS2DETooltips.Button_ExportToXML}" HorizontalAlignment="Right" Command="{Binding Source={StaticResource LocaleMainData}, Path=GenerateHandlesCommands}">
+										<Button x:Name="ExportButton" ToolTip="{x:Static core:DOS2DETooltips.Button_ExportToXML}" 
+												HorizontalAlignment="Right" Click="ExportButton_Click">
 											<Image Source="{Binding Source={StaticResource IconProxy}, Path=Data.XML_Template, FallbackValue={x:Null}}" Stretch="UniformToFill" />
 										</Button>
 									</StackPanel>

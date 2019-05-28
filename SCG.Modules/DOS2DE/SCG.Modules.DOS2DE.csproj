@@ -149,6 +149,9 @@
     <Compile Include="Windows\EditVersionWindow.xaml.cs">
       <DependentUpon>EditVersionWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Windows\LocaleExportWindow.xaml.cs">
+      <DependentUpon>LocaleExportWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Windows\LocalizationEditorWindow.xaml.cs">
       <DependentUpon>LocalizationEditorWindow.xaml</DependentUpon>
     </Compile>
@@ -197,6 +200,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Windows\EditVersionWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Windows\LocaleExportWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

@@ -27,9 +27,14 @@ namespace SCG.Modules.DOS2DE.Windows
 
 		public DOS2DELocalizationViewData Data { get; set; }
 
+		public LocaleExportWindow ExportWindow { get; set; }
+
 		public LocalizationEditorWindow()
 		{
 			InitializeComponent();
+
+			ExportWindow = new LocaleExportWindow();
+			ExportWindow.Hide();
 		}
 
 		public void LoadData(DOS2DELocalizationViewData data)
@@ -43,6 +48,8 @@ namespace SCG.Modules.DOS2DE.Windows
 				currentdata.UpdateCombinedGroup(true);
 				Log.Here().Important($"DataContext is {DataContext.GetType()}");
 				Log.Here().Important($"Count {currentdata.Groups.Count}");
+
+				Data = (DOS2DELocalizationViewData)this.DataContext;
 			}
 			else
 			{
@@ -69,6 +76,20 @@ namespace SCG.Modules.DOS2DE.Windows
 					column.MinWidth = column.ActualWidth;
 					column.Width = new DataGridLength(1, DataGridLengthUnitType.Star);
 				}
+			}
+		}
+
+		private void ExportButton_Click(object sender, RoutedEventArgs e)
+		{
+			if (ExportWindow.FindName("OutputTextbox") is TextBox outputTextbox)
+			{
+				outputTextbox.Text = DOS2DELocalizationEditor.ExportData(Data);
+			}
+
+			if (!ExportWindow.IsVisible)
+			{
+				ExportWindow.Show();
+				ExportWindow.Owner = this;
 			}
 		}
 	}

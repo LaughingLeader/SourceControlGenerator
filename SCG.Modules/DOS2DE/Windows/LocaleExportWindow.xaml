@@ -1,0 +1,21 @@
+﻿<win:HideWindowBase x:Class="SCG.Modules.DOS2DE.Windows.LocaleExportWindow"
+		xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+		xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+		xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+		xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+		xmlns:local="clr-namespace:SCG.Modules.DOS2DE.Windows"
+		xmlns:win="clr-namespace:SCG.Windows;assembly=SourceControlGenerator"
+		mc:Ignorable="d"
+		Title="Localization Export" Height="200" Width="400">
+	<Grid>
+		<Grid.RowDefinitions>
+			<RowDefinition Height="*" />
+			<RowDefinition Height="Auto" />
+		</Grid.RowDefinitions>
+		<TextBox AllowDrop="True" IsReadOnly="False" AcceptsReturn="True" x:Name="OutputTextbox" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto"/>
+		<StackPanel Orientation="Horizontal" Grid.Row="1">
+			<Button Content="Close" x:Name="CloseButton" Click="CloseButton_Click" />
+			<Button Content="Copy" x:Name="CopyButton" Click="CopyButton_Click" />
+		</StackPanel>
+	</Grid>
+</win:HideWindowBase>
