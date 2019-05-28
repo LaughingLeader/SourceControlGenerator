@@ -31,12 +31,12 @@ namespace SCG.Modules.DOS2DE.Data.View
 			//Name = result.Error;
 
 			Name = "Test";
-			Data.ModsGroup.DataFiles = new ObservableCollection<IKeyFileData>();
+			Data.ModsGroup.DataFiles = new ObservableRangeCollection<IKeyFileData>();
 			Data.ModsGroup.DataFiles.Add(new DOS2DEStringKeyFileDataBase("Skills"));
 			Data.ModsGroup.DataFiles.Add(new DOS2DEStringKeyFileDataBase("Statuses"));
 			Data.ModsGroup.DataFiles.Add(new DOS2DEStringKeyFileDataBase("Potions"));
 
-			Data.PublicGroup.DataFiles = new ObservableCollection<IKeyFileData>();
+			Data.PublicGroup.DataFiles = new ObservableRangeCollection<IKeyFileData>();
 			Data.PublicGroup.DataFiles.Add(new DOS2DEStringKeyFileDataBase("Skills"));
 			Data.PublicGroup.DataFiles.Add(new DOS2DEStringKeyFileDataBase("Statuses"));
 			Data.PublicGroup.DataFiles.Add(new DOS2DEStringKeyFileDataBase("Potions"));

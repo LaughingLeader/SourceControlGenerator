@@ -108,18 +108,18 @@
 								</Grid.RowDefinitions>
 								<Grid Grid.Column="0" Grid.Row="0" Background="Transparent" Margin="2,2,2,0" Panel.ZIndex="1">
 									<Grid.ColumnDefinitions>
-										<ColumnDefinition Width="*" />
 										<ColumnDefinition Width="Auto" />
+										<ColumnDefinition Width="*" />
 									</Grid.ColumnDefinitions>
 									<TabPanel x:Name="headerPanel" Background="Transparent" IsItemsHost="true" KeyboardNavigation.TabIndex="1"/>
-									<StackPanel Background="Transparent" Orientation="Horizontal" HorizontalAlignment="Right" Grid.Column="1" Margin="4">
+									<StackPanel Background="Transparent" Orientation="Horizontal" HorizontalAlignment="Left" Grid.Column="1" Margin="2,4,4,4">
 										<StackPanel.Resources>
 											<Style TargetType="Button">
 												<Setter Property="MinHeight" Value="16" />
 												<Setter Property="MinWidth" Value="16" />
 												<Setter Property="MaxHeight" Value="16" />
 												<Setter Property="MaxWidth" Value="16" />
-												<Setter Property="Margin" Value="1,0,0,0" />
+												<Setter Property="Margin" Value="2,0,0,0" />
 											</Style>
 										</StackPanel.Resources>
 										<Button ToolTip="{x:Static core:DOS2DETooltips.Button_GenerateHandles}" HorizontalAlignment="Right" Command="{Binding Source={StaticResource LocaleMainData}, Path=GenerateHandlesCommands}">

@@ -59,7 +59,7 @@ namespace SCG.Modules.DOS2DE.Utilities
 					{
 						Log.Here().Activity($"Loading localization data from '{modsLocalePath}'.");
 						var modsLocaleData = await LoadFilesAsync(modsLocalePath, token, ".lsb");
-						localizationData.ModsGroup.DataFiles = new ObservableCollection<IKeyFileData>(modsLocaleData);
+						localizationData.ModsGroup.DataFiles = new ObservableRangeCollection<IKeyFileData>(modsLocaleData);
 						localizationData.ModsGroup.UpdateCombinedData();
 					}
 					else
@@ -71,8 +71,8 @@ namespace SCG.Modules.DOS2DE.Utilities
 					if (Directory.Exists(dialogLocalePath))
 					{
 						Log.Here().Activity($"Loading dialog localization data from '{dialogLocalePath}'.");
-						var modsDialogLocaleData = await LoadFilesAsync(dialogLocalePath, token, ".lsj");
-						localizationData.DialogGroup.DataFiles = new ObservableCollection<IKeyFileData>(modsDialogLocaleData);
+						var dialogLocaleData = await LoadFilesAsync(dialogLocalePath, token, ".lsj");
+						localizationData.DialogGroup.DataFiles = new ObservableRangeCollection<IKeyFileData>(dialogLocaleData);
 						localizationData.DialogGroup.UpdateCombinedData();
 					}
 					else
@@ -95,7 +95,7 @@ namespace SCG.Modules.DOS2DE.Utilities
 					{
 						Log.Here().Activity($"Loading localization data from '{publicLocalePath}'.");
 						var publicLocaleData = await LoadFilesAsync(publicLocalePath, token, ".lsb");
-						localizationData.PublicGroup.DataFiles = new ObservableCollection<IKeyFileData>(publicLocaleData);
+						localizationData.PublicGroup.DataFiles = new ObservableRangeCollection<IKeyFileData>(publicLocaleData);
 						localizationData.PublicGroup.UpdateCombinedData();
 					}
 					else

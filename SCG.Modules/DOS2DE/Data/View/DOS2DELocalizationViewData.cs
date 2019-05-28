@@ -100,10 +100,22 @@ namespace SCG.Modules.DOS2DE.Data.View
 			}
 		}
 
+		private bool MultipleGroupsEntriesFilled()
+		{
+			int total = 0;
+			if (ModsGroup.DataFiles.Count > 0) total++;
+			if (PublicGroup.DataFiles.Count > 0) total++;
+			if (DialogGroup.DataFiles.Count > 0) total++;
+			return total > 1;
+		}
+
 		public void UpdateCombinedGroup(bool updateCombinedEntries = false)
 		{
-			CombinedGroup.DataFiles = new ObservableCollection<IKeyFileData>(ModsGroup.DataFiles.Union(PublicGroup.DataFiles).ToList());
-			CombinedGroup.Visibility = (publicGroup.DataFiles.Count > 0 && modsGroup.DataFiles.Count > 0);
+			CombinedGroup.DataFiles = new ObservableRangeCollection<IKeyFileData>();
+			CombinedGroup.DataFiles.AddRange(ModsGroup.DataFiles);
+			CombinedGroup.DataFiles.AddRange(PublicGroup.DataFiles);
+			CombinedGroup.DataFiles.AddRange(DialogGroup.DataFiles);
+			CombinedGroup.Visibility = MultipleGroupsEntriesFilled();
 			RaisePropertyChanged("CombinedGroup");
 			RaisePropertyChanged("Groups");
 
@@ -158,9 +170,9 @@ namespace SCG.Modules.DOS2DE.Data.View
 			}
 		}
 
-		private ObservableCollection<IKeyFileData> dataFiles;
+		private ObservableRangeCollection<IKeyFileData> dataFiles;
 
-		public ObservableCollection<IKeyFileData> DataFiles
+		public ObservableRangeCollection<IKeyFileData> DataFiles
 		{
 			get { return dataFiles; }
 			set
@@ -239,7 +251,7 @@ namespace SCG.Modules.DOS2DE.Data.View
 		{
 			Name = name;
 			CombinedEntries = new DOS2DEStringKeyFileDataBase("All");
-			DataFiles = new ObservableCollection<IKeyFileData>();
+			DataFiles = new ObservableRangeCollection<IKeyFileData>();
 			Tabs = new ObservableCollection<IKeyFileData>();
 
 			UpdateAllCommand = new ActionCommand(UpdateCombinedData);
