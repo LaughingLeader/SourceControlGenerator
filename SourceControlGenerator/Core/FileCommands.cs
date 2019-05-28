@@ -261,6 +261,22 @@ namespace SCG
 			return Helpers.Image.CheckImageType(filename) != Util.HelperUtil.ImageType.None;
 		}
 
+		public static bool FileExtensionFound(string fPath, params string[] extensions)
+		{
+			if (extensions.Length > 1)
+			{
+				Array.Sort(extensions, StringComparer.OrdinalIgnoreCase);
+				int result = Array.BinarySearch(extensions, Path.GetExtension(fPath), StringComparer.OrdinalIgnoreCase);
+				//Log.Here().Activity($"Binary search: {fPath} [{string.Join(",", extensions)}] = {result}");
+				return result > -1;
+			}
+			else if (extensions.Length == 1)
+			{
+				return extensions[0].Equals(Path.GetExtension(fPath), StringComparison.OrdinalIgnoreCase);
+			}
+			return false;
+		}
+
 		public static void Init()
 		{
 			loadCommands = new LoadCommands();

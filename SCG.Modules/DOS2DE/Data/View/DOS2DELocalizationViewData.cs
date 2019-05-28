@@ -38,6 +38,18 @@ namespace SCG.Modules.DOS2DE.Data.View
 			}
 		}
 
+		private DOS2DELocalizationGroup dialogGroup;
+
+		public DOS2DELocalizationGroup DialogGroup
+		{
+			get { return dialogGroup; }
+			set
+			{
+				dialogGroup = value;
+				RaisePropertyChanged("DialogGroup");
+			}
+		}
+
 		private DOS2DELocalizationGroup publicGroup;
 
 		public DOS2DELocalizationGroup PublicGroup
@@ -90,7 +102,7 @@ namespace SCG.Modules.DOS2DE.Data.View
 
 		public void UpdateCombinedGroup(bool updateCombinedEntries = false)
 		{
-			CombinedGroup.DataFiles = new ObservableCollection<DOS2DEStringKeyFileData>(ModsGroup.DataFiles.Union(PublicGroup.DataFiles).ToList());
+			CombinedGroup.DataFiles = new ObservableCollection<IKeyFileData>(ModsGroup.DataFiles.Union(PublicGroup.DataFiles).ToList());
 			CombinedGroup.Visibility = (publicGroup.DataFiles.Count > 0 && modsGroup.DataFiles.Count > 0);
 			RaisePropertyChanged("CombinedGroup");
 			RaisePropertyChanged("Groups");
@@ -118,13 +130,15 @@ namespace SCG.Modules.DOS2DE.Data.View
 
 		public DOS2DELocalizationViewData()
 		{
-			ModsGroup = new DOS2DELocalizationGroup("Mods");
-			PublicGroup = new DOS2DELocalizationGroup("Public");
+			ModsGroup = new DOS2DELocalizationGroup("Locale (Mods)");
+			DialogGroup = new DOS2DELocalizationGroup("Dialog");
+			PublicGroup = new DOS2DELocalizationGroup("Locale (Public)");
 			CombinedGroup = new DOS2DELocalizationGroup("All");
 			Groups = new ObservableCollection<DOS2DELocalizationGroup>();
 			Groups.Add(CombinedGroup);
 			Groups.Add(ModsGroup);
 			Groups.Add(PublicGroup);
+			Groups.Add(DialogGroup);
 
 			GenerateHandlesCommands = new ActionCommand(GenerateHandles);
 		}
@@ -144,9 +158,9 @@ namespace SCG.Modules.DOS2DE.Data.View
 			}
 		}
 
-		private ObservableCollection<DOS2DEStringKeyFileData> dataFiles;
+		private ObservableCollection<IKeyFileData> dataFiles;
 
-		public ObservableCollection<DOS2DEStringKeyFileData> DataFiles
+		public ObservableCollection<IKeyFileData> DataFiles
 		{
 			get { return dataFiles; }
 			set
@@ -156,11 +170,11 @@ namespace SCG.Modules.DOS2DE.Data.View
 			}
 		}
 
-		public ObservableCollection<DOS2DEStringKeyFileData> Tabs { get; set; }
+		public ObservableCollection<IKeyFileData> Tabs { get; set; }
 
-		private DOS2DEStringKeyFileData combinedEntries;
+		private IKeyFileData combinedEntries;
 
-		public DOS2DEStringKeyFileData CombinedEntries
+		public IKeyFileData CombinedEntries
 		{
 			get { return combinedEntries; }
 			private set
@@ -184,7 +198,7 @@ namespace SCG.Modules.DOS2DE.Data.View
 			}
 		}
 
-		public DOS2DEStringKeyFileData SelectedFile
+		public IKeyFileData SelectedFile
 		{
 			get
 			{
@@ -208,7 +222,7 @@ namespace SCG.Modules.DOS2DE.Data.View
 
 		public void UpdateCombinedData()
 		{
-			Tabs = new ObservableCollection<DOS2DEStringKeyFileData>(DataFiles);
+			Tabs = new ObservableCollection<IKeyFileData>(DataFiles);
 			Tabs.Insert(0, CombinedEntries);
 
 			CombinedEntries.Entries.Clear();
@@ -224,18 +238,28 @@ namespace SCG.Modules.DOS2DE.Data.View
 		public DOS2DELocalizationGroup(string name="")
 		{
 			Name = name;
-			CombinedEntries = new DOS2DEStringKeyFileData(null, "All");
-			DataFiles = new ObservableCollection<DOS2DEStringKeyFileData>();
-			Tabs = new ObservableCollection<DOS2DEStringKeyFileData>();
+			CombinedEntries = new DOS2DEStringKeyFileDataBase("All");
+			DataFiles = new ObservableCollection<IKeyFileData>();
+			Tabs = new ObservableCollection<IKeyFileData>();
 
 			UpdateAllCommand = new ActionCommand(UpdateCombinedData);
 		}
 	}
 
-	public class DOS2DEStringKeyFileData : PropertyChangedBase
+	public interface IKeyFileData
 	{
-		public LSLib.LS.Resource Source { get; private set; }
+		ObservableRangeCollection<DOS2DEKeyEntry> Entries { get; set; }
 
+		string Name { get; set; }
+		bool Active { get; set; }
+		bool AllSelected { get; set; }
+
+		void SelectAll();
+		void SelectNone();
+	}
+
+	public class DOS2DEStringKeyFileDataBase : PropertyChangedBase, IKeyFileData
+	{
 		public ObservableRangeCollection<DOS2DEKeyEntry> Entries { get; set; }
 
 		private string name;
@@ -288,83 +312,27 @@ namespace SCG.Modules.DOS2DE.Data.View
 			}
 		}
 
-
-		public DOS2DEStringKeyFileData(LSLib.LS.Resource res = null, string name = "")
+		public DOS2DEStringKeyFileDataBase(string name = "")
 		{
 			Entries = new ObservableRangeCollection<DOS2DEKeyEntry>();
 
 			Name = name;
-
-			try
-			{
-				if (res != null)
-				{
-					Source = res;
-
-					var rootNode = res.Regions.First().Value;
-					foreach (var entry in rootNode.Children)
-					{
-						foreach (var node in entry.Value)
-						{
-							DOS2DEKeyEntry localeEntry = new DOS2DEKeyEntry(node);
-							Entries.Add(localeEntry);
-
-							//TraceNode(node);
-						}
-
-					}
-				}
-				
-			}
-			finally { }
 		}
+	}
 
-		public void Debug_TestEntries()
+	public class DOS2DEStringKeyFileData : DOS2DEStringKeyFileDataBase
+	{
+		public LSLib.LS.Resource Source { get; private set; }
+
+		public LSLib.LS.Enums.ResourceFormat Format { get; set; }
+
+		public string SourcePath { get; set; }
+
+		public DOS2DEStringKeyFileData(LSLib.LS.Enums.ResourceFormat resourceFormat, LSLib.LS.Resource res, string sourcePath, string name = "") : base(name)
 		{
-			for (int i=0;i<4;i++)
-			{
-				var node = new LSLib.LS.Node();
-				var att = new LSLib.LS.NodeAttribute(LSLib.LS.NodeAttribute.DataType.DT_TranslatedString);
-				att.Value = new LSLib.LS.TranslatedString();
-
-				var handle = Guid.NewGuid().ToString().Replace('-', 'g').Insert(0, "h");
-				if (att.Value is LSLib.LS.TranslatedString str)
-				{
-					str.Handle = handle;
-					str.Value = "Test";
-				}
-
-				node.Attributes.Add("Content", att);
-				var entry = new DOS2DEKeyEntry(node);
-				Entries.Add(entry);
-			}
-		}
-
-		private void TraceNodes(KeyValuePair<string, List<LSLib.LS.Node>> keyValuePair, int indent = 0)
-		{
-			Log.Here().Activity($"{String.Concat(Enumerable.Repeat("\t", indent))}Key[{keyValuePair.Key}]|Value[{keyValuePair.Value}]");
-			foreach (var next in keyValuePair.Value)
-			{
-				TraceNode(next, indent + 1);
-			}
-		}
-
-		private void TraceNode(LSLib.LS.Node v, int indent = 0)
-		{
-			Log.Here().Activity($"{String.Concat(Enumerable.Repeat("\t", indent))}Name[{v.Name}]|{v.GetType()}|Parent: [{v.Parent.Name}]");
-			foreach (var att in v.Attributes)
-			{
-				TraceAtt(att, indent + 1);
-			}
-			foreach (var child in v.Children)
-			{
-				TraceNodes(child, indent + 1);
-			}
-		}
-
-		private void TraceAtt(KeyValuePair<string, LSLib.LS.NodeAttribute> attdict, int indent = 0)
-		{
-			Log.Here().Activity($"{String.Concat(Enumerable.Repeat("\t", indent))}Attribute: {attdict.Key} | {attdict.Value.Type} = {attdict.Value.Value}");
+			Source = res;
+			SourcePath = sourcePath;
+			Format = resourceFormat;
 		}
 	}
 
@@ -372,46 +340,57 @@ namespace SCG.Modules.DOS2DE.Data.View
 	{
 		private LSLib.LS.Node node;
 
-		private LSLib.LS.NodeAttribute uuidNode;
-		private LSLib.LS.NodeAttribute contentNode;
+		public LSLib.LS.NodeAttribute KeyAttribute { get; set; }
+
+		public LSLib.LS.NodeAttribute TranslatedStringAttribute { get; set; }
+
+		public LSLib.LS.TranslatedString TranslatedString { get; set; }
+
+		private bool lockKey = false;
+
+		public bool LockKey
+		{
+			get { return lockKey; }
+			set
+			{
+				lockKey = value;
+				RaisePropertyChanged("LockKey");
+			}
+		}
 
 		public string Key
 		{
-			get { return uuidNode != null ? uuidNode.Value.ToString() : "Key"; }
+			get { return KeyAttribute != null ? KeyAttribute.Value.ToString() : "None"; }
 			set
 			{
-				if(node != null) node.Attributes["UUID"].Value = value;
-				RaisePropertyChanged("Key");
+				if (KeyAttribute != null)
+				{
+					KeyAttribute.Value = value;
+					RaisePropertyChanged("Key");
+				}
 			}
 		}
 
 		public string Content
 		{
-			get { return contentNode != null ? contentNode.Value.ToString() : "Content"; }
+			get { return TranslatedString != null ? TranslatedString.Value : "Content"; }
 			set
 			{
-				if (node != null) node.Attributes["Content"].Value = value;
+				TranslatedString.Value = value;
 				RaisePropertyChanged("Content");
 			}
 		}
 
 		public string Handle
 		{
-			get
-			{
-				if (contentNode != null && contentNode.Value is LSLib.LS.TranslatedString str)
-				{
-					return str.Handle;
-				}
-				return "ls::TranslatedStringRepository::s_HandleUnknown";
-			}
+			get { return TranslatedString != null ? TranslatedString.Handle : "ls::TranslatedStringRepository::s_HandleUnknown"; }
 			set
 			{
-				if (contentNode != null && contentNode.Value is LSLib.LS.TranslatedString str)
+				if (TranslatedString != null)
 				{
-					str.Handle = value;
+					TranslatedString.Handle = value;
+					RaisePropertyChanged("Handle");
 				}
-				RaisePropertyChanged("Handle");
 			}
 		}
 
@@ -429,12 +408,13 @@ namespace SCG.Modules.DOS2DE.Data.View
 
 		public DOS2DEKeyEntry(LSLib.LS.Node resNode)
 		{
-			if(resNode != null)
-			{
-				node = resNode;
+			node = resNode;
 
-				node.Attributes.TryGetValue("UUID", out uuidNode);
-				node.Attributes.TryGetValue("Content", out contentNode);
+			if (resNode != null)
+			{
+				
+
+				
 			}
 		}
 	}

@@ -33,5 +33,8 @@ namespace SCG.Modules.DOS2DE.Core
 		public static string Button_BackupSelected = "Backup selected projects to auto-generated project folders.";
 		public static string Button_BackupSelectedTo = "Backup selected projects to folder...";
 		public static string Button_StartGitGenerator = "Open the Git Generation window for selected projects...";
+
+		public static string Button_GenerateHandles = "Generate Handles for Unset Entries";
+		public static string Button_ExportToXML = "Create Localization XML from Selected...";
 	}
 }

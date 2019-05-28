@@ -5,13 +5,14 @@
 		xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 		xmlns:local="clr-namespace:SCG.Modules.DOS2DE.Windows"
 		xmlns:data="clr-namespace:SCG.Modules.DOS2DE.Data.View"
+		xmlns:core="clr-namespace:SCG.Modules.DOS2DE.Core"
 		xmlns:conv="clr-namespace:SCG.Converters;assembly=SourceControlGenerator"
 		xmlns:win="clr-namespace:SCG.Windows;assembly=SourceControlGenerator"
 		xmlns:behavior="clr-namespace:SCG.Controls.Behavior;assembly=SourceControlGenerator"
 		xmlns:dgx="urn:tom-englert.de/DataGridExtensions"
 		mc:Ignorable="d"
 		d:DataContext="{d:DesignInstance data:LocalizationEditorDesignData, IsDesignTimeCreatable=True}"
-		Title="LocalizationEditorWindow" Height="450" Width="800">
+		Title="Localization Editor" Height="450" Width="800">
 	<win:HideWindowBase.Resources>
 		<ResourceDictionary>
 			<ResourceDictionary.MergedDictionaries>
@@ -63,7 +64,7 @@
 								</DataTemplate>
 							</DataGridTemplateColumn.CellTemplate>
 						</DataGridTemplateColumn>
-						<DataGridTextColumn Header="Key" Binding="{Binding Key}" MinWidth="50" Width="Auto" CellStyle="{StaticResource DataGrid_NoHighlight}" />
+						<DataGridTextColumn Header="Key" Binding="{Binding Key}" MinWidth="50" Width="Auto" CellStyle="{StaticResource DataGrid_NoHighlight}" IsReadOnly="{Binding LockKey}" />
 						<DataGridTextColumn Header="Content" Binding="{Binding Content}" MinWidth="50" Width="*" />
 						<DataGridTextColumn Header="Handle" Binding="{Binding Handle}" MinWidth="50" Width="Auto" />
 					</DataGrid.Columns>
@@ -105,12 +106,30 @@
 									<RowDefinition x:Name="RowDefinition0" Height="Auto"/>
 									<RowDefinition x:Name="RowDefinition1" Height="*"/>
 								</Grid.RowDefinitions>
-								<StackPanel Grid.Column="0" Grid.Row="0" Background="Transparent" Margin="2,2,2,0" Panel.ZIndex="1" Orientation="Horizontal">
+								<Grid Grid.Column="0" Grid.Row="0" Background="Transparent" Margin="2,2,2,0" Panel.ZIndex="1">
+									<Grid.ColumnDefinitions>
+										<ColumnDefinition Width="*" />
+										<ColumnDefinition Width="Auto" />
+									</Grid.ColumnDefinitions>
 									<TabPanel x:Name="headerPanel" Background="Transparent" IsItemsHost="true" KeyboardNavigation.TabIndex="1"/>
-									<StackPanel Background="Transparent" Margin="0" Orientation="Horizontal">
-										<Button Content="Generate Handles" HorizontalAlignment="Right" Command="{Binding Source={StaticResource LocaleMainData}, Path=GenerateHandlesCommands}" />
+									<StackPanel Background="Transparent" Orientation="Horizontal" HorizontalAlignment="Right" Grid.Column="1" Margin="4">
+										<StackPanel.Resources>
+											<Style TargetType="Button">
+												<Setter Property="MinHeight" Value="16" />
+												<Setter Property="MinWidth" Value="16" />
+												<Setter Property="MaxHeight" Value="16" />
+												<Setter Property="MaxWidth" Value="16" />
+												<Setter Property="Margin" Value="1,0,0,0" />
+											</Style>
+										</StackPanel.Resources>
+										<Button ToolTip="{x:Static core:DOS2DETooltips.Button_GenerateHandles}" HorizontalAlignment="Right" Command="{Binding Source={StaticResource LocaleMainData}, Path=GenerateHandlesCommands}">
+											<Image Source="{Binding Source={StaticResource IconProxy}, Path=Data.WriteToDatabase, FallbackValue={x:Null}}" Stretch="UniformToFill" />
+										</Button>
+										<Button ToolTip="{x:Static core:DOS2DETooltips.Button_ExportToXML}" HorizontalAlignment="Right" Command="{Binding Source={StaticResource LocaleMainData}, Path=GenerateHandlesCommands}">
+											<Image Source="{Binding Source={StaticResource IconProxy}, Path=Data.XML_Template, FallbackValue={x:Null}}" Stretch="UniformToFill" />
+										</Button>
 									</StackPanel>
-								</StackPanel>
+								</Grid>
 								<Border x:Name="contentPanel" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{TemplateBinding Background}" Grid.Column="0" KeyboardNavigation.DirectionalNavigation="Contained" Grid.Row="1" KeyboardNavigation.TabIndex="2" KeyboardNavigation.TabNavigation="Local">
 									<ContentPresenter x:Name="PART_SelectedContentHost" ContentSource="SelectedContent" Margin="{TemplateBinding Padding}" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
 								</Border>
