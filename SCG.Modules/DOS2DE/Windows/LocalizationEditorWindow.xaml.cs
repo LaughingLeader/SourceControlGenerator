@@ -24,8 +24,18 @@ namespace SCG.Modules.DOS2DE.Windows
 	/// </summary>
 	public partial class LocalizationEditorWindow : HideWindowBase
 	{
+		/*
+		public DOS2DELocalizationViewData LocaleData
+		{
+			get { return (DOS2DELocalizationViewData)GetValue(LocaleDataProperty); }
+			set { SetValue(LocaleDataProperty, value); }
+		}
 
-		public DOS2DELocalizationViewData Data { get; set; }
+		// Using a DependencyProperty as the backing store for KeywordName.  This enables animation, styling, binding, etc...
+		public static readonly DependencyProperty LocaleDataProperty =
+			DependencyProperty.Register("LocaleData", typeof(string), typeof(DOS2DELocalizationViewData), new PropertyMetadata(""));
+		*/
+		public DOS2DELocalizationViewData LocaleData { get; set; }
 
 		public LocaleExportWindow ExportWindow { get; set; }
 
@@ -39,22 +49,11 @@ namespace SCG.Modules.DOS2DE.Windows
 
 		public void LoadData(DOS2DELocalizationViewData data)
 		{
-			//Data = data;
-			//DataContext = Data;
-
-			if(DataContext is DOS2DELocalizationViewData currentdata)
-			{
-				currentdata.Groups = new System.Collections.ObjectModel.ObservableCollection<DOS2DELocalizationGroup>(data.Groups);
-				currentdata.UpdateCombinedGroup(true);
-				Log.Here().Important($"DataContext is {DataContext.GetType()}");
-				Log.Here().Important($"Count {currentdata.Groups.Count}");
-
-				Data = (DOS2DELocalizationViewData)this.DataContext;
-			}
-			else
-			{
-				Log.Here().Error($"DataContext is {DataContext.GetType()}");
-			}
+			LocaleData = data;
+			LocaleData.UpdateCombinedGroup(true);
+			DataContext = LocaleData;
+			//currentdata.Groups = new System.Collections.ObjectModel.ObservableCollection<DOS2DELocalizationGroup>(data.Groups);
+			//currentdata.UpdateCombinedGroup(true);
 		}
 
 		private void Entries_SelectAll(object sender, RoutedEventArgs e)
@@ -83,7 +82,7 @@ namespace SCG.Modules.DOS2DE.Windows
 		{
 			if (ExportWindow.FindName("OutputTextbox") is TextBox outputTextbox)
 			{
-				outputTextbox.Text = DOS2DELocalizationEditor.ExportData(Data);
+				outputTextbox.Text = DOS2DELocalizationEditor.ExportData(LocaleData, LocaleData.ExportSource, LocaleData.ExportKeys);
 			}
 
 			if (!ExportWindow.IsVisible)

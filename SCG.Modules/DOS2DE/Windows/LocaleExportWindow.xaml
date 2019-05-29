@@ -9,13 +9,12 @@
 		Title="Localization Export" Height="200" Width="400">
 	<Grid>
 		<Grid.RowDefinitions>
-			<RowDefinition Height="*" />
 			<RowDefinition Height="Auto" />
+			<RowDefinition Height="*" />
 		</Grid.RowDefinitions>
-		<TextBox AllowDrop="True" IsReadOnly="False" AcceptsReturn="True" x:Name="OutputTextbox" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto"/>
-		<StackPanel Orientation="Horizontal" Grid.Row="1">
-			<Button Content="Close" x:Name="CloseButton" Click="CloseButton_Click" />
+		<StackPanel Orientation="Horizontal" Grid.Row="0" Margin="4">
 			<Button Content="Copy" x:Name="CopyButton" Click="CopyButton_Click" />
 		</StackPanel>
+		<TextBox AllowDrop="True" IsReadOnly="False" AcceptsReturn="True" x:Name="OutputTextbox" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" Grid.Row="1"/>
 	</Grid>
 </win:HideWindowBase>

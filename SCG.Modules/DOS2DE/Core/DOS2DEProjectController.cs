@@ -1100,7 +1100,7 @@ namespace SCG.Core
 			{
 				AppController.Main.MainWindow.Dispatcher.BeginInvoke(new Action(async () =>
 				{
-					var data = await DOS2DELocalizationEditor.LoadLocalizationDataAsync(Data.Settings.DOS2DEDataDirectory, Data.ManagedProjects.First());
+					var data = await DOS2DELocalizationEditor.LoadLocalizationDataAsync(Data.Settings.DOS2DEDataDirectory, Data.ManagedProjects.Where(p => p.Selected));
 					localizationEditorWindow.LoadData(data);
 					localizationEditorWindow.Show();
 				}), DispatcherPriority.Background);

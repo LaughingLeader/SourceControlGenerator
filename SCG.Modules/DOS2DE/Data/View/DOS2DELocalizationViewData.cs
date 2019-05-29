@@ -6,6 +6,7 @@ using System.Collections.ObjectModel;
 using System.Windows.Input;
 using SCG.Commands;
 using SCG.Modules.DOS2DE.Utilities;
+using System.Windows;
 
 namespace SCG.Modules.DOS2DE.Data.View
 {
@@ -82,6 +83,30 @@ namespace SCG.Modules.DOS2DE.Data.View
 			}
 		}
 
+		private bool exportKeys = true;
+
+		public bool ExportKeys
+		{
+			get { return exportKeys; }
+			set
+			{
+				exportKeys = value;
+				RaisePropertyChanged("ExportKeys");
+			}
+		}
+
+		private bool exportSource = true;
+
+		public bool ExportSource
+		{
+			get { return exportSource; }
+			set
+			{
+				exportSource = value;
+				RaisePropertyChanged("ExportSource");
+			}
+		}
+
 		public ICommand GenerateHandlesCommands { get; set; }
 
 		public void GenerateHandles()
@@ -103,9 +128,9 @@ namespace SCG.Modules.DOS2DE.Data.View
 		private bool MultipleGroupsEntriesFilled()
 		{
 			int total = 0;
-			if (ModsGroup.DataFiles.Count > 0) total++;
-			if (PublicGroup.DataFiles.Count > 0) total++;
-			if (DialogGroup.DataFiles.Count > 0) total++;
+			if (ModsGroup.DataFiles.Count > 0) total += 1;
+			if (PublicGroup.DataFiles.Count > 0) total += 1;
+			if (DialogGroup.DataFiles.Count > 0) total += 1;
 			return total > 1;
 		}
 
@@ -116,8 +141,6 @@ namespace SCG.Modules.DOS2DE.Data.View
 			CombinedGroup.DataFiles.AddRange(PublicGroup.DataFiles);
 			CombinedGroup.DataFiles.AddRange(DialogGroup.DataFiles);
 			CombinedGroup.Visibility = MultipleGroupsEntriesFilled();
-			RaisePropertyChanged("CombinedGroup");
-			RaisePropertyChanged("Groups");
 
 			if(!CombinedGroup.Visibility)
 			{
@@ -129,7 +152,24 @@ namespace SCG.Modules.DOS2DE.Data.View
 				{
 					SelectedGroupIndex = 2;
 				}
+				else if (DialogGroup.Visibility)
+				{
+					SelectedGroupIndex = 3;
+				}
+				else
+				{
+					SelectedGroupIndex = 0;
+				}
 			}
+			else
+			{
+				SelectedGroupIndex = 0;
+			}
+
+			RaisePropertyChanged("CombinedGroup");
+			RaisePropertyChanged("Groups");
+
+			Log.Here().Activity($"Setting selected group index to '{SelectedGroupIndex}' {CombinedGroup.Visibility}.");
 
 			if(updateCombinedEntries)
 			{
@@ -182,7 +222,7 @@ namespace SCG.Modules.DOS2DE.Data.View
 			}
 		}
 
-		public ObservableCollection<IKeyFileData> Tabs { get; set; }
+		public ObservableRangeCollection<IKeyFileData> Tabs { get; set; }
 
 		private IKeyFileData combinedEntries;
 
@@ -214,7 +254,7 @@ namespace SCG.Modules.DOS2DE.Data.View
 		{
 			get
 			{
-				return SelectedFileIndex > -1 ? Tabs[SelectedFileIndex] : null;
+				return SelectedFileIndex > -1 && Tabs.Count > 0 ? Tabs[SelectedFileIndex] : null;
 			}
 		}
 
@@ -234,8 +274,9 @@ namespace SCG.Modules.DOS2DE.Data.View
 
 		public void UpdateCombinedData()
 		{
-			Tabs = new ObservableCollection<IKeyFileData>(DataFiles);
-			Tabs.Insert(0, CombinedEntries);
+			Tabs = new ObservableRangeCollection<IKeyFileData>();
+			Tabs.Add(CombinedEntries);
+			Tabs.AddRange(DataFiles);
 
 			CombinedEntries.Entries.Clear();
 			foreach (var obj in DataFiles)
@@ -245,6 +286,7 @@ namespace SCG.Modules.DOS2DE.Data.View
 			CombinedEntries.Entries.OrderBy(e => e.Key);
 			RaisePropertyChanged("CombinedEntries");
 			RaisePropertyChanged("Tabs");
+			Log.Here().Activity($"Updated combined entries for '{Name}'.");
 		}
 
 		public DOS2DELocalizationGroup(string name="")
@@ -252,7 +294,7 @@ namespace SCG.Modules.DOS2DE.Data.View
 			Name = name;
 			CombinedEntries = new DOS2DEStringKeyFileDataBase("All");
 			DataFiles = new ObservableRangeCollection<IKeyFileData>();
-			Tabs = new ObservableCollection<IKeyFileData>();
+			Tabs = new ObservableRangeCollection<IKeyFileData>();
 
 			UpdateAllCommand = new ActionCommand(UpdateCombinedData);
 		}
@@ -358,28 +400,35 @@ namespace SCG.Modules.DOS2DE.Data.View
 
 		public LSLib.LS.TranslatedString TranslatedString { get; set; }
 
-		private bool lockKey = false;
+		private bool keyIsEditable = false;
 
-		public bool LockKey
+		public bool KeyIsEditable
 		{
-			get { return lockKey; }
+			get { return keyIsEditable; }
 			set
 			{
-				lockKey = value;
-				RaisePropertyChanged("LockKey");
+				keyIsEditable = value;
+				RaisePropertyChanged("KeyIsEditable");
 			}
 		}
 
+		private string key = "None";
+
 		public string Key
 		{
-			get { return KeyAttribute != null ? KeyAttribute.Value.ToString() : "None"; }
+			get { return KeyAttribute != null ? KeyAttribute.Value.ToString() : key; }
 			set
 			{
 				if (KeyAttribute != null)
 				{
 					KeyAttribute.Value = value;
-					RaisePropertyChanged("Key");
 				}
+				else
+				{
+					key = value;
+				}
+
+				RaisePropertyChanged("Key");
 			}
 		}
 

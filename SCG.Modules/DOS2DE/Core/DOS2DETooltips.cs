@@ -36,5 +36,8 @@ namespace SCG.Modules.DOS2DE.Core
 
 		public static string Button_GenerateHandles = "Generate Handles for Selected Entries...\nOnly unset handles will be replaced.";
 		public static string Button_ExportToXML = "Generate Language LSX from Selected...";
+
+		public static string Checkbox_ExportXML_Keys = "Export key names as attributes in each xml node.\nEnable this if you want to keep track of what each handle is for.";
+		public static string Checkbox_ExportXML_Source= "Export the source filenames of handles as attributes in each xml node.\nEnable this if you want to keep track of what each handle is for.";
 	}
 }
