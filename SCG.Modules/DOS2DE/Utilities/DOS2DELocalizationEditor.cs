@@ -374,6 +374,8 @@ namespace SCG.Modules.DOS2DE.Utilities
 		{
 			try
 			{
+				if (!Directory.Exists(backupDirectory)) Directory.CreateDirectory(backupDirectory);
+
 				List<string> sourceFiles = new List<string>();
 				string sysFormat = CultureInfo.CurrentCulture.DateTimeFormat.ShortDatePattern.Replace("/", "-");
 				string archivePath = Path.Combine(backupDirectory, "LocalizationEditorBackup") + "_" + DateTime.Now.ToString(sysFormat + "_HH-mm-ss") + ".zip";
@@ -443,7 +445,7 @@ namespace SCG.Modules.DOS2DE.Utilities
 				{
 
 					Log.Here().Activity($"Saving '{dataFile.Name}' to '{dataFile.SourcePath}'.");
-					LSLib.LS.ResourceUtils.SaveResource(dataFile.Source, dataFile.SourcePath, ResourceFormat.LSB);
+					LSLib.LS.ResourceUtils.SaveResource(dataFile.Source, dataFile.SourcePath, dataFile.Format);
 					Log.Here().Important($"Saved '{dataFile.SourcePath}'.");
 					return 1;
 				}
