@@ -18,9 +18,11 @@ namespace SCG.Data.View
 		public string ExpanderRight => @"pack://application:,,,/SourceControlGenerator;component/Resources/Icons/ExpandChevronRight_16x.png";
 		public string Star => @"pack://application:,,,/SourceControlGenerator;component/Resources/Icons/Star_16x.png";
 		public string Convert => @"pack://application:,,,/SourceControlGenerator;component/Resources/Icons/Convert_16x.png";
+		public string Save => @"pack://application:,,,/SourceControlGenerator;component/Resources/Icons/Save_16x.png";
 		public string Save_Disabled => @"pack://application:,,,/SourceControlGenerator;component/Resources/Icons/SaveGrey_16x.png";
 		public string Save_All => @"pack://application:,,,/SourceControlGenerator;component/Resources/Icons/SaveAll_16x.png";
 		public string Save_As => @"pack://application:,,,/SourceControlGenerator;component/Resources/Icons/SaveAs_16x.png";
+		public string Save_Close => @"pack://application:,,,/SourceControlGenerator;component/Resources/Icons/SaveClose_16x.png";
 		public string Save_FileDialog => @"pack://application:,,,/SourceControlGenerator;component/Resources/Icons/SaveFileDialogControl_16x.png";
 		public string Save_Status1 => @"pack://application:,,,/SourceControlGenerator;component/Resources/Icons/SaveStatusBar1_16x.png";
 		public string Save_Table => @"pack://application:,,,/SourceControlGenerator;component/Resources/Icons/SaveTable_16x.png";

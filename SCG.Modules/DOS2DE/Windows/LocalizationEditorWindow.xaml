@@ -127,13 +127,57 @@
 										<ColumnDefinition Width="*" />
 									</Grid.ColumnDefinitions>
 									<TabPanel x:Name="headerPanel" Background="Transparent" IsItemsHost="true" KeyboardNavigation.TabIndex="1"/>
-									<StackPanel Background="Transparent" Orientation="Horizontal" HorizontalAlignment="Left" Grid.Column="1" Margin="2,4,4,4">
-										<Button ToolTip="{x:Static core:DOS2DETooltips.Button_GenerateHandles}" HorizontalAlignment="Right" 
-												Command="{Binding Path=LocaleData.GenerateHandlesCommands, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=win:HideWindowBase}}">
-											<Image Source="{Binding Source={StaticResource IconProxy}, Path=Data.WriteToDatabase, FallbackValue={x:Null}}" Stretch="UniformToFill" />
-										</Button>
+									<Grid Grid.Column="1" Background="Transparent" Margin="2,4,4,4" >
+										<Grid.ColumnDefinitions>
+											<ColumnDefinition Width="2*" />
+											<ColumnDefinition Width="1*"  />
+											<ColumnDefinition Width="2*" />
+										</Grid.ColumnDefinitions>
 
-									</StackPanel>
+										<Grid.Resources>
+											<Style TargetType="StackPanel">
+												<Setter Property="Background" Value="Transparent" />
+												<Setter Property="Orientation" Value="Horizontal" />
+												<Setter Property="HorizontalAlignment" Value="Left" />
+											</Style>
+										</Grid.Resources>
+
+										<StackPanel x:Name="CommandsPanel" Grid.Column="0" >
+											<Button ToolTip="{x:Static core:DOS2DETooltips.Button_Locale_GenerateHandles}" HorizontalAlignment="Right" 
+												Command="{Binding Path=LocaleData.GenerateHandlesCommand, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=win:HideWindowBase}}">
+												<Image Source="{Binding Source={StaticResource IconProxy}, Path=Data.WriteToDatabase, FallbackValue={x:Null}}" Stretch="UniformToFill" />
+											</Button>
+										</StackPanel>
+
+										<StackPanel x:Name="SavePanel" Grid.Column="2">
+											<Button HorizontalAlignment="Right" Command="{Binding Path=LocaleData.SaveCurrentCommand, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=win:HideWindowBase}}"
+													IsEnabled="{Binding Path=LocaleData.CanSave, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=win:HideWindowBase}}"
+													>
+												<Image Stretch="UniformToFill" ToolTipService.ShowOnDisabled="True">
+													<Image.Style>
+														<Style TargetType="Image">
+															<Style.Triggers>
+																<Trigger Property="IsEnabled" Value="False">
+																	<Setter Property="Source" Value="{Binding Source={StaticResource IconProxy}, Path=Data.Save_Disabled, FallbackValue={x:Null}}" />
+																	<Setter Property="ToolTip" Value="{x:Static core:DOS2DETooltips.Button_Locale_SaveCurrent_Disabled}" />
+																</Trigger>
+																<Trigger Property="IsEnabled" Value="True">
+																	<Setter Property="Source" Value="{Binding Source={StaticResource IconProxy}, Path=Data.Save, FallbackValue={x:Null}}" />
+																	<Setter Property="ToolTip" Value="{x:Static core:DOS2DETooltips.Button_Locale_SaveCurrent}" />
+																</Trigger>
+															</Style.Triggers>
+														</Style>
+													</Image.Style>
+												</Image>
+											</Button>
+											<Button x:Name="SaveAllButton" ToolTip="{x:Static core:DOS2DETooltips.Button_Locale_SaveAll}" HorizontalAlignment="Right" 
+													Click="SaveAllButton_Click"
+												>
+												<Image Source="{Binding Source={StaticResource IconProxy}, Path=Data.Save_All, FallbackValue={x:Null}}" Stretch="UniformToFill" />
+											</Button>
+										</StackPanel>
+									</Grid>
+									
 									<StackPanel Background="Transparent" Orientation="Horizontal" HorizontalAlignment="Left" Grid.Column="2" Margin="2,4,4,4">
 										<StackPanel.Resources>
 											<Style TargetType="CheckBox">
@@ -142,13 +186,13 @@
 												<Setter Property="MaxHeight" Value="16" />
 											</Style>
 										</StackPanel.Resources>
-										<Button x:Name="ExportButton" ToolTip="{x:Static core:DOS2DETooltips.Button_ExportToXML}" 
+										<Button x:Name="ExportButton" ToolTip="{x:Static core:DOS2DETooltips.Button_Locale_ExportToXML}" 
 												HorizontalAlignment="Right" Click="ExportButton_Click">
 											<Image Source="{Binding Source={StaticResource IconProxy}, Path=Data.XML_Template, FallbackValue={x:Null}}" Stretch="UniformToFill" />
 										</Button>
-										<CheckBox Content="Keys" ToolTip="{x:Static core:DOS2DETooltips.Checkbox_ExportXML_Keys}"
+										<CheckBox Content="Keys" ToolTip="{x:Static core:DOS2DETooltips.Checkbox_Locale_ExportXML_Keys}"
 												  IsChecked="{Binding Path=LocaleData.ExportKeys, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=win:HideWindowBase}}" />
-										<CheckBox Content="Source" ToolTip="{x:Static core:DOS2DETooltips.Checkbox_ExportXML_Source}"
+										<CheckBox Content="Source" ToolTip="{x:Static core:DOS2DETooltips.Checkbox_Locale_ExportXML_Source}"
 												  IsChecked="{Binding Path=LocaleData.ExportSource, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=win:HideWindowBase}}" />
 									</StackPanel>
 								</Grid>

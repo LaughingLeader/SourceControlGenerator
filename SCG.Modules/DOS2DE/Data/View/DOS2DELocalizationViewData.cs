@@ -24,6 +24,7 @@ namespace SCG.Modules.DOS2DE.Data.View
 				selectedGroupIndex = value;
 				RaisePropertyChanged("SelectedGroupIndex");
 				RaisePropertyChanged("SelectedGroup");
+				RaisePropertyChanged("CanSave");
 			}
 		}
 
@@ -83,6 +84,14 @@ namespace SCG.Modules.DOS2DE.Data.View
 			}
 		}
 
+		public IKeyFileData SelectedItem
+		{
+			get
+			{
+				return SelectedGroup != null ? SelectedGroup.SelectedFile : null;
+			}
+		}
+
 		private bool exportKeys = true;
 
 		public bool ExportKeys
@@ -107,7 +116,29 @@ namespace SCG.Modules.DOS2DE.Data.View
 			}
 		}
 
-		public ICommand GenerateHandlesCommands { get; set; }
+		private void SelectedFileChanged(DOS2DELocalizationGroup group, IKeyFileData keyFileData)
+		{
+			CanSave = group.CombinedEntries != keyFileData;
+			Log.Here().Activity($"Selected file changed to {group.Name} | {keyFileData.Name}");
+		}
+
+		private bool canSave = true;
+
+		public bool CanSave
+		{
+			get { return canSave; }
+			set
+			{
+				canSave = value;
+				RaisePropertyChanged("CanSave");
+			}
+		}
+
+
+
+		public ICommand SaveAllCommand { get; set; }
+		public ICommand SaveCurrentCommand { get; set; }
+		public ICommand GenerateHandlesCommand { get; set; }
 
 		public void GenerateHandles()
 		{
@@ -118,7 +149,7 @@ namespace SCG.Modules.DOS2DE.Data.View
 				{
 					if(entry.Handle.Equals("ls::TranslatedStringRepository::s_HandleUnknown", StringComparison.OrdinalIgnoreCase))
 					{
-						entry.Handle = DOS2DELocalizationEditor.NewHandle();
+						entry.Handle = DOS2DELocalizationEditor.CreateHandle();
 						Log.Here().Activity($"[{entry.Key}] New handle generated. [{entry.Handle}]");
 					}
 				}
@@ -180,6 +211,22 @@ namespace SCG.Modules.DOS2DE.Data.View
 			}
 		}
 
+		public void SaveAll()
+		{
+			
+		}
+
+		public void SaveCurrent()
+		{
+			if(SelectedGroup != null)
+			{
+				if (SelectedGroup.SelectedFile != null && SelectedGroup.SelectedFile is DOS2DEStringKeyFileData keyFileData)
+				{
+					DOS2DELocalizationEditor.SaveDataFile(keyFileData);
+				}
+			}
+		}
+
 		public DOS2DELocalizationViewData()
 		{
 			ModsGroup = new DOS2DELocalizationGroup("Locale (Mods)");
@@ -192,7 +239,14 @@ namespace SCG.Modules.DOS2DE.Data.View
 			Groups.Add(PublicGroup);
 			Groups.Add(DialogGroup);
 
-			GenerateHandlesCommands = new ActionCommand(GenerateHandles);
+			foreach(var g in Groups)
+			{
+				g.SelectedFileChanged = SelectedFileChanged;
+			}
+
+			SaveAllCommand = new ActionCommand(SaveAll);
+			SaveCurrentCommand = new ActionCommand(SaveCurrent);
+			GenerateHandlesCommand = new ActionCommand(GenerateHandles);
 		}
 	}
 
@@ -236,6 +290,7 @@ namespace SCG.Modules.DOS2DE.Data.View
 			}
 		}
 
+		public Action<DOS2DELocalizationGroup, IKeyFileData> SelectedFileChanged { get; set; }
 
 		private int selectedfileIndex = 0;
 
@@ -247,6 +302,7 @@ namespace SCG.Modules.DOS2DE.Data.View
 				selectedfileIndex = value;
 				RaisePropertyChanged("SelectedFileIndex");
 				RaisePropertyChanged("SelectedFile");
+				SelectedFileChanged?.Invoke(this, SelectedFile);
 			}
 		}
 

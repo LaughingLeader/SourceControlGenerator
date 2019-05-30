@@ -1093,7 +1093,7 @@ namespace SCG.Core
 		{
 			if (localizationEditorWindow == null)
 			{
-				localizationEditorWindow = new LocalizationEditorWindow();
+				localizationEditorWindow = new LocalizationEditorWindow(Data);
 			}
 
 			if(!localizationEditorWindow.IsVisible)

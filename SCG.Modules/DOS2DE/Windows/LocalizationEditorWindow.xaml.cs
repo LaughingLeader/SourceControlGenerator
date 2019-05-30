@@ -16,6 +16,8 @@ using System.Windows.Shapes;
 using Alphaleonis.Win32.Filesystem;
 using SCG.Windows;
 using DataGridExtensions;
+using SCG.Data.View;
+using SCG.Core;
 
 namespace SCG.Modules.DOS2DE.Windows
 {
@@ -39,9 +41,13 @@ namespace SCG.Modules.DOS2DE.Windows
 
 		public LocaleExportWindow ExportWindow { get; set; }
 
-		public LocalizationEditorWindow()
+		private DOS2DEModuleData moduleData;
+
+		public LocalizationEditorWindow(DOS2DEModuleData data)
 		{
 			InitializeComponent();
+
+			moduleData = data;
 
 			ExportWindow = new LocaleExportWindow();
 			ExportWindow.Hide();
@@ -82,13 +88,23 @@ namespace SCG.Modules.DOS2DE.Windows
 		{
 			if (ExportWindow.FindName("OutputTextbox") is TextBox outputTextbox)
 			{
-				outputTextbox.Text = DOS2DELocalizationEditor.ExportData(LocaleData, LocaleData.ExportSource, LocaleData.ExportKeys);
+				outputTextbox.Text = DOS2DELocalizationEditor.ExportDataAsXML(LocaleData, LocaleData.ExportSource, LocaleData.ExportKeys);
 			}
 
 			if (!ExportWindow.IsVisible)
 			{
 				ExportWindow.Show();
 				ExportWindow.Owner = this;
+			}
+		}
+
+		private void SaveAllButton_Click(object sender, RoutedEventArgs e)
+		{
+			var backupSuccess = DOS2DELocalizationEditor.BackupDataFiles(LocaleData, moduleData.Settings.BackupRootDirectory);
+			if (backupSuccess.Result == true)
+			{
+				var successes = DOS2DELocalizationEditor.SaveDataFiles(LocaleData);
+				Log.Here().Important($"Saved {successes} localization files.");
 			}
 		}
 	}

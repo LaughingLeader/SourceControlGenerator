@@ -68,7 +68,7 @@ namespace SCG.FileGen
 							{
 								//Disabled for now, since it seems to slow the process down.
 								//if (updateProgress) AppController.Main.UpdateProgressLog($"Adding \"{f.Replace(rootPath, "").Replace(@"\", "/").Substring(1)}\" to archive...");
-								await WriteZipAsync(zipWriter, f.Replace(rootPath, ""), f, token.Value);
+								await WriteZipAsync(zipWriter, f.Replace(rootPath, ""), f, token.Value).ConfigureAwait(false);
 							}
 
 							return BackupResult.Success;
@@ -223,6 +223,47 @@ namespace SCG.FileGen
 				if(!token.Value.IsCancellationRequested)
 				{
 					Log.Here().Error($"Error writing archive {directoryPath} to {archiveFilePath}: {ex.ToString()}");
+				}
+				else
+				{
+					Log.Here().Warning($"Cancelled writing archive \"{archiveFilePath}\".");
+				}
+			}
+			return BackupResult.Error;
+		}
+
+		public static async Task<BackupResult> CreateArchiveFromFiles(List<string> files, string archiveFilePath, CancellationToken? token = null)
+		{
+			try
+			{
+				if (files.Count > 0)
+				{
+					if (token == null) token = CancellationToken.None;
+
+					var targetFiles = new ConcurrentBag<string>(files);
+					using (var zip = File.OpenWrite(archiveFilePath))
+					using (var zipWriter = WriterFactory.Open(zip, ArchiveType.Zip, CompressionType.Deflate))
+					{
+						Log.Here().Activity($"Saving {files.Count} files to archive at '{archiveFilePath}'.");
+						foreach (var f in targetFiles)
+						{
+							string rootPath = Path.GetPathRoot(f);
+							await WriteZipAsync(zipWriter, f.Replace(rootPath, ""), f, token.Value).ConfigureAwait(false);
+						}
+
+						return BackupResult.Success;
+					}
+				}
+				else
+				{
+					Log.Here().Error($"Source folders for project are empty.");
+				}
+			}
+			catch (Exception ex)
+			{
+				if (!token.Value.IsCancellationRequested)
+				{
+					Log.Here().Error($"Error writing archive to '{archiveFilePath}': {ex.ToString()}");
 				}
 				else
 				{
