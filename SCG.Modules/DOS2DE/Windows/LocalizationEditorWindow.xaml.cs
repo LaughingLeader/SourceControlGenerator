@@ -18,13 +18,14 @@ using SCG.Windows;
 using DataGridExtensions;
 using SCG.Data.View;
 using SCG.Core;
+using System.ComponentModel;
 
 namespace SCG.Modules.DOS2DE.Windows
 {
 	/// <summary>
 	/// Interaction logic for LocalizationEditorWindow.xaml
 	/// </summary>
-	public partial class LocalizationEditorWindow : HideWindowBase
+	public partial class LocalizationEditorWindow : Window
 	{
 		/*
 		public DOS2DELocalizationViewData LocaleData
@@ -60,6 +61,8 @@ namespace SCG.Modules.DOS2DE.Windows
 			DataContext = LocaleData;
 			//currentdata.Groups = new System.Collections.ObjectModel.ObservableCollection<DOS2DELocalizationGroup>(data.Groups);
 			//currentdata.UpdateCombinedGroup(true);
+			LocaleData.MenuData.RegisterShortcuts(this);
+			LocaleData.ModuleData = moduleData;
 		}
 
 		private void Entries_SelectAll(object sender, RoutedEventArgs e)
@@ -106,6 +109,11 @@ namespace SCG.Modules.DOS2DE.Windows
 				var successes = DOS2DELocalizationEditor.SaveDataFiles(LocaleData);
 				Log.Here().Important($"Saved {successes} localization files.");
 			}
+		}
+
+		private void LocaleWindow_Closing(object sender, CancelEventArgs e)
+		{
+			LocaleData.MenuData.UnregisterShortcuts(this);
 		}
 	}
 }

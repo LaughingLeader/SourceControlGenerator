@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using Alphaleonis.Win32.Filesystem;
 using LSLib.LS.Enums;
+using SCG.Data.View;
 using SCG.Modules.DOS2DE.Utilities;
 
 namespace SCG.Modules.DOS2DE.Data.View
@@ -18,6 +19,8 @@ namespace SCG.Modules.DOS2DE.Data.View
 		public string Name { get; set; } = "Test";
 
 		public ObservableCollection<DOS2DELocalizationGroup> Groups { get; set; }
+
+		public LocaleMenuData MenuData { get; set; }
 
 		public LocalizationEditorDesignData()
 		{
@@ -54,6 +57,7 @@ namespace SCG.Modules.DOS2DE.Data.View
 			Data.UpdateCombinedGroup(true);
 
 			Groups = Data.Groups;
+			MenuData = Data.MenuData;
 		}
 	}
 }

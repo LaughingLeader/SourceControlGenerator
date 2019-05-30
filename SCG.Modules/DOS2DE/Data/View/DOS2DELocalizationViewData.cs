@@ -7,11 +7,26 @@ using System.Windows.Input;
 using SCG.Commands;
 using SCG.Modules.DOS2DE.Utilities;
 using System.Windows;
+using SCG.Data.View;
 
 namespace SCG.Modules.DOS2DE.Data.View
 {
 	public class DOS2DELocalizationViewData : PropertyChangedBase
 	{
+		public DOS2DEModuleData ModuleData { get; set; }
+
+		private LocaleMenuData menuData;
+
+		public LocaleMenuData MenuData
+		{
+			get { return menuData; }
+			set
+			{
+				menuData = value;
+				RaisePropertyChanged("MenuData");
+			}
+		}
+
 		public ObservableCollection<DOS2DELocalizationGroup> Groups { get; set; }
 
 		private int selectedGroupIndex = 0;
@@ -21,10 +36,16 @@ namespace SCG.Modules.DOS2DE.Data.View
 			get { return selectedGroupIndex; }
 			set
 			{
+				bool updateCanSave = selectedGroupIndex != value;
+				
 				selectedGroupIndex = value;
 				RaisePropertyChanged("SelectedGroupIndex");
 				RaisePropertyChanged("SelectedGroup");
-				RaisePropertyChanged("CanSave");
+
+				if (updateCanSave)
+				{
+					SelectedFileChanged(Groups[selectedGroupIndex], Groups[selectedGroupIndex].SelectedFile);
+				}
 			}
 		}
 
@@ -118,11 +139,18 @@ namespace SCG.Modules.DOS2DE.Data.View
 
 		private void SelectedFileChanged(DOS2DELocalizationGroup group, IKeyFileData keyFileData)
 		{
-			CanSave = group.CombinedEntries != keyFileData;
-			Log.Here().Activity($"Selected file changed to {group.Name} | {keyFileData.Name}");
+			if(keyFileData != null)
+			{
+				CanSave = (group.CombinedEntries != keyFileData) || group.DataFiles.Count == 1;
+				Log.Here().Activity($"Selected file changed to {group.Name} | {keyFileData.Name}");
+			}
+			else
+			{
+				CanSave = false;
+			}
 		}
 
-		private bool canSave = true;
+		private bool canSave;
 
 		public bool CanSave
 		{
@@ -130,11 +158,46 @@ namespace SCG.Modules.DOS2DE.Data.View
 			set
 			{
 				canSave = value;
+				SaveCurrentMenuData.IsEnabled = canSave;
 				RaisePropertyChanged("CanSave");
 			}
 		}
 
+		private string outputDate;
 
+		public string OutputDate
+		{
+			get { return outputDate; }
+			set
+			{
+				outputDate = value;
+				RaisePropertyChanged("OutputDate");
+			}
+		}
+
+		private string outputText;
+
+		public string OutputText
+		{
+			get { return outputText; }
+			set
+			{
+				outputText = value;
+				RaisePropertyChanged("OutputText");
+			}
+		}
+
+		private LogType outputType;
+
+		public LogType OutputType
+		{
+			get { return outputType; }
+			set
+			{
+				outputType = value;
+				RaisePropertyChanged("OutputType");
+			}
+		}
 
 		public ICommand SaveAllCommand { get; set; }
 		public ICommand SaveCurrentCommand { get; set; }
@@ -211,9 +274,36 @@ namespace SCG.Modules.DOS2DE.Data.View
 			}
 		}
 
+		public int TotalFiles
+		{
+			get
+			{
+				try
+				{
+					return CombinedGroup.CombinedEntries.Entries.Count;
+				}
+				catch { }
+				return 0;
+			}
+		}
+
 		public void SaveAll()
 		{
-			
+			Log.Here().Activity("Saving all files.");
+			var backupSuccess = DOS2DELocalizationEditor.BackupDataFiles(this, ModuleData.Settings.BackupRootDirectory);
+			if (backupSuccess.Result == true)
+			{
+				var successes = DOS2DELocalizationEditor.SaveDataFiles(this);
+				Log.Here().Important($"Saved {successes} localization files.");
+				OutputText = $"Saved {successes}/{TotalFiles} files.";
+				OutputType = LogType.Important;
+			}
+			else
+			{
+				OutputText = $"Problem occured when backing up files. Check the log.";
+				OutputType = LogType.Error;
+			}
+			OutputDate = DateTime.Now.ToShortTimeString();
 		}
 
 		public void SaveCurrent()
@@ -222,13 +312,28 @@ namespace SCG.Modules.DOS2DE.Data.View
 			{
 				if (SelectedGroup.SelectedFile != null && SelectedGroup.SelectedFile is DOS2DEStringKeyFileData keyFileData)
 				{
-					DOS2DELocalizationEditor.SaveDataFile(keyFileData);
+					var result = DOS2DELocalizationEditor.SaveDataFile(keyFileData);
+					if(result > 0)
+					{
+						OutputText = $"Saved '{keyFileData.SourcePath}'";
+						OutputType = LogType.Important;
+					}
+					else
+					{
+						OutputText = $"Error saving '{keyFileData.SourcePath}'. Check the log.";
+						OutputType = LogType.Error;
+					}
+					OutputDate = DateTime.Now.ToShortTimeString();
 				}
 			}
 		}
 
+		private MenuData SaveCurrentMenuData { get; set; }
+
 		public DOS2DELocalizationViewData()
 		{
+			MenuData = new LocaleMenuData();
+
 			ModsGroup = new DOS2DELocalizationGroup("Locale (Mods)");
 			DialogGroup = new DOS2DELocalizationGroup("Dialog");
 			PublicGroup = new DOS2DELocalizationGroup("Locale (Public)");
@@ -247,6 +352,13 @@ namespace SCG.Modules.DOS2DE.Data.View
 			SaveAllCommand = new ActionCommand(SaveAll);
 			SaveCurrentCommand = new ActionCommand(SaveCurrent);
 			GenerateHandlesCommand = new ActionCommand(GenerateHandles);
+
+			SaveCurrentMenuData = new MenuData("SaveCurrent", "Save", SaveCurrentCommand, Key.S, ModifierKeys.Control);
+
+			MenuData.File.Add(SaveCurrentMenuData);
+			MenuData.File.Add(new MenuData("SaveAll", "Save All", SaveAllCommand, Key.S, ModifierKeys.Control | ModifierKeys.Shift));
+
+			CanSave = false;
 		}
 	}
 

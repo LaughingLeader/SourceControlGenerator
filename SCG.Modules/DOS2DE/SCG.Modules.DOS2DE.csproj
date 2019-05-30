@@ -115,6 +115,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Data\View\DOS2DELocalizationViewData.cs" />
+    <Compile Include="Data\View\LocaleMenuData.cs" />
     <Compile Include="Data\View\LocalizationEditorDesignData.cs" />
     <Compile Include="Data\View\ProjectVersionData.cs" />
     <Compile Include="Module.cs" />

@@ -1094,6 +1094,7 @@ namespace SCG.Core
 			if (localizationEditorWindow == null)
 			{
 				localizationEditorWindow = new LocalizationEditorWindow(Data);
+				localizationEditorWindow.Closing += LocalizationEditorWindow_Closing;
 			}
 
 			if(!localizationEditorWindow.IsVisible)
@@ -1107,8 +1108,13 @@ namespace SCG.Core
 			}
 			else
 			{
-				localizationEditorWindow.Hide();
+				localizationEditorWindow.Close();
 			}
+		}
+
+		private void LocalizationEditorWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+		{
+			localizationEditorWindow = null;
 		}
 
 		private MenuData BackupSelectedMenuData { get; set; }
