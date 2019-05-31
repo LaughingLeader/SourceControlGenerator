@@ -343,13 +343,24 @@ namespace SCG.Modules.DOS2DE.Utilities
 				if(fileData != null)
 				{
 					string sourcePath = "";
-					if (fileData is DOS2DEStringKeyFileData keyFileData)
+					bool findActualSource = fileData == data.SelectedGroup.CombinedEntries;
+
+					if (!findActualSource && fileData is DOS2DEStringKeyFileData keyFileData)
 					{
 						sourcePath = EscapeXml(Path.GetFileName(keyFileData.SourcePath));
 					}
 
-					foreach (var e in fileData.Entries)
+					foreach (var e in fileData.Entries.Where(fd => fd.Selected))
 					{
+						if(findActualSource)
+						{
+							var actualSource = data.SelectedGroup.DataFiles.Where(d => d.Entries.Contains(e)).FirstOrDefault();
+							if(actualSource is DOS2DEStringKeyFileData sourceFileData)
+							{
+								sourcePath = EscapeXml(Path.GetFileName(sourceFileData.SourcePath));
+							}
+						}
+
 						string content = EscapeXml(e.Content);
 						if (!String.IsNullOrWhiteSpace(e.Key) && e.KeyIsEditable)
 						{

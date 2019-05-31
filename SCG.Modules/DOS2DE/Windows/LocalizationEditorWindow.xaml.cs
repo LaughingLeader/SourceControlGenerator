@@ -91,7 +91,13 @@ namespace SCG.Modules.DOS2DE.Windows
 		{
 			if (ExportWindow.FindName("OutputTextbox") is TextBox outputTextbox)
 			{
+				Log.Here().Activity("Exporting data to xml format.");
+				outputTextbox.Text = "";
 				outputTextbox.Text = DOS2DELocalizationEditor.ExportDataAsXML(LocaleData, LocaleData.ExportSource, LocaleData.ExportKeys);
+			}
+			else
+			{
+				Log.Here().Activity("Failed to find textbox.");
 			}
 
 			if (!ExportWindow.IsVisible)

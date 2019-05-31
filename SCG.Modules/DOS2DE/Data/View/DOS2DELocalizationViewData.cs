@@ -113,7 +113,7 @@ namespace SCG.Modules.DOS2DE.Data.View
 			}
 		}
 
-		private bool exportKeys = true;
+		private bool exportKeys = false;
 
 		public bool ExportKeys
 		{
@@ -122,10 +122,11 @@ namespace SCG.Modules.DOS2DE.Data.View
 			{
 				exportKeys = value;
 				RaisePropertyChanged("ExportKeys");
+				Log.Here().Activity($"ExportKeys set to {exportKeys}");
 			}
 		}
 
-		private bool exportSource = true;
+		private bool exportSource = false;
 
 		public bool ExportSource
 		{
@@ -359,6 +360,8 @@ namespace SCG.Modules.DOS2DE.Data.View
 			MenuData.File.Add(new MenuData("SaveAll", "Save All", SaveAllCommand, Key.S, ModifierKeys.Control | ModifierKeys.Shift));
 
 			CanSave = false;
+			ExportKeys = true;
+			ExportSource = false;
 		}
 	}
 

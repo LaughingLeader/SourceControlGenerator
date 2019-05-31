@@ -113,88 +113,8 @@
 									<RowDefinition x:Name="RowDefinition0" Height="Auto"/>
 									<RowDefinition x:Name="RowDefinition1" Height="*"/>
 								</Grid.RowDefinitions>
-								<Grid Grid.Column="0" Grid.Row="0" Background="Transparent" Margin="0" Panel.ZIndex="1">
-									<Grid.Resources>
-										<Style TargetType="Button">
-											<Setter Property="MinHeight" Value="16" />
-											<Setter Property="MinWidth" Value="16" />
-											<Setter Property="MaxHeight" Value="16" />
-											<Setter Property="MaxWidth" Value="16" />
-											<Setter Property="Margin" Value="0,0,1,0" />
-										</Style>
-									</Grid.Resources>
-									<Grid.ColumnDefinitions>
-										<ColumnDefinition Width="Auto" />
-										<ColumnDefinition Width="*" />
-										<ColumnDefinition Width="*" />
-									</Grid.ColumnDefinitions>
-									<TabPanel x:Name="headerPanel" Background="Transparent" IsItemsHost="true" KeyboardNavigation.TabIndex="1"/>
-									<Grid Grid.Column="1" Background="Transparent" Margin="4,0,0,0" Height="Auto" >
-										<!--<Grid.ColumnDefinitions>
-											<ColumnDefinition Width="2*" />
-											<ColumnDefinition Width="1*"  />
-											<ColumnDefinition Width="2*" />
-										</Grid.ColumnDefinitions>-->
-
-										<Grid.Resources>
-											<Style TargetType="StackPanel">
-												<Setter Property="Background" Value="Transparent" />
-												<Setter Property="Orientation" Value="Horizontal" />
-												<Setter Property="HorizontalAlignment" Value="Left" />
-											</Style>
-										</Grid.Resources>
-										<StackPanel x:Name="ShortcutsButtonPanel" Grid.Column="0" VerticalAlignment="Center">
-											<Button Command="{Binding Path=LocaleData.SaveCurrentCommand, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}"
-													IsEnabled="{Binding Path=LocaleData.CanSave, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}"
-													>
-												<Image Stretch="UniformToFill" ToolTipService.ShowOnDisabled="True">
-													<Image.Style>
-														<Style TargetType="Image">
-															<Style.Triggers>
-																<Trigger Property="IsEnabled" Value="False">
-																	<Setter Property="Source" Value="{Binding Source={StaticResource IconProxy}, Path=Data.Save_Disabled, FallbackValue={x:Null}}" />
-																	<Setter Property="ToolTip" Value="{x:Static core:DOS2DETooltips.Button_Locale_SaveCurrent_Disabled}" />
-																</Trigger>
-																<Trigger Property="IsEnabled" Value="True">
-																	<Setter Property="Source" Value="{Binding Source={StaticResource IconProxy}, Path=Data.Save, FallbackValue={x:Null}}" />
-																	<Setter Property="ToolTip" Value="{x:Static core:DOS2DETooltips.Button_Locale_SaveCurrent}" />
-																</Trigger>
-															</Style.Triggers>
-														</Style>
-													</Image.Style>
-												</Image>
-											</Button>
-											<Button x:Name="SaveAllButton" ToolTip="{x:Static core:DOS2DETooltips.Button_Locale_SaveAll}"
-													Command="{Binding Path=LocaleData.SaveAllCommand, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}"
-												>
-												<Image Source="{Binding Source={StaticResource IconProxy}, Path=Data.Save_All, FallbackValue={x:Null}}" Stretch="UniformToFill" />
-											</Button>
-											<Rectangle VerticalAlignment="Stretch" Width="1" Margin="2,2,4,2" Stroke="Gray" />
-											<Button ToolTip="{x:Static core:DOS2DETooltips.Button_Locale_GenerateHandles}"
-												Command="{Binding Path=LocaleData.GenerateHandlesCommand, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}">
-												<Image Source="{Binding Source={StaticResource IconProxy}, Path=Data.WriteToDatabase, FallbackValue={x:Null}}" Stretch="UniformToFill" />
-											</Button>
-										</StackPanel>
-									</Grid>
-									
-									<StackPanel x:Name="ExportShortcutButtonsPanel" Background="Transparent" Orientation="Horizontal" HorizontalAlignment="Left" Grid.Column="2" Margin="0">
-										<StackPanel.Resources>
-											<Style TargetType="CheckBox">
-												<Setter Property="Margin" Value="2,1,0,0" />
-												<Setter Property="MinHeight" Value="16" />
-												<Setter Property="MaxHeight" Value="16" />
-											</Style>
-										</StackPanel.Resources>
-										<Button x:Name="ExportButton" ToolTip="{x:Static core:DOS2DETooltips.Button_Locale_ExportToXML}" 
-												HorizontalAlignment="Right" Click="ExportButton_Click">
-											<Image Source="{Binding Source={StaticResource IconProxy}, Path=Data.XML_Template, FallbackValue={x:Null}}" Stretch="UniformToFill" />
-										</Button>
-										<CheckBox Content="Keys" ToolTip="{x:Static core:DOS2DETooltips.Checkbox_Locale_ExportXML_Keys}"
-												  IsChecked="{Binding Path=LocaleData.ExportKeys, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}" />
-										<CheckBox Content="Source" ToolTip="{x:Static core:DOS2DETooltips.Checkbox_Locale_ExportXML_Source}"
-												  IsChecked="{Binding Path=LocaleData.ExportSource, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}" />
-									</StackPanel>
-								</Grid>
+								<TabPanel x:Name="headerPanel" Grid.Column="0" Grid.Row="0"
+										  Background="Transparent" IsItemsHost="true" KeyboardNavigation.TabIndex="1" Panel.ZIndex="1"/>
 								<Border x:Name="contentPanel" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{TemplateBinding Background}" Grid.Column="0" KeyboardNavigation.DirectionalNavigation="Contained" Grid.Row="1" KeyboardNavigation.TabIndex="2" KeyboardNavigation.TabNavigation="Local">
 									<ContentPresenter x:Name="PART_SelectedContentHost" ContentSource="SelectedContent" Margin="{TemplateBinding Padding}" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
 								</Border>
@@ -242,6 +162,7 @@
 	<Grid>
 		<Grid.RowDefinitions>
 			<RowDefinition Height="Auto" />
+			<RowDefinition Height="Auto" />
 			<RowDefinition Height="*" />
 			<RowDefinition Height="Auto" />
 		</Grid.RowDefinitions>
@@ -249,7 +170,67 @@
 			<Menu DockPanel.Dock="Top" ItemsSource="{Binding MenuData.Menus}" Background="Transparent" Margin="0" MinHeight="10" Padding="0"
 				  UsesItemContainerTemplate="True" ItemContainerTemplateSelector="{StaticResource MenuItemContainerTemplateSelector}" />
 		</DockPanel>
-		<TabControl Grid.Row="1" ItemsSource="{Binding Groups}" ContentTemplate="{Binding Source={StaticResource LocaleFileTabs}}"
+		<Grid Grid.Column="1" Background="Transparent" Margin="4,2,2,2" Height="Auto" Grid.Row="1" >
+			<Grid.Resources>
+				<Style TargetType="StackPanel">
+					<Setter Property="Background" Value="Transparent" />
+					<Setter Property="Orientation" Value="Horizontal" />
+					<Setter Property="HorizontalAlignment" Value="Left" />
+				</Style>
+				<Style x:Key="VerticalSeparator" TargetType="Rectangle">
+					<Setter Property="VerticalAlignment" Value="Stretch" />
+					<Setter Property="Width" Value="1" />
+					<Setter Property="Margin" Value="2,2,4,2" />
+					<Setter Property="Stroke" Value="Gray" />
+				</Style>
+			</Grid.Resources>
+			<StackPanel x:Name="ShortcutsButtonPanel" Grid.Column="0" VerticalAlignment="Center">
+				<StackPanel.Resources>
+					<Style TargetType="Button">
+						<Setter Property="MinHeight" Value="16" />
+						<Setter Property="MinWidth" Value="16" />
+						<Setter Property="MaxHeight" Value="16" />
+						<Setter Property="MaxWidth" Value="16" />
+						<Setter Property="Margin" Value="0,0,1,0" />
+					</Style>
+				</StackPanel.Resources>
+				<Button Command="{Binding LocaleData.SaveCurrentCommand}" IsEnabled="{Binding CanSave}">
+					<Image Stretch="UniformToFill" ToolTipService.ShowOnDisabled="True">
+						<Image.Style>
+							<Style TargetType="Image">
+								<Style.Triggers>
+									<Trigger Property="IsEnabled" Value="False">
+										<Setter Property="Source" Value="{Binding Source={StaticResource IconProxy}, Path=Data.Save_Disabled, FallbackValue={x:Null}}" />
+										<Setter Property="ToolTip" Value="{x:Static core:DOS2DETooltips.Button_Locale_SaveCurrent_Disabled}" />
+									</Trigger>
+									<Trigger Property="IsEnabled" Value="True">
+										<Setter Property="Source" Value="{Binding Source={StaticResource IconProxy}, Path=Data.Save, FallbackValue={x:Null}}" />
+										<Setter Property="ToolTip" Value="{x:Static core:DOS2DETooltips.Button_Locale_SaveCurrent}" />
+									</Trigger>
+								</Style.Triggers>
+							</Style>
+						</Image.Style>
+					</Image>
+				</Button>
+				<Button x:Name="SaveAllButton" Command="{Binding SaveAllCommand}" ToolTip="{x:Static core:DOS2DETooltips.Button_Locale_SaveAll}">
+					<Image Source="{Binding Source={StaticResource IconProxy}, Path=Data.Save_All, FallbackValue={x:Null}}" Stretch="UniformToFill" />
+				</Button>
+				<Rectangle Style="{StaticResource VerticalSeparator}" />
+				<Button Command="{Binding GenerateHandlesCommand}" ToolTip="{x:Static core:DOS2DETooltips.Button_Locale_GenerateHandles}">
+					<Image Source="{Binding Source={StaticResource IconProxy}, Path=Data.WriteToDatabase, FallbackValue={x:Null}}" Stretch="UniformToFill" />
+				</Button>
+				<Rectangle Style="{StaticResource VerticalSeparator}" />
+				<Button x:Name="ExportButton" ToolTip="{x:Static core:DOS2DETooltips.Button_Locale_ExportToXML}" 
+												HorizontalAlignment="Right" Click="ExportButton_Click">
+					<Image Source="{Binding Source={StaticResource IconProxy}, Path=Data.XML_Template, FallbackValue={x:Null}}" Stretch="UniformToFill" />
+				</Button>
+				<CheckBox Content="Keys" IsChecked="{Binding ExportKeys}" 
+					ToolTip="{x:Static core:DOS2DETooltips.Checkbox_Locale_ExportXML_Keys}" />
+				<CheckBox Content="Source" IsChecked="{Binding ExportSource}" 
+					ToolTip="{x:Static core:DOS2DETooltips.Checkbox_Locale_ExportXML_Source}" />
+			</StackPanel>
+		</Grid>
+		<TabControl Grid.Row="2" ItemsSource="{Binding Groups}" ContentTemplate="{Binding Source={StaticResource LocaleFileTabs}}"
 					SelectedIndex="{Binding SelectedGroupIndex}" Style="{DynamicResource LocaleGroupTabControl}"
 			>
 			<TabControl.ItemContainerStyle>
@@ -259,7 +240,7 @@
 				</Style>
 			</TabControl.ItemContainerStyle>
 		</TabControl>
-		<Grid x:Name="FooterGrid" Grid.Row="2">
+		<Grid x:Name="FooterGrid" Grid.Row="3">
 			<Grid.ColumnDefinitions>
 				<ColumnDefinition Width="90" MaxWidth="90" />
 				<ColumnDefinition Width="*" />

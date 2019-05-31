@@ -79,7 +79,7 @@ namespace SCG.Modules.DOS2DE.Data.View
 		public LocaleMenuData()
 		{
 			File = new MenuData("Base.File", "File");
-			Edit = new MenuData("Base.Options", "Options");
+			Edit = new MenuData("Base.Edit", "Edit");
 			Help = new MenuData("Base.Help", "Help");
 
 			Menus = new ObservableCollection<MenuData>()
