@@ -201,49 +201,130 @@
 					</Trigger>
 				</Style.Triggers>
 			</Style>
+
+			<Style x:Key="LocaleDataGridStyle" TargetType="{x:Type DataGrid}">
+				<Setter Property="Background" Value="{DynamicResource {x:Static SystemColors.ControlBrushKey}}"/>
+				<Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}"/>
+				<Setter Property="BorderBrush" Value="#FF688CAF"/>
+				<Setter Property="BorderThickness" Value="1"/>
+				<Setter Property="RowDetailsVisibilityMode" Value="VisibleWhenSelected"/>
+				<Setter Property="ScrollViewer.CanContentScroll" Value="true"/>
+				<Setter Property="ScrollViewer.PanningMode" Value="Both"/>
+				<Setter Property="Stylus.IsFlicksEnabled" Value="False"/>
+				<Setter Property="Template">
+					<Setter.Value>
+						<ControlTemplate TargetType="{x:Type DataGrid}">
+							<Border BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{TemplateBinding Background}" Padding="{TemplateBinding Padding}" SnapsToDevicePixels="True">
+								<ScrollViewer x:Name="DG_ScrollViewer" Focusable="false">
+									<ScrollViewer.Template>
+										<ControlTemplate TargetType="{x:Type ScrollViewer}">
+											<Grid>
+												<Grid.ColumnDefinitions>
+													<ColumnDefinition Width="Auto"/>
+													<ColumnDefinition Width="*"/>
+													<ColumnDefinition Width="Auto"/>
+												</Grid.ColumnDefinitions>
+												<Grid.RowDefinitions>
+													<RowDefinition Height="Auto"/>
+													<RowDefinition Height="Auto"/>
+													<RowDefinition Height="*"/>
+													<RowDefinition Height="Auto"/>
+												</Grid.RowDefinitions>
+												<StackPanel Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="3" Orientation="Horizontal" Margin="0"
+													Background="LightGray"
+															>
+													<Button Command="{Binding Path=DataContext.GenerateHandlesCommand, RelativeSource={RelativeSource AncestorType={x:Type Window}}}" 
+														ToolTip="{x:Static core:DOS2DETooltips.Button_Locale_GenerateHandles}"
+														Style="{StaticResource ShortcutButton}" Margin="4"
+													>
+														<Image Source="{Binding Source={StaticResource IconProxy}, Path=Data.WriteToDatabase, FallbackValue={x:Null}}" Stretch="UniformToFill" />
+													</Button>
+
+												</StackPanel>
+												<Button Command="{x:Static DataGrid.SelectAllCommand}" Grid.Row="1" Focusable="false" Style="{DynamicResource {ComponentResourceKey ResourceId=DataGridSelectAllButtonStyle, TypeInTargetAssembly={x:Type DataGrid}}}" Visibility="{Binding HeadersVisibility, ConverterParameter={x:Static DataGridHeadersVisibility.All}, Converter={x:Static DataGrid.HeadersVisibilityConverter}, RelativeSource={RelativeSource AncestorType={x:Type DataGrid}}}" Width="{Binding CellsPanelHorizontalOffset, RelativeSource={RelativeSource AncestorType={x:Type DataGrid}}}"/>
+												<DataGridColumnHeadersPresenter x:Name="PART_ColumnHeadersPresenter" Grid.Row="1" Grid.Column="1" Visibility="{Binding HeadersVisibility, ConverterParameter={x:Static DataGridHeadersVisibility.Column}, Converter={x:Static DataGrid.HeadersVisibilityConverter}, RelativeSource={RelativeSource AncestorType={x:Type DataGrid}}}"/>
+												<ScrollContentPresenter x:Name="PART_ScrollContentPresenter" CanContentScroll="{TemplateBinding CanContentScroll}" Grid.ColumnSpan="2" Grid.Row="2"/>
+												<ScrollBar x:Name="PART_VerticalScrollBar" Grid.Column="2" Maximum="{TemplateBinding ScrollableHeight}" Orientation="Vertical" Grid.Row="2" Visibility="{TemplateBinding ComputedVerticalScrollBarVisibility}" Value="{Binding VerticalOffset, Mode=OneWay, RelativeSource={RelativeSource TemplatedParent}}" ViewportSize="{TemplateBinding ViewportHeight}"/>
+												<Grid Grid.Column="1" Grid.Row="3">
+													<Grid.ColumnDefinitions>
+														<ColumnDefinition Width="{Binding NonFrozenColumnsViewportHorizontalOffset, RelativeSource={RelativeSource AncestorType={x:Type DataGrid}}}"/>
+														<ColumnDefinition Width="*"/>
+													</Grid.ColumnDefinitions>
+													<ScrollBar x:Name="PART_HorizontalScrollBar" Grid.Column="1" Maximum="{TemplateBinding ScrollableWidth}" Orientation="Horizontal" Visibility="{TemplateBinding ComputedHorizontalScrollBarVisibility}" Value="{Binding HorizontalOffset, Mode=OneWay, RelativeSource={RelativeSource TemplatedParent}}" ViewportSize="{TemplateBinding ViewportWidth}"/>
+												</Grid>
+											</Grid>
+										</ControlTemplate>
+									</ScrollViewer.Template>
+									<ItemsPresenter SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
+								</ScrollViewer>
+							</Border>
+						</ControlTemplate>
+					</Setter.Value>
+				</Setter>
+				<Style.Triggers>
+					<MultiTrigger>
+						<MultiTrigger.Conditions>
+							<Condition Property="IsGrouping" Value="true"/>
+							<Condition Property="VirtualizingPanel.IsVirtualizingWhenGrouping" Value="false"/>
+						</MultiTrigger.Conditions>
+						<Setter Property="ScrollViewer.CanContentScroll" Value="false"/>
+					</MultiTrigger>
+				</Style.Triggers>
+			</Style>
+
 			<DataTemplate x:Key="LocaleEntryGrid">
-				<DataGrid ItemsSource="{Binding Entries}" 
+				<Grid>
+					<Grid.RowDefinitions>
+						<RowDefinition Height="Auto"/>
+						<RowDefinition Height="*"/>
+					</Grid.RowDefinitions>
+					
+					<DataGrid ItemsSource="{Binding Entries}" 
 					FrozenColumnCount="1" BorderThickness="0"
 					AutoGenerateColumns="False" CanUserAddRows="True"
 					CanUserDeleteRows="True" CanUserResizeRows="True"
 					VirtualizingPanel.IsVirtualizingWhenGrouping="True"
 					dgx:DataGridFilter.IsAutoFilterEnabled="True"
 					dgx:DataGridFilter.ContentFilterFactory="{StaticResource RegexContentFilterFactory}"
+					Grid.Row="1"
+					Style="{StaticResource LocaleDataGridStyle}"
 				>
-					<DataGrid.Resources>
-						<behavior:DataContextSpy x:Key="FileData" DataContext="{Binding}" />
-					</DataGrid.Resources>
-					<DataGrid.Columns>
-						<DataGridTemplateColumn MinWidth="25" CanUserResize="False" dgx:DataGridFilterColumn.IsFilterVisible="False" >
-							<DataGridTemplateColumn.Header>
-								<CheckBox 
+						<DataGrid.Resources>
+							<behavior:DataContextSpy x:Key="FileData" DataContext="{Binding}" />
+						</DataGrid.Resources>
+						<DataGrid.Columns>
+							<DataGridTemplateColumn MinWidth="25" CanUserResize="False" dgx:DataGridFilterColumn.IsFilterVisible="False" >
+								<DataGridTemplateColumn.Header>
+									<CheckBox 
 									IsChecked="{Binding Source={StaticResource FileData}, Path=DataContext.AllSelected, Mode=TwoWay}"
 										  ToolTip="Select/Deselect All" />
-							</DataGridTemplateColumn.Header>
-							<DataGridTemplateColumn.CellStyle>
-								<Style TargetType="{x:Type DataGridCell}" BasedOn="{StaticResource DataGrid_NoHighlight}">
-									<Setter Property="Margin" Value="0" />
-								</Style>
-							</DataGridTemplateColumn.CellStyle>
-							<DataGridTemplateColumn.CellTemplate>
-								<DataTemplate>
-									<CheckBox x:Name="ProjectSelectedCheckbox" IsChecked="{Binding Selected, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Center" VerticalAlignment="Center"
+								</DataGridTemplateColumn.Header>
+								<DataGridTemplateColumn.CellStyle>
+									<Style TargetType="{x:Type DataGridCell}" BasedOn="{StaticResource DataGrid_NoHighlight}">
+										<Setter Property="Margin" Value="0" />
+									</Style>
+								</DataGridTemplateColumn.CellStyle>
+								<DataGridTemplateColumn.CellTemplate>
+									<DataTemplate>
+										<CheckBox x:Name="ProjectSelectedCheckbox" IsChecked="{Binding Selected, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Center" VerticalAlignment="Center"
 							  IsEnabled="{Binding RelativeSource={RelativeSource AncestorType={x:Type DataGridRow}},Path=IsSelected,Mode=OneWay}"
 							  />
-								</DataTemplate>
-							</DataGridTemplateColumn.CellTemplate>
-						</DataGridTemplateColumn>
-						<DataGridTextColumn Header="Key" Binding="{Binding Key}" MinWidth="50" Width="Auto">
-							<DataGridTextColumn.CellStyle>
-								<Style TargetType="DataGridCell" BasedOn="{StaticResource DataGrid_NoHighlight}">
-									<Setter Property="IsEnabled" Value="{Binding KeyIsEditable}" />
-								</Style>
-							</DataGridTextColumn.CellStyle>
-						</DataGridTextColumn>
-						<DataGridTextColumn Header="Content" Binding="{Binding Content}" MinWidth="50" Width="*" />
-						<DataGridTextColumn Header="Handle" Binding="{Binding Handle}" MinWidth="50" Width="Auto" />
-					</DataGrid.Columns>
-				</DataGrid>
+									</DataTemplate>
+								</DataGridTemplateColumn.CellTemplate>
+							</DataGridTemplateColumn>
+							<DataGridTextColumn Header="Key" Binding="{Binding Key}" MinWidth="50" Width="Auto">
+								<DataGridTextColumn.CellStyle>
+									<Style TargetType="DataGridCell" BasedOn="{StaticResource DataGrid_NoHighlight}">
+										<Setter Property="IsEnabled" Value="{Binding KeyIsEditable}" />
+									</Style>
+								</DataGridTextColumn.CellStyle>
+							</DataGridTextColumn>
+							<DataGridTextColumn Header="Content" Binding="{Binding Content}" MinWidth="50" Width="*" />
+							<DataGridTextColumn Header="Handle" Binding="{Binding Handle}" MinWidth="50" Width="Auto" />
+						</DataGrid.Columns>
+					</DataGrid>
+				</Grid>
+
 			</DataTemplate>
 
 			<DataTemplate x:Key="LocaleFileTabs">
@@ -319,10 +400,6 @@
 				</Button>
 				<Button x:Name="SaveAllButton" Command="{Binding SaveAllCommand}" ToolTip="{x:Static core:DOS2DETooltips.Button_Locale_SaveAll}">
 					<Image Source="{Binding Source={StaticResource IconProxy}, Path=Data.Save_All, FallbackValue={x:Null}}" Stretch="UniformToFill" />
-				</Button>
-				<Rectangle Style="{StaticResource VerticalSeparator}" />
-				<Button Command="{Binding GenerateHandlesCommand}" ToolTip="{x:Static core:DOS2DETooltips.Button_Locale_GenerateHandles}">
-					<Image Source="{Binding Source={StaticResource IconProxy}, Path=Data.WriteToDatabase, FallbackValue={x:Null}}" Stretch="UniformToFill" />
 				</Button>
 				<Rectangle Style="{StaticResource VerticalSeparator}" />
 				<Button x:Name="ExportButton" ToolTip="{x:Static core:DOS2DETooltips.Button_Locale_ExportToXML}" 
