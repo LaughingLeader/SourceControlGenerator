@@ -25,7 +25,7 @@ namespace SCG.Modules.DOS2DE.Utilities
 		public static async Task<DOS2DELocalizationViewData> LoadLocalizationDataAsync(string dataRootPath, IEnumerable<ModProjectData> modProjects, CancellationToken? token = null)
 		{
 			DOS2DELocalizationViewData localizationData = new DOS2DELocalizationViewData();
-			foreach(var project in modProjects)
+			foreach (var project in modProjects)
 			{
 				var success = await LoadProjectLocalizationDataAsync(localizationData, dataRootPath, project, token).ConfigureAwait(false);
 			}
@@ -246,7 +246,7 @@ namespace SCG.Modules.DOS2DE.Utilities
 					}
 				}
 
-				if (resourceFormat == ResourceFormat.LSJ)
+				if (resourceFormat == ResourceFormat.LSJ || resourceFormat == ResourceFormat.LSX)
 				{
 					var rootNode = resource.Regions.First().Value;
 
@@ -454,9 +454,13 @@ namespace SCG.Modules.DOS2DE.Utilities
 			{
 				if (dataFile.Source != null)
 				{
-
+					var saveFormat = dataFile.Format;
+					if (saveFormat == ResourceFormat.LSX && FileCommands.FileExtensionFound(dataFile.SourcePath, ".lsb"))
+					{
+						saveFormat = ResourceFormat.LSB;
+					}
 					Log.Here().Activity($"Saving '{dataFile.Name}' to '{dataFile.SourcePath}'.");
-					LSLib.LS.ResourceUtils.SaveResource(dataFile.Source, dataFile.SourcePath, dataFile.Format);
+					LSLib.LS.ResourceUtils.SaveResource(dataFile.Source, dataFile.SourcePath, saveFormat);
 					Log.Here().Important($"Saved '{dataFile.SourcePath}'.");
 					return 1;
 				}
@@ -475,6 +479,40 @@ namespace SCG.Modules.DOS2DE.Utilities
 		public static string CreateHandle()
 		{
 			return Guid.NewGuid().ToString().Replace('-', 'g').Insert(0, "h");
+		}
+
+		public static Resource CreateLocalizationResource()
+		{
+			try
+			{
+				using (var stream = new System.IO.MemoryStream())
+				{
+					var writer = new System.IO.StreamWriter(stream);
+					writer.Write(SCG.Modules.DOS2DE.Properties.Resources.DefaultLocaleResource);
+					writer.Flush();
+					stream.Position = 0;
+					Log.Here().Activity("Creating default localization resource.");
+					var resource = LSLib.LS.ResourceUtils.LoadResource(stream, ResourceFormat.LSX);
+
+					return resource;
+				}
+			}
+			catch (Exception ex)
+			{
+				Log.Here().Error($"Error creating new localization resource: {ex.ToString()}");
+				return null;
+			}
+		}
+
+		public static void AddFileData(DOS2DELocalizationGroup groupData, string destinationPath, string name)
+		{
+			var resource = CreateLocalizationResource();
+			var fileData = new DOS2DEStringKeyFileData(ResourceFormat.LSX, resource, destinationPath, name);
+			LoadFromResource(fileData, resource, ResourceFormat.LSB, true);
+
+			groupData.DataFiles.Add(fileData);
+			groupData.UpdateCombinedData();
+			groupData.SelectedFileIndex = groupData.Tabs.Count - 1;
 		}
 
 		public static string EscapeXml(string s)

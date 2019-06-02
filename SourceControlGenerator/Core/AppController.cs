@@ -524,7 +524,7 @@ namespace SCG.Core
 			string sysFormat = CultureInfo.CurrentCulture.DateTimeFormat.ShortDatePattern.Replace("/", "-");
 			string fileName = "SourceControlGenerator_Log_" + DateTime.Now.ToString(sysFormat + "_HH-mm") + ".txt";
 
-			FileCommands.Save.OpenDialog(mainWindow, "Save Log File...", Data.AppSettings.LastLogPath, logContent, (string logPath) => {
+			FileCommands.Save.OpenDialog(mainWindow, "Save Log File...", Data.AppSettings.LastLogPath, (string logPath) => {
 				if (FileCommands.WriteToFile(logPath, logContent))
 				{
 					Log.Here().Activity($"Saved log file to {logPath}.");

@@ -12,7 +12,6 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 using Alphaleonis.Win32.Filesystem;
 using SCG.Windows;
 using DataGridExtensions;
@@ -120,6 +119,33 @@ namespace SCG.Modules.DOS2DE.Windows
 		private void LocaleWindow_Closing(object sender, CancelEventArgs e)
 		{
 			LocaleData.MenuData.UnregisterShortcuts(this);
+		}
+
+		private void AddFileButton_Click(object sender, RoutedEventArgs e)
+		{
+			if(LocaleData.SelectedGroup != null)
+			{
+				var sourceRoot = "";
+				if (LocaleData.SelectedGroup.DataFiles.First() is DOS2DEStringKeyFileData keyFileData)
+				{
+					sourceRoot = Path.GetDirectoryName(keyFileData.SourcePath) + @"\";
+				}
+				else
+				{
+					if(LocaleData.SelectedGroup == LocaleData.PublicGroup)
+					{
+						sourceRoot = Path.Combine(moduleData.Settings.DOS2DEDataDirectory, "Public");
+					}
+					else if(LocaleData.SelectedGroup == LocaleData.ModsGroup)
+					{
+						sourceRoot = Path.Combine(moduleData.Settings.DOS2DEDataDirectory, "Mods");
+					}
+				}
+
+				FileCommands.Save.OpenDialog(this, "Create Localization File...", sourceRoot, (string savePath) => {
+					DOS2DELocalizationEditor.AddFileData(LocaleData.SelectedGroup, savePath, Path.GetFileName(savePath));
+				}, "NewFile.lsb", "Larian Localization File (*.lsb)|*.lsb");
+			}
 		}
 	}
 }

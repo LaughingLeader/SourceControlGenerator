@@ -106,7 +106,7 @@ namespace SCG.Commands
 			}
 		}
 
-		public void OpenDialog(Window ParentWindow, string Title, string FilePath, string FileContent, Action<string> SaveAction, string FileName = "")
+		public void OpenDialog(Window ParentWindow, string Title, string FilePath, Action<string> SaveAction, string FileName = "", string filter = "All files (*.*)|*.*")
 		{
 			string filePath = FilePath;
 			string fileName = FileName;
@@ -125,6 +125,7 @@ namespace SCG.Commands
 			fileDialog.InitialDirectory = Directory.GetParent(filePath).FullName;
 			fileDialog.FileName = fileName;
 			fileDialog.OverwritePrompt = true;
+			fileDialog.Filter = filter;
 
 			Nullable<bool> result = fileDialog.ShowDialog(ParentWindow);
 			if (result == true)

@@ -82,38 +82,52 @@ namespace SCG.Modules.DOS2DE.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to #SourceControlGenerator
-        ///######################
+        ///   Looks up a localized string similar to # SourceControlGenerator #
+        ///##########################
         ///SourceControlGenerator.json
         ///
-        ///#Levels
+        ///# Levels
         ///######################
         ///Mods/$ModFolderName/Levels/*
         ///Mods/$ModFolderName/Globals/*
         ///Editor/Mods/$ModFolderName/Levels/*
         ///
-        ///#Compiled Story files
+        ///# Story files        #
         ///######################
         ///*.div
         ///*.raw
+        ///story_orphanqueries_ignore.txt
+        ///Mods/$ModFolderName/Story/Dialogs/Autosave/*
+        ///Mods/$ModFolderName/Story/Dialogs/Recovered/*
         ///
-        ///#Assets
-        ///######################*
-        ///Public/$ModFolderName/Assets/*
-        ///#Public/$ModFolderName/GUI/*
-        ///
-        ///#Editor files
+        ///# Asset Folders      #
         ///######################
-        ///StatsEditorConfig.xml
-        ///EffectEditorConfig.xml
-        ///DockPanel.config
-        ///EditorBrowserMetadata.*
-        ///
-        ///#Assets [rest of string was truncated]&quot;;.
+        ///Public/$ModFolderName/Assets/*
+        ///#Public/$ModFolderName [rest of string was truncated]&quot;;.
         /// </summary>
         public static string DefaultGitIgnore {
             get {
                 return ResourceManager.GetString("DefaultGitIgnore", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;
+        ///&lt;save&gt;
+        ///	&lt;header version=&quot;2&quot; time=&quot;0&quot; /&gt;
+        ///	&lt;version major=&quot;3&quot; minor=&quot;6&quot; revision=&quot;4&quot; build=&quot;0&quot; /&gt;
+        ///	&lt;region id=&quot;TranslatedStringKeys&quot;&gt;
+        ///		&lt;node id=&quot;root&quot;&gt;
+        ///			&lt;children&gt;
+        ///				&lt;node id=&quot;TranslatedStringKey&quot;&gt;
+        ///					&lt;attribute id=&quot;Content&quot; value=&quot;&quot; type=&quot;28&quot; handle=&quot;ls::TranslatedStringRepository::s_HandleUnknown&quot; /&gt;
+        ///					&lt;attribute id=&quot;ExtraData&quot; value=&quot;&quot; type=&quot;23&quot; /&gt;
+        ///					&lt;attribute id=&quot;Speaker&quot; value=&quot;&quot; type=&quot;22&quot; /&gt;
+        ///					&lt;attribute id=&quot;Stub&quot; value=&quot;True&quot; type=&quot;19&quot;  [rest of string was truncated]&quot;;.
+        /// </summary>
+        public static string DefaultLocaleResource {
+            get {
+                return ResourceManager.GetString("DefaultLocaleResource", resourceCulture);
             }
         }
         
@@ -137,16 +151,18 @@ namespace SCG.Modules.DOS2DE.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to #Keywords
+        ///   Looks up a localized string similar to ### Keywords ###
         ///# ProjectName = The name of the project, without the GUID.
-        ///# ProjectGUID = The GUID(UUID) of the project.
+        ///# ProjectFolder = The folder name of the project. Typically just the project name, though imported projects may differ.
+        ///# ModUUID = The UUID of the mod.
+        ///# ModFolder = The folder value for the mod. Typically ProjectName_ModUUID
         ///
-        ///#Directories to scan
+        ///### Directories to use for junctions ###
         ///
-        ///Editor/Mods/ProjectName_ProjectGUID
-        ///Mods/ProjectName_ProjectGUID
-        ///Projects/ProjectName
-        ///Public/ProjectName_ProjectGUID.
+        ///Editor/Mods/ModFolder
+        ///Mods/ModFolder
+        ///Projects/ProjectFolder
+        ///Public/ModFolder.
         /// </summary>
         public static string DirectoryLayout {
             get {

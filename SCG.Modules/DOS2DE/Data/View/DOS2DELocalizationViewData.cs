@@ -138,19 +138,6 @@ namespace SCG.Modules.DOS2DE.Data.View
 			}
 		}
 
-		private void SelectedFileChanged(DOS2DELocalizationGroup group, IKeyFileData keyFileData)
-		{
-			if(keyFileData != null)
-			{
-				CanSave = (group.CombinedEntries != keyFileData) || group.DataFiles.Count == 1;
-				Log.Here().Activity($"Selected file changed to {group.Name} | {keyFileData.Name}");
-			}
-			else
-			{
-				CanSave = false;
-			}
-		}
-
 		private bool canSave;
 
 		public bool CanSave
@@ -162,6 +149,33 @@ namespace SCG.Modules.DOS2DE.Data.View
 				SaveCurrentMenuData.IsEnabled = canSave;
 				RaisePropertyChanged("CanSave");
 			}
+		}
+
+		private bool canAddFile = false;
+
+		public bool CanAddFile
+		{
+			get { return canAddFile; }
+			set
+			{
+				canAddFile = value;
+				RaisePropertyChanged("CanAddFile");
+			}
+		}
+
+		private void SelectedFileChanged(DOS2DELocalizationGroup group, IKeyFileData keyFileData)
+		{
+			if (keyFileData != null)
+			{
+				CanSave = (group.CombinedEntries != keyFileData) || group.DataFiles.Count == 1;
+				Log.Here().Activity($"Selected file changed to {group.Name} | {keyFileData.Name}");
+			}
+			else
+			{
+				CanSave = false;
+			}
+
+			CanAddFile = group != CombinedGroup && group != DialogGroup;
 		}
 
 		private string outputDate;
@@ -449,7 +463,7 @@ namespace SCG.Modules.DOS2DE.Data.View
 			Tabs.Add(CombinedEntries);
 			Tabs.AddRange(DataFiles);
 
-			CombinedEntries.Entries.Clear();
+			CombinedEntries.Entries = new ObservableRangeCollection<DOS2DEKeyEntry>();
 			foreach (var obj in DataFiles)
 			{
 				CombinedEntries.Entries.AddRange(obj.Entries);

@@ -8,6 +8,8 @@ namespace SCG.Data.View
 {
 	public class IconPathData
 	{
+		public string Add => @"pack://application:,,,/SourceControlGenerator;component/Resources/Icons/Add_16x.png";
+		public string AddDisabled => @"pack://application:,,,/SourceControlGenerator;component/Resources/Icons/AddGrey_16x.png";
 		public string Archive => @"pack://application:,,,/SourceControlGenerator;component/Resources/Icons/7zipIcon.png";
 		public string Folder => @"pack://application:,,,/SourceControlGenerator;component/Resources/Icons/Folder.png";
 		public string GitLogoEnabled => @"pack://application:,,,/SourceControlGenerator;component/Resources/Icons/GitLogo.png";
