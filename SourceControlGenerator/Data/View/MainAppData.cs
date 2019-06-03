@@ -85,9 +85,6 @@ namespace SCG.Data.View
 			}
 		}
 
-
-		public static IconPathData IconData { get; set; }
-
 		private MenuBarData menuBarData;
 
 		public MenuBarData MenuBarData
@@ -352,7 +349,6 @@ namespace SCG.Data.View
 		{
 			ModuleIsLoaded = false;
 
-			IconData = new IconPathData();
 			MenuBarData = new MenuBarData();
 
 			ProgressCancelCommand = new ActionCommand();

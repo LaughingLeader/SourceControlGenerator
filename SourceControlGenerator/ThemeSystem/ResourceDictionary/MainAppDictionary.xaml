@@ -12,9 +12,10 @@
 					xmlns:sys="clr-namespace:System;assembly=mscorlib"
 					xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
 					xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+					mc:Ignorable="d"
 					x:Name="MainAppDictionary"
+					
 					>
-	<proxy:IconProxy x:Key="IconProxy" Data="{x:Static data:MainAppData.IconData}"/>
 	<proxy:AppControllerProxy x:Key="AppControllerProxy" Data="{x:Static core:AppController.Main}"/>
 
 	<BooleanToVisibilityConverter  x:Key="BoolToVisibilityConverter"/>

@@ -22,7 +22,7 @@ namespace SCG.Converters
 					image.BeginInit();
 					image.CacheOption = BitmapCacheOption.OnLoad;
 					//image.CreateOptions = BitmapCreateOptions.IgnoreImageCache;
-					image.UriSource = new Uri(uri, UriKind.Absolute);
+					image.UriSource = new Uri(uri, UriKind.RelativeOrAbsolute);
 					image.EndInit();
 					return image;
 				}

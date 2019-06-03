@@ -5,6 +5,7 @@
 		xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 		xmlns:local="clr-namespace:SCG.Modules.DOS2DE.Windows"
 		xmlns:data="clr-namespace:SCG.Modules.DOS2DE.Data.View"
+		xmlns:vdata="clr-namespace:SCG.Data.View;assembly=SourceControlGenerator"
 		xmlns:core="clr-namespace:SCG.Modules.DOS2DE.Core"
 		xmlns:conv="clr-namespace:SCG.Converters;assembly=SourceControlGenerator"
 		xmlns:win="clr-namespace:SCG.Windows;assembly=SourceControlGenerator"
@@ -179,7 +180,7 @@
 												IsEnabled="{Binding RelativeSource={RelativeSource AncestorType={x:Type Window}}, Path=DataContext.CanAddFile}"
 												Tooltip_Enabled="{x:Static core:DOS2DETooltips.Button_Locale_AddFile}"
 												Tooltip_Disabled="{x:Static core:DOS2DETooltips.Button_Locale_AddFile_Disabled}"
-												Source="{Binding Source={StaticResource IconProxy}, Path=Data.Add}"
+												Source="{x:Static vdata:IconPathData.Add}"
 												Visibility="{Binding RelativeSource={RelativeSource AncestorType={x:Type Window}}, Path=DataContext.CanAddFile, Converter={StaticResource BoolToVisibilityConverter}}"
 												/>
 									</StackPanel>
@@ -274,12 +275,13 @@
 													<RowDefinition Height="*"/>
 													<RowDefinition Height="Auto"/>
 												</Grid.RowDefinitions>
-												<StackPanel Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="3" Orientation="Horizontal" Margin="0"
+												<StackPanel Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="2" Orientation="Horizontal" Margin="6,4,0,4"
 													Background="#FFDFEFFF"
 															>
+													<TextBlock Text="Actions:" VerticalAlignment="Center" Margin="4" />
 													<c:ImageButton Command="{Binding Path=DataContext.GenerateHandlesCommand, RelativeSource={RelativeSource AncestorType={x:Type Window}}}" 
 														ToolTip="{x:Static core:DOS2DETooltips.Button_Locale_GenerateHandles}"
-														Source="{Binding Source={StaticResource IconProxy}, Path=Data.WriteToDatabase}"
+														Source="{x:Static vdata:IconPathData.WriteToDatabase}"
 														Margin="4"
 													/>
 												</StackPanel>
@@ -419,15 +421,15 @@
 					</Style>
 				</StackPanel.Resources>
 				<c:ImageButton Command="{Binding SaveCurrentCommand}" IsEnabled="{Binding CanSave}" 
-					Source="{Binding Source={StaticResource IconProxy}, Path=Data.Save}"
+					Source="{x:Static vdata:IconPathData.Save}"
 					Tooltip_Enabled="{x:Static core:DOS2DETooltips.Button_Locale_SaveCurrent}"
 					Tooltip_Disabled="{x:Static core:DOS2DETooltips.Button_Locale_SaveCurrent_Disabled}"
 				/>
 				<c:ImageButton x:Name="SaveAllButton" Command="{Binding SaveAllCommand}" ToolTip="{x:Static core:DOS2DETooltips.Button_Locale_SaveAll}" 
-							   Source="{Binding Source={StaticResource IconProxy}, Path=Data.Save_All}" />
+							   Source="{x:Static vdata:IconPathData.Save_All}" />
 				<Rectangle Style="{StaticResource VerticalSeparator}" />
 				<c:ImageButton x:Name="ExportButton" Click="ExportButton_Click" ToolTip="{x:Static core:DOS2DETooltips.Button_Locale_ExportToXML}" 
-							   Source="{Binding Source={StaticResource IconProxy}, Path=Data.XML_Template}" />
+							   Source="{x:Static vdata:IconPathData.XML_Template}" />
 				<CheckBox Content="Keys" IsChecked="{Binding ExportKeys}" 
 					ToolTip="{x:Static core:DOS2DETooltips.Checkbox_Locale_ExportXML_Keys}" />
 				<CheckBox Content="Source" IsChecked="{Binding ExportSource}" 
