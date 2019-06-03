@@ -200,6 +200,7 @@
     <Compile Include="Controls\Behavior\ProgressBarAnimationBehavior.cs" />
     <Compile Include="Controls\Behavior\TextBoxEnterKeyBehavior.cs" />
     <Compile Include="Controls\ImageButton.cs" />
+    <Compile Include="Converters\BindingFallbackConverter.cs" />
     <Compile Include="Converters\GrayscaleTintImageConverter.cs" />
     <Compile Include="Converters\StringToCachedImageConverter.cs" />
     <Compile Include="Data\App\CachedImageSource.cs" />

@@ -39,31 +39,90 @@
 	<cv:LogTypeColorConverter x:Key="LogTypeColorConverter"/>
 	<cv:StringToCachedImageConverter x:Key="StringToCachedImageConverter"/>
 	<cv:GrayscaleTintImageConverter x:Key="GrayscaleTintImageConverter"/>
+	<cv:BindingFallbackConverter x:Key="BindingFallbackConverter"/>
 
 	<Style TargetType="{x:Type c:TemplateKeywordControl}"/>
 	<Style TargetType="{x:Type ListViewItem}" />
 
 	<ControlTemplate x:Key="ImageButtonTemplate" TargetType="{x:Type c:ImageButton}">
-		<Image
+		<Grid>
+			<Image
 			x:Name="ButtonImageControl"
-			MinHeight="{Binding Width, RelativeSource={RelativeSource TemplatedParent}}"
-			MinWidth="{Binding Height, RelativeSource={RelativeSource TemplatedParent}}"
-			Source="{Binding ButtonImage, RelativeSource={RelativeSource TemplatedParent}}"
-			ToolTipService.ShowOnDisabled="True"
-			>
-			<Image.Resources>
-				<Style TargetType="Image">
-					<Style.Triggers>
-						<Trigger Property="IsEnabled" Value="True">
-							<Setter Property="ToolTip" Value="{Binding Tooltip_Enabled, RelativeSource={RelativeSource TemplatedParent}}" />
-						</Trigger>
-						<Trigger Property="IsEnabled" Value="False">
-							<Setter Property="ToolTip" Value="{Binding Tooltip_Disabled, RelativeSource={RelativeSource TemplatedParent}}" />
-						</Trigger>
-					</Style.Triggers>
-				</Style>
-			</Image.Resources>
-		</Image>
+			Height="{Binding MaxSize, RelativeSource={RelativeSource TemplatedParent}}"
+			Width="{Binding MaxSize, RelativeSource={RelativeSource TemplatedParent}}"
+			Source="{Binding Source, RelativeSource={RelativeSource TemplatedParent}}"
+			ToolTipService.ShowOnDisabled="True" />
+			<Rectangle x:Name="TintRect"
+				Width="{Binding MaxSize, RelativeSource={RelativeSource TemplatedParent}}" Height="{Binding MaxSize, RelativeSource={RelativeSource TemplatedParent}}">
+				<Rectangle.Fill>
+					<SolidColorBrush Color="Transparent" />
+				</Rectangle.Fill>
+				<Rectangle.OpacityMask>
+					<ImageBrush ImageSource="{Binding Source, RelativeSource={RelativeSource TemplatedParent}}"/>
+				</Rectangle.OpacityMask>
+			</Rectangle>
+		</Grid>
+		<ControlTemplate.Triggers>
+			<Trigger Property="IsEnabled" Value="True">
+				<Setter TargetName="ButtonImageControl" Property="ToolTip">
+					<Setter.Value>
+						<MultiBinding Converter="{StaticResource BindingFallbackConverter}">
+							<Binding Path="Tooltip_Enabled" RelativeSource="{RelativeSource TemplatedParent}"/>
+							<Binding Path="ToolTip" RelativeSource="{RelativeSource TemplatedParent}"/>
+						</MultiBinding>
+					</Setter.Value>
+				</Setter>
+			</Trigger>
+			<Trigger Property="IsEnabled" Value="False">
+				<Setter TargetName="ButtonImageControl" Property="ToolTip">
+					<Setter.Value>
+						<MultiBinding Converter="{StaticResource BindingFallbackConverter}">
+							<Binding Path="Tooltip_Disabled" RelativeSource="{RelativeSource TemplatedParent}"/>
+							<Binding Path="ToolTip" RelativeSource="{RelativeSource TemplatedParent}"/>
+						</MultiBinding>
+					</Setter.Value>
+				</Setter>
+			</Trigger>
+			<MultiTrigger>
+				<MultiTrigger.Conditions>
+					<Condition Property="IsMouseOver" Value="True" />
+					<Condition Property="IsEnabled" Value="True" />
+				</MultiTrigger.Conditions>
+				<MultiTrigger.Setters>
+					<Setter TargetName="TintRect" Property="Fill">
+						<Setter.Value>
+							<SolidColorBrush Color="LightBlue" Opacity="0.5"/>
+						</Setter.Value>
+					</Setter>
+				</MultiTrigger.Setters>
+			</MultiTrigger>
+			<MultiTrigger>
+				<MultiTrigger.Conditions>
+					<Condition Property="IsMouseOver" Value="True" />
+					<Condition Property="IsEnabled" Value="False" />
+				</MultiTrigger.Conditions>
+				<MultiTrigger.Setters>
+					<Setter TargetName="TintRect" Property="Fill">
+						<Setter.Value>
+							<SolidColorBrush Color="Gray" Opacity="0.10"/>
+						</Setter.Value>
+					</Setter>
+				</MultiTrigger.Setters>
+			</MultiTrigger>
+			<MultiTrigger>
+				<MultiTrigger.Conditions>
+					<Condition Property="IsMouseOver" Value="False" />
+					<Condition Property="IsEnabled" Value="False" />
+				</MultiTrigger.Conditions>
+				<MultiTrigger.Setters>
+					<Setter TargetName="TintRect" Property="Fill">
+						<Setter.Value>
+							<SolidColorBrush Color="Gray" Opacity="0.25"/>
+						</Setter.Value>
+					</Setter>
+				</MultiTrigger.Setters>
+			</MultiTrigger>
+		</ControlTemplate.Triggers>
 	</ControlTemplate>
 
 	<!-- Default Style for Image Button -->

@@ -19,36 +19,6 @@ namespace SCG.Controls
 			DefaultStyleKeyProperty.OverrideMetadata(typeof(ImageButton), new FrameworkPropertyMetadata(typeof(ImageButton)));
 		}
 
-		public event PropertyChangedEventHandler PropertyChanged;
-
-		public void RaisePropertyChanged(string propertyName)
-		{
-			OnPropertyChanged(propertyName);
-		}
-
-		private void OnPropertyChanged(String property)
-		{
-			PropertyChangedEventHandler handler = this.PropertyChanged;
-
-			if (handler != null)
-			{
-				var e = new PropertyChangedEventArgs(property);
-				handler(this, e);
-			}
-		}
-
-		private WriteableBitmap buttonImage;
-
-		public WriteableBitmap ButtonImage
-		{
-			get { return buttonImage; }
-			set
-			{
-				buttonImage = value;
-				RaisePropertyChanged("ButtonImage");
-			}
-		}
-
 		public string Source
 		{
 			get
@@ -65,10 +35,12 @@ namespace SCG.Controls
 
 		private static void OnSourceChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
 		{
-			if (sender is ImageButton imageButton && !string.IsNullOrEmpty(imageButton.Source))
-			{
-				imageButton.ButtonImage = new WriteableBitmap(new BitmapImage(new Uri(imageButton.Source, UriKind.RelativeOrAbsolute)));
-			}
+			//if (sender is ImageButton imageButton && !string.IsNullOrEmpty(imageButton.Source))
+			//{
+			//	imageButton.ButtonImage = new WriteableBitmap(new BitmapImage(new Uri(imageButton.Source, UriKind.RelativeOrAbsolute)));
+			//	imageButton.CreateGreyImage();
+			//	imageButton.CreateHoverImage();
+			//}
 		}
 
 		public int MaxSize
@@ -99,7 +71,7 @@ namespace SCG.Controls
 		}
 
 		public static readonly DependencyProperty Tooltip_EnabledProperty =
-			DependencyProperty.Register("Tooltip_Enabled", typeof(string), typeof(ImageButton), new PropertyMetadata(""));
+			DependencyProperty.Register("Tooltip_Enabled", typeof(string), typeof(ImageButton), new PropertyMetadata(null));
 
 		public string Tooltip_Disabled
 		{
@@ -108,48 +80,33 @@ namespace SCG.Controls
 		}
 
 		public static readonly DependencyProperty Tooltip_DisabledProperty =
-			DependencyProperty.Register("Tooltip_Disabled", typeof(string), typeof(ImageButton), new PropertyMetadata(""));
+			DependencyProperty.Register("Tooltip_Disabled", typeof(string), typeof(ImageButton), new PropertyMetadata(null));
 
 
 		public ImageButton() : base()
 		{
-			IsEnabledChanged += OnEnabledChanged;
+			
 		}
 
-		private void OnEnabledChanged(object sender, DependencyPropertyChangedEventArgs e)
-		{
-			if(ButtonImage != null)
-			{
-				if(IsEnabled)
-				{
-					ButtonImage = new WriteableBitmap(new BitmapImage(new Uri(Source, UriKind.RelativeOrAbsolute)));
+		//public void CreateGreyImage()
+		//{
+		//	GreyImage = new WriteableBitmap(new BitmapImage(new Uri(Source, UriKind.RelativeOrAbsolute)));
 
-					foreach(var image in this.FindVisualChildren<Image>())
-					{
-						image.Source = null;
-						image.Source = ButtonImage;
-					}
-				}
-				else
-				{
-					byte[] orgPixels = new byte[ButtonImage.PixelHeight * ButtonImage.PixelWidth * 4];
-					byte[] newPixels = new byte[orgPixels.Length];
-					ButtonImage.CopyPixels(orgPixels, ButtonImage.PixelWidth * 4, 0);
+		//	byte[] orgPixels = new byte[GreyImage.PixelHeight * GreyImage.PixelWidth * 4];
+		//	byte[] newPixels = new byte[orgPixels.Length];
+		//	GreyImage.CopyPixels(orgPixels, GreyImage.PixelWidth * 4, 0);
 
-					for (int i = 3; i < orgPixels.Length; i += 4)
-					{
-						int grayVal = ((int)orgPixels[i - 3] + (int)orgPixels[i - 2] + (int)orgPixels[i - 1]);
-						if (grayVal != 0) grayVal = grayVal / 3;
-						newPixels[i] = orgPixels[i]; //Set AlphaChannel
-						newPixels[i - 3] = (byte)grayVal;
-						newPixels[i - 2] = (byte)grayVal;
-						newPixels[i - 1] = (byte)grayVal;
-					}
+		//	for (int i = 3; i < orgPixels.Length; i += 4)
+		//	{
+		//		int grayVal = ((int)orgPixels[i - 3] + (int)orgPixels[i - 2] + (int)orgPixels[i - 1]);
+		//		if (grayVal != 0) grayVal = grayVal / 3;
+		//		newPixels[i] = orgPixels[i]; //Set AlphaChannel
+		//		newPixels[i - 3] = (byte)grayVal;
+		//		newPixels[i - 2] = (byte)grayVal;
+		//		newPixels[i - 1] = (byte)grayVal;
+		//	}
 
-					ButtonImage.WritePixels(new Int32Rect(0, 0, ButtonImage.PixelWidth, ButtonImage.PixelHeight), newPixels, ButtonImage.PixelWidth * 4, 0);
-				}
-				
-			}
-		}
+		//	GreyImage.WritePixels(new Int32Rect(0, 0, GreyImage.PixelWidth, GreyImage.PixelHeight), newPixels, GreyImage.PixelWidth * 4, 0);
+		//}
 	}
 }
