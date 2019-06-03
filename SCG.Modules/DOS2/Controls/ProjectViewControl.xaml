@@ -38,7 +38,7 @@
 					<Setter.Value>
 						<ControlTemplate>
 							<Grid>
-								<Image Name="Image" Source="{Binding Source={StaticResource IconProxy}, Path=Data.RefreshSmall, FallbackValue={x:Null}}" Stretch="UniformToFill" MaxHeight="16" MaxWidth="16" Width="16" Height="16"/>
+								<Image Name="Image" Source="{Binding Source={x:Static data:IconPathData.Refresh}, Converter={StaticResource StringToCachedImageConverter}}" Stretch="UniformToFill" MaxHeight="16" MaxWidth="16" Width="16" Height="16"/>
 								<Rectangle Name="ImageHighlight" Width="16" Height="16" Visibility="Collapsed">
 									<Rectangle.Fill>
 										<SolidColorBrush Color="White" Opacity="0.25"/>
@@ -169,13 +169,13 @@
 										<Setter.Value>
 											<StackPanel Orientation="Horizontal" cb:MarginSetter.Margin="2">
 												<TextBlock Text="{Binding AvailableProjectsToggleText, FallbackValue='Available Projects'}" />
-												<Image Source="{Binding Source={StaticResource IconProxy}, Path=Data.ExpanderRight, FallbackValue={x:Null}}"
+												<Image Source="{Binding Source={x:Static data:IconPathData.ExpandChevronRight}, Converter={StaticResource StringToCachedImageConverter}}"
 													RenderTransformOrigin=".5,.5">
 													<Image.RenderTransform>
 														<RotateTransform Angle="180" />
 													</Image.RenderTransform>
 												</Image>
-												<Image Source="{Binding Source={StaticResource IconProxy}, Path=Data.Star, FallbackValue={x:Null}}" Visibility="{Binding NewProjectsAvailable, Converter={StaticResource BoolToVisibilityConverter}}" />
+												<Image Source="{x:Static data:IconPathData.Star}" Visibility="{Binding NewProjectsAvailable, Converter={StaticResource BoolToVisibilityConverter}}" />
 											</StackPanel>
 										</Setter.Value>
 									</Setter>
@@ -187,7 +187,7 @@
 												<Setter.Value>
 													<StackPanel Orientation="Horizontal" cb:MarginSetter.Margin="2">
 														<TextBlock Text="{Binding AvailableProjectsToggleText, FallbackValue='Available Projects'}" />
-														<Image Source="{Binding Source={StaticResource IconProxy}, Path=Data.ExpanderRight, FallbackValue={x:Null}}" />
+														<Image Source="{Binding Source={x:Static data:IconPathData.ExpandChevronRight}, Converter={StaticResource StringToCachedImageConverter}}" />
 													</StackPanel>
 												</Setter.Value>
 											</Setter>
@@ -260,7 +260,7 @@
 													</Style>
 												</StackPanel.Resources>
 												<Button x:Name="Btn_Backup" ToolTip="{x:Static core:DOS2Tooltips.Button_BackupFolder}" Command="{Binding OpenBackupFolder}" >
-													<Image Source="{Binding Source={StaticResource IconProxy}, Path=Data.Archive, FallbackValue={x:Null}}" Stretch="UniformToFill"/>
+													<Image Source="{x:Static data:IconPathData.Archive}" Stretch="UniformToFill"/>
 												</Button>
 												<Button x:Name="Btn_GenGit" IsEnabled="{Binding GitGenerated}" Command="{Binding OpenGitFolder}" >
 													<Image Stretch="UniformToFill" ToolTipService.ShowOnDisabled="True">
@@ -268,11 +268,11 @@
 															<Style TargetType="Image">
 																<Style.Triggers>
 																	<Trigger Property="IsEnabled" Value="False">
-																		<Setter Property="Source" Value="{Binding Source={StaticResource IconProxy}, Path=Data.GitLogoDisabled, FallbackValue={x:Null}}" />
+																		<Setter Property="Source" Value="{Binding Source={x:Static data:IconPathData.GitLogo_Disabled}, Converter={StaticResource StringToCachedImageConverter}}" />
 																		<Setter Property="ToolTip" Value="{x:Static core:DOS2Tooltips.Button_GitFolderDisabled}" />
 																	</Trigger>
 																	<Trigger Property="IsEnabled" Value="True">
-																		<Setter Property="Source" Value="{Binding Source={StaticResource IconProxy}, Path=Data.GitLogoEnabled, FallbackValue={x:Null}}" />
+																		<Setter Property="Source" Value="{Binding Source={x:Static data:IconPathData.GitLogo}, Converter={StaticResource StringToCachedImageConverter}}" />
 																		<Setter Property="ToolTip" Value="{x:Static core:DOS2Tooltips.Button_GitFolder}" />
 																	</Trigger>
 																</Style.Triggers>
@@ -281,7 +281,7 @@
 													</Image>
 												</Button>
 												<Button x:Name="Btn_DataFolders" ToolTip="{x:Static core:DOS2Tooltips.Button_DataFolderParent}" Click="SetDataFolderContextMenuTarget" >
-													<Image Source="{Binding Source={StaticResource IconProxy}, Path=Data.Folder, FallbackValue={x:Null}}" Stretch="UniformToFill"/>
+													<Image Source="{x:Static data:IconPathData.Folder}" Stretch="UniformToFill"/>
 													<Button.ContextMenu>
 														<ContextMenu>
 															<MenuItem x:Name="Btn_EditorFolder" Header="{x:Static core:DOS2Tooltips.Button_DataFolderEditor}" Command="{Binding OpenEditorFolder}" />
@@ -318,7 +318,7 @@
 												</Button>
 												<Button x:Name="Btn_OpenMarkdown" ToolTip="{x:Static core:DOS2Tooltips.Button_MarkdownConverter}" IsEnabled="{Binding GitGenerated}" Command="{Binding Path=Data.OpenProjectReadmeInMarkdownConverterCommand, Source={StaticResource AppControllerProxy}}"
 														CommandParameter="{Binding}" >
-													<Image Source="{Binding Source={StaticResource IconProxy}, Path=Data.Convert, FallbackValue={x:Null}}" Stretch="UniformToFill"/>
+													<Image Source="{x:Static data:IconPathData.Convert}" Stretch="UniformToFill"/>
 												</Button>
 											</StackPanel>
 										</DataTemplate>

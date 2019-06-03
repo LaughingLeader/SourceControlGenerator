@@ -176,7 +176,6 @@ namespace SCG.Modules.DOS2DE.Data.View
 			}
 
 			CanAddFile = group != CombinedGroup && group != DialogGroup;
-
 			Log.Here().Activity($"Can add file: {CanAddFile}");
 		}
 

@@ -249,7 +249,11 @@
     <Compile Include="Data\Proxy\AppControllerProxy.cs" />
     <Compile Include="Data\Proxy\BindingProxy.cs" />
     <Compile Include="Data\Proxy\IconProxy.cs" />
-    <Compile Include="Data\View\IconPathData.cs" />
+    <Compile Include="Data\View\IconPathData.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>IconPathData.tt</DependentUpon>
+    </Compile>
     <Compile Include="Data\View\LogData.cs" />
     <Compile Include="Data\View\LogWindowViewData.cs" />
     <Compile Include="Data\View\MarkdownConverterViewData.cs" />
@@ -446,7 +450,7 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Resources\Icons\7zipIcon.png">
+    <Resource Include="Resources\Icons\Archive.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>
     <Resource Include="Resources\Icons\Activity_16x.png">
@@ -512,6 +516,10 @@
     <Resource Include="Resources\Icons\XSLTTemplate_16x.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>
+    <Content Include="Data\View\IconPathData.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>IconPathData.cs</LastGenOutput>
+    </Content>
     <Content Include="Resources\Logos\DivinityOriginalSin2DE.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -585,6 +593,9 @@
       <Project>{2709c5c0-66ae-49dc-a65b-391163a39602}</Project>
       <Name>SCG.Utilities</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

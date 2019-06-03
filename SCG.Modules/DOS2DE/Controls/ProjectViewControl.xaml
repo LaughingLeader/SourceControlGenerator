@@ -105,7 +105,7 @@
 						<c:ImageButton x:Name="Btn_AvailableProjects_Refresh" ToolTip="{Binding Source={x:Static core:DOS2DETooltips.Button_RefreshAvailableProjects}, FallbackValue='Refresh Available Projects'}" 
 								Click="Btn_AvailableProjects_Refresh_Click" 
 								IsEnabled="{Binding CanClickRefresh}" 
-								Source="{x:Static vdata:IconPathData.RefreshSmall}" Style="{StaticResource RefreshButtonStyle}" />
+								Source="{x:Static vdata:IconPathData.Refresh}" Style="{StaticResource RefreshButtonStyle}" />
 					</StackPanel>
 					<Grid Grid.Row="1" Width="200" MaxWidth="200">
 						<Grid>
@@ -161,7 +161,7 @@
 					<StackPanel Orientation="Horizontal">
 						<Label Content="Managed Projects" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Row="0" />
 						<c:ImageButton x:Name="Btn_ModProjects_Refresh" ToolTip="Refresh Project Data" Click="Btn_ModProjects_Refresh_Click" 
-							IsEnabled="{Binding CanClickRefresh}" Source="{x:Static vdata:IconPathData.RefreshSmall}" 
+							IsEnabled="{Binding CanClickRefresh}" Source="{x:Static vdata:IconPathData.Refresh}" 
 							Style="{StaticResource RefreshButtonStyle}" />
 					</StackPanel>
 					<Grid Grid.Column="2">
@@ -178,7 +178,7 @@
 										<Setter.Value>
 											<StackPanel Orientation="Horizontal" cb:MarginSetter.Margin="2">
 												<TextBlock Text="{Binding AvailableProjectsToggleText, FallbackValue='Available Projects'}" />
-												<Image Source="{Binding Source={x:Static vdata:IconPathData.ExpanderRight}, Converter={StaticResource StringToCachedImageConverter}}"
+												<Image Source="{Binding Source={x:Static vdata:IconPathData.ExpandChevronRight}, Converter={StaticResource StringToCachedImageConverter}}"
 													RenderTransformOrigin=".5,.5">
 													<Image.RenderTransform>
 														<RotateTransform Angle="180" />
@@ -196,7 +196,7 @@
 												<Setter.Value>
 													<StackPanel Orientation="Horizontal" cb:MarginSetter.Margin="2">
 														<TextBlock Text="{Binding AvailableProjectsToggleText, FallbackValue='Available Projects'}" />
-														<Image Source="{Binding Source={x:Static vdata:IconPathData.ExpanderRight}, Converter={StaticResource StringToCachedImageConverter}}" />
+														<Image Source="{Binding Source={x:Static vdata:IconPathData.ExpandChevronRight}, Converter={StaticResource StringToCachedImageConverter}}" />
 													</StackPanel>
 												</Setter.Value>
 											</Setter>
@@ -268,7 +268,7 @@
 												<c:ImageButton x:Name="Btn_Backup" ToolTip="{x:Static core:DOS2DETooltips.Button_BackupFolder}" Command="{Binding OpenBackupFolder}"
 														Source="{x:Static vdata:IconPathData.Archive}"/>
 												<c:ImageButton x:Name="Btn_GenGit" IsEnabled="{Binding GitGenerated}" Command="{Binding OpenGitFolder}"
-													Source="{x:Static vdata:IconPathData.GitLogoEnabled}"
+													Source="{x:Static vdata:IconPathData.GitLogo}"
 													Tooltip_Enabled="{x:Static core:DOS2DETooltips.Button_GitFolder}"
 													Tooltip_Disabled="{x:Static core:DOS2DETooltips.Button_GitFolderDisabled}"
 															   >
@@ -277,7 +277,7 @@
 															<Setter Property="Template" Value="{StaticResource ImageButtonTemplate}" />
 															<Style.Triggers>
 																<Trigger Property="IsEnabled" Value="False">
-																	<Setter Property="Source" Value="{x:Static vdata:IconPathData.GitLogoDisabled}" />
+																	<Setter Property="Source" Value="{x:Static vdata:IconPathData.GitLogo_Disabled}" />
 																</Trigger>
 															</Style.Triggers>
 														</Style>

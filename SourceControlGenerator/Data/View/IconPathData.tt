@@ -1,0 +1,74 @@
+﻿// This is an auto-generated file.
+<#@ template language="C#" hostSpecific="true" debug="True" #>
+<#@ output extension="cs" #>
+<#@ assembly name="System.Core" #>
+<#@ assembly name="EnvDte" #>
+<#@ import namespace="System.Linq" #>
+<#@ import namespace="System.IO" #>
+<#@ import namespace="System.Collections.Generic" #>
+<#@ import namespace="System.Text.RegularExpressions" #>
+<#@ import namespace="System" #>
+<#
+ /***************************************************************************************************
+ T4 template to generate list of files that are part of the project. This template is useful for 
+ generating list of css/js resources to be put in bundle. The value comes from the fact that files 
+ which are not part of the project (e.g. - excluded files) will not actually be included in the 
+ resulting list.
+ (https://gist.github.com/niaher/bfa87f0aeda1204091fe)
+ ***************************************************************************************************/
+
+  var visualStudio = (this.Host as IServiceProvider).GetService(typeof(EnvDTE.DTE)) as EnvDTE.DTE;
+  var project = visualStudio.Solution.FindProjectItem(this.Host.TemplateFile).ContainingProject as EnvDTE.Project;
+
+  string root = Host.ResolvePath("");
+  var projectItems = GetProjectItemsRecursively(project.ProjectItems);
+#>
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace SCG.Data.View
+{
+	public static class IconPathData
+	{
+<# ListFiles("../../../Resources/Icons", "png", projectItems); #>
+	}
+}
+	<#+
+		public void ListFiles(string path, string fileType, List<string> projectItems)
+		{
+			var root = Host.ResolvePath("");
+		
+			var fileNames = Directory.EnumerateFiles(root + path, "*.*", SearchOption.AllDirectories).OrderBy(f => f).ToList();
+
+			foreach(string fileName in fileNames)
+			{
+				var packName = $"pack://application:,,,/SourceControlGenerator;component/Resources/Icons/{Path.GetFileName(fileName)}";
+				var variableName = Path.GetFileNameWithoutExtension(fileName).Replace("_16x", "");
+				WriteLine($"\t\tpublic static readonly string {variableName} = @\"{packName}\";");
+			}
+		}
+
+		public List<string> GetProjectItemsRecursively(EnvDTE.ProjectItems items)
+		{
+			var ret = new List<string>();
+			if (items == null) return ret;
+
+			foreach(EnvDTE.ProjectItem item in items)
+			{
+				string result = item.FileNames[1].Replace("\\", "/");
+			
+				// If not folder.
+				if (result[result.Length - 1] != '\\')
+				{
+					ret.Add(result);
+				}
+						
+				ret.AddRange(GetProjectItemsRecursively(item.ProjectItems));
+			}
+
+			return ret;
+		}
+#>

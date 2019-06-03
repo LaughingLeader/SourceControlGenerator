@@ -44,6 +44,9 @@ namespace SCG.Modules.DOS2DE.Core
 		public static string Button_Locale_AddFile = "Add Locale File";
 		public static string Button_Locale_AddFile_Disabled = "Add Locale File (Disabled for Tabs All & Dialog)";
 
+		public static string Button_Locale_AddKey = "Add Key";
+		public static string Button_Locale_AddKey_Disabled = "Add Key (Disabled for Tabs All & Dialog)";
+
 		public static string Checkbox_Locale_ExportXML_Keys = "Export key names as attributes in each xml node.\nEnable this if you want to keep track of what each handle is for.";
 		public static string Checkbox_Locale_ExportXML_Source = "Export the source filenames of handles as attributes in each xml node.\nEnable this if you want to keep track of what each handle is for.";
 	}
