@@ -8,6 +8,7 @@ using SCG.Commands;
 using SCG.Modules.DOS2DE.Utilities;
 using System.Windows;
 using SCG.Data.View;
+using LSLib.LS;
 
 namespace SCG.Modules.DOS2DE.Data.View
 {
@@ -29,7 +30,7 @@ namespace SCG.Modules.DOS2DE.Data.View
 
 		public ObservableCollection<DOS2DELocalizationGroup> Groups { get; set; }
 
-		private int selectedGroupIndex = 0;
+		private int selectedGroupIndex = -1;
 
 		public int SelectedGroupIndex
 		{
@@ -135,6 +136,7 @@ namespace SCG.Modules.DOS2DE.Data.View
 			{
 				exportSource = value;
 				RaisePropertyChanged("ExportSource");
+				Log.Here().Activity($"ExportSource set to {exportSource}");
 			}
 		}
 
@@ -163,6 +165,18 @@ namespace SCG.Modules.DOS2DE.Data.View
 			}
 		}
 
+		private bool canAddKeys = true;
+
+		public bool CanAddKeys
+		{
+			get { return canAddKeys; }
+			set
+			{
+				canAddKeys = value;
+				RaisePropertyChanged("CanAddKeys");
+			}
+		}
+
 		private void SelectedFileChanged(DOS2DELocalizationGroup group, IKeyFileData keyFileData)
 		{
 			if (keyFileData != null)
@@ -176,6 +190,7 @@ namespace SCG.Modules.DOS2DE.Data.View
 			}
 
 			CanAddFile = group != CombinedGroup && group != DialogGroup;
+			CanAddKeys = SelectedGroup != null && SelectedGroup.SelectedFile != null && !SelectedGroup.SelectedFile.Locked;
 			Log.Here().Activity($"Can add file: {CanAddFile}");
 		}
 
@@ -218,12 +233,55 @@ namespace SCG.Modules.DOS2DE.Data.View
 		public ICommand SaveAllCommand { get; set; }
 		public ICommand SaveCurrentCommand { get; set; }
 		public ICommand GenerateHandlesCommand { get; set; }
+		public ICommand AddNewKeyCommand { get; set; }
+
+		public void AddNewKey()
+		{
+			if (SelectedGroup != null && SelectedGroup.SelectedFile != null)
+			{
+				if (SelectedGroup.SelectedFile is DOS2DEStringKeyFileData fileData && fileData.Format == LSLib.LS.Enums.ResourceFormat.LSB)
+				{
+					var rootNode = fileData.Source.Regions.First().Value;
+
+					var refNode = fileData.Entries.Where(f => f.Node != null).FirstOrDefault().Node;
+					if(refNode != null)
+					{
+						var node = new Node();
+						node.Parent = rootNode;
+						node.Name = refNode.Name;
+						Log.Here().Activity($"Node name: {node.Name}");
+						foreach(var kp in refNode.Attributes)
+						{
+							var att = new NodeAttribute(kp.Value.Type);
+							att.Value = new TranslatedString()
+							{
+								Value = "",
+								Handle = DOS2DELocalizationEditor.CreateHandle()
+							};
+							node.Attributes.Add(kp.Key, att);
+						}
+
+						DOS2DEKeyEntry localeEntry = DOS2DELocalizationEditor.LoadFromNode(node, fileData.Format);
+						localeEntry.Key = "NewKey" + (fileData.Entries.Count + 1);
+						localeEntry.Content = "";
+						//localeEntry.Handle = DOS2DELocalizationEditor.CreateHandle();
+
+						fileData.Entries.Add(localeEntry);
+						SelectedGroup.UpdateCombinedData();
+					}
+				}
+			}
+			else
+			{
+				Log.Here().Activity("No selected file found. Skipping key generation.");
+			}
+		}
 
 		public void GenerateHandles()
 		{
-			Log.Here().Activity("Generating handles");
 			if (SelectedGroup != null && SelectedGroup.SelectedFile != null)
 			{
+				Log.Here().Activity("Generating handles...");
 				foreach (var entry in SelectedGroup.SelectedFile.Entries.Where(e => e.Selected))
 				{
 					if(entry.Handle.Equals("ls::TranslatedStringRepository::s_HandleUnknown", StringComparison.OrdinalIgnoreCase))
@@ -232,6 +290,10 @@ namespace SCG.Modules.DOS2DE.Data.View
 						Log.Here().Activity($"[{entry.Key}] New handle generated. [{entry.Handle}]");
 					}
 				}
+			}
+			else
+			{
+				Log.Here().Activity("No selected file found. Skipping handle generation.");
 			}
 		}
 
@@ -279,7 +341,7 @@ namespace SCG.Modules.DOS2DE.Data.View
 			RaisePropertyChanged("CombinedGroup");
 			RaisePropertyChanged("Groups");
 
-			Log.Here().Activity($"Setting selected group index to '{SelectedGroupIndex}' {CombinedGroup.Visibility}.");
+			//Log.Here().Activity($"Setting selected group index to '{SelectedGroupIndex}' {CombinedGroup.Visibility}.");
 
 			if(updateCombinedEntries)
 			{
@@ -368,6 +430,7 @@ namespace SCG.Modules.DOS2DE.Data.View
 			SaveAllCommand = new ActionCommand(SaveAll);
 			SaveCurrentCommand = new ActionCommand(SaveCurrent);
 			GenerateHandlesCommand = new ActionCommand(GenerateHandles);
+			AddNewKeyCommand = new ActionCommand(AddNewKey);
 
 			SaveCurrentMenuData = new MenuData("SaveCurrent", "Save", SaveCurrentCommand, Key.S, ModifierKeys.Control);
 
@@ -479,6 +542,7 @@ namespace SCG.Modules.DOS2DE.Data.View
 		{
 			Name = name;
 			CombinedEntries = new DOS2DEStringKeyFileDataBase("All");
+			CombinedEntries.Locked = true;
 			DataFiles = new ObservableRangeCollection<IKeyFileData>();
 			Tabs = new ObservableRangeCollection<IKeyFileData>();
 
@@ -493,6 +557,7 @@ namespace SCG.Modules.DOS2DE.Data.View
 		string Name { get; set; }
 		bool Active { get; set; }
 		bool AllSelected { get; set; }
+		bool Locked { get; set; }
 
 		void SelectAll();
 		void SelectNone();
@@ -523,6 +588,18 @@ namespace SCG.Modules.DOS2DE.Data.View
 			{
 				active = value;
 				RaisePropertyChanged("Active");
+			}
+		}
+
+		private bool locked = false;
+
+		public bool Locked
+		{
+			get { return locked; }
+			set
+			{
+				locked = value;
+				RaisePropertyChanged("Locked");
 			}
 		}
 
@@ -578,7 +655,7 @@ namespace SCG.Modules.DOS2DE.Data.View
 
 	public class DOS2DEKeyEntry : SCG.Data.PropertyChangedBase
 	{
-		private LSLib.LS.Node node;
+		public LSLib.LS.Node Node { get; set; }
 
 		public LSLib.LS.NodeAttribute KeyAttribute { get; set; }
 
@@ -623,8 +700,11 @@ namespace SCG.Modules.DOS2DE.Data.View
 			get { return TranslatedString != null ? TranslatedString.Value : "Content"; }
 			set
 			{
-				TranslatedString.Value = value;
-				RaisePropertyChanged("Content");
+				if (TranslatedString != null)
+				{
+					TranslatedString.Value = value;
+					RaisePropertyChanged("Content");
+				}
 			}
 		}
 
@@ -655,13 +735,11 @@ namespace SCG.Modules.DOS2DE.Data.View
 
 		public DOS2DEKeyEntry(LSLib.LS.Node resNode)
 		{
-			node = resNode;
+			Node = resNode;
 
 			if (resNode != null)
 			{
-				
 
-				
 			}
 		}
 	}

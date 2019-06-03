@@ -83,6 +83,8 @@ namespace SCG.Modules.DOS2DE.Utilities
 					{
 						Log.Here().Activity($"Loading dialog localization data from '{dialogLocalePath}'.");
 						var dialogLocaleData = await LoadFilesAsync(dialogLocalePath, token, ".lsj").ConfigureAwait(false);
+						//Lock dialog files, as adding a new entry is more complicated than simply adding a key.
+						dialogLocaleData.ForEach(f => f.Locked = true);
 						localizationData.DialogGroup.DataFiles.AddRange(dialogLocaleData);
 						localizationData.DialogGroup.UpdateCombinedData();
 					}
@@ -122,7 +124,6 @@ namespace SCG.Modules.DOS2DE.Utilities
 				}
 
 				localizationData.CombinedGroup.UpdateCombinedData();
-
 				//localizationData.UpdateCombinedGroup();
 
 				Log.Here().Activity($"Localization loaded.");
@@ -225,21 +226,7 @@ namespace SCG.Modules.DOS2DE.Utilities
 					{
 						foreach (var node in entry.Value)
 						{
-							DOS2DEKeyEntry localeEntry = new DOS2DEKeyEntry(node);
-							NodeAttribute keyAtt = null;
-							NodeAttribute contentAtt = null;
-							node.Attributes.TryGetValue("UUID", out keyAtt);
-							node.Attributes.TryGetValue("Content", out contentAtt);
-
-							localeEntry.KeyAttribute = keyAtt;
-							localeEntry.KeyIsEditable = true;
-
-							if (contentAtt != null)
-							{
-								localeEntry.TranslatedStringAttribute = contentAtt;
-								localeEntry.TranslatedString = contentAtt.Value as TranslatedString;
-							}
-
+							DOS2DEKeyEntry localeEntry = LoadFromNode(node, resourceFormat);
 							stringKeyFileData.Entries.Add(localeEntry);
 						}
 
@@ -260,19 +247,8 @@ namespace SCG.Modules.DOS2DE.Utilities
 
 					foreach(var node in stringNodes)
 					{
-						DOS2DEKeyEntry localeEntry = new DOS2DEKeyEntry(node);
+						DOS2DEKeyEntry localeEntry = LoadFromNode(node, resourceFormat);
 						stringKeyFileData.Entries.Add(localeEntry);
-
-						localeEntry.KeyIsEditable = false;
-						localeEntry.Key = "Dialog Text";
-
-						NodeAttribute contentAtt = null;
-						node.Attributes.TryGetValue("TagText", out contentAtt);
-						if (contentAtt != null)
-						{
-							localeEntry.TranslatedStringAttribute = contentAtt;
-							localeEntry.TranslatedString = contentAtt.Value as TranslatedString;
-						}
 					}
 
 					/*
@@ -295,6 +271,62 @@ namespace SCG.Modules.DOS2DE.Utilities
 				Log.Here().Error($"Error loading from resource: {ex.ToString()}");
 				return false;
 			}
+		}
+
+		public static DOS2DEKeyEntry LoadFromNode(Node node, ResourceFormat resourceFormat, bool generateNewHandle = false)
+		{
+			if (resourceFormat == ResourceFormat.LSB)
+			{
+				DOS2DEKeyEntry localeEntry = new DOS2DEKeyEntry(node);
+				NodeAttribute keyAtt = null;
+				NodeAttribute contentAtt = null;
+				node.Attributes.TryGetValue("UUID", out keyAtt);
+				node.Attributes.TryGetValue("Content", out contentAtt);
+
+				localeEntry.KeyAttribute = keyAtt;
+				localeEntry.KeyIsEditable = true;
+
+				if (contentAtt == null)
+				{
+					contentAtt = new NodeAttribute(NodeAttribute.DataType.DT_TranslatedString);
+					if(contentAtt.Value is TranslatedString translatedString)
+					{
+						translatedString.Value = "";
+						translatedString.Handle = CreateHandle();
+						localeEntry.TranslatedString = translatedString;
+					}
+					localeEntry.TranslatedStringAttribute = contentAtt;
+				}
+				else
+				{
+					localeEntry.TranslatedStringAttribute = contentAtt;
+					localeEntry.TranslatedString = contentAtt.Value as TranslatedString;
+				}
+
+				if(generateNewHandle)
+				{
+					localeEntry.TranslatedString.Handle = CreateHandle();
+				}
+
+				return localeEntry;
+			}
+			else if (resourceFormat == ResourceFormat.LSJ || resourceFormat == ResourceFormat.LSX)
+			{
+				DOS2DEKeyEntry localeEntry = new DOS2DEKeyEntry(node);
+				
+				localeEntry.KeyIsEditable = false;
+				localeEntry.Key = "Dialog Text";
+
+				NodeAttribute contentAtt = null;
+				node.Attributes.TryGetValue("TagText", out contentAtt);
+				if (contentAtt != null)
+				{
+					localeEntry.TranslatedStringAttribute = contentAtt;
+					localeEntry.TranslatedString = contentAtt.Value as TranslatedString;
+				}
+				return localeEntry;
+			}
+			return null;
 		}
 
 		private static List<Node> FindTranslatedStringsInNodeList(KeyValuePair<string, List<LSLib.LS.Node>> nodeList)
@@ -361,19 +393,24 @@ namespace SCG.Modules.DOS2DE.Utilities
 							}
 						}
 
+						var sourceStr = "";
+
+						if (exportSourceName)
+						{
+							sourceStr = $" Source =\"{sourcePath}\"";
+						}
+
+						var keyStr = "";
+
+						if (exportKeyName && !String.IsNullOrWhiteSpace(e.Key) && e.KeyIsEditable)
+						{
+							keyStr = $" Key=\"{e.Key}\"";
+						}
+
 						string content = EscapeXml(e.Content);
-						if (!String.IsNullOrWhiteSpace(e.Key) && e.KeyIsEditable)
-						{
-							string addStr = "\t" + "<content contentuid=\"{0}\"{1}{2}>{3}</content>" + Environment.NewLine;
-							entriesStr += String.Format(addStr, e.Handle, exportKeyName ? $" Source =\"{sourcePath}\"" : "", exportKeyName ? $" Key=\"{e.Key}\"" : "", content);
-							//entriesStr += "\t" + $"<content contentuid=\"{e.Handle}\" Source=\"{sourcePath}\" Key=\"{e.Key}\">{e.Content}</content>" + Environment.NewLine;
-						}
-						else
-						{
-							string addStr = "\t" + "<content contentuid=\"{0}\"{1}>{2}</content>" + Environment.NewLine;
-							entriesStr += String.Format(addStr, e.Handle, exportKeyName || exportKeyName ? $" Source =\"{sourcePath}\"" : "", content);
-							//entriesStr += "\t" + $"<content contentuid=\"{e.Handle}\" Source=\"{sourcePath}\">{e.Content}</content>" + Environment.NewLine;
-						}
+
+						string addStr = "\t" + "<content contentuid=\"{0}\"{1}{2}>{3}</content>" + Environment.NewLine;
+						entriesStr += String.Format(addStr, e.Handle, sourceStr, keyStr, content);
 					}
 				}
 			}

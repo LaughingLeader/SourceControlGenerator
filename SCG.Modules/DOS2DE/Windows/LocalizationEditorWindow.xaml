@@ -180,7 +180,7 @@
 												IsEnabled="{Binding RelativeSource={RelativeSource AncestorType={x:Type Window}}, Path=DataContext.CanAddFile}"
 												Tooltip_Enabled="{x:Static core:DOS2DETooltips.Button_Locale_AddFile}"
 												Tooltip_Disabled="{x:Static core:DOS2DETooltips.Button_Locale_AddFile_Disabled}"
-												Source="{x:Static vdata:IconPathData.Add}"
+												Source="{x:Static vdata:IconPathData.AddFile}"
 												Visibility="{Binding RelativeSource={RelativeSource AncestorType={x:Type Window}}, Path=DataContext.CanAddFile, Converter={StaticResource BoolToVisibilityConverter}}"
 												/>
 									</StackPanel>
@@ -278,15 +278,21 @@
 												<StackPanel Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="2" Orientation="Horizontal" Margin="6,4,0,4"
 													Background="#FFD0FFD0"
 															>
+													<StackPanel.Resources>
+														<Style TargetType="c:ImageButton" BasedOn="{StaticResource {x:Type c:ImageButton}}">
+															<Setter Property="TintColor" Value="Lime" />
+														</Style>
+													</StackPanel.Resources>
 													<TextBlock Text="Actions:" VerticalAlignment="Center" Margin="4,0,2,0" />
-													<c:ImageButton Command="{Binding Path=DataContext.GenerateHandlesCommand, RelativeSource={RelativeSource AncestorType={x:Type Window}}}" 
-														ToolTip="{x:Static core:DOS2DETooltips.Button_Locale_GenerateHandles}"
-														Source="{x:Static vdata:IconPathData.WriteToDatabase}"
-														Margin="4"
-													/>
 													<c:ImageButton Command="{Binding Path=DataContext.AddNewKeyCommand, RelativeSource={RelativeSource AncestorType={x:Type Window}}}" 
 														Tooltip_Enabled="{x:Static core:DOS2DETooltips.Button_Locale_AddKey}"
 														Tooltip_Disabled="{x:Static core:DOS2DETooltips.Button_Locale_AddKey_Disabled}"
+														Source="{x:Static vdata:IconPathData.AddItem}"
+														IsEnabled="{Binding Path=DataContext.CanAddKeys, RelativeSource={RelativeSource AncestorType={x:Type Window}}}"
+														Margin="4"
+													/>
+													<c:ImageButton Command="{Binding Path=DataContext.GenerateHandlesCommand, RelativeSource={RelativeSource AncestorType={x:Type Window}}}" 
+														ToolTip="{x:Static core:DOS2DETooltips.Button_Locale_GenerateHandles}"
 														Source="{x:Static vdata:IconPathData.WriteToDatabase}"
 														Margin="4"
 													/>
@@ -445,7 +451,7 @@
 							   Source="{x:Static vdata:IconPathData.XSLTTemplate}" />
 				<CheckBox Content="Keys" IsChecked="{Binding ExportKeys}"
 					ToolTip="{x:Static core:DOS2DETooltips.Checkbox_Locale_ExportXML_Keys}" />
-				<CheckBox Content="Source" IsChecked="{Binding ExportSource}"
+				<CheckBox Content="Source" IsChecked="{Binding Path=DataContext.ExportSource, RelativeSource={RelativeSource AncestorType={x:Type Window}, Mode=FindAncestor}}"
 					ToolTip="{x:Static core:DOS2DETooltips.Checkbox_Locale_ExportXML_Source}" />
 			</StackPanel>
 		</Grid>

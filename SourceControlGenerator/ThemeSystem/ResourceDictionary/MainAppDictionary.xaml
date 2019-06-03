@@ -92,7 +92,7 @@
 				<MultiTrigger.Setters>
 					<Setter TargetName="TintRect" Property="Fill">
 						<Setter.Value>
-							<SolidColorBrush Color="LightBlue" Opacity="0.5"/>
+							<SolidColorBrush Color="{Binding TintColor, RelativeSource={RelativeSource TemplatedParent}}" Opacity="0.5"/>
 						</Setter.Value>
 					</Setter>
 				</MultiTrigger.Setters>
@@ -105,7 +105,7 @@
 				<MultiTrigger.Setters>
 					<Setter TargetName="TintRect" Property="Fill">
 						<Setter.Value>
-							<SolidColorBrush Color="Gray" Opacity="0.10"/>
+							<SolidColorBrush Color="Black" Opacity="0.10"/>
 						</Setter.Value>
 					</Setter>
 				</MultiTrigger.Setters>

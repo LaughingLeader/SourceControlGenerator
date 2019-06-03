@@ -83,6 +83,17 @@ namespace SCG.Controls
 			DependencyProperty.Register("Tooltip_Disabled", typeof(string), typeof(ImageButton), new PropertyMetadata(null));
 
 
+
+		public Color TintColor
+		{
+			get { return (Color)GetValue(TintColorProperty); }
+			set { SetValue(TintColorProperty, value); }
+		}
+
+		// Using a DependencyProperty as the backing store for TintColor.  This enables animation, styling, binding, etc...
+		public static readonly DependencyProperty TintColorProperty =
+			DependencyProperty.Register("TintColor", typeof(Color), typeof(ImageButton), new PropertyMetadata(Colors.LightBlue));
+
 		public ImageButton() : base()
 		{
 			
