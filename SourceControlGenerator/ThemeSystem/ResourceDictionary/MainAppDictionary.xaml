@@ -38,9 +38,38 @@
 	<cv:VisibleLogsConverter x:Key="VisibleLogsConverter"/>
 	<cv:LogTypeColorConverter x:Key="LogTypeColorConverter"/>
 	<cv:StringToCachedImageConverter x:Key="StringToCachedImageConverter"/>
+	<cv:GrayscaleTintImageConverter x:Key="GrayscaleTintImageConverter"/>
 
 	<Style TargetType="{x:Type c:TemplateKeywordControl}"/>
 	<Style TargetType="{x:Type ListViewItem}" />
+
+	<ControlTemplate x:Key="ImageButtonTemplate" TargetType="{x:Type c:ImageButton}">
+		<Image
+			x:Name="ButtonImageControl"
+			MinHeight="{Binding Width, RelativeSource={RelativeSource TemplatedParent}}"
+			MinWidth="{Binding Height, RelativeSource={RelativeSource TemplatedParent}}"
+			Source="{Binding ButtonImage, RelativeSource={RelativeSource TemplatedParent}}"
+			ToolTipService.ShowOnDisabled="True"
+			>
+			<Image.Resources>
+				<Style TargetType="Image">
+					<Style.Triggers>
+						<Trigger Property="IsEnabled" Value="True">
+							<Setter Property="ToolTip" Value="{Binding Tooltip_Enabled, RelativeSource={RelativeSource TemplatedParent}}" />
+						</Trigger>
+						<Trigger Property="IsEnabled" Value="False">
+							<Setter Property="ToolTip" Value="{Binding Tooltip_Disabled, RelativeSource={RelativeSource TemplatedParent}}" />
+						</Trigger>
+					</Style.Triggers>
+				</Style>
+			</Image.Resources>
+		</Image>
+	</ControlTemplate>
+
+	<!-- Default Style for Image Button -->
+	<Style TargetType="{x:Type c:ImageButton}" BasedOn="{x:Null}">
+		<Setter Property="Template" Value="{StaticResource ImageButtonTemplate}" />
+	</Style>
 
 	<!-- Style to hide tool tips that have an empty content. -->
 	<Style TargetType="ToolTip" BasedOn="{StaticResource {x:Type ToolTip}}">

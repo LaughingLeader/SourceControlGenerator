@@ -199,6 +199,8 @@
     <Compile Include="Controls\Behavior\MarginSetter.cs" />
     <Compile Include="Controls\Behavior\ProgressBarAnimationBehavior.cs" />
     <Compile Include="Controls\Behavior\TextBoxEnterKeyBehavior.cs" />
+    <Compile Include="Controls\ImageButton.cs" />
+    <Compile Include="Converters\GrayscaleTintImageConverter.cs" />
     <Compile Include="Converters\StringToCachedImageConverter.cs" />
     <Compile Include="Data\App\CachedImageSource.cs" />
     <Compile Include="Controls\CrossButton.cs" />
@@ -257,6 +259,7 @@
     <Compile Include="Data\View\ModuleSelectionData.cs" />
     <Compile Include="Data\View\SettingsEntryData.cs" />
     <Compile Include="Data\View\TextGeneratorData.cs" />
+    <Compile Include="Extensions\ControlExtensions.cs" />
     <Compile Include="Extensions\StringExtensions.cs" />
     <Compile Include="SCGEnum\BackupMode.cs" />
     <Compile Include="SCGEnum\FileValidation.cs" />

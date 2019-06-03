@@ -8,6 +8,7 @@
 		xmlns:core="clr-namespace:SCG.Modules.DOS2DE.Core"
 		xmlns:conv="clr-namespace:SCG.Converters;assembly=SourceControlGenerator"
 		xmlns:win="clr-namespace:SCG.Windows;assembly=SourceControlGenerator"
+		xmlns:c="clr-namespace:SCG.Controls;assembly=SourceControlGenerator"
 		xmlns:behavior="clr-namespace:SCG.Controls.Behavior;assembly=SourceControlGenerator"
 		xmlns:dgx="urn:tom-englert.de/DataGridExtensions"
 		mc:Ignorable="d"
@@ -28,6 +29,56 @@
 				<Setter Property="MinWidth" Value="16" />
 				<Setter Property="MaxHeight" Value="16" />
 				<Setter Property="MaxWidth" Value="16" />
+				<Setter Property="BorderBrush" Value="{x:Null}"/>
+				<Setter Property="BorderThickness" Value="0"/>
+				<Setter Property="Background" Value="Transparent"/>
+
+				<Setter Property="Content">
+					<Setter.Value>
+						<Style TargetType="Image">
+							<Setter Property="Stretch" Value="UniformToFill" />
+							<Style.Triggers>
+								<Trigger Property="IsEnabled" Value="False">
+									<Setter Property="Source">
+										<Setter.Value>
+											<Binding Path="Source" RelativeSource="{RelativeSource Self}">
+												<Binding.Converter>
+													<conv:GrayscaleTintImageConverter />
+												</Binding.Converter>
+											</Binding>
+										</Setter.Value>
+									</Setter>
+								</Trigger>
+							</Style.Triggers>
+						</Style>
+					</Setter.Value>
+				</Setter>
+
+				<Style.Triggers>
+					<Trigger Property="IsEnabled" Value="False">
+						<Setter Property="Foreground" Value="Transparent"/>
+						<Setter Property="Background" Value="Transparent"/>
+						<Setter Property="BorderBrush" Value="{x:Null}"/>
+						<Setter Property="BorderThickness" Value="0"/>
+					</Trigger>
+				</Style.Triggers>
+			</Style>
+
+			<Style x:Key="ButtonImage" TargetType="Image">
+				<Setter Property="Stretch" Value="UniformToFill" />
+				<Style.Triggers>
+					<Trigger Property="IsEnabled" Value="False">
+						<Setter Property="Source">
+							<Setter.Value>
+								<Binding>
+									<Binding.Converter>
+										<conv:GrayscaleTintImageConverter />
+									</Binding.Converter>
+								</Binding>
+							</Setter.Value>
+						</Setter>
+					</Trigger>
+				</Style.Triggers>
 			</Style>
 
 			<SolidColorBrush x:Key="TabItem.Selected.Background" Color="#FFFFFF"/>
@@ -121,16 +172,14 @@
 										<TabPanel x:Name="headerPanel" Grid.Column="0" Grid.Row="0" Background="Transparent" IsItemsHost="true" KeyboardNavigation.TabIndex="1" Panel.ZIndex="1"/>
 										<Button Click="AddFileButton_Click" IsEnabled="{Binding RelativeSource={RelativeSource AncestorType={x:Type Window}}, Path=DataContext.CanAddFile, FallbackValue=False}"
 												Style="{StaticResource ShortcutButton}">
-											<Image Stretch="UniformToFill" ToolTipService.ShowOnDisabled="True">
+											<Image Stretch="UniformToFill" ToolTipService.ShowOnDisabled="True" Source="/SourceControlGenerator;Component/Resources/Icons/Add_16x.png">
 												<Image.Style>
-													<Style TargetType="Image">
+													<Style TargetType="Image" BasedOn="{StaticResource ButtonImage}">
 														<Style.Triggers>
 															<Trigger Property="IsEnabled" Value="True">
-																<Setter Property="Source" Value="{Binding Source={StaticResource IconProxy}, Path=Data.Add, FallbackValue={x:Null}}" />
 																<Setter Property="ToolTip" Value="{x:Static core:DOS2DETooltips.Button_Locale_AddFile}" />
 															</Trigger>
 															<Trigger Property="IsEnabled" Value="False">
-																<Setter Property="Source" Value="{Binding Source={StaticResource IconProxy}, Path=Data.AddDisabled, FallbackValue={x:Null}}" />
 																<Setter Property="ToolTip" Value="{x:Static core:DOS2DETooltips.Button_Locale_AddFile_Disabled}" />
 															</Trigger>
 														</Style.Triggers>
@@ -231,7 +280,7 @@
 													<RowDefinition Height="Auto"/>
 												</Grid.RowDefinitions>
 												<StackPanel Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="3" Orientation="Horizontal" Margin="0"
-													Background="LightGray"
+													Background="#FFDFEFFF"
 															>
 													<Button Command="{Binding Path=DataContext.GenerateHandlesCommand, RelativeSource={RelativeSource AncestorType={x:Type Window}}}" 
 														ToolTip="{x:Static core:DOS2DETooltips.Button_Locale_GenerateHandles}"
@@ -372,39 +421,21 @@
 			</Grid.Resources>
 			<StackPanel x:Name="ShortcutsButtonPanel" Grid.Column="0" VerticalAlignment="Center">
 				<StackPanel.Resources>
-					<Style TargetType="Button">
-						<Setter Property="MinHeight" Value="16" />
-						<Setter Property="MinWidth" Value="16" />
-						<Setter Property="MaxHeight" Value="16" />
-						<Setter Property="MaxWidth" Value="16" />
-						<Setter Property="Margin" Value="0,0,1,0" />
+					<Style TargetType="Button" BasedOn="{StaticResource ShortcutButton}">
+						<Setter Property="Background" Value="Transparent" />
 					</Style>
 				</StackPanel.Resources>
-				<Button Command="{Binding SaveCurrentCommand}" IsEnabled="{Binding CanSave}">
-					<Image Stretch="UniformToFill" ToolTipService.ShowOnDisabled="True">
-						<Image.Style>
-							<Style TargetType="Image">
-								<Style.Triggers>
-									<Trigger Property="IsEnabled" Value="False">
-										<Setter Property="Source" Value="{Binding Source={StaticResource IconProxy}, Path=Data.Save_Disabled, FallbackValue={x:Null}}" />
-										<Setter Property="ToolTip" Value="{x:Static core:DOS2DETooltips.Button_Locale_SaveCurrent_Disabled}" />
-									</Trigger>
-									<Trigger Property="IsEnabled" Value="True">
-										<Setter Property="Source" Value="{Binding Source={StaticResource IconProxy}, Path=Data.Save, FallbackValue={x:Null}}" />
-										<Setter Property="ToolTip" Value="{x:Static core:DOS2DETooltips.Button_Locale_SaveCurrent}" />
-									</Trigger>
-								</Style.Triggers>
-							</Style>
-						</Image.Style>
-					</Image>
-				</Button>
+				<c:ImageButton Command="{Binding SaveCurrentCommand}" IsEnabled="{Binding CanSave}" Source="pack://application:,,,/SourceControlGenerator;component/Resources/Icons/Save_16x.png"
+					Tooltip_Enabled="{x:Static core:DOS2DETooltips.Button_Locale_SaveCurrent}"
+					Tooltip_Disabled="{x:Static core:DOS2DETooltips.Button_Locale_SaveCurrent_Disabled}"
+					MaxSize="16"
+				/>
 				<Button x:Name="SaveAllButton" Command="{Binding SaveAllCommand}" ToolTip="{x:Static core:DOS2DETooltips.Button_Locale_SaveAll}">
-					<Image Source="{Binding Source={StaticResource IconProxy}, Path=Data.Save_All, FallbackValue={x:Null}}" Stretch="UniformToFill" />
+					<Image Source="{Binding Source={StaticResource IconProxy}, Path=Data.Save_All, FallbackValue={x:Null}}"/>
 				</Button>
 				<Rectangle Style="{StaticResource VerticalSeparator}" />
-				<Button x:Name="ExportButton" ToolTip="{x:Static core:DOS2DETooltips.Button_Locale_ExportToXML}" 
-												HorizontalAlignment="Right" Click="ExportButton_Click">
-					<Image Source="{Binding Source={StaticResource IconProxy}, Path=Data.XML_Template, FallbackValue={x:Null}}" Stretch="UniformToFill" />
+				<Button x:Name="ExportButton" ToolTip="{x:Static core:DOS2DETooltips.Button_Locale_ExportToXML}" HorizontalAlignment="Right" Click="ExportButton_Click">
+					<Image Source="{Binding Source={StaticResource IconProxy}, Path=Data.XML_Template, FallbackValue={x:Null}}"/>
 				</Button>
 				<CheckBox Content="Keys" IsChecked="{Binding ExportKeys}" 
 					ToolTip="{x:Static core:DOS2DETooltips.Checkbox_Locale_ExportXML_Keys}" />
