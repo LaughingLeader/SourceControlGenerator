@@ -9,6 +9,7 @@ using SCG.Modules.DOS2DE.Utilities;
 using System.Windows;
 using SCG.Data.View;
 using LSLib.LS;
+using SCG.Modules.DOS2DE.Windows;
 
 namespace SCG.Modules.DOS2DE.Data.View
 {
@@ -177,6 +178,30 @@ namespace SCG.Modules.DOS2DE.Data.View
 			}
 		}
 
+		private bool anySelected = false;
+
+		public bool AnySelected
+		{
+			get { return anySelected; }
+			set
+			{
+				anySelected = value;
+				RaisePropertyChanged("AnySelected");
+			}
+		}
+
+		public void UpdateAnySelected(bool recentSelection = false)
+		{
+			if(recentSelection)
+			{
+				AnySelected = true;
+			}
+			else
+			{
+				AnySelected = SelectedGroup?.Tabs.Any(t => t.Entries.Any(e => e.Selected)) == true;
+			}
+		}
+
 		private void SelectedFileChanged(DOS2DELocalizationGroup group, IKeyFileData keyFileData)
 		{
 			if (keyFileData != null)
@@ -234,6 +259,7 @@ namespace SCG.Modules.DOS2DE.Data.View
 		public ICommand SaveCurrentCommand { get; set; }
 		public ICommand GenerateHandlesCommand { get; set; }
 		public ICommand AddNewKeyCommand { get; set; }
+		public ICommand DeleteKeysCommand { get; set; }
 
 		public void AddNewKey()
 		{
@@ -275,6 +301,27 @@ namespace SCG.Modules.DOS2DE.Data.View
 			{
 				Log.Here().Activity("No selected file found. Skipping key generation.");
 			}
+		}
+
+		public void DeleteSelectedKeys(bool confirm)
+		{
+			if(confirm)
+			{
+				if (SelectedGroup != null && SelectedGroup.SelectedFile != null)
+				{
+					foreach(var entry in SelectedGroup.SelectedFile.Entries.Where(e => e.Selected).ToList())
+					{
+						SelectedGroup.SelectedFile.Entries.Remove(entry);
+					}
+
+					SelectedGroup.UpdateCombinedData();
+				}
+				else
+				{
+					Log.Here().Activity("No selected file(s) found. Skipping delete operation.");
+				}
+			}
+			
 		}
 
 		public void GenerateHandles()
@@ -431,6 +478,7 @@ namespace SCG.Modules.DOS2DE.Data.View
 			SaveCurrentCommand = new ActionCommand(SaveCurrent);
 			GenerateHandlesCommand = new ActionCommand(GenerateHandles);
 			AddNewKeyCommand = new ActionCommand(AddNewKey);
+			DeleteKeysCommand = new TaskCommand(DeleteSelectedKeys, LocalizationEditorWindow.instance, "Delete Keys", "Delete selected keys?", "Changes will be lost.");
 
 			SaveCurrentMenuData = new MenuData("SaveCurrent", "Save", SaveCurrentCommand, Key.S, ModifierKeys.Control);
 
@@ -730,6 +778,7 @@ namespace SCG.Modules.DOS2DE.Data.View
 			{
 				selected = value;
 				RaisePropertyChanged("Selected");
+				LocalizationEditorWindow.instance?.KeyEntrySelected(this, selected);
 			}
 		}
 

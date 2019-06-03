@@ -21,6 +21,8 @@ namespace SCG.Data.View
 		public static readonly string AddTextFile = @"pack://application:,,,/SourceControlGenerator;component/Resources/Icons/AddTextFile_16x.png";
 		public static readonly string Archive = @"pack://application:,,,/SourceControlGenerator;component/Resources/Icons/Archive.png";
 		public static readonly string Convert = @"pack://application:,,,/SourceControlGenerator;component/Resources/Icons/Convert_16x.png";
+		public static readonly string DeleteDatabase = @"pack://application:,,,/SourceControlGenerator;component/Resources/Icons/DeleteDatabase_16x.png";
+		public static readonly string DeleteTableRow = @"pack://application:,,,/SourceControlGenerator;component/Resources/Icons/DeleteTableRow_16x.png";
 		public static readonly string ExpandChevronRight = @"pack://application:,,,/SourceControlGenerator;component/Resources/Icons/ExpandChevronRight_16x.png";
 		public static readonly string ExportFile = @"pack://application:,,,/SourceControlGenerator;component/Resources/Icons/ExportFile_16x.png";
 		public static readonly string FileError = @"pack://application:,,,/SourceControlGenerator;component/Resources/Icons/FileError_16x.png";
@@ -30,6 +32,9 @@ namespace SCG.Data.View
 		public static readonly string Log_MouseOver = @"pack://application:,,,/SourceControlGenerator;component/Resources/Icons/Log_MouseOver.png";
 		public static readonly string Log_Normal = @"pack://application:,,,/SourceControlGenerator;component/Resources/Icons/Log_Normal.png";
 		public static readonly string Refresh = @"pack://application:,,,/SourceControlGenerator;component/Resources/Icons/Refresh_16x.png";
+		public static readonly string RemoveRow = @"pack://application:,,,/SourceControlGenerator;component/Resources/Icons/RemoveRow_16x.png";
+		public static readonly string Rename = @"pack://application:,,,/SourceControlGenerator;component/Resources/Icons/Rename_16x.png";
+		public static readonly string RowUpdating = @"pack://application:,,,/SourceControlGenerator;component/Resources/Icons/RowUpdating_16x.png";
 		public static readonly string RunChecked = @"pack://application:,,,/SourceControlGenerator;component/Resources/Icons/RunChecked_16x.png";
 		public static readonly string Save = @"pack://application:,,,/SourceControlGenerator;component/Resources/Icons/Save_16x.png";
 		public static readonly string SaveAll = @"pack://application:,,,/SourceControlGenerator;component/Resources/Icons/SaveAll_16x.png";

@@ -26,6 +26,7 @@ namespace SCG.Modules.DOS2DE.Windows
 	/// </summary>
 	public partial class LocalizationEditorWindow : Window
 	{
+		public static LocalizationEditorWindow instance { get; private set; }
 		/*
 		public DOS2DELocalizationViewData LocaleData
 		{
@@ -51,6 +52,8 @@ namespace SCG.Modules.DOS2DE.Windows
 
 			ExportWindow = new LocaleExportWindow();
 			ExportWindow.Hide();
+
+			instance = this;
 		}
 
 		public void LoadData(DOS2DELocalizationViewData data)
@@ -146,6 +149,33 @@ namespace SCG.Modules.DOS2DE.Windows
 					DOS2DELocalizationEditor.AddFileData(LocaleData.SelectedGroup, savePath, Path.GetFileName(savePath));
 				}, "NewFile.lsb", "Larian Localization File (*.lsb)|*.lsb");
 			}
+		}
+
+		/// <summary>
+		/// Single-click selection
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void LocaleEntryDataGrid_GotFocus(object sender, RoutedEventArgs e)
+		{
+			if(sender is DataGrid dg && e.OriginalSource is DataGridCell cell)
+			{
+				if (cell.Column is DataGridCheckBoxColumn column)
+				{
+					dg.BeginEdit();
+					CheckBox chkBox = cell.Content as CheckBox;
+					if (chkBox != null)
+					{
+						chkBox.IsChecked = !chkBox.IsChecked;
+					}
+					e.Handled = true;
+				}
+			}
+		}
+
+		public void KeyEntrySelected(DOS2DEKeyEntry keyEntry, bool selected)
+		{
+			LocaleData.UpdateAnySelected(selected);
 		}
 	}
 }

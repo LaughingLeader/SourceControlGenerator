@@ -64,23 +64,23 @@ namespace SCG.Controls
 			}
 		}
 
-		public string Tooltip_Enabled
+		public string ToolTip_Enabled
 		{
-			get { return (string)GetValue(Tooltip_EnabledProperty); }
-			set { SetValue(Tooltip_EnabledProperty, value); }
+			get { return (string)GetValue(ToolTip_EnabledProperty); }
+			set { SetValue(ToolTip_EnabledProperty, value); }
 		}
 
-		public static readonly DependencyProperty Tooltip_EnabledProperty =
-			DependencyProperty.Register("Tooltip_Enabled", typeof(string), typeof(ImageButton), new PropertyMetadata(null));
+		public static readonly DependencyProperty ToolTip_EnabledProperty =
+			DependencyProperty.Register("ToolTip_Enabled", typeof(string), typeof(ImageButton), new PropertyMetadata(null));
 
-		public string Tooltip_Disabled
+		public string ToolTip_Disabled
 		{
-			get { return (string)GetValue(Tooltip_DisabledProperty); }
-			set { SetValue(Tooltip_DisabledProperty, value); }
+			get { return (string)GetValue(ToolTip_DisabledProperty); }
+			set { SetValue(ToolTip_DisabledProperty, value); }
 		}
 
-		public static readonly DependencyProperty Tooltip_DisabledProperty =
-			DependencyProperty.Register("Tooltip_Disabled", typeof(string), typeof(ImageButton), new PropertyMetadata(null));
+		public static readonly DependencyProperty ToolTip_DisabledProperty =
+			DependencyProperty.Register("ToolTip_Disabled", typeof(string), typeof(ImageButton), new PropertyMetadata(null));
 
 
 

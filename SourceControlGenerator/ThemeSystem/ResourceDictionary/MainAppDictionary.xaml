@@ -48,13 +48,16 @@
 	<ControlTemplate x:Key="ImageButtonTemplate" TargetType="{x:Type c:ImageButton}">
 		<Grid>
 			<Image
-			x:Name="ButtonImageControl"
-			Height="{Binding MaxSize, RelativeSource={RelativeSource TemplatedParent}}"
-			Width="{Binding MaxSize, RelativeSource={RelativeSource TemplatedParent}}"
-			Source="{Binding Source, RelativeSource={RelativeSource TemplatedParent}}"
-			ToolTipService.ShowOnDisabled="True" />
+				x:Name="ButtonImageControl"
+				Height="{Binding MaxSize, RelativeSource={RelativeSource TemplatedParent}}"
+				Width="{Binding MaxSize, RelativeSource={RelativeSource TemplatedParent}}"
+				Source="{Binding Source, RelativeSource={RelativeSource TemplatedParent}}"
+				ToolTipService.ShowOnDisabled="True" 
+			/>
 			<Rectangle x:Name="TintRect"
-				Width="{Binding MaxSize, RelativeSource={RelativeSource TemplatedParent}}" Height="{Binding MaxSize, RelativeSource={RelativeSource TemplatedParent}}">
+				Width="{Binding MaxSize, RelativeSource={RelativeSource TemplatedParent}}" Height="{Binding MaxSize, RelativeSource={RelativeSource TemplatedParent}}"
+				ToolTipService.ShowOnDisabled="True" ToolTip="{Binding Path=ToolTip, ElementName=ButtonImageControl}"
+					   >
 				<Rectangle.Fill>
 					<SolidColorBrush Color="Transparent" />
 				</Rectangle.Fill>
@@ -68,7 +71,7 @@
 				<Setter TargetName="ButtonImageControl" Property="ToolTip">
 					<Setter.Value>
 						<MultiBinding Converter="{StaticResource BindingFallbackConverter}">
-							<Binding Path="Tooltip_Enabled" RelativeSource="{RelativeSource TemplatedParent}"/>
+							<Binding Path="ToolTip_Enabled" RelativeSource="{RelativeSource TemplatedParent}"/>
 							<Binding Path="ToolTip" RelativeSource="{RelativeSource TemplatedParent}"/>
 						</MultiBinding>
 					</Setter.Value>
@@ -78,7 +81,7 @@
 				<Setter TargetName="ButtonImageControl" Property="ToolTip">
 					<Setter.Value>
 						<MultiBinding Converter="{StaticResource BindingFallbackConverter}">
-							<Binding Path="Tooltip_Disabled" RelativeSource="{RelativeSource TemplatedParent}"/>
+							<Binding Path="ToolTip_Disabled" RelativeSource="{RelativeSource TemplatedParent}"/>
 							<Binding Path="ToolTip" RelativeSource="{RelativeSource TemplatedParent}"/>
 						</MultiBinding>
 					</Setter.Value>
@@ -129,6 +132,7 @@
 	<!-- Default Style for Image Button -->
 	<Style TargetType="{x:Type c:ImageButton}" BasedOn="{x:Null}">
 		<Setter Property="Template" Value="{StaticResource ImageButtonTemplate}" />
+		<Setter Property="ToolTipService.ShowOnDisabled" Value="True" />
 	</Style>
 
 	<!-- Style to hide tool tips that have an empty content. -->

@@ -178,8 +178,8 @@
 										<TabPanel x:Name="headerPanel" Grid.Column="0" Grid.Row="0" Background="Transparent" IsItemsHost="true" KeyboardNavigation.TabIndex="1" Panel.ZIndex="1"/>
 										<c:ImageButton Click="AddFileButton_Click" MaxSize="16"
 												IsEnabled="{Binding RelativeSource={RelativeSource AncestorType={x:Type Window}}, Path=DataContext.CanAddFile}"
-												Tooltip_Enabled="{x:Static core:DOS2DETooltips.Button_Locale_AddFile}"
-												Tooltip_Disabled="{x:Static core:DOS2DETooltips.Button_Locale_AddFile_Disabled}"
+												ToolTip_Enabled="{x:Static core:DOS2DETooltips.Button_Locale_AddFile}"
+												ToolTip_Disabled="{x:Static core:DOS2DETooltips.Button_Locale_AddFile_Disabled}"
 												Source="{x:Static vdata:IconPathData.AddFile}"
 												Visibility="{Binding RelativeSource={RelativeSource AncestorType={x:Type Window}}, Path=DataContext.CanAddFile, Converter={StaticResource BoolToVisibilityConverter}}"
 												/>
@@ -281,20 +281,24 @@
 													<StackPanel.Resources>
 														<Style TargetType="c:ImageButton" BasedOn="{StaticResource {x:Type c:ImageButton}}">
 															<Setter Property="TintColor" Value="Lime" />
+															<Setter Property="Margin" Value="2" />
 														</Style>
 													</StackPanel.Resources>
 													<TextBlock Text="Actions:" VerticalAlignment="Center" Margin="4,0,2,0" />
 													<c:ImageButton Command="{Binding Path=DataContext.AddNewKeyCommand, RelativeSource={RelativeSource AncestorType={x:Type Window}}}" 
-														Tooltip_Enabled="{x:Static core:DOS2DETooltips.Button_Locale_AddKey}"
-														Tooltip_Disabled="{x:Static core:DOS2DETooltips.Button_Locale_AddKey_Disabled}"
-														Source="{x:Static vdata:IconPathData.AddItem}"
+														ToolTip_Enabled="{x:Static core:DOS2DETooltips.Button_Locale_AddKey}"
+														ToolTip_Disabled="{x:Static core:DOS2DETooltips.Button_Locale_AddKey_Disabled}"
+														Source="{x:Static vdata:IconPathData.AddRow}"
 														IsEnabled="{Binding Path=DataContext.CanAddKeys, RelativeSource={RelativeSource AncestorType={x:Type Window}}}"
-														Margin="4"
+													/>
+													<c:ImageButton Command="{Binding Path=DataContext.DeleteKeysCommand, RelativeSource={RelativeSource AncestorType={x:Type Window}}}" 
+														ToolTip="{x:Static core:DOS2DETooltips.Button_Locale_DeleteKeys}"
+														Source="{x:Static vdata:IconPathData.DeleteTableRow}"
+														IsEnabled="{Binding Path=DataContext.AnySelected, RelativeSource={RelativeSource AncestorType={x:Type Window}}}"
 													/>
 													<c:ImageButton Command="{Binding Path=DataContext.GenerateHandlesCommand, RelativeSource={RelativeSource AncestorType={x:Type Window}}}" 
 														ToolTip="{x:Static core:DOS2DETooltips.Button_Locale_GenerateHandles}"
-														Source="{x:Static vdata:IconPathData.WriteToDatabase}"
-														Margin="4"
+														Source="{x:Static vdata:IconPathData.RowUpdating}"
 													/>
 												</StackPanel>
 												<Button Command="{x:Static DataGrid.SelectAllCommand}" Grid.Row="1" Focusable="false" Style="{DynamicResource {ComponentResourceKey ResourceId=DataGridSelectAllButtonStyle, TypeInTargetAssembly={x:Type DataGrid}}}" Visibility="{Binding HeadersVisibility, ConverterParameter={x:Static DataGridHeadersVisibility.All}, Converter={x:Static DataGrid.HeadersVisibilityConverter}, RelativeSource={RelativeSource AncestorType={x:Type DataGrid}}}" Width="{Binding CellsPanelHorizontalOffset, RelativeSource={RelativeSource AncestorType={x:Type DataGrid}}}"/>
@@ -334,40 +338,35 @@
 						<RowDefinition Height="Auto"/>
 						<RowDefinition Height="*"/>
 					</Grid.RowDefinitions>
-					
-					<DataGrid ItemsSource="{Binding Entries}" 
-					FrozenColumnCount="1" BorderThickness="0"
-					AutoGenerateColumns="False" CanUserAddRows="True"
-					CanUserDeleteRows="True" CanUserResizeRows="True"
-					VirtualizingPanel.IsVirtualizingWhenGrouping="True"
-					dgx:DataGridFilter.IsAutoFilterEnabled="True"
-					dgx:DataGridFilter.ContentFilterFactory="{StaticResource RegexContentFilterFactory}"
-					Grid.Row="1"
-					Style="{StaticResource LocaleDataGridStyle}"
+
+					<DataGrid x:Name="LocaleEntryDataGrid"
+						GotFocus="LocaleEntryDataGrid_GotFocus"
+						ItemsSource="{Binding Entries}" 
+						FrozenColumnCount="1" BorderThickness="0"
+						AutoGenerateColumns="False" CanUserAddRows="True"
+						CanUserDeleteRows="True" CanUserResizeRows="True"
+						VirtualizingPanel.IsVirtualizingWhenGrouping="True"
+						dgx:DataGridFilter.IsAutoFilterEnabled="True"
+						dgx:DataGridFilter.ContentFilterFactory="{StaticResource RegexContentFilterFactory}"
+						Grid.Row="1"
+						Style="{StaticResource LocaleDataGridStyle}"
 				>
 						<DataGrid.Resources>
 							<behavior:DataContextSpy x:Key="FileData" DataContext="{Binding}" />
 						</DataGrid.Resources>
 						<DataGrid.Columns>
-							<DataGridTemplateColumn MinWidth="25" CanUserResize="False" dgx:DataGridFilterColumn.IsFilterVisible="False" >
-								<DataGridTemplateColumn.Header>
-									<CheckBox 
-									IsChecked="{Binding Source={StaticResource FileData}, Path=DataContext.AllSelected, Mode=TwoWay}"
+							<DataGridCheckBoxColumn MinWidth="25" CanUserResize="False" dgx:DataGridFilterColumn.IsFilterVisible="False" 
+									Binding="{Binding Selected, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" >
+								<DataGridCheckBoxColumn.Header>
+									<CheckBox IsChecked="{Binding Source={StaticResource FileData}, Path=DataContext.AllSelected, Mode=TwoWay}"
 										  ToolTip="Select/Deselect All" />
-								</DataGridTemplateColumn.Header>
-								<DataGridTemplateColumn.CellStyle>
+								</DataGridCheckBoxColumn.Header>
+								<DataGridCheckBoxColumn.CellStyle>
 									<Style TargetType="{x:Type DataGridCell}" BasedOn="{StaticResource DataGrid_NoHighlight}">
 										<Setter Property="Margin" Value="0" />
 									</Style>
-								</DataGridTemplateColumn.CellStyle>
-								<DataGridTemplateColumn.CellTemplate>
-									<DataTemplate>
-										<CheckBox x:Name="ProjectSelectedCheckbox" IsChecked="{Binding Selected, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Center" VerticalAlignment="Center"
-							  IsEnabled="{Binding RelativeSource={RelativeSource AncestorType={x:Type DataGridRow}},Path=IsSelected,Mode=OneWay}"
-							  />
-									</DataTemplate>
-								</DataGridTemplateColumn.CellTemplate>
-							</DataGridTemplateColumn>
+								</DataGridCheckBoxColumn.CellStyle>
+							</DataGridCheckBoxColumn>
 							<DataGridTextColumn Header="Key" Binding="{Binding Key}" MinWidth="50" Width="Auto">
 								<DataGridTextColumn.CellStyle>
 									<Style TargetType="DataGridCell" BasedOn="{StaticResource DataGrid_NoHighlight}">
@@ -441,8 +440,8 @@
 				</StackPanel.Resources>
 				<c:ImageButton Command="{Binding SaveCurrentCommand}" IsEnabled="{Binding CanSave}" 
 					Source="{x:Static vdata:IconPathData.Save}"
-					Tooltip_Enabled="{x:Static core:DOS2DETooltips.Button_Locale_SaveCurrent}"
-					Tooltip_Disabled="{x:Static core:DOS2DETooltips.Button_Locale_SaveCurrent_Disabled}"
+					ToolTip_Enabled="{x:Static core:DOS2DETooltips.Button_Locale_SaveCurrent}"
+					ToolTip_Disabled="{x:Static core:DOS2DETooltips.Button_Locale_SaveCurrent_Disabled}"
 				/>
 				<c:ImageButton x:Name="SaveAllButton" Command="{Binding SaveAllCommand}" ToolTip="{x:Static core:DOS2DETooltips.Button_Locale_SaveAll}" 
 							   Source="{x:Static vdata:IconPathData.SaveAll}" />

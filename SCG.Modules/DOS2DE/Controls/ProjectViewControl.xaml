@@ -269,8 +269,8 @@
 														Source="{x:Static vdata:IconPathData.Archive}"/>
 												<c:ImageButton x:Name="Btn_GenGit" IsEnabled="{Binding GitGenerated}" Command="{Binding OpenGitFolder}"
 													Source="{x:Static vdata:IconPathData.GitLogo}"
-													Tooltip_Enabled="{x:Static core:DOS2DETooltips.Button_GitFolder}"
-													Tooltip_Disabled="{x:Static core:DOS2DETooltips.Button_GitFolderDisabled}"
+													ToolTip_Enabled="{x:Static core:DOS2DETooltips.Button_GitFolder}"
+													ToolTip_Disabled="{x:Static core:DOS2DETooltips.Button_GitFolderDisabled}"
 															   >
 													<c:ImageButton>
 														<Style TargetType="c:ImageButton" BasedOn="{StaticResource {x:Type c:ImageButton}}">
