@@ -41,6 +41,7 @@
 	<cv:StringToCachedImageConverter x:Key="StringToCachedImageConverter"/>
 	<cv:GrayscaleTintImageConverter x:Key="GrayscaleTintImageConverter"/>
 	<cv:BindingFallbackConverter x:Key="BindingFallbackConverter"/>
+	<cv:MultiValueToArrayConverter x:Key="MultiValueToArrayConverter"/>
 
 	<Style TargetType="{x:Type c:TemplateKeywordControl}"/>
 	<Style TargetType="{x:Type ListViewItem}" />

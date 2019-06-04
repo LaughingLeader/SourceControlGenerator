@@ -32,7 +32,7 @@ namespace SCG.Core
 	{
 		private ProjectViewControl projectViewControl;
 
-		private LocalizationEditorWindow localizationEditorWindow;
+		private LocaleEditorWindow localizationEditorWindow;
 
 		public MainAppData MainAppData { get; set; }
 		public DOS2DEModuleData Data { get; set; }
@@ -1093,7 +1093,7 @@ namespace SCG.Core
 		{
 			if (localizationEditorWindow == null)
 			{
-				localizationEditorWindow = new LocalizationEditorWindow(Data);
+				localizationEditorWindow = new LocaleEditorWindow(Data);
 				localizationEditorWindow.Closing += LocalizationEditorWindow_Closing;
 			}
 
@@ -1101,7 +1101,7 @@ namespace SCG.Core
 			{
 				AppController.Main.MainWindow.Dispatcher.BeginInvoke(new Action(async () =>
 				{
-					var data = await DOS2DELocalizationEditor.LoadLocalizationDataAsync(Data.Settings.DOS2DEDataDirectory, Data.ManagedProjects.Where(p => p.Selected));
+					var data = await LocaleEditorCommands.LoadLocalizationDataAsync(Data.Settings.DOS2DEDataDirectory, Data.ManagedProjects.Where(p => p.Selected));
 					localizationEditorWindow.LoadData(data);
 					localizationEditorWindow.Show();
 				}), DispatcherPriority.Background);
@@ -1159,7 +1159,7 @@ namespace SCG.Core
 			var Debug_LocalizationTest = new MenuData("DOS2.ParseLocalizationLSB")
 			{
 				Header = "[Debug] Parse Localization",
-				ClickCommand = new ActionCommand(() => { var f = DOS2DELocalizationEditor.LoadResourceAsync(@"G:\Divinity Original Sin 2\DefEd\Data\Mods\Nemesis_627c8d3a-7e6b-4fd2-8ce5-610d553fdbe9\Localization\LLMIME_MiscText.lsb"); }),
+				ClickCommand = new ActionCommand(() => { var f = LocaleEditorCommands.LoadResourceAsync(@"G:\Divinity Original Sin 2\DefEd\Data\Mods\Nemesis_627c8d3a-7e6b-4fd2-8ce5-610d553fdbe9\Localization\LLMIME_MiscText.lsb"); }),
 				IsEnabled = true
 			};
 

@@ -20,10 +20,11 @@ using SCG.FileGen;
 using Newtonsoft.Json;
 using SCG.Modules.DOS2DE.Data.App;
 using SCG.Modules.DOS2DE.Core;
+using SCG.Modules.DOS2DE.Windows;
 
 namespace SCG.Modules.DOS2DE.Utilities
 {
-	public class DOS2DELocalizationEditor
+	public class LocaleEditorCommands
 	{
 		#region Loading Localization Files
 		public static async Task<LocaleViewData> LoadLocalizationDataAsync(string dataRootPath, IEnumerable<ModProjectData> modProjects, CancellationToken? token = null)
@@ -74,6 +75,7 @@ namespace SCG.Modules.DOS2DE.Utilities
 					{
 						Log.Here().Activity($"Loading localization data from '{modsLocalePath}'.");
 						var modsLocaleData = await LoadFilesAsync(modsLocalePath, token, ".lsb").ConfigureAwait(false);
+						localizationData.ModsGroup.SourceDirectory = modsLocalePath;
 						localizationData.ModsGroup.DataFiles.AddRange(modsLocaleData);
 						localizationData.ModsGroup.UpdateCombinedData();
 					}
@@ -89,6 +91,7 @@ namespace SCG.Modules.DOS2DE.Utilities
 						var dialogLocaleData = await LoadFilesAsync(dialogLocalePath, token, ".lsj").ConfigureAwait(false);
 						//Lock dialog files, as adding a new entry is more complicated than simply adding a key.
 						dialogLocaleData.ForEach(f => f.Locked = true);
+						localizationData.DialogGroup.SourceDirectory = dialogLocalePath;
 						localizationData.DialogGroup.DataFiles.AddRange(dialogLocaleData);
 						localizationData.DialogGroup.UpdateCombinedData();
 					}
@@ -112,7 +115,8 @@ namespace SCG.Modules.DOS2DE.Utilities
 					{
 						Log.Here().Activity($"Loading localization data from '{publicLocalePath}'.");
 						var publicLocaleData = await LoadFilesAsync(publicLocalePath, token, ".lsb");
-						localizationData.PublicGroup.DataFiles = new ObservableRangeCollection<IKeyFileData>(publicLocaleData);
+						localizationData.PublicGroup.SourceDirectory = publicLocalePath;
+						localizationData.PublicGroup.DataFiles = new ObservableRangeCollection<ILocaleFileData>(publicLocaleData);
 						localizationData.PublicGroup.UpdateCombinedData();
 					}
 					else
@@ -550,15 +554,13 @@ namespace SCG.Modules.DOS2DE.Utilities
 			return Guid.NewGuid().ToString().Replace('-', 'g').Insert(0, "h");
 		}
 
-		public static void AddFileData(DOS2DELocalizationGroup groupData, string destinationPath, string name)
+		public static LocaleFileData CreateFileData(string destinationPath, string name)
 		{
 			var resource = CreateLocalizationResource();
 			var fileData = new LocaleFileData(ResourceFormat.LSX, resource, destinationPath, name);
 			LoadFromResource(fileData, resource, ResourceFormat.LSB, true);
-
-			groupData.DataFiles.Add(fileData);
-			groupData.UpdateCombinedData();
-			groupData.SelectedFileIndex = groupData.Tabs.Count - 1;
+			fileData.ChangesUnsaved = true;
+			return fileData;
 		}
 
 		public static string EscapeXml(string s)
@@ -574,6 +576,152 @@ namespace SCG.Modules.DOS2DE.Utilities
 				toxml = toxml.Replace("<", "&lt;");
 			}
 			return toxml;
+		}
+
+		public static LocaleKeyEntry CreateNewLocaleEntry(LocaleFileData fileData, string key = "NewKey", string content = "")
+		{
+			var rootNode = fileData.Source.Regions.First().Value;
+
+			var refNode = fileData.Entries.Where(f => f.Node != null).FirstOrDefault().Node;
+			if (refNode != null)
+			{
+				var node = new Node();
+				node.Parent = rootNode;
+				node.Name = refNode.Name;
+				//Log.Here().Activity($"Node name: {node.Name}");
+				foreach (var kp in refNode.Attributes)
+				{
+					var att = new NodeAttribute(kp.Value.Type);
+					att.Value = new TranslatedString()
+					{
+						Value = "",
+						Handle = LocaleEditorCommands.CreateHandle()
+					};
+					node.Attributes.Add(kp.Key, att);
+				}
+
+				LocaleKeyEntry localeEntry = LocaleEditorCommands.LoadFromNode(node, fileData.Format);
+				localeEntry.Key = key == "NewKey" ? key + (fileData.Entries.Count + 1) : key;
+				localeEntry.Content = content;
+				return localeEntry;
+			}
+			return null;
+		}
+
+		public static List<ILocaleFileData> ImportFilesAsData(IEnumerable<string> files, LocaleTabGroup groupData)
+		{
+			List<ILocaleFileData> newFileDataList = new List<ILocaleFileData>();
+			try
+			{
+				foreach (var path in files)
+				{
+					if (FileCommands.FileExtensionFound(path, ".lsb", ".lsj"))
+					{
+						Task<ILocaleFileData> task = Task.Run<ILocaleFileData>(async () => await LoadResourceAsync(path).ConfigureAwait(false));
+						if(task?.Result != null)
+						{
+							newFileDataList.Add(task.Result);
+							continue;
+						}
+					}
+					else if (FileCommands.FileExtensionFound(path, ".txt", ".tsv", ".csv"))
+					{
+						char delimiter = '\t';
+						if (FileCommands.FileExtensionFound(path, ".csv")) delimiter = ',';
+
+						string line = String.Empty;
+						using (var stream = new System.IO.StreamReader(path))
+						{
+							string sourcePath = Path.Combine(groupData.SourceDirectory, Path.GetFileNameWithoutExtension(path), ".lsb");
+							string name = Path.GetFileNameWithoutExtension(path);
+							LocaleFileData data = CreateFileData(sourcePath, name);
+
+							int lineNum = 0;
+							while((line = stream.ReadLine()) != null)
+							{
+								if (lineNum == 0) continue; // Skip top line, as it typically describes the columns
+								var parts = line.Split(delimiter);
+
+								var key = parts.ElementAtOrDefault(0);
+								var content = parts.ElementAtOrDefault(0);
+
+								if (key == null) key = "NewKey";
+								if (content == null) content = "";
+
+								var entry = CreateNewLocaleEntry(data, key, content);
+								data.Entries.Add(entry);
+								lineNum++;
+							}
+
+							newFileDataList.Add(data);
+						}
+					}
+				}
+			}
+			catch(Exception ex)
+			{
+				Log.Here().Error("Error importing files to the localization editor: " + ex.ToString());
+			}
+			LocaleEditorWindow.instance.SaveSettings();
+			return newFileDataList;
+		}
+
+		public static List<LocaleKeyEntry> ImportFilesAsEntries(IEnumerable<string> files, LocaleFileData fileData)
+		{
+			List<LocaleKeyEntry> newEntryList = new List<LocaleKeyEntry>();
+			try
+			{
+				foreach(var path in files)
+				{
+					Log.Here().Activity($"Checking file '{path}'");
+
+					if (FileCommands.FileExtensionFound(path, ".lsb", ".lsj"))
+					{
+						Log.Here().Activity($"Creating entries from resource.");
+
+						Task<ILocaleFileData> task = Task.Run<ILocaleFileData>(async () => await LoadResourceAsync(path).ConfigureAwait(false));
+						if (task?.Result != null)
+						{
+							newEntryList.AddRange(task.Result.Entries);
+							continue;
+						}
+					}
+					else if (FileCommands.FileExtensionFound(path, ".txt", ".tsv", ".csv"))
+					{
+						Log.Here().Activity($"Creating entries from delimited text file.");
+						char delimiter = '\t';
+						if (FileCommands.FileExtensionFound(path, ".csv")) delimiter = ',';
+
+						string line = String.Empty;
+						using (var stream = new System.IO.StreamReader(path))
+						{
+							int lineNum = 0;
+							while ((line = stream.ReadLine()) != null)
+							{
+								lineNum += 1;
+								if (lineNum == 1) continue; // Skip top line, as it typically describes the columns
+								var parts = line.Split(delimiter);
+
+								var key = parts.ElementAtOrDefault(0);
+								var content = parts.ElementAtOrDefault(1);
+
+								if (key == null) key = "NewKey";
+								if (content == null) content = "";
+
+								var entry = CreateNewLocaleEntry(fileData, key, content);
+								newEntryList.Add(entry);
+							}
+							stream.Close();
+						}
+					}
+				}
+			}
+			catch (Exception ex)
+			{
+				Log.Here().Error("Error importing files as entries to the localization editor: " + ex.ToString());
+			}
+			LocaleEditorWindow.instance.SaveSettings();
+			return newEntryList;
 		}
 		#endregion
 
@@ -597,10 +745,9 @@ namespace SCG.Modules.DOS2DE.Utilities
 		{
 			string settingsPath = Path.GetFullPath(DOS2DEDefaultPaths.LocalizationEditorSettings(moduleData));
 
-			Log.Here().Activity($"Saving localization editor settings to '{settingsPath}'.");
-
 			if (localeData.Settings != null)
 			{
+				Log.Here().Activity($"Saving localization editor settings to '{settingsPath}'.");
 				string json = JsonConvert.SerializeObject(localeData.Settings, Newtonsoft.Json.Formatting.Indented);
 				FileCommands.WriteToFile(settingsPath, json);
 			}

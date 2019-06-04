@@ -62,10 +62,49 @@ namespace SCG.Commands
 				fileDialog.Filters.Add(new CommonFileDialogFilter(CommonFileFilters.All.Name, CommonFileFilters.All.Values));
 			}
 
-			var result = fileDialog.ShowDialog();
+			var result = fileDialog.ShowDialog(ParentWindow);
 			if (result == CommonFileDialogResult.Ok)
 			{
 				OnFileSelected?.Invoke(fileDialog.FileName);
+			}
+		}
+
+		public void OpenMultiFileDialog(Window ParentWindow, string Title, string FilePath, Action<IEnumerable<string>> OnFileSelected, params FileBrowserFilter[] Filters)
+		{
+			var fileDialog = new CommonOpenFileDialog();
+			fileDialog.Title = Title;
+			fileDialog.InitialDirectory = Directory.GetParent(FilePath).FullName;
+			fileDialog.DefaultFileName = Path.GetFileName(FilePath);
+			fileDialog.Multiselect = true;
+
+			if (Filters != null)
+			{
+				if (Filters.Length <= 0)
+				{
+					fileDialog.Filters.Add(new CommonFileDialogFilter(CommonFileFilters.All.Name, CommonFileFilters.All.Values));
+				}
+				else
+				{
+					foreach (var filter in Filters)
+					{
+						fileDialog.Filters.Add(new CommonFileDialogFilter(filter.Name, filter.Values));
+					}
+				}
+			}
+			else
+			{
+				fileDialog.Filters.Add(new CommonFileDialogFilter(CommonFileFilters.All.Name, CommonFileFilters.All.Values));
+			}
+
+			var result = fileDialog.ShowDialog(ParentWindow);
+			if (result == CommonFileDialogResult.Ok)
+			{
+				Log.Here().Activity("Invoking action");
+				OnFileSelected?.Invoke(fileDialog.FileNames);
+			}
+			else
+			{
+				Log.Here().Activity($"Result: {result}");
 			}
 		}
 

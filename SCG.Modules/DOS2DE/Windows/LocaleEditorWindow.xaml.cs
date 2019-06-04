@@ -22,11 +22,11 @@ using System.ComponentModel;
 namespace SCG.Modules.DOS2DE.Windows
 {
 	/// <summary>
-	/// Interaction logic for LocalizationEditorWindow.xaml
+	/// Interaction logic for LocaleEditorWindow.xaml
 	/// </summary>
-	public partial class LocalizationEditorWindow : Window
+	public partial class LocaleEditorWindow : Window
 	{
-		public static LocalizationEditorWindow instance { get; private set; }
+		public static LocaleEditorWindow instance { get; private set; }
 		/*
 		public LocaleViewData LocaleData
 		{
@@ -44,7 +44,7 @@ namespace SCG.Modules.DOS2DE.Windows
 
 		private DOS2DEModuleData ModuleData { get; set; }
 
-		public LocalizationEditorWindow(DOS2DEModuleData data)
+		public LocaleEditorWindow(DOS2DEModuleData data)
 		{
 			InitializeComponent();
 
@@ -66,12 +66,12 @@ namespace SCG.Modules.DOS2DE.Windows
 			LocaleData.MenuData.RegisterShortcuts(this);
 			LocaleData.ModuleData = ModuleData;
 
-			DOS2DELocalizationEditor.LoadSettings(ModuleData, LocaleData);
+			LocaleEditorCommands.LoadSettings(ModuleData, LocaleData);
 		}
 
-		public void SaveSettings(object sender, RoutedEventArgs e)
+		public void SaveSettings()
 		{
-			DOS2DELocalizationEditor.SaveSettings(ModuleData, LocaleData);
+			LocaleEditorCommands.SaveSettings(ModuleData, LocaleData);
 		}
 
 		private void Entries_SelectAll(object sender, RoutedEventArgs e)
@@ -102,7 +102,7 @@ namespace SCG.Modules.DOS2DE.Windows
 			{
 				Log.Here().Activity("Exporting data to xml format.");
 				outputTextbox.Text = "";
-				outputTextbox.Text = DOS2DELocalizationEditor.ExportDataAsXML(LocaleData, LocaleData.ExportSource, LocaleData.ExportKeys);
+				outputTextbox.Text = LocaleEditorCommands.ExportDataAsXML(LocaleData, LocaleData.ExportSource, LocaleData.ExportKeys);
 			}
 			else
 			{
@@ -118,17 +118,17 @@ namespace SCG.Modules.DOS2DE.Windows
 
 		private void SaveAllButton_Click(object sender, RoutedEventArgs e)
 		{
-			var backupSuccess = DOS2DELocalizationEditor.BackupDataFiles(LocaleData, ModuleData.Settings.BackupRootDirectory);
+			var backupSuccess = LocaleEditorCommands.BackupDataFiles(LocaleData, ModuleData.Settings.BackupRootDirectory);
 			if (backupSuccess.Result == true)
 			{
-				var successes = DOS2DELocalizationEditor.SaveDataFiles(LocaleData);
+				var successes = LocaleEditorCommands.SaveDataFiles(LocaleData);
 				Log.Here().Important($"Saved {successes} localization files.");
 			}
 		}
 
 		private void LocaleWindow_Closing(object sender, CancelEventArgs e)
 		{
-			DOS2DELocalizationEditor.SaveSettings(ModuleData, LocaleData);
+			LocaleEditorCommands.SaveSettings(ModuleData, LocaleData);
 			LocaleData.MenuData.UnregisterShortcuts(this);
 		}
 
@@ -154,7 +154,10 @@ namespace SCG.Modules.DOS2DE.Windows
 				}
 
 				FileCommands.Save.OpenDialog(this, "Create Localization File...", sourceRoot, (string savePath) => {
-					DOS2DELocalizationEditor.AddFileData(LocaleData.SelectedGroup, savePath, Path.GetFileName(savePath));
+					var fileData = LocaleEditorCommands.CreateFileData(savePath, Path.GetFileName(savePath));
+					LocaleData.SelectedGroup.DataFiles.Add(fileData);
+					LocaleData.SelectedGroup.UpdateCombinedData();
+					LocaleData.SelectedGroup.SelectedFileIndex = LocaleData.SelectedGroup.Tabs.Count - 1;
 				}, "NewFile.lsb", "Larian Localization File (*.lsb)|*.lsb");
 			}
 		}

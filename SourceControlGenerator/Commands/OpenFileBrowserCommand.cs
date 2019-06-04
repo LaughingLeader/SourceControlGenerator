@@ -7,12 +7,15 @@ using System.Threading.Tasks;
 using System.Windows.Input;
 using SCG.Extensions;
 using System.Windows;
+using SCG.Core;
 
 namespace SCG.Commands
 {
 	public class OpenFileBrowserCommand : BaseCommand
 	{
-		private Action<string> onSelected;
+		public Action<string> SingleCallback { get; set; }
+
+		public Action<IEnumerable<string>> MultiCallback { get; set; }
 
 		public bool BrowserOpen { get; private set; } = false;
 
@@ -21,6 +24,10 @@ namespace SCG.Commands
 		public string Title { get; set; }
 
 		public bool UseFolderBrowser { get; set; } = false;
+
+		public bool AllowMultipleFiles { get; set; } = false;
+
+		public FileBrowserFilter[] Filters { get; set; }
 
 		public Window ParentWindow { get; set; }
 
@@ -31,6 +38,10 @@ namespace SCG.Commands
 
 		public override void Execute(object parameter)
 		{
+			if (String.IsNullOrWhiteSpace(Title)) Title = "Open File...";
+			if (String.IsNullOrWhiteSpace(StartPath)) StartPath = Directory.GetCurrentDirectory();
+			if (ParentWindow == null) ParentWindow = App.Current.MainWindow;
+
 			var values = (object[])parameter;
 
 			string startPath = FileCommands.IsValidFilePath(StartPath) ? StartPath : Directory.GetCurrentDirectory();
@@ -58,7 +69,14 @@ namespace SCG.Commands
 
 			if (!useFolderBrowser)
 			{
-				FileCommands.Load.OpenFileDialog(ParentWindow, title, startPath, OnFileSelected);
+				if(!AllowMultipleFiles || (AllowMultipleFiles && MultiCallback == null))
+				{
+					FileCommands.Load.OpenFileDialog(ParentWindow, title, startPath, OnFileSelected, Filters);
+				}
+				else
+				{
+					FileCommands.Load.OpenMultiFileDialog(ParentWindow, title, startPath, OnMultipleFilesSelected, Filters);
+				}
 			}
 			else
 			{
@@ -67,20 +85,34 @@ namespace SCG.Commands
 
 		}
 
+		private void OnMultipleFilesSelected(IEnumerable<string> files)
+		{
+			BrowserOpen = false;
+			MultiCallback?.Invoke(files);
+		}
+
 		private void OnFileSelected(string path)
 		{
 			BrowserOpen = false;
-			onSelected?.Invoke(path);
+			SingleCallback?.Invoke(path);
 		}
 
-		public OpenFileBrowserCommand(Action<string> OnFileSelected)
+		public OpenFileBrowserCommand() { }
+
+		public OpenFileBrowserCommand(Action<string> callback)
 		{
-			onSelected = OnFileSelected;
-
-			Title = "Open File...";
-			StartPath = Directory.GetCurrentDirectory();
-
-			ParentWindow = App.Current.MainWindow;
+			SingleCallback = callback;
+			AllowMultipleFiles = false;
 		}
+
+		public OpenFileBrowserCommand(Action<IEnumerable<string>> callback)
+		{
+			MultiCallback = callback;
+			AllowMultipleFiles = true;
+		}
+	}
+
+	public interface IEnumberable<T>
+	{
 	}
 }

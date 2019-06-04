@@ -24,9 +24,12 @@ namespace SCG.Modules.DOS2DE.Data.View
 			//Data = result.Data;
 			//Name = result.Error;
 
-			ModsGroup.DataFiles.Add(new BaseLocaleFileData("Skills"));
+			ModsGroup.DataFiles.Add(new BaseLocaleFileData("Skills") { ChangesUnsaved = true });
 			ModsGroup.DataFiles.Add(new BaseLocaleFileData("Statuses"));
-			ModsGroup.DataFiles.Add(new BaseLocaleFileData("Potions"));
+			for(var i = 1; i < 20; i++)
+			{
+				ModsGroup.DataFiles.Add(new BaseLocaleFileData("Potionslalalalala" + i));
+			}
 
 			PublicGroup.DataFiles.Add(new BaseLocaleFileData("Skills"));
 			PublicGroup.DataFiles.Add(new BaseLocaleFileData("Statuses"));
@@ -34,12 +37,12 @@ namespace SCG.Modules.DOS2DE.Data.View
 
 			foreach(var d in ModsGroup.DataFiles)
 			{
-				DOS2DELocalizationEditor.Debug_CreateEntries(d.Entries);
+				LocaleEditorCommands.Debug_CreateEntries(d.Entries);
 			}
 
 			foreach (var d in PublicGroup.DataFiles)
 			{
-				DOS2DELocalizationEditor.Debug_CreateEntries(d.Entries);
+				LocaleEditorCommands.Debug_CreateEntries(d.Entries);
 			}
 
 			UpdateCombinedGroup(true);

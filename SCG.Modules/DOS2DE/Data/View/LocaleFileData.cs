@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace SCG.Modules.DOS2DE.Data.View
 {
-	public class BaseLocaleFileData : PropertyChangedBase, IKeyFileData
+	public class BaseLocaleFileData : PropertyChangedBase, ILocaleFileData
 	{
 		public ObservableRangeCollection<LocaleKeyEntry> Entries { get; set; }
 
@@ -21,7 +21,27 @@ namespace SCG.Modules.DOS2DE.Data.View
 			{
 				name = value;
 				RaisePropertyChanged("Name");
+				UpdateDisplayName();
 			}
+		}
+
+		private string displayName;
+
+		public string DisplayName
+		{
+			get { return displayName; }
+			private set
+			{
+				displayName = value;
+				RaisePropertyChanged("DisplayName");
+			}
+		}
+
+		private void UpdateDisplayName()
+		{
+			//var str = $"<font size='8' align='left'>{Name}</font>";
+			//DisplayName = !ChangesUnsaved ? str : "<font color='#FF0000'>*</font>" + str;
+			DisplayName = !ChangesUnsaved ? Name : "*" + Name;
 		}
 
 		private bool active = false;
@@ -45,6 +65,19 @@ namespace SCG.Modules.DOS2DE.Data.View
 			{
 				locked = value;
 				RaisePropertyChanged("Locked");
+			}
+		}
+
+		private bool changesUnsaved = false;
+
+		public bool ChangesUnsaved
+		{
+			get { return changesUnsaved; }
+			set
+			{
+				changesUnsaved = value;
+				RaisePropertyChanged("ChangesUnsaved");
+				UpdateDisplayName();
 			}
 		}
 

@@ -46,7 +46,7 @@ namespace SCG.Core
 		public static FileBrowserFilter GitFiles { get; private set; } = new FileBrowserFilter()
 		{
 			Name = "Git text files",
-			Values = "*.md;.gitignore;.gitattributes"
+			Values = "*.md;*.gitignore;*.gitattributes"
 		};
 
 		public static FileBrowserFilter SourceControlGeneratorFiles { get; private set; } = new FileBrowserFilter()
@@ -76,6 +76,32 @@ namespace SCG.Core
 		public static List<FileBrowserFilter> MarkdownConverterFilesList { get; private set; } = new List<FileBrowserFilter>()
 		{
 			MarkdownConverterFiles,
+			All
+		};
+
+		public static FileBrowserFilter TabSeparatedFile { get; private set; } = new FileBrowserFilter()
+		{
+			Name = "Tab-Separated file",
+			Values = "*.tsv"
+		};
+
+		public static FileBrowserFilter CommaSeparatedFile { get; private set; } = new FileBrowserFilter()
+		{
+			Name = "Comma-Separated file",
+			Values = "*.csv"
+		};
+
+		public static FileBrowserFilter DelimitedLocaleFiles { get; private set; } = new FileBrowserFilter()
+		{
+			Name = "Delimited Localization file",
+			Values = CombineFilters(TabSeparatedFile, CommaSeparatedFile, NormalTextFile)
+		};
+
+		public static List<FileBrowserFilter> AllLocaleFilesList { get; set; } = new List<FileBrowserFilter>()
+		{
+			DelimitedLocaleFiles,
+			TabSeparatedFile,
+			CommaSeparatedFile,
 			All
 		};
 

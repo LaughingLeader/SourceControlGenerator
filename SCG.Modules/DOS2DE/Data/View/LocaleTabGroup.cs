@@ -24,9 +24,33 @@ namespace SCG.Modules.DOS2DE.Data.View
 			}
 		}
 
-		private ObservableRangeCollection<IKeyFileData> dataFiles;
+		private string sourceDirectory;
 
-		public ObservableRangeCollection<IKeyFileData> DataFiles
+		public string SourceDirectory
+		{
+			get { return sourceDirectory; }
+			set
+			{
+				sourceDirectory = value;
+				RaisePropertyChanged("SourceDirectory");
+			}
+		}
+
+		private bool changesUnsaved = true;
+
+		public bool ChangesUnsaved
+		{
+			get { return changesUnsaved; }
+			set
+			{
+				changesUnsaved = value;
+				RaisePropertyChanged("ChangesUnsaved");
+			}
+		}
+
+		private ObservableRangeCollection<ILocaleFileData> dataFiles;
+
+		public ObservableRangeCollection<ILocaleFileData> DataFiles
 		{
 			get { return dataFiles; }
 			set
@@ -36,11 +60,11 @@ namespace SCG.Modules.DOS2DE.Data.View
 			}
 		}
 
-		public ObservableRangeCollection<IKeyFileData> Tabs { get; set; }
+		public ObservableRangeCollection<ILocaleFileData> Tabs { get; set; }
 
-		private IKeyFileData combinedEntries;
+		private ILocaleFileData combinedEntries;
 
-		public IKeyFileData CombinedEntries
+		public ILocaleFileData CombinedEntries
 		{
 			get { return combinedEntries; }
 			private set
@@ -50,7 +74,7 @@ namespace SCG.Modules.DOS2DE.Data.View
 			}
 		}
 
-		public Action<LocaleTabGroup, IKeyFileData> SelectedFileChanged { get; set; }
+		public Action<LocaleTabGroup, ILocaleFileData> SelectedFileChanged { get; set; }
 
 		private int selectedfileIndex = 0;
 
@@ -66,7 +90,7 @@ namespace SCG.Modules.DOS2DE.Data.View
 			}
 		}
 
-		public IKeyFileData SelectedFile
+		public ILocaleFileData SelectedFile
 		{
 			get
 			{
@@ -90,7 +114,7 @@ namespace SCG.Modules.DOS2DE.Data.View
 
 		public void UpdateCombinedData()
 		{
-			Tabs = new ObservableRangeCollection<IKeyFileData>();
+			Tabs = new ObservableRangeCollection<ILocaleFileData>();
 			Tabs.Add(CombinedEntries);
 			Tabs.AddRange(DataFiles);
 
@@ -110,8 +134,8 @@ namespace SCG.Modules.DOS2DE.Data.View
 			Name = name;
 			CombinedEntries = new BaseLocaleFileData("All");
 			CombinedEntries.Locked = true;
-			DataFiles = new ObservableRangeCollection<IKeyFileData>();
-			Tabs = new ObservableRangeCollection<IKeyFileData>();
+			DataFiles = new ObservableRangeCollection<ILocaleFileData>();
+			Tabs = new ObservableRangeCollection<ILocaleFileData>();
 
 			UpdateAllCommand = new ActionCommand(UpdateCombinedData);
 		}

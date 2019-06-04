@@ -195,13 +195,23 @@
     </Compile>
     <Compile Include="Controls\AutoScrollingTextbox.cs" />
     <Compile Include="Controls\Behavior\ComboBoxWidthFromItemsBehavior.cs" />
+    <Compile Include="Controls\Behavior\FlowDocumentPagePadding.cs" />
+    <Compile Include="Controls\Behavior\HtmlRichTextBoxBehavior.cs" />
     <Compile Include="Controls\Behavior\ListBoxSelectionBehavior.cs" />
     <Compile Include="Controls\Behavior\MarginSetter.cs" />
     <Compile Include="Controls\Behavior\ProgressBarAnimationBehavior.cs" />
     <Compile Include="Controls\Behavior\TextBoxEnterKeyBehavior.cs" />
     <Compile Include="Controls\ImageButton.cs" />
+    <Compile Include="Controls\Microsoft\CssStylesheet.cs" />
+    <Compile Include="Controls\Microsoft\HtmlCSSParser.cs" />
+    <Compile Include="Controls\Microsoft\HtmlLexicalAnalyzer.cs" />
+    <Compile Include="Controls\Microsoft\HtmlParser.cs" />
+    <Compile Include="Controls\Microsoft\HtmlSchema.cs" />
+    <Compile Include="Controls\Microsoft\HtmlTokenType.cs" />
+    <Compile Include="Controls\Microsoft\HtmlToXamlConverter.cs" />
     <Compile Include="Converters\BindingFallbackConverter.cs" />
     <Compile Include="Converters\GrayscaleTintImageConverter.cs" />
+    <Compile Include="Converters\MultiValueToArrayConverter.cs" />
     <Compile Include="Converters\StringToCachedImageConverter.cs" />
     <Compile Include="Data\App\CachedImageSource.cs" />
     <Compile Include="Controls\CrossButton.cs" />
@@ -264,6 +274,7 @@
     <Compile Include="Data\View\ModuleSelectionData.cs" />
     <Compile Include="Data\View\SettingsEntryData.cs" />
     <Compile Include="Data\View\TextGeneratorData.cs" />
+    <Compile Include="Extensions\ArrayExtensions.cs" />
     <Compile Include="Extensions\ControlExtensions.cs" />
     <Compile Include="Extensions\StringExtensions.cs" />
     <Compile Include="SCGEnum\BackupMode.cs" />
@@ -280,7 +291,7 @@
     <Compile Include="Commands\ParameterCommand.cs" />
     <Compile Include="Commands\ActionCommand.cs" />
     <Compile Include="Core\CommandHandlers\LoadCommands.cs" />
-    <Compile Include="Commands\OpenFileBrowseCommand.cs" />
+    <Compile Include="Commands\OpenFileBrowserCommand.cs" />
     <Compile Include="Commands\OpenFileCommand.cs" />
     <Compile Include="Commands\RelayCommand.cs" />
     <Compile Include="Commands\SaveFileAsCommand.cs" />

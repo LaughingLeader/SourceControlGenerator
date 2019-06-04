@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace SCG.Modules.DOS2DE.Data.View
 {
-	public interface IKeyFileData
+	public interface ILocaleFileData
 	{
 		ObservableRangeCollection<LocaleKeyEntry> Entries { get; set; }
 
@@ -15,6 +15,7 @@ namespace SCG.Modules.DOS2DE.Data.View
 		bool Active { get; set; }
 		bool AllSelected { get; set; }
 		bool Locked { get; set; }
+		bool ChangesUnsaved { get; set; }
 
 		void SelectAll();
 		void SelectNone();

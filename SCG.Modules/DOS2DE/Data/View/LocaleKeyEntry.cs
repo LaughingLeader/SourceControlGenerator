@@ -85,7 +85,7 @@ namespace SCG.Modules.DOS2DE.Data.View
 			{
 				selected = value;
 				RaisePropertyChanged("Selected");
-				LocalizationEditorWindow.instance?.KeyEntrySelected(this, selected);
+				LocaleEditorWindow.instance?.KeyEntrySelected(this, selected);
 			}
 		}
 

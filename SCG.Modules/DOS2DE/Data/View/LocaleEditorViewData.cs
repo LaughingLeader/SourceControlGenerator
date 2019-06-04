@@ -12,6 +12,9 @@ using LSLib.LS;
 using SCG.Modules.DOS2DE.Windows;
 using SCG.Modules.DOS2DE.Core;
 using SCG.Modules.DOS2DE.Data.App;
+using Alphaleonis.Win32;
+using Alphaleonis.Win32.Filesystem;
+using SCG.Core;
 
 namespace SCG.Modules.DOS2DE.Data.View
 {
@@ -47,6 +50,8 @@ namespace SCG.Modules.DOS2DE.Data.View
 				selectedGroupIndex = value;
 				RaisePropertyChanged("SelectedGroupIndex");
 				RaisePropertyChanged("SelectedGroup");
+				RaisePropertyChanged("SelectedItem");
+				RaisePropertyChanged("CurrentImportPath");
 
 				if (updateCanSave)
 				{
@@ -111,7 +116,7 @@ namespace SCG.Modules.DOS2DE.Data.View
 			}
 		}
 
-		public IKeyFileData SelectedItem
+		public ILocaleFileData SelectedItem
 		{
 			get
 			{
@@ -206,7 +211,7 @@ namespace SCG.Modules.DOS2DE.Data.View
 			}
 		}
 
-		private void SelectedFileChanged(LocaleTabGroup group, IKeyFileData keyFileData)
+		private void SelectedFileChanged(LocaleTabGroup group, ILocaleFileData keyFileData)
 		{
 			if (keyFileData != null)
 			{
@@ -259,12 +264,15 @@ namespace SCG.Modules.DOS2DE.Data.View
 			}
 		}
 
+		public ICommand ImportFileCommand { get; set; }
+
 		public ICommand SaveAllCommand { get; set; }
 		public ICommand SaveCurrentCommand { get; set; }
 		public ICommand GenerateHandlesCommand { get; set; }
+
 		public ICommand AddNewKeyCommand { get; set; }
 		public ICommand DeleteKeysCommand { get; set; }
-		public ICommand ImportFileCommand { get; set; }
+		public ICommand ImportKeysCommand { get; set; }
 
 		public void AddNewKey()
 		{
@@ -272,34 +280,9 @@ namespace SCG.Modules.DOS2DE.Data.View
 			{
 				if (SelectedGroup.SelectedFile is LocaleFileData fileData && fileData.Format == LSLib.LS.Enums.ResourceFormat.LSB)
 				{
-					var rootNode = fileData.Source.Regions.First().Value;
-
-					var refNode = fileData.Entries.Where(f => f.Node != null).FirstOrDefault().Node;
-					if(refNode != null)
-					{
-						var node = new Node();
-						node.Parent = rootNode;
-						node.Name = refNode.Name;
-						Log.Here().Activity($"Node name: {node.Name}");
-						foreach(var kp in refNode.Attributes)
-						{
-							var att = new NodeAttribute(kp.Value.Type);
-							att.Value = new TranslatedString()
-							{
-								Value = "",
-								Handle = DOS2DELocalizationEditor.CreateHandle()
-							};
-							node.Attributes.Add(kp.Key, att);
-						}
-
-						LocaleKeyEntry localeEntry = DOS2DELocalizationEditor.LoadFromNode(node, fileData.Format);
-						localeEntry.Key = "NewKey" + (fileData.Entries.Count + 1);
-						localeEntry.Content = "";
-						//localeEntry.Handle = DOS2DELocalizationEditor.CreateHandle();
-
-						fileData.Entries.Add(localeEntry);
-						SelectedGroup.UpdateCombinedData();
-					}
+					LocaleKeyEntry localeEntry = LocaleEditorCommands.CreateNewLocaleEntry(fileData);
+					fileData.Entries.Add(localeEntry);
+					SelectedGroup.UpdateCombinedData();
 				}
 			}
 			else
@@ -338,7 +321,7 @@ namespace SCG.Modules.DOS2DE.Data.View
 				{
 					if(entry.Handle.Equals("ls::TranslatedStringRepository::s_HandleUnknown", StringComparison.OrdinalIgnoreCase))
 					{
-						entry.Handle = DOS2DELocalizationEditor.CreateHandle();
+						entry.Handle = LocaleEditorCommands.CreateHandle();
 						Log.Here().Activity($"[{entry.Key}] New handle generated. [{entry.Handle}]");
 					}
 				}
@@ -360,7 +343,7 @@ namespace SCG.Modules.DOS2DE.Data.View
 
 		public void UpdateCombinedGroup(bool updateCombinedEntries = false)
 		{
-			CombinedGroup.DataFiles = new ObservableRangeCollection<IKeyFileData>();
+			CombinedGroup.DataFiles = new ObservableRangeCollection<ILocaleFileData>();
 			CombinedGroup.DataFiles.AddRange(ModsGroup.DataFiles);
 			CombinedGroup.DataFiles.AddRange(PublicGroup.DataFiles);
 			CombinedGroup.DataFiles.AddRange(DialogGroup.DataFiles);
@@ -420,10 +403,10 @@ namespace SCG.Modules.DOS2DE.Data.View
 		public void SaveAll()
 		{
 			Log.Here().Activity("Saving all files.");
-			var backupSuccess = DOS2DELocalizationEditor.BackupDataFiles(this, ModuleData.Settings.BackupRootDirectory);
+			var backupSuccess = LocaleEditorCommands.BackupDataFiles(this, ModuleData.Settings.BackupRootDirectory);
 			if (backupSuccess.Result == true)
 			{
-				var successes = DOS2DELocalizationEditor.SaveDataFiles(this);
+				var successes = LocaleEditorCommands.SaveDataFiles(this);
 				Log.Here().Important($"Saved {successes} localization files.");
 				OutputText = $"Saved {successes}/{TotalFiles} files.";
 				OutputType = LogType.Important;
@@ -442,7 +425,7 @@ namespace SCG.Modules.DOS2DE.Data.View
 			{
 				if (SelectedGroup.SelectedFile != null && SelectedGroup.SelectedFile is LocaleFileData keyFileData)
 				{
-					var result = DOS2DELocalizationEditor.SaveDataFile(keyFileData);
+					var result = LocaleEditorCommands.SaveDataFile(keyFileData);
 					if(result > 0)
 					{
 						OutputText = $"Saved '{keyFileData.SourcePath}'";
@@ -458,9 +441,46 @@ namespace SCG.Modules.DOS2DE.Data.View
 			}
 		}
 
-		public void ImportFile(string path)
+		public string CurrentImportPath
 		{
+			get
+			{
+				if(SelectedItem != null && SelectedItem is LocaleFileData data)
+				{
+					return Path.GetDirectoryName(data.SourcePath);
+				}
+				else if (SelectedGroup != null)
+				{
+					return SelectedGroup.SourceDirectory;
+				}
+				return Directory.GetCurrentDirectory();
+			}
+		}
 
+
+		public void ImportFileAsFileData(IEnumerable<string> files)
+		{
+			var newFileDataList = LocaleEditorCommands.ImportFilesAsData(files, SelectedGroup);
+			foreach (var k in newFileDataList)
+			{
+				SelectedGroup.DataFiles.Add(k);
+			}
+			SelectedGroup.ChangesUnsaved = true;
+			SelectedGroup.UpdateCombinedData();
+			LocaleEditorWindow.instance.SaveSettings();
+		}
+
+		public void ImportFileAsKeys(IEnumerable<string> files)
+		{
+			Log.Here().Activity("Importing keys from files...");
+			var newKeys = LocaleEditorCommands.ImportFilesAsEntries(files, SelectedItem as LocaleFileData);
+			foreach (var k in newKeys)
+			{
+				SelectedItem.Entries.Add(k);
+			}
+			SelectedItem.ChangesUnsaved = true;
+			SelectedGroup.UpdateCombinedData();
+			LocaleEditorWindow.instance.SaveSettings();
 		}
 
 		private MenuData SaveCurrentMenuData { get; set; }
@@ -484,16 +504,29 @@ namespace SCG.Modules.DOS2DE.Data.View
 				g.SelectedFileChanged = SelectedFileChanged;
 			}
 
+			ImportFileCommand = new OpenFileBrowserCommand(ImportFileAsFileData)
+			{
+				Title = DOS2DETooltips.Button_Locale_ImportFile,
+				ParentWindow = LocaleEditorWindow.instance,
+				UseFolderBrowser = false,
+				AllowMultipleFiles = true,
+				Filters = DOS2DEFileFilters.AllLocaleFilesList.ToArray(),
+				StartPath = CurrentImportPath
+			};
+
 			SaveAllCommand = new ActionCommand(SaveAll);
 			SaveCurrentCommand = new ActionCommand(SaveCurrent);
 			GenerateHandlesCommand = new ActionCommand(GenerateHandles);
 			AddNewKeyCommand = new ActionCommand(AddNewKey);
-			DeleteKeysCommand = new TaskCommand(DeleteSelectedKeys, LocalizationEditorWindow.instance, "Delete Keys", "Delete selected keys?", "Changes will be lost.");
-			ImportFileCommand = new OpenFileBrowserCommand(ImportFile)
+			DeleteKeysCommand = new TaskCommand(DeleteSelectedKeys, LocaleEditorWindow.instance, "Delete Keys", "Delete selected keys?", "Changes will be lost.");
+			ImportKeysCommand = new OpenFileBrowserCommand(ImportFileAsKeys)
 			{
-				Title = DOS2DETooltips.Button_Locale_ImportFile,
-				ParentWindow = LocalizationEditorWindow.instance,
-				UseFolderBrowser = false
+				Title = DOS2DETooltips.Button_Locale_ImportKeys,
+				ParentWindow = LocaleEditorWindow.instance,
+				UseFolderBrowser = false,
+				AllowMultipleFiles = true,
+				Filters = DOS2DEFileFilters.AllLocaleFilesList.ToArray(),
+				StartPath = CurrentImportPath
 			};
 
 			SaveCurrentMenuData = new MenuData("SaveCurrent", "Save", SaveCurrentCommand, Key.S, ModifierKeys.Control);
