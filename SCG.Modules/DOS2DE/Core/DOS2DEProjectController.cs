@@ -1102,8 +1102,15 @@ namespace SCG.Core
 			{
 				AppController.Main.MainWindow.Dispatcher.BeginInvoke(new Action(async () =>
 				{
-					var data = await LocaleEditorCommands.LoadLocalizationDataAsync(Data.Settings.DOS2DEDataDirectory, Data.ManagedProjects.Where(p => p.Selected));
-					localizationEditorWindow.LoadData(data);
+					try
+					{
+						var data = await LocaleEditorCommands.LoadLocalizationDataAsync(Data.Settings.DOS2DEDataDirectory, Data.ManagedProjects.Where(p => p.Selected));
+						localizationEditorWindow.LoadData(data);
+					}
+					catch(Exception ex)
+					{
+						Log.Here().Error("Error loading localization data: " + ex.ToString());
+					}
 					localizationEditorWindow.Show();
 				}), DispatcherPriority.Background);
 			}

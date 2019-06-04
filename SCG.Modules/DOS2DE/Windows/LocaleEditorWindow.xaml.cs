@@ -132,6 +132,27 @@ namespace SCG.Modules.DOS2DE.Windows
 			LocaleData.MenuData.UnregisterShortcuts(this);
 		}
 
+		private bool NameExistsInData(string name)
+		{
+			return LocaleData.SelectedGroup.DataFiles.Any(f => f.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
+		}
+
+		private string GetNewFileName(string rootPath, string baseName, string extension = ".lsb")
+		{
+			var checkPath = Path.Combine(rootPath, baseName, extension);
+
+			var originalBase = baseName;
+			int checks = 1;
+			while (File.Exists(checkPath) || NameExistsInData(baseName + extension))
+			{
+				baseName = originalBase + checks;
+				checkPath = Path.Combine(rootPath, baseName, extension);
+				checks++;
+			}
+
+			return baseName + extension;
+		}
+
 		private void AddFileButton_Click(object sender, RoutedEventArgs e)
 		{
 			if(LocaleData.SelectedGroup != null)
@@ -153,12 +174,14 @@ namespace SCG.Modules.DOS2DE.Windows
 					}
 				}
 
+				string newFileName = GetNewFileName(sourceRoot, "NewFile");
+
 				FileCommands.Save.OpenDialog(this, "Create Localization File...", sourceRoot, (string savePath) => {
 					var fileData = LocaleEditorCommands.CreateFileData(savePath, Path.GetFileName(savePath));
 					LocaleData.SelectedGroup.DataFiles.Add(fileData);
 					LocaleData.SelectedGroup.UpdateCombinedData();
 					LocaleData.SelectedGroup.SelectedFileIndex = LocaleData.SelectedGroup.Tabs.Count - 1;
-				}, "NewFile.lsb", "Larian Localization File (*.lsb)|*.lsb");
+				}, newFileName, "Larian Localization File (*.lsb)|*.lsb");
 			}
 		}
 

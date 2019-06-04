@@ -22,6 +22,7 @@
 		<ResourceDictionary>
 			<ResourceDictionary.MergedDictionaries>
 				<ResourceDictionary Source="pack://application:,,,/SourceControlGenerator;component/ThemeSystem/ResourceDictionary/MainAppDictionary.xaml" />
+				<ResourceDictionary Source="pack://application:,,,/SourceControlGenerator;component/ThemeSystem/ResourceDictionary/ScrollbarStyles.xaml" />
 			</ResourceDictionary.MergedDictionaries>
 
 			<dgx:RegexContentFilterFactory x:Key="RegexContentFilterFactory" />
@@ -193,7 +194,10 @@
 												  IsItemsHost="true" KeyboardNavigation.TabIndex="1" Panel.ZIndex="1"
 											/>
 										<ScrollViewer.Resources>
-											<sys:Double x:Key="{x:Static SystemParameters.VerticalScrollBarWidthKey}">6</sys:Double>
+											<Style TargetType="{x:Type ScrollBar}" BasedOn="{StaticResource SkinnyScrollbarStyle}">
+												<Setter Property="SnapsToDevicePixels" Value="True"/>
+												<Setter Property="OverridesDefaultStyle" Value="true"/>
+											</Style>
 										</ScrollViewer.Resources>
 									</ScrollViewer>
 								</Grid>
@@ -315,9 +319,8 @@
 														IsEnabled="{Binding Path=DataContext.CanAddKeys, RelativeSource={RelativeSource AncestorType={x:Type Window}}}"
 													>
 														<c:ImageButton.CommandParameter>
-															<MultiBinding Converter="{StaticResource MultiValueToArrayConverter}">
-																<Binding Path="DataContext.CurrentImportPath" RelativeSource="{RelativeSource AncestorType={x:Type Window}}" />
-															</MultiBinding>
+															<Binding Path="DataContext.CurrentImportPath" RelativeSource="{RelativeSource AncestorType={x:Type Window}}"
+																Converter="{StaticResource ParamsToOpenFileBrowserParamsConverter}" />
 														</c:ImageButton.CommandParameter>
 													</c:ImageButton>
 												</StackPanel>

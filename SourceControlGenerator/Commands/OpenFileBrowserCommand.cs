@@ -11,6 +11,39 @@ using SCG.Core;
 
 namespace SCG.Commands
 {
+	public struct OpenFileBrowserParams
+	{
+		public string StartPath { get; set; }
+		public string Title { get; set; }
+		public bool UseFolderBrowser { get; set; }
+		public FileBrowserFilter[] Filters { get; set; }
+		public Window ParentWindow { get; set; }
+
+		public static OpenFileBrowserParams Default()
+		{
+			return new OpenFileBrowserParams()
+			{
+				StartPath = Directory.GetCurrentDirectory(),
+				Title = "Open File...",
+				ParentWindow = App.Current.MainWindow,
+				UseFolderBrowser = false,
+				Filters = null
+			};
+		}
+
+		public OpenFileBrowserParams Copy()
+		{
+			return new OpenFileBrowserParams()
+			{
+				StartPath = this.StartPath,
+				Title = this.Title,
+				ParentWindow = this.ParentWindow,
+				UseFolderBrowser = this.UseFolderBrowser,
+				Filters = this.Filters
+			};
+		}
+	}
+
 	public class OpenFileBrowserCommand : BaseCommand
 	{
 		public Action<string> SingleCallback { get; set; }
@@ -19,68 +52,51 @@ namespace SCG.Commands
 
 		public bool BrowserOpen { get; private set; } = false;
 
-		public string StartPath { get; set; }
-
-		public string Title { get; set; }
-
-		public bool UseFolderBrowser { get; set; } = false;
-
-		public bool AllowMultipleFiles { get; set; } = false;
-
-		public FileBrowserFilter[] Filters { get; set; }
-
-		public Window ParentWindow { get; set; }
+		public OpenFileBrowserParams? DefaultParams { get; set; }
 
 		public override bool CanExecute(object parameter)
 		{
 			return !BrowserOpen && base.CanExecute(parameter);
 		}
 
+		public OpenFileBrowserParams LoadParams(object parameter)
+		{
+			OpenFileBrowserParams useBrowserParams = DefaultParams != null ? DefaultParams.Value.Copy() : OpenFileBrowserParams.Default();
+
+			if(parameter is  OpenFileBrowserParams browseParams)
+			{
+				if (FileCommands.IsValidFilePath(browseParams.StartPath)) useBrowserParams.StartPath = browseParams.StartPath;
+				if (!string.IsNullOrEmpty(browseParams.Title)) useBrowserParams.Title = browseParams.Title;
+				if (browseParams.ParentWindow != null && browseParams.ParentWindow.IsVisible) useBrowserParams.ParentWindow = browseParams.ParentWindow;
+				useBrowserParams.UseFolderBrowser = browseParams.UseFolderBrowser;
+				if (browseParams.Filters != null) useBrowserParams.Filters = browseParams.Filters;
+			}
+			
+			return useBrowserParams;
+		}
+
 		public override void Execute(object parameter)
 		{
-			if (String.IsNullOrWhiteSpace(Title)) Title = "Open File...";
-			if (String.IsNullOrWhiteSpace(StartPath)) StartPath = Directory.GetCurrentDirectory();
-			if (ParentWindow == null) ParentWindow = App.Current.MainWindow;
-
-			var values = (object[])parameter;
-
-			string startPath = FileCommands.IsValidFilePath(StartPath) ? StartPath : Directory.GetCurrentDirectory();
-
-			if(values.ElementAtOrDefault(0) is string path && FileCommands.IsValidFilePath(path))
-			{
-				startPath = path;
-			}
-
-			string title = Title;
-
-			if (values.ElementAtOrDefault(1) is string paramTitle)
-			{
-				title = paramTitle;
-			}
-
-			bool useFolderBrowser = UseFolderBrowser;
-
-			if (values.ElementAtOrDefault(2) is int useFolderMode)
-			{
-				useFolderBrowser = useFolderMode >= 1;
-			}
+			OpenFileBrowserParams browserParams = LoadParams(parameter);
 
 			BrowserOpen = true;
 
-			if (!useFolderBrowser)
+			browserParams.StartPath = Path.GetFileName(Path.GetDirectoryName(browserParams.StartPath)) + @"\";
+
+			if (!browserParams.UseFolderBrowser)
 			{
-				if(!AllowMultipleFiles || (AllowMultipleFiles && MultiCallback == null))
+				if(MultiCallback == null)
 				{
-					FileCommands.Load.OpenFileDialog(ParentWindow, title, startPath, OnFileSelected, Filters);
+					FileCommands.Load.OpenFileDialog(browserParams.ParentWindow, browserParams.Title, browserParams.StartPath, OnFileSelected, browserParams.Filters);
 				}
 				else
 				{
-					FileCommands.Load.OpenMultiFileDialog(ParentWindow, title, startPath, OnMultipleFilesSelected, Filters);
+					FileCommands.Load.OpenMultiFileDialog(browserParams.ParentWindow, browserParams.Title, browserParams.StartPath, OnMultipleFilesSelected, browserParams.Filters);
 				}
 			}
 			else
 			{
-				FileCommands.Load.OpenFolderDialog(ParentWindow, title, startPath, OnFileSelected);
+				FileCommands.Load.OpenFolderDialog(browserParams.ParentWindow, browserParams.Title, browserParams.StartPath, OnFileSelected);
 			}
 
 		}
@@ -102,13 +118,11 @@ namespace SCG.Commands
 		public OpenFileBrowserCommand(Action<string> callback)
 		{
 			SingleCallback = callback;
-			AllowMultipleFiles = false;
 		}
 
 		public OpenFileBrowserCommand(Action<IEnumerable<string>> callback)
 		{
 			MultiCallback = callback;
-			AllowMultipleFiles = true;
 		}
 	}
 

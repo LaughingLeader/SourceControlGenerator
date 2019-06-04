@@ -203,6 +203,7 @@
     <Compile Include="Converters\BindingFallbackConverter.cs" />
     <Compile Include="Converters\GrayscaleTintImageConverter.cs" />
     <Compile Include="Converters\MultiValueToArrayConverter.cs" />
+    <Compile Include="Converters\ParamsToOpenFileBrowserParamsConverter.cs" />
     <Compile Include="Converters\StringToCachedImageConverter.cs" />
     <Compile Include="Data\App\CachedImageSource.cs" />
     <Compile Include="Controls\CrossButton.cs" />
@@ -381,6 +382,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="ThemeSystem\ResourceDictionary\NumericUpDownTheme.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="ThemeSystem\ResourceDictionary\ScrollbarStyles.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

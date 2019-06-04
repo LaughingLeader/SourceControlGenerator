@@ -458,6 +458,10 @@ namespace SCG.Modules.DOS2DE.Data.View
 		{
 			get
 			{
+				if(Settings != null && FileCommands.IsValidPath(Settings.LastImportPath) && File.Exists(Settings.LastImportPath))
+				{
+					return Settings.LastImportPath;
+				}
 				if(SelectedItem != null && SelectedItem is LocaleFileData data)
 				{
 					return Path.GetDirectoryName(data.SourcePath);
@@ -481,6 +485,13 @@ namespace SCG.Modules.DOS2DE.Data.View
 			SelectedGroup.ChangesUnsaved = true;
 			SelectedGroup.UpdateCombinedData();
 			SelectedGroup.SelectLast();
+
+
+			if(files.Count() > 0)
+			{
+				Settings.LastImportPath = Path.GetDirectoryName(files.FirstOrDefault());
+				RaisePropertyChanged("CurrentImportPath");
+			}
 			LocaleEditorWindow.instance.SaveSettings();
 		}
 
@@ -494,6 +505,12 @@ namespace SCG.Modules.DOS2DE.Data.View
 			}
 			SelectedItem.ChangesUnsaved = true;
 			SelectedGroup.UpdateCombinedData();
+
+			if (files.Count() > 0)
+			{
+				Settings.LastImportPath = Path.GetDirectoryName(files.FirstOrDefault());
+				RaisePropertyChanged("CurrentImportPath");
+			}
 			LocaleEditorWindow.instance.SaveSettings();
 		}
 
@@ -520,12 +537,14 @@ namespace SCG.Modules.DOS2DE.Data.View
 
 			ImportFileCommand = new OpenFileBrowserCommand(ImportFileAsFileData)
 			{
-				Title = DOS2DETooltips.Button_Locale_ImportFile,
-				ParentWindow = LocaleEditorWindow.instance,
-				UseFolderBrowser = false,
-				AllowMultipleFiles = true,
-				Filters = DOS2DEFileFilters.AllLocaleFilesList.ToArray(),
-				StartPath = CurrentImportPath
+				DefaultParams = new OpenFileBrowserParams()
+				{
+					Title = DOS2DETooltips.Button_Locale_ImportFile,
+					ParentWindow = LocaleEditorWindow.instance,
+					UseFolderBrowser = false,
+					Filters = DOS2DEFileFilters.AllLocaleFilesList.ToArray(),
+					StartPath = CurrentImportPath
+				}
 			};
 
 			SaveAllCommand = new ActionCommand(SaveAll);
@@ -535,12 +554,14 @@ namespace SCG.Modules.DOS2DE.Data.View
 			DeleteKeysCommand = new TaskCommand(DeleteSelectedKeys, LocaleEditorWindow.instance, "Delete Keys", "Delete selected keys?", "Changes will be lost.");
 			ImportKeysCommand = new OpenFileBrowserCommand(ImportFileAsKeys)
 			{
-				Title = DOS2DETooltips.Button_Locale_ImportKeys,
-				ParentWindow = LocaleEditorWindow.instance,
-				UseFolderBrowser = false,
-				AllowMultipleFiles = true,
-				Filters = DOS2DEFileFilters.AllLocaleFilesList.ToArray(),
-				StartPath = CurrentImportPath
+				DefaultParams = new OpenFileBrowserParams()
+				{
+					Title = DOS2DETooltips.Button_Locale_ImportKeys,
+					ParentWindow = LocaleEditorWindow.instance,
+					UseFolderBrowser = false,
+					Filters = DOS2DEFileFilters.AllLocaleFilesList.ToArray(),
+					StartPath = CurrentImportPath
+				}
 			};
 
 			SaveCurrentMenuData = new MenuData("SaveCurrent", "Save", SaveCurrentCommand, Key.S, ModifierKeys.Control);

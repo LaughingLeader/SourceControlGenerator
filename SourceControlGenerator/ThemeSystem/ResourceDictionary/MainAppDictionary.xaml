@@ -42,6 +42,7 @@
 	<cv:GrayscaleTintImageConverter x:Key="GrayscaleTintImageConverter"/>
 	<cv:BindingFallbackConverter x:Key="BindingFallbackConverter"/>
 	<cv:MultiValueToArrayConverter x:Key="MultiValueToArrayConverter"/>
+	<cv:ParamsToOpenFileBrowserParamsConverter x:Key="ParamsToOpenFileBrowserParamsConverter"/>
 
 	<Style TargetType="{x:Type c:TemplateKeywordControl}"/>
 	<Style TargetType="{x:Type ListViewItem}" />
@@ -52,7 +53,7 @@
 				x:Name="ButtonImageControl"
 				Height="{Binding MaxSize, RelativeSource={RelativeSource TemplatedParent}}"
 				Width="{Binding MaxSize, RelativeSource={RelativeSource TemplatedParent}}"
-				Source="{Binding Source, RelativeSource={RelativeSource TemplatedParent}}"
+				Source="{Binding Source, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource StringToCachedImageConverter}, FallbackValue={x:Null}}"
 				ToolTipService.ShowOnDisabled="True" 
 			/>
 			<Rectangle x:Name="TintRect"
