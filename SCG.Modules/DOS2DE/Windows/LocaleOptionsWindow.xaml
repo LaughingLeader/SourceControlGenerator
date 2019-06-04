@@ -38,7 +38,7 @@
 							</Grid.ColumnDefinitions>
 							<TextBlock Text="Last Import" />
 							<Rectangle Grid.Column="1" Style="{StaticResource VerticalSeparator}" Margin="0" />
-							<controls:FileBrowseControl Grid.Column="2" BorderBrush="0" />
+							<controls:FileBrowseControl Grid.Column="2" BorderThickness="0" />
 						</Grid>
 					</Border>
 				</StackPanel>

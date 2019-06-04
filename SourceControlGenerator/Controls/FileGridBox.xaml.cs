@@ -28,10 +28,17 @@ namespace SCG.Controls
 		}
 
 		public static readonly DependencyProperty HeaderProperty =
-			DependencyProperty.Register("Header", typeof(string), typeof(FileGridBox), new PropertyMetadata(""));
+			DependencyProperty.Register("Header", typeof(string), typeof(FileGridBox), new PropertyMetadata("Test"));
 
 
+		public string FilePath
+		{
+			get { return (string)GetValue(FilePathProperty); }
+			set { SetValue(FilePathProperty, value); }
+		}
 
+		public static readonly DependencyProperty FilePathProperty = 
+			DependencyProperty.Register("FilePath", typeof(string), typeof(FileGridBox), new PropertyMetadata("Test"));
 
 		public FileGridBox()
 		{
