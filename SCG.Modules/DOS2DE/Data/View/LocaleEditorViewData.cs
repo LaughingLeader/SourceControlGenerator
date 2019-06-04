@@ -216,7 +216,7 @@ namespace SCG.Modules.DOS2DE.Data.View
 			if (keyFileData != null)
 			{
 				CanSave = (group.CombinedEntries != keyFileData) || group.DataFiles.Count == 1;
-				Log.Here().Activity($"Selected file changed to {group.Name} | {keyFileData.Name}");
+				//Log.Here().Activity($"Selected file changed to {group.Name} | {keyFileData.Name}");
 			}
 			else
 			{
@@ -225,7 +225,18 @@ namespace SCG.Modules.DOS2DE.Data.View
 
 			CanAddFile = group != CombinedGroup && group != DialogGroup;
 			CanAddKeys = SelectedGroup != null && SelectedGroup.SelectedFile != null && !SelectedGroup.SelectedFile.Locked;
-			Log.Here().Activity($"Can add file: {CanAddFile}");
+
+			if (group == DialogGroup)
+			{
+				DOS2DETooltips.Button_Locale_ImportDisabled = "Import Disabled for Dialog";
+				DOS2DETooltips.TooltipChanged("Button_Locale_ImportDisabled");
+			}
+			else
+			{
+				DOS2DETooltips.Button_Locale_ImportDisabled = "Import Disabled";
+				DOS2DETooltips.TooltipChanged("Button_Locale_ImportDisabled");
+			}
+			//Log.Here().Activity($"Can add file: {CanAddFile}");
 		}
 
 		private string outputDate;
@@ -469,6 +480,7 @@ namespace SCG.Modules.DOS2DE.Data.View
 			}
 			SelectedGroup.ChangesUnsaved = true;
 			SelectedGroup.UpdateCombinedData();
+			SelectedGroup.SelectLast();
 			LocaleEditorWindow.instance.SaveSettings();
 		}
 

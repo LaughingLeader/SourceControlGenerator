@@ -11,6 +11,7 @@ namespace SCG.Modules.DOS2DE.Data.View
 	{
 		ObservableRangeCollection<LocaleKeyEntry> Entries { get; set; }
 
+		string SourcePath { get; set; }
 		string Name { get; set; }
 		bool Active { get; set; }
 		bool AllSelected { get; set; }

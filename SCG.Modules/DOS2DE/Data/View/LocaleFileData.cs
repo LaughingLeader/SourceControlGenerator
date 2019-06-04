@@ -12,6 +12,8 @@ namespace SCG.Modules.DOS2DE.Data.View
 	{
 		public ObservableRangeCollection<LocaleKeyEntry> Entries { get; set; }
 
+		public string SourcePath { get; set; }
+
 		private string name;
 
 		public string Name
@@ -120,8 +122,6 @@ namespace SCG.Modules.DOS2DE.Data.View
 		public LSLib.LS.Resource Source { get; private set; }
 
 		public LSLib.LS.Enums.ResourceFormat Format { get; set; }
-
-		public string SourcePath { get; set; }
 
 		public LocaleFileData(LSLib.LS.Enums.ResourceFormat resourceFormat, LSLib.LS.Resource res, string sourcePath, string name = "") : base(name)
 		{

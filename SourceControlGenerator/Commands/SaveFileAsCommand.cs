@@ -26,7 +26,7 @@ namespace SCG.Commands
 
 		public override bool CanExecute(object parameter)
 		{
-			if (parameter != null && FileCommands.Save != null)
+			if (base.CanExecute(parameter) && parameter != null && FileCommands.Save != null)
 			{
 				if(parameter is ISaveCommandData data)
 				{

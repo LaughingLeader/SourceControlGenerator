@@ -12,6 +12,7 @@
 		xmlns:c="clr-namespace:SCG.Controls;assembly=SourceControlGenerator"
 		xmlns:behavior="clr-namespace:SCG.Controls.Behavior;assembly=SourceControlGenerator"
 		xmlns:dgx="urn:tom-englert.de/DataGridExtensions"
+		xmlns:sys="clr-namespace:System;assembly=mscorlib"
 		mc:Ignorable="d"
 		d:DataContext="{d:DesignInstance data:LocaleEditorDesignData, IsDesignTimeCreatable=True}"
 		x:Name="LocaleWindow"
@@ -166,7 +167,8 @@
 				<Setter Property="Template">
 					<Setter.Value>
 						<ControlTemplate TargetType="{x:Type TabControl}">
-							<Grid x:Name="templateRoot" ClipToBounds="true" SnapsToDevicePixels="true" KeyboardNavigation.TabNavigation="Local" ScrollViewer.VerticalScrollBarVisibility="Auto">
+							<Grid x:Name="templateRoot" ClipToBounds="true" 
+								  SnapsToDevicePixels="true" KeyboardNavigation.TabNavigation="Local" ScrollViewer.VerticalScrollBarVisibility="Auto">
 								<Grid.ColumnDefinitions>
 									<ColumnDefinition x:Name="ColumnDefinition0"/>
 									<ColumnDefinition x:Name="GridSplitter" Width="0"/>
@@ -176,31 +178,24 @@
 									<RowDefinition x:Name="RowDefinition0" Height="Auto"/>
 									<RowDefinition x:Name="RowDefinition1" Height="*"/>
 								</Grid.RowDefinitions>
-								<GridSplitter BorderBrush="Red" 
-											  Grid.Column="1"
-											  Grid.RowSpan="3" 
-											  VerticalAlignment="Stretch" HorizontalAlignment="Stretch"
-											  Height="Auto"
-											  ResizeDirection="Columns" />
+								<GridSplitter 
+									Background="LightGray"
+									Grid.Column="1"
+									Grid.RowSpan="3"
+									VerticalAlignment="Stretch" HorizontalAlignment="Stretch"
+									Height="Auto"
+									ResizeDirection="Columns" />
 								<Grid Grid.Column="0" Grid.Row="0" x:Name="headerGrid">
-									<Grid.RowDefinitions>
-										<RowDefinition x:Name="ScrollRow" Height="*" />
-										<RowDefinition x:Name="ActionsRow" Height="Auto" />
-									</Grid.RowDefinitions>
-									<ScrollViewer Grid.Row="0" MinWidth="120"
-										ScrollViewer.CanContentScroll="True"
-										ScrollViewer.VerticalScrollBarVisibility="Hidden" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+									<ScrollViewer
+										ScrollViewer.CanContentScroll="True" VerticalAlignment="Top"
+										ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
 										<TabPanel x:Name="headerPanel" Background="Transparent"
 												  IsItemsHost="true" KeyboardNavigation.TabIndex="1" Panel.ZIndex="1"
 											/>
+										<ScrollViewer.Resources>
+											<sys:Double x:Key="{x:Static SystemParameters.VerticalScrollBarWidthKey}">6</sys:Double>
+										</ScrollViewer.Resources>
 									</ScrollViewer>
-									<c:ImageButton Click="AddFileButton_Click" MaxSize="16" Grid.Row="1"
-										IsEnabled="{Binding RelativeSource={RelativeSource AncestorType={x:Type Window}}, Path=DataContext.CanAddFile}"
-										ToolTip_Enabled="{x:Static core:DOS2DETooltips.Button_Locale_AddFile}"
-										ToolTip_Disabled="{x:Static core:DOS2DETooltips.Button_Locale_AddFile_Disabled}"
-										Source="{x:Static vdata:IconPathData.AddFile}"
-										Visibility="{Binding RelativeSource={RelativeSource AncestorType={x:Type Window}}, Path=DataContext.CanAddFile, Converter={StaticResource BoolToVisibilityConverter}}"
-										/>
 								</Grid>
 								<Border x:Name="contentPanel" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{TemplateBinding Background}" 
 										Grid.Column="0" Grid.Row="1" KeyboardNavigation.DirectionalNavigation="Contained" KeyboardNavigation.TabIndex="2" KeyboardNavigation.TabNavigation="Local">
@@ -222,7 +217,7 @@
 									<Setter Property="Grid.Column" TargetName="contentPanel" Value="2"/>
 									<Setter Property="Width" TargetName="ColumnDefinition0" Value="Auto"/>
 									<Setter Property="Width" TargetName="ColumnDefinition1" Value="*"/>
-									<Setter Property="Width" TargetName="GridSplitter" Value="4"/>
+									<Setter Property="Width" TargetName="GridSplitter" Value="1"/>
 									<Setter Property="Height" TargetName="RowDefinition0" Value="*"/>
 									<Setter Property="Height" TargetName="RowDefinition1" Value="0"/>
 									<Setter Property="Margin" TargetName="headerPanel" Value="2,2,0,2"/>
@@ -314,7 +309,8 @@
 													<Rectangle Style="{StaticResource VerticalSeparator}" />
 													<c:ImageButton 
 														Command="{Binding Path=DataContext.ImportKeysCommand, RelativeSource={RelativeSource AncestorType={x:Type Window}}}"
-														ToolTip="{x:Static core:DOS2DETooltips.Button_Locale_ImportKeys}"
+														ToolTip_Enabled="{x:Static core:DOS2DETooltips.Button_Locale_ImportKeys}"
+														ToolTip_Disabled="{x:Static core:DOS2DETooltips.Button_Locale_ImportDisabled}"
 														Source="{x:Static vdata:IconPathData.ImportFile}"
 														IsEnabled="{Binding Path=DataContext.CanAddKeys, RelativeSource={RelativeSource AncestorType={x:Type Window}}}"
 													>
@@ -636,11 +632,16 @@
 											<TextBlock 
 												Text="{Binding DisplayName}"
 												ToolTip="{Binding SourcePath}"
-												
 												TextAlignment="Left"
 												Margin="4,0,0,0"
 												x:Name="headerText"
-											/>
+											>
+												<TextBlock.Resources>
+													<Style TargetType="ToolTip">
+														<Setter Property="Visibility" Value="{Binding SourcePath, Converter={StaticResource EmptyStringVisibilityConverter}}" />
+													</Style>
+												</TextBlock.Resources>
+											</TextBlock>
 											<DataTemplate.Triggers>
 												<DataTrigger Binding="{Binding ChangesUnsaved}" Value="True">
 													<Setter TargetName="headerText" Property="Foreground" Value="#FF459727"/>
@@ -710,7 +711,8 @@
 				<Rectangle Style="{StaticResource VerticalSeparator}" />
 				<c:ImageButton 
 					Command="{Binding Path=DataContext.ImportFileCommand, RelativeSource={RelativeSource AncestorType={x:Type Window}}}"
-					ToolTip="{x:Static core:DOS2DETooltips.Button_Locale_ImportFile}"
+					ToolTip_Enabled="{x:Static core:DOS2DETooltips.Button_Locale_ImportFile}"
+					ToolTip_Disabled="{x:Static core:DOS2DETooltips.Button_Locale_ImportDisabled}"
 					Source="{x:Static vdata:IconPathData.ImportFile}"
 					IsEnabled="{Binding Path=DataContext.CanAddFile, RelativeSource={RelativeSource AncestorType={x:Type Window}}}"
 					>
@@ -720,6 +722,13 @@
 						</MultiBinding>
 					</c:ImageButton.CommandParameter>
 				</c:ImageButton>
+				<c:ImageButton 
+					Click="AddFileButton_Click"
+					IsEnabled="{Binding RelativeSource={RelativeSource AncestorType={x:Type Window}}, Path=DataContext.CanAddFile}"
+					ToolTip_Enabled="{x:Static core:DOS2DETooltips.Button_Locale_AddFile}"
+					ToolTip_Disabled="{x:Static core:DOS2DETooltips.Button_Locale_AddFile_Disabled}"
+					Source="{x:Static vdata:IconPathData.AddFile}"
+				/>
 			</StackPanel>
 		</Grid>
 		<TabControl Grid.Row="2" ItemsSource="{Binding Groups}" ContentTemplate="{Binding Source={StaticResource LocaleFileTabs}}"

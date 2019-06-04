@@ -142,7 +142,7 @@ namespace SCG.Data.View
 		{
 			get
 			{
-				if (_addTemplateCommand == null) _addTemplateCommand = new RelayCommand(param => AddTemplate(), null);
+				if (_addTemplateCommand == null) _addTemplateCommand = new ActionCommand(AddTemplate);
 				return _addTemplateCommand;
 			}
 		}
@@ -153,7 +153,7 @@ namespace SCG.Data.View
 		{
 			get
 			{
-				if (_cancelAddTemplateCommand == null) _cancelAddTemplateCommand = new RelayCommand(param => HideAddTemplateControl(), null);
+				if (_cancelAddTemplateCommand == null) _cancelAddTemplateCommand = new ActionCommand(HideAddTemplateControl);
 				return _cancelAddTemplateCommand;
 			}
 		}

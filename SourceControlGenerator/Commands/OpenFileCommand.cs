@@ -14,7 +14,7 @@ namespace SCG.Commands
 
 		public override bool CanExecute(object parameter)
 		{
-			if (parameter != null && FileCommands.Load != null)
+			if (base.CanExecute(parameter) && parameter != null && FileCommands.Load != null)
 			{
 				string filePath = (String)parameter;
 				return FileCommands.IsValidPath(filePath);

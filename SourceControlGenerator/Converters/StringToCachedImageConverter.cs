@@ -18,13 +18,20 @@ namespace SCG.Converters
 			{
 				if(!String.IsNullOrWhiteSpace(uri))
 				{
-					BitmapImage image = new BitmapImage();
-					image.BeginInit();
-					image.CacheOption = BitmapCacheOption.OnLoad;
-					//image.CreateOptions = BitmapCreateOptions.IgnoreImageCache;
-					image.UriSource = new Uri(uri, UriKind.RelativeOrAbsolute);
-					image.EndInit();
-					return image;
+					try
+					{
+						BitmapImage image = new BitmapImage();
+						image.BeginInit();
+						image.CacheOption = BitmapCacheOption.OnLoad;
+						//image.CreateOptions = BitmapCreateOptions.IgnoreImageCache;
+						image.UriSource = new Uri(uri, UriKind.RelativeOrAbsolute);
+						image.EndInit();
+						return image;
+					}
+					catch(Exception ex)
+					{
+						Log.Here().Error($"Error converting string to BitmapImage: {ex.ToString()}");
+					}
 				}
 			}
 			return null;

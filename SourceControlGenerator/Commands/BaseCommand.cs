@@ -20,9 +20,15 @@ namespace SCG.Commands
 			CommandManager.InvalidateRequerySuggested();
 		}
 
+		public bool Enabled { get; set; } = true;
+
 		public virtual bool CanExecute(object parameter)
 		{
-			return true;
+			if(parameter is bool changeEnabled)
+			{
+				Enabled = changeEnabled;
+			}
+			return Enabled;
 		}
 
 		public virtual void Execute(object parameter) { }

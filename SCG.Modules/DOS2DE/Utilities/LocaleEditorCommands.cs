@@ -634,27 +634,35 @@ namespace SCG.Modules.DOS2DE.Utilities
 						using (var stream = new System.IO.StreamReader(path))
 						{
 							string sourcePath = Path.Combine(groupData.SourceDirectory, Path.GetFileNameWithoutExtension(path), ".lsb");
-							string name = Path.GetFileNameWithoutExtension(path);
-							LocaleFileData data = CreateFileData(sourcePath, name);
+							string name = Path.GetFileName(path);
+							LocaleFileData fileData = CreateFileData(sourcePath, name);
 
 							int lineNum = 0;
 							while((line = stream.ReadLine()) != null)
 							{
-								if (lineNum == 0) continue; // Skip top line, as it typically describes the columns
+								lineNum += 1;
+								// Skip top line, as it typically describes the columns
+								Log.Here().Activity(line);
+								if (lineNum == 1 && line.Contains("Key\tContent")) continue;
 								var parts = line.Split(delimiter);
 
 								var key = parts.ElementAtOrDefault(0);
-								var content = parts.ElementAtOrDefault(0);
+								var content = parts.ElementAtOrDefault(1);
 
 								if (key == null) key = "NewKey";
 								if (content == null) content = "";
 
-								var entry = CreateNewLocaleEntry(data, key, content);
-								data.Entries.Add(entry);
-								lineNum++;
+								var entry = CreateNewLocaleEntry(fileData, key, content);
+								fileData.Entries.Add(entry);
 							}
 
-							newFileDataList.Add(data);
+							//Remove the empty default new key
+							if(fileData.Entries.Count > 1)
+							{
+								fileData.Entries.Remove(fileData.Entries.First());
+							}
+
+							newFileDataList.Add(fileData);
 						}
 					}
 				}
@@ -700,7 +708,8 @@ namespace SCG.Modules.DOS2DE.Utilities
 							while ((line = stream.ReadLine()) != null)
 							{
 								lineNum += 1;
-								if (lineNum == 1) continue; // Skip top line, as it typically describes the columns
+								// Skip top line, as it typically describes the columns
+								if (lineNum == 1 && line.Contains("Key\tContent")) continue;
 								var parts = line.Split(delimiter);
 
 								var key = parts.ElementAtOrDefault(0);

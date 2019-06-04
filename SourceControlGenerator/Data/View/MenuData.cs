@@ -43,6 +43,10 @@ namespace SCG.Data.View
 			get { return isEnabled; }
 			set
 			{
+				if (ClickCommand != null && isEnabled != value)
+				{
+					ClickCommand.CanExecute(value);
+				}
 				isEnabled = value;
 				RaisePropertyChanged("IsEnabled");
 			}

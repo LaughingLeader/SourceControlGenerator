@@ -284,7 +284,6 @@
     <Compile Include="Core\CommandHandlers\LoadCommands.cs" />
     <Compile Include="Commands\OpenFileBrowserCommand.cs" />
     <Compile Include="Commands\OpenFileCommand.cs" />
-    <Compile Include="Commands\RelayCommand.cs" />
     <Compile Include="Commands\SaveFileAsCommand.cs" />
     <Compile Include="Core\CommandHandlers\SaveCommands.cs" />
     <Compile Include="Commands\SaveFileCommand.cs" />

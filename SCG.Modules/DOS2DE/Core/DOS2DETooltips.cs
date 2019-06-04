@@ -1,5 +1,7 @@
-﻿using System;
+﻿using SCG.Data;
+using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -8,6 +10,13 @@ namespace SCG.Modules.DOS2DE.Core
 {
 	public static class DOS2DETooltips
 	{
+		public static event EventHandler<PropertyChangedEventArgs> StaticPropertyChanged;
+
+		public static void TooltipChanged(string property)
+		{
+			StaticPropertyChanged?.Invoke(null, new PropertyChangedEventArgs(property));
+		}
+
 		public static string AvailableProjects = "Detected (unmanaged) mod projects will show up here.\nCTRL + Left Click to deselect projects.";
 		public static string AvailableProjects_Availability_New = "New Projects Available";
 		public static string AvailableProjects_Availability_None = "No New Projects Found";
@@ -50,6 +59,7 @@ namespace SCG.Modules.DOS2DE.Core
 
 		public static string Button_Locale_ImportFile = "Import File...";
 		public static string Button_Locale_ImportKeys = "Import Entries From File...";
+		public static string Button_Locale_ImportDisabled = "Import Disabled";
 
 		//public static string Button_Locale_UnsavedChanges_Tab = "Unsaved Changes ";
 

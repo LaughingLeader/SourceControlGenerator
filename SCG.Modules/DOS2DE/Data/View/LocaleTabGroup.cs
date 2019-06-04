@@ -129,6 +129,16 @@ namespace SCG.Modules.DOS2DE.Data.View
 			Log.Here().Activity($"Updated combined entries for '{Name}'.");
 		}
 
+		public void SelectFirst()
+		{
+			SelectedFileIndex = 0;
+		}
+
+		public void SelectLast()
+		{
+			SelectedFileIndex = Tabs.Count - 1;
+		}
+
 		public LocaleTabGroup(string name = "")
 		{
 			Name = name;

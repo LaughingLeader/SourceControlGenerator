@@ -33,7 +33,7 @@ namespace SCG.Commands
 
 		public override bool CanExecute(object parameter)
 		{
-			return !BrowserOpen;
+			return !BrowserOpen && base.CanExecute(parameter);
 		}
 
 		public override void Execute(object parameter)

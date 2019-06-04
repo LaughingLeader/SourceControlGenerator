@@ -1079,6 +1079,7 @@ namespace SCG.Core
 		{
 			BackupSelectedMenuData.IsEnabled = BackupSelectedToMenuData.IsEnabled = Data.ProjectSelected;
 			StartGitGenerationMenuData.IsEnabled = Data.CanGenerateGit;
+			OpenLocalizationEditorMenuData.IsEnabled = Data.ProjectSelected;
 		}
 
 		public void OpenFolder(string folderPath)
@@ -1121,6 +1122,7 @@ namespace SCG.Core
 		private MenuData BackupSelectedToMenuData { get; set; }
 		private MenuData StartGitGenerationMenuData { get; set; }
 		private MenuData OpenLocalModsFolderMenuData { get; set; }
+		private MenuData OpenLocalizationEditorMenuData { get; set; }
 
 		public void Initialize(MainAppData mainAppData)
 		{
@@ -1156,13 +1158,6 @@ namespace SCG.Core
 				IsEnabled = true
 			};
 
-			var Debug_LocalizationTest = new MenuData("DOS2.ParseLocalizationLSB")
-			{
-				Header = "[Debug] Parse Localization",
-				ClickCommand = new ActionCommand(() => { var f = LocaleEditorCommands.LoadResourceAsync(@"G:\Divinity Original Sin 2\DefEd\Data\Mods\Nemesis_627c8d3a-7e6b-4fd2-8ce5-610d553fdbe9\Localization\LLMIME_MiscText.lsb"); }),
-				IsEnabled = true
-			};
-
 			MainAppData.MenuBarData.File.Register(Data.ModuleName,
 				new SeparatorData(),
 				new MenuData("DOS2.RefreshProjects")
@@ -1183,18 +1178,28 @@ namespace SCG.Core
 #if DEBUG
 				,
 				new SeparatorData(),
-				Debug_LocalizationTest
+				new MenuData("DOS2.ParseLocalizationLSB")
+				{
+					Header = "[Debug] Parse Localization",
+					ClickCommand = new ActionCommand(() => { var f = LocaleEditorCommands.LoadResourceAsync(@"G:\Divinity Original Sin 2\DefEd\Data\Mods\Nemesis_627c8d3a-7e6b-4fd2-8ce5-610d553fdbe9\Localization\LLMIME_MiscText.lsb"); }),
+					IsEnabled = true
+				}
 #endif
 			);
 
+
+			OpenLocalizationEditorMenuData = new MenuData("DOS2.LocalizationEditor")
+			{
+				Header = "Localization Editor",
+				ClickCommand = new ActionCommand(OpenLocalizationEditor),
+				ShortcutKey = System.Windows.Input.Key.F7,
+				IsEnabled = false
+			};
+
 			MainAppData.MenuBarData.Tools.Register(Data.ModuleName,
 				new SeparatorData(),
-				new MenuData("DOS2.LocalizationEditor")
-				{
-					Header = "Localization Editor",
-					ClickCommand = new ActionCommand(OpenLocalizationEditor),
-					ShortcutKey = System.Windows.Input.Key.F7
-				});
+				OpenLocalizationEditorMenuData
+			);
 		}
 
 		public void Start()

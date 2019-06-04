@@ -24,7 +24,7 @@ namespace SCG.Commands
 
 		public override bool CanExecute(object parameter)
 		{
-			return !TaskOpen;
+			return !TaskOpen && base.CanExecute(parameter);
 		}
 
 		public override void Execute(object parameter)

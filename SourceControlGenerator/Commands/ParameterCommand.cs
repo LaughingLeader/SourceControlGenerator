@@ -27,7 +27,7 @@ namespace SCG.Commands
 
 		public override bool CanExecute(object parameter)
 		{
-			return execute != null;
+			return execute != null && base.CanExecute(parameter);
 		}
 
 		public override void Execute(object parameter)
