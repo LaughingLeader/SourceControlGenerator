@@ -32,13 +32,6 @@
 				<Setter Property="MaxSize" Value="16" />
 			</Style>
 
-			<Style x:Key="VerticalSeparator" TargetType="Rectangle">
-				<Setter Property="VerticalAlignment" Value="Stretch" />
-				<Setter Property="Width" Value="1" />
-				<Setter Property="Margin" Value="2,2,4,2" />
-				<Setter Property="Stroke" Value="Gray" />
-			</Style>
-
 			<Style x:Key="ShortcutButton" TargetType="Button">
 				<Setter Property="MinHeight" Value="16" />
 				<Setter Property="MinWidth" Value="16" />
@@ -319,10 +312,13 @@
 														IsEnabled="{Binding Path=DataContext.CanAddKeys, RelativeSource={RelativeSource AncestorType={x:Type Window}}}"
 													>
 														<c:ImageButton.CommandParameter>
-															<Binding Path="DataContext.CurrentImportPath" RelativeSource="{RelativeSource AncestorType={x:Type Window}}"
+															<Binding Path="DataContext.CurrentEntryImportPath" RelativeSource="{RelativeSource AncestorType={x:Type Window}}"
 																Converter="{StaticResource ParamsToOpenFileBrowserParamsConverter}" />
 														</c:ImageButton.CommandParameter>
 													</c:ImageButton>
+													<Rectangle Style="{StaticResource VerticalSeparator}" />
+													<c:ImageButton x:Name="ExportButton" Click="ExportButton_Click" ToolTip="{x:Static core:DOS2DETooltips.Button_Locale_ExportToXML}" 
+														Source="{x:Static vdata:IconPathData.XSLTTemplate}" />
 												</StackPanel>
 												<Button Command="{x:Static DataGrid.SelectAllCommand}" Grid.Row="1" Focusable="false" Style="{DynamicResource {ComponentResourceKey ResourceId=DataGridSelectAllButtonStyle, TypeInTargetAssembly={x:Type DataGrid}}}" Visibility="{Binding HeadersVisibility, ConverterParameter={x:Static DataGridHeadersVisibility.All}, Converter={x:Static DataGrid.HeadersVisibilityConverter}, RelativeSource={RelativeSource AncestorType={x:Type DataGrid}}}" Width="{Binding CellsPanelHorizontalOffset, RelativeSource={RelativeSource AncestorType={x:Type DataGrid}}}"/>
 												<DataGridColumnHeadersPresenter x:Name="PART_ColumnHeadersPresenter" Grid.Row="1" Grid.Column="1" Visibility="{Binding HeadersVisibility, ConverterParameter={x:Static DataGridHeadersVisibility.Column}, Converter={x:Static DataGrid.HeadersVisibilityConverter}, RelativeSource={RelativeSource AncestorType={x:Type DataGrid}}}"/>
@@ -373,7 +369,7 @@
 						dgx:DataGridFilter.ContentFilterFactory="{StaticResource RegexContentFilterFactory}"
 						Grid.Row="1"
 						Style="{StaticResource LocaleDataGridStyle}"
-				>
+					>
 						<DataGrid.Resources>
 							<behavior:DataContextSpy x:Key="FileData" DataContext="{Binding}" />
 						</DataGrid.Resources>
@@ -441,7 +437,7 @@
 						<ControlTemplate TargetType="{x:Type TabItem}">
 							<Grid x:Name="templateRoot" SnapsToDevicePixels="true">
 								<Border x:Name="mainBorder" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="1,1,1,0" Background="{TemplateBinding Background}" Margin="0">
-									<Border x:Name="innerBorder" BorderBrush="{StaticResource TabItem.Selected.Border}" BorderThickness="1,1,1,0" Background="{StaticResource TabItem.Selected.Background}" Margin="-1" Opacity="0"/>
+									<Border x:Name="innerBorder" BorderBrush="{StaticResource TabItem.Selected.Border}" BorderThickness="1,1,1,0" Background="#FFD7F5BE" Margin="-1" Opacity="0"/>
 								</Border>
 								<ContentPresenter x:Name="contentPresenter" ContentSource="Header" Focusable="False" HorizontalAlignment="{Binding HorizontalContentAlignment, RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}" Margin="{TemplateBinding Padding}" RecognizesAccessKey="True" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" VerticalAlignment="{Binding VerticalContentAlignment, RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}"/>
 							</Grid>
@@ -686,10 +682,6 @@
 				<Style TargetType="c:ImageButton" BasedOn="{StaticResource {x:Type c:ImageButton}}">
 					<Setter Property="Margin" Value="2" />
 				</Style>
-				<Style TargetType="CheckBox">
-					<Setter Property="Margin" Value="2,3,2,0" />
-
-				</Style>
 			</Grid.Resources>
 			<StackPanel x:Name="ShortcutsButtonPanel" Grid.Column="0" VerticalAlignment="Center" Margin="2" MinHeight="16">
 				<StackPanel.Resources>
@@ -697,6 +689,21 @@
 						<Setter Property="Background" Value="Transparent" />
 					</Style>
 				</StackPanel.Resources>
+				<c:ImageButton 
+					Click="AddFileButton_Click"
+					IsEnabled="{Binding RelativeSource={RelativeSource AncestorType={x:Type Window}}, Path=DataContext.CanAddFile}"
+					ToolTip_Enabled="{x:Static core:DOS2DETooltips.Button_Locale_AddFile}"
+					ToolTip_Disabled="{x:Static core:DOS2DETooltips.Button_Locale_AddFile_Disabled}"
+					Source="{x:Static vdata:IconPathData.AddFile}"
+				/>
+				<c:ImageButton 
+					Command="{Binding ImportFileCommand}"
+					CommandParameter="{Binding CurrentFileImportPath, Converter={StaticResource ParamsToOpenFileBrowserParamsConverter}}"
+					ToolTip_Enabled="{x:Static core:DOS2DETooltips.Button_Locale_ImportFile}"
+					ToolTip_Disabled="{x:Static core:DOS2DETooltips.Button_Locale_ImportDisabled}"
+					Source="{x:Static vdata:IconPathData.ImportFile}"
+					IsEnabled="{Binding CanAddFile}"
+					/>
 				<c:ImageButton Command="{Binding SaveCurrentCommand}" IsEnabled="{Binding CanSave}" 
 					Source="{x:Static vdata:IconPathData.Save}"
 					ToolTip_Enabled="{x:Static core:DOS2DETooltips.Button_Locale_SaveCurrent}"
@@ -705,33 +712,7 @@
 				<c:ImageButton x:Name="SaveAllButton" Command="{Binding SaveAllCommand}" ToolTip="{x:Static core:DOS2DETooltips.Button_Locale_SaveAll}" 
 							   Source="{x:Static vdata:IconPathData.SaveAll}" />
 				<Rectangle Style="{StaticResource VerticalSeparator}" />
-				<c:ImageButton x:Name="ExportButton" Click="ExportButton_Click" ToolTip="{x:Static core:DOS2DETooltips.Button_Locale_ExportToXML}" 
-							   Source="{x:Static vdata:IconPathData.XSLTTemplate}" />
-				<CheckBox Content="Keys" IsChecked="{Binding ExportKeys}"
-					ToolTip="{x:Static core:DOS2DETooltips.Checkbox_Locale_ExportXML_Keys}" />
-				<CheckBox Content="Source" IsChecked="{Binding Path=DataContext.ExportSource, RelativeSource={RelativeSource AncestorType={x:Type Window}, Mode=FindAncestor}}"
-					ToolTip="{x:Static core:DOS2DETooltips.Checkbox_Locale_ExportXML_Source}" />
-				<Rectangle Style="{StaticResource VerticalSeparator}" />
-				<c:ImageButton 
-					Command="{Binding Path=DataContext.ImportFileCommand, RelativeSource={RelativeSource AncestorType={x:Type Window}}}"
-					ToolTip_Enabled="{x:Static core:DOS2DETooltips.Button_Locale_ImportFile}"
-					ToolTip_Disabled="{x:Static core:DOS2DETooltips.Button_Locale_ImportDisabled}"
-					Source="{x:Static vdata:IconPathData.ImportFile}"
-					IsEnabled="{Binding Path=DataContext.CanAddFile, RelativeSource={RelativeSource AncestorType={x:Type Window}}}"
-					>
-					<c:ImageButton.CommandParameter>
-						<MultiBinding Converter="{StaticResource MultiValueToArrayConverter}">
-							<Binding Path="DataContext.CurrentImportPath" RelativeSource="{RelativeSource AncestorType={x:Type Window}}" />
-						</MultiBinding>
-					</c:ImageButton.CommandParameter>
-				</c:ImageButton>
-				<c:ImageButton 
-					Click="AddFileButton_Click"
-					IsEnabled="{Binding RelativeSource={RelativeSource AncestorType={x:Type Window}}, Path=DataContext.CanAddFile}"
-					ToolTip_Enabled="{x:Static core:DOS2DETooltips.Button_Locale_AddFile}"
-					ToolTip_Disabled="{x:Static core:DOS2DETooltips.Button_Locale_AddFile_Disabled}"
-					Source="{x:Static vdata:IconPathData.AddFile}"
-				/>
+
 			</StackPanel>
 		</Grid>
 		<TabControl Grid.Row="2" ItemsSource="{Binding Groups}" ContentTemplate="{Binding Source={StaticResource LocaleFileTabs}}"

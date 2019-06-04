@@ -13,7 +13,8 @@ namespace SCG.Commands
 {
 	public struct OpenFileBrowserParams
 	{
-		public string StartPath { get; set; }
+		public string StartDirectory { get; set; }
+		public string DefaultFilename { get; set; }
 		public string Title { get; set; }
 		public bool UseFolderBrowser { get; set; }
 		public FileBrowserFilter[] Filters { get; set; }
@@ -23,7 +24,8 @@ namespace SCG.Commands
 		{
 			return new OpenFileBrowserParams()
 			{
-				StartPath = Directory.GetCurrentDirectory(),
+				StartDirectory = Directory.GetCurrentDirectory(),
+				DefaultFilename = "",
 				Title = "Open File...",
 				ParentWindow = App.Current.MainWindow,
 				UseFolderBrowser = false,
@@ -35,7 +37,8 @@ namespace SCG.Commands
 		{
 			return new OpenFileBrowserParams()
 			{
-				StartPath = this.StartPath,
+				StartDirectory = this.StartDirectory,
+				DefaultFilename = this.DefaultFilename,
 				Title = this.Title,
 				ParentWindow = this.ParentWindow,
 				UseFolderBrowser = this.UseFolderBrowser,
@@ -63,10 +66,12 @@ namespace SCG.Commands
 		{
 			OpenFileBrowserParams useBrowserParams = DefaultParams != null ? DefaultParams.Value.Copy() : OpenFileBrowserParams.Default();
 
-			if(parameter is  OpenFileBrowserParams browseParams)
+			if(parameter is OpenFileBrowserParams browseParams)
 			{
-				if (FileCommands.IsValidFilePath(browseParams.StartPath)) useBrowserParams.StartPath = browseParams.StartPath;
-				if (!string.IsNullOrEmpty(browseParams.Title)) useBrowserParams.Title = browseParams.Title;
+				if (!String.IsNullOrEmpty(browseParams.StartDirectory))
+					useBrowserParams.StartDirectory = browseParams.StartDirectory;
+				if (!String.IsNullOrEmpty(browseParams.DefaultFilename)) useBrowserParams.DefaultFilename = browseParams.DefaultFilename;
+				if (!String.IsNullOrEmpty(browseParams.Title)) useBrowserParams.Title = browseParams.Title;
 				if (browseParams.ParentWindow != null && browseParams.ParentWindow.IsVisible) useBrowserParams.ParentWindow = browseParams.ParentWindow;
 				useBrowserParams.UseFolderBrowser = browseParams.UseFolderBrowser;
 				if (browseParams.Filters != null) useBrowserParams.Filters = browseParams.Filters;
@@ -81,24 +86,25 @@ namespace SCG.Commands
 
 			BrowserOpen = true;
 
-			browserParams.StartPath = Path.GetFileName(Path.GetDirectoryName(browserParams.StartPath)) + @"\";
+			Log.Here().Activity("Starting at path: " + browserParams.StartDirectory);
 
 			if (!browserParams.UseFolderBrowser)
 			{
 				if(MultiCallback == null)
 				{
-					FileCommands.Load.OpenFileDialog(browserParams.ParentWindow, browserParams.Title, browserParams.StartPath, OnFileSelected, browserParams.Filters);
+					FileCommands.Load.OpenFileDialog(browserParams.ParentWindow, browserParams.Title, browserParams.StartDirectory, OnFileSelected, 
+						browserParams.DefaultFilename, OnCanceled, browserParams.Filters);
 				}
 				else
 				{
-					FileCommands.Load.OpenMultiFileDialog(browserParams.ParentWindow, browserParams.Title, browserParams.StartPath, OnMultipleFilesSelected, browserParams.Filters);
+					FileCommands.Load.OpenMultiFileDialog(browserParams.ParentWindow, browserParams.Title, browserParams.StartDirectory, 
+						OnMultipleFilesSelected, browserParams.DefaultFilename, OnCanceled, browserParams.Filters);
 				}
 			}
 			else
 			{
-				FileCommands.Load.OpenFolderDialog(browserParams.ParentWindow, browserParams.Title, browserParams.StartPath, OnFileSelected);
+				FileCommands.Load.OpenFolderDialog(browserParams.ParentWindow, browserParams.Title, browserParams.StartDirectory, OnFileSelected);
 			}
-
 		}
 
 		private void OnMultipleFilesSelected(IEnumerable<string> files)
@@ -111,6 +117,12 @@ namespace SCG.Commands
 		{
 			BrowserOpen = false;
 			SingleCallback?.Invoke(path);
+		}
+
+		private void OnCanceled(string file, Microsoft.WindowsAPICodePack.Dialogs.CommonFileDialogResult result)
+		{
+			BrowserOpen = false;
+			//Log.Here().Activity($"File opening canceled. Reason: `{result}`.");
 		}
 
 		public OpenFileBrowserCommand() { }

@@ -36,22 +36,25 @@ namespace SCG.Commands
 
 		private bool SaveAppSettings = false;
 
-		public void OpenFileDialog(Window ParentWindow, string Title, string FilePath, Action<string> OnFileSelected, params FileBrowserFilter[] Filters)
+		private CommonOpenFileDialog CreateOpenDialog(string title, string startingDirectory, string defaultFilename = "", bool multiSelect = false, params FileBrowserFilter[] filters)
 		{
-			var fileDialog = new CommonOpenFileDialog();
-			fileDialog.Title = Title;
-			fileDialog.InitialDirectory = Directory.GetParent(FilePath).FullName;
-			fileDialog.DefaultFileName = Path.GetFileName(FilePath);
-
-			if (Filters != null)
+			var fileDialog = new CommonOpenFileDialog()
 			{
-				if (Filters.Length <= 0)
+				Title = title,
+				InitialDirectory = startingDirectory,
+				DefaultFileName = defaultFilename,
+				Multiselect = multiSelect
+			};
+			
+			if (filters != null)
+			{
+				if (filters.Length <= 0)
 				{
 					fileDialog.Filters.Add(new CommonFileDialogFilter(CommonFileFilters.All.Name, CommonFileFilters.All.Values));
 				}
 				else
 				{
-					foreach (var filter in Filters)
+					foreach (var filter in filters)
 					{
 						fileDialog.Filters.Add(new CommonFileDialogFilter(filter.Name, filter.Values));
 					}
@@ -62,49 +65,36 @@ namespace SCG.Commands
 				fileDialog.Filters.Add(new CommonFileDialogFilter(CommonFileFilters.All.Name, CommonFileFilters.All.Values));
 			}
 
-			var result = fileDialog.ShowDialog(ParentWindow);
+			return fileDialog;
+		}
+
+		public void OpenFileDialog(Window parentWindow, string title, string startingDirectory, Action<string> OnFileSelected, string defaultFilename = "", Action<string, CommonFileDialogResult> OnCancel = null, params FileBrowserFilter[] filters)
+		{
+			var fileDialog = CreateOpenDialog(title, startingDirectory, defaultFilename, false, filters);
+
+			var result = fileDialog.ShowDialog(parentWindow);
 			if (result == CommonFileDialogResult.Ok)
 			{
 				OnFileSelected?.Invoke(fileDialog.FileName);
 			}
-		}
-
-		public void OpenMultiFileDialog(Window ParentWindow, string Title, string FilePath, Action<IEnumerable<string>> OnFileSelected, params FileBrowserFilter[] Filters)
-		{
-			var fileDialog = new CommonOpenFileDialog();
-			fileDialog.Title = Title;
-			fileDialog.InitialDirectory = Directory.GetParent(FilePath).FullName;
-			fileDialog.DefaultFileName = Path.GetFileName(FilePath);
-			fileDialog.Multiselect = true;
-
-			if (Filters != null)
-			{
-				if (Filters.Length <= 0)
-				{
-					fileDialog.Filters.Add(new CommonFileDialogFilter(CommonFileFilters.All.Name, CommonFileFilters.All.Values));
-				}
-				else
-				{
-					foreach (var filter in Filters)
-					{
-						fileDialog.Filters.Add(new CommonFileDialogFilter(filter.Name, filter.Values));
-					}
-				}
-			}
 			else
 			{
-				fileDialog.Filters.Add(new CommonFileDialogFilter(CommonFileFilters.All.Name, CommonFileFilters.All.Values));
+				OnCancel?.Invoke(fileDialog.InitialDirectory, result);
 			}
+		}
 
-			var result = fileDialog.ShowDialog(ParentWindow);
+		public void OpenMultiFileDialog(Window parentWindow, string Title, string startingDirectory, Action<IEnumerable<string>> OnFileSelected, string defaultFilename = "", Action<string, CommonFileDialogResult> OnCancel = null, params FileBrowserFilter[] filters)
+		{
+			var fileDialog = CreateOpenDialog(Title, startingDirectory, defaultFilename, true, filters);
+
+			var result = fileDialog.ShowDialog(parentWindow);
 			if (result == CommonFileDialogResult.Ok)
 			{
-				Log.Here().Activity("Invoking action");
 				OnFileSelected?.Invoke(fileDialog.FileNames);
 			}
 			else
 			{
-				Log.Here().Activity($"Result: {result}");
+				OnCancel?.Invoke(fileDialog.InitialDirectory, result);
 			}
 		}
 

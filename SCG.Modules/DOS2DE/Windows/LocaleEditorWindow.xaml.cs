@@ -59,6 +59,7 @@ namespace SCG.Modules.DOS2DE.Windows
 		public void LoadData(LocaleViewData data)
 		{
 			LocaleData = data;
+			LocaleEditorCommands.LoadSettings(ModuleData, LocaleData);
 			LocaleData.UpdateCombinedGroup(true);
 			DataContext = LocaleData;
 			//currentdata.Groups = new System.Collections.ObjectModel.ObservableCollection<DOS2DELocalizationGroup>(data.Groups);
@@ -66,7 +67,6 @@ namespace SCG.Modules.DOS2DE.Windows
 			LocaleData.MenuData.RegisterShortcuts(this);
 			LocaleData.ModuleData = ModuleData;
 
-			LocaleEditorCommands.LoadSettings(ModuleData, LocaleData);
 		}
 
 		public void SaveSettings()
@@ -102,7 +102,7 @@ namespace SCG.Modules.DOS2DE.Windows
 			{
 				Log.Here().Activity("Exporting data to xml format.");
 				outputTextbox.Text = "";
-				outputTextbox.Text = LocaleEditorCommands.ExportDataAsXML(LocaleData, LocaleData.ExportSource, LocaleData.ExportKeys);
+				outputTextbox.Text = LocaleEditorCommands.ExportDataAsXML(LocaleData, LocaleData.Settings.ExportSource, LocaleData.Settings.ExportKeys);
 			}
 			else
 			{
