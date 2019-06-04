@@ -195,20 +195,11 @@
     </Compile>
     <Compile Include="Controls\AutoScrollingTextbox.cs" />
     <Compile Include="Controls\Behavior\ComboBoxWidthFromItemsBehavior.cs" />
-    <Compile Include="Controls\Behavior\FlowDocumentPagePadding.cs" />
-    <Compile Include="Controls\Behavior\HtmlRichTextBoxBehavior.cs" />
     <Compile Include="Controls\Behavior\ListBoxSelectionBehavior.cs" />
     <Compile Include="Controls\Behavior\MarginSetter.cs" />
     <Compile Include="Controls\Behavior\ProgressBarAnimationBehavior.cs" />
     <Compile Include="Controls\Behavior\TextBoxEnterKeyBehavior.cs" />
     <Compile Include="Controls\ImageButton.cs" />
-    <Compile Include="Controls\Microsoft\CssStylesheet.cs" />
-    <Compile Include="Controls\Microsoft\HtmlCSSParser.cs" />
-    <Compile Include="Controls\Microsoft\HtmlLexicalAnalyzer.cs" />
-    <Compile Include="Controls\Microsoft\HtmlParser.cs" />
-    <Compile Include="Controls\Microsoft\HtmlSchema.cs" />
-    <Compile Include="Controls\Microsoft\HtmlTokenType.cs" />
-    <Compile Include="Controls\Microsoft\HtmlToXamlConverter.cs" />
     <Compile Include="Converters\BindingFallbackConverter.cs" />
     <Compile Include="Converters\GrayscaleTintImageConverter.cs" />
     <Compile Include="Converters\MultiValueToArrayConverter.cs" />

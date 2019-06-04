@@ -422,6 +422,7 @@ namespace SCG.Modules.DOS2DE.Utilities
 				foreach (var f in data.SelectedGroup.DataFiles.OfType<LocaleFileData>())
 				{
 					success += SaveDataFile(f, token);
+					f.ChangesUnsaved = false;
 				}
 			});
 			Log.Here().Activity($"Files saved: '{success}'.");

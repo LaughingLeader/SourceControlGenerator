@@ -437,6 +437,8 @@ namespace SCG.Modules.DOS2DE.Data.View
 						OutputType = LogType.Error;
 					}
 					OutputDate = DateTime.Now.ToShortTimeString();
+
+					keyFileData.ChangesUnsaved = false;
 				}
 			}
 		}

@@ -635,8 +635,8 @@
 										<DataTemplate>
 											<TextBlock 
 												Text="{Binding DisplayName}"
-												ToolTip="{Binding Name}"
-												IsHitTestVisible="False"
+												ToolTip="{Binding SourcePath}"
+												
 												TextAlignment="Left"
 												Margin="4,0,0,0"
 												x:Name="headerText"
