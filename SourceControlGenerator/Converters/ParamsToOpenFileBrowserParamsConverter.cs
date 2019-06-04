@@ -17,9 +17,10 @@ namespace SCG.Converters
 		{
 			if(value is string pathParam && !String.IsNullOrEmpty(pathParam))
 			{
+				Log.Here().Activity(pathParam);
 				return new OpenFileBrowserParams()
 				{
-					StartPath = pathParam
+					StartDirectory = pathParam
 				};
 			}
 			else if(value is OpenFileBrowserParams openFileBrowserParams)
@@ -36,7 +37,7 @@ namespace SCG.Converters
 					{
 						if (i == 0)
 						{
-							fileBrowserParams.StartPath = strParam;
+							fileBrowserParams.StartDirectory = strParam;
 						}
 						else
 						{
@@ -45,6 +46,10 @@ namespace SCG.Converters
 					}
 				}
 				return fileBrowserParams;
+			}
+			else
+			{
+				Log.Here().Activity($"{value}");
 			}
 			return null;
 		}

@@ -163,6 +163,9 @@
     <Compile Include="Windows\LocaleExportWindow.xaml.cs">
       <DependentUpon>LocaleExportWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Windows\LocaleOptionsWindow.xaml.cs">
+      <DependentUpon>LocaleOptionsWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Windows\SetupWindow.xaml.cs">
       <DependentUpon>SetupWindow.xaml</DependentUpon>
     </Compile>
@@ -216,6 +219,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Windows\LocaleExportWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Windows\LocaleOptionsWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

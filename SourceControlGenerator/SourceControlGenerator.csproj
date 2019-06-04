@@ -199,6 +199,9 @@
     <Compile Include="Controls\Behavior\MarginSetter.cs" />
     <Compile Include="Controls\Behavior\ProgressBarAnimationBehavior.cs" />
     <Compile Include="Controls\Behavior\TextBoxEnterKeyBehavior.cs" />
+    <Compile Include="Controls\FileGridBox.xaml.cs">
+      <DependentUpon>FileGridBox.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Controls\ImageButton.cs" />
     <Compile Include="Converters\BindingFallbackConverter.cs" />
     <Compile Include="Converters\GrayscaleTintImageConverter.cs" />
@@ -350,6 +353,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Controls\FileBrowseControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\FileGridBox.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

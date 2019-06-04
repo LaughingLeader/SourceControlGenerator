@@ -308,7 +308,9 @@ namespace SCG.Windows
 
 		private void OpenKeywordsButton_Click(object sender, RoutedEventArgs e)
 		{
-			FileCommands.Load.OpenFileDialog(this, "Open Keywords", Data.ModuleSettings.UserKeywordsFile, (path) => { FileCommands.Load.LoadUserKeywords(Data, path); }, CommonFileFilters.Json);
+			FileCommands.Load.OpenFileDialog(this, "Open Keywords", Data.ModuleSettings.UserKeywordsFile, (path) => {
+				FileCommands.Load.LoadUserKeywords(Data, path);
+			}, "", null, CommonFileFilters.Json);
 		}
 
 		private void KeywordsList_Add_Click(object sender, RoutedEventArgs e)
