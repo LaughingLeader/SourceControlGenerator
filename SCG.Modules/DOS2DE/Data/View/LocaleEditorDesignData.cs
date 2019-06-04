@@ -12,10 +12,10 @@ using SCG.Modules.DOS2DE.Utilities;
 
 namespace SCG.Modules.DOS2DE.Data.View
 {
-	public class LocalizationEditorDesignData : DOS2DELocalizationViewData
+	public class LocaleEditorDesignData : LocaleViewData
 	{
 
-		public LocalizationEditorDesignData() : base()
+		public LocaleEditorDesignData() : base()
 		{
 			//var metaFile = new FileInfo(@"G:\Divinity Original Sin 2\DefEd\Data\Mods\Nemesis_627c8d3a-7e6b-4fd2-8ce5-610d553fdbe9\meta.lsx");
 			//ModProjectData testData = new ModProjectData(metaFile, @"G:\Divinity Original Sin 2\DefEd\Data\Projects");
@@ -24,13 +24,13 @@ namespace SCG.Modules.DOS2DE.Data.View
 			//Data = result.Data;
 			//Name = result.Error;
 
-			ModsGroup.DataFiles.Add(new DOS2DEStringKeyFileDataBase("Skills"));
-			ModsGroup.DataFiles.Add(new DOS2DEStringKeyFileDataBase("Statuses"));
-			ModsGroup.DataFiles.Add(new DOS2DEStringKeyFileDataBase("Potions"));
+			ModsGroup.DataFiles.Add(new BaseLocaleFileData("Skills"));
+			ModsGroup.DataFiles.Add(new BaseLocaleFileData("Statuses"));
+			ModsGroup.DataFiles.Add(new BaseLocaleFileData("Potions"));
 
-			PublicGroup.DataFiles.Add(new DOS2DEStringKeyFileDataBase("Skills"));
-			PublicGroup.DataFiles.Add(new DOS2DEStringKeyFileDataBase("Statuses"));
-			PublicGroup.DataFiles.Add(new DOS2DEStringKeyFileDataBase("Potions"));
+			PublicGroup.DataFiles.Add(new BaseLocaleFileData("Skills"));
+			PublicGroup.DataFiles.Add(new BaseLocaleFileData("Statuses"));
+			PublicGroup.DataFiles.Add(new BaseLocaleFileData("Potions"));
 
 			foreach(var d in ModsGroup.DataFiles)
 			{

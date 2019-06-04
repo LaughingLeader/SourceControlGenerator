@@ -17,14 +17,18 @@ using System.Xml.Serialization;
 using System.Collections.ObjectModel;
 using System.Globalization;
 using SCG.FileGen;
+using Newtonsoft.Json;
+using SCG.Modules.DOS2DE.Data.App;
+using SCG.Modules.DOS2DE.Core;
 
 namespace SCG.Modules.DOS2DE.Utilities
 {
 	public class DOS2DELocalizationEditor
 	{
-		public static async Task<DOS2DELocalizationViewData> LoadLocalizationDataAsync(string dataRootPath, IEnumerable<ModProjectData> modProjects, CancellationToken? token = null)
+		#region Loading Localization Files
+		public static async Task<LocaleViewData> LoadLocalizationDataAsync(string dataRootPath, IEnumerable<ModProjectData> modProjects, CancellationToken? token = null)
 		{
-			DOS2DELocalizationViewData localizationData = new DOS2DELocalizationViewData();
+			LocaleViewData localizationData = new LocaleViewData();
 			foreach (var project in modProjects)
 			{
 				var success = await LoadProjectLocalizationDataAsync(localizationData, dataRootPath, project, token).ConfigureAwait(false);
@@ -32,7 +36,7 @@ namespace SCG.Modules.DOS2DE.Utilities
 			return localizationData;
 		}
 
-		public static async Task<bool> LoadProjectLocalizationDataAsync(DOS2DELocalizationViewData localizationData, string dataRootPath, ModProjectData modProjectData, CancellationToken? token = null)
+		public static async Task<bool> LoadProjectLocalizationDataAsync(LocaleViewData localizationData, string dataRootPath, ModProjectData modProjectData, CancellationToken? token = null)
 		{
 			try
 			{
@@ -144,9 +148,9 @@ namespace SCG.Modules.DOS2DE.Utilities
 			}
 		}
 
-		private static async Task<List<DOS2DEStringKeyFileData>> LoadFilesAsync(string directoryPath, CancellationToken? token = null, params string[] fileExtensions)
+		private static async Task<List<LocaleFileData>> LoadFilesAsync(string directoryPath, CancellationToken? token = null, params string[] fileExtensions)
 		{
-			List<DOS2DEStringKeyFileData> stringKeyData = new List<DOS2DEStringKeyFileData>();
+			List<LocaleFileData> stringKeyData = new List<LocaleFileData>();
 
 			var filters = new DirectoryEnumerationFilters()
 			{
@@ -191,7 +195,7 @@ namespace SCG.Modules.DOS2DE.Utilities
 			return stringKeyData;
 		}
 
-		public static async Task<DOS2DEStringKeyFileData> LoadResourceAsync(string path, CancellationToken? token = null)
+		public static async Task<LocaleFileData> LoadResourceAsync(string path, CancellationToken? token = null)
 		{
 			return await Task.Run(() =>
 			{
@@ -203,7 +207,7 @@ namespace SCG.Modules.DOS2DE.Utilities
 
 				var resource = LSLib.LS.ResourceUtils.LoadResource(path, resourceFormat);
 
-				var data = new DOS2DEStringKeyFileData(resourceFormat, resource, path, Path.GetFileName(path));
+				var data = new LocaleFileData(resourceFormat, resource, path, Path.GetFileName(path));
 				LoadFromResource(data, resource, resourceFormat);
 				
 				//foreach (var entry in data.Entries)
@@ -215,7 +219,7 @@ namespace SCG.Modules.DOS2DE.Utilities
 			}).ConfigureAwait(false);
 		}
 
-		public static bool LoadFromResource(DOS2DEStringKeyFileData stringKeyFileData, Resource resource, ResourceFormat resourceFormat, bool sort = true)
+		public static bool LoadFromResource(LocaleFileData stringKeyFileData, Resource resource, ResourceFormat resourceFormat, bool sort = true)
 		{
 			try
 			{
@@ -226,7 +230,7 @@ namespace SCG.Modules.DOS2DE.Utilities
 					{
 						foreach (var node in entry.Value)
 						{
-							DOS2DEKeyEntry localeEntry = LoadFromNode(node, resourceFormat);
+							LocaleKeyEntry localeEntry = LoadFromNode(node, resourceFormat);
 							stringKeyFileData.Entries.Add(localeEntry);
 						}
 
@@ -247,7 +251,7 @@ namespace SCG.Modules.DOS2DE.Utilities
 
 					foreach(var node in stringNodes)
 					{
-						DOS2DEKeyEntry localeEntry = LoadFromNode(node, resourceFormat);
+						LocaleKeyEntry localeEntry = LoadFromNode(node, resourceFormat);
 						stringKeyFileData.Entries.Add(localeEntry);
 					}
 
@@ -261,7 +265,7 @@ namespace SCG.Modules.DOS2DE.Utilities
 
 				if (sort)
 				{
-					stringKeyFileData.Entries = new ObservableRangeCollection<DOS2DEKeyEntry>(stringKeyFileData.Entries.OrderBy(e => e.Key).ToList());
+					stringKeyFileData.Entries = new ObservableRangeCollection<LocaleKeyEntry>(stringKeyFileData.Entries.OrderBy(e => e.Key).ToList());
 				}
 
 				return true;
@@ -273,11 +277,11 @@ namespace SCG.Modules.DOS2DE.Utilities
 			}
 		}
 
-		public static DOS2DEKeyEntry LoadFromNode(Node node, ResourceFormat resourceFormat, bool generateNewHandle = false)
+		public static LocaleKeyEntry LoadFromNode(Node node, ResourceFormat resourceFormat, bool generateNewHandle = false)
 		{
 			if (resourceFormat == ResourceFormat.LSB)
 			{
-				DOS2DEKeyEntry localeEntry = new DOS2DEKeyEntry(node);
+				LocaleKeyEntry localeEntry = new LocaleKeyEntry(node);
 				NodeAttribute keyAtt = null;
 				NodeAttribute contentAtt = null;
 				node.Attributes.TryGetValue("UUID", out keyAtt);
@@ -312,7 +316,7 @@ namespace SCG.Modules.DOS2DE.Utilities
 			}
 			else if (resourceFormat == ResourceFormat.LSJ || resourceFormat == ResourceFormat.LSX)
 			{
-				DOS2DEKeyEntry localeEntry = new DOS2DEKeyEntry(node);
+				LocaleKeyEntry localeEntry = new LocaleKeyEntry(node);
 				
 				localeEntry.KeyIsEditable = false;
 				localeEntry.Key = "Dialog Text";
@@ -363,8 +367,102 @@ namespace SCG.Modules.DOS2DE.Utilities
 
 			return nodes;
 		}
+		#endregion
 
-		public static string ExportDataAsXML(DOS2DELocalizationViewData data, bool exportSourceName = true, bool exportKeyName = true)
+		#region Saving
+
+		public static async Task<bool> BackupDataFiles(LocaleViewData data, string backupDirectory, CancellationToken? token = null)
+		{
+			try
+			{
+				if (!Directory.Exists(backupDirectory)) Directory.CreateDirectory(backupDirectory);
+
+				List<string> sourceFiles = new List<string>();
+				string sysFormat = CultureInfo.CurrentCulture.DateTimeFormat.ShortDatePattern.Replace("/", "-");
+				string archivePath = Path.Combine(backupDirectory, "LocalizationEditorBackup") + "_" + DateTime.Now.ToString(sysFormat + "_HH-mm-ss") + ".zip";
+
+				foreach (var f in data.SelectedGroup.DataFiles.OfType<LocaleFileData>())
+				{
+					if (File.Exists(f.SourcePath))
+					{
+						sourceFiles.Add(f.SourcePath);
+					}
+				}
+
+				if (sourceFiles.Count > 0)
+				{
+					var result = await BackupGenerator.CreateArchiveFromFiles(sourceFiles, archivePath, token).ConfigureAwait(false);
+					Log.Here().Activity($"Localization backup result to '{archivePath}': {result.ToString()}");
+					return result != BackupResult.Error;
+				}
+				else
+				{
+					Log.Here().Activity("Skipping localization backup, as no files were found.");
+					return true;
+				}
+			}
+			catch (Exception ex)
+			{
+				Log.Here().Error($"Error backing up localization files: {ex.ToString()}");
+				return false;
+			}
+		}
+
+		public static async Task<int> SaveDataFiles(LocaleViewData data, CancellationToken? token = null)
+		{
+			if (data.SelectedGroup == null) return -1;
+
+			int success = 0;
+			await Task.Run(() =>
+			{
+				foreach (var f in data.SelectedGroup.DataFiles.OfType<LocaleFileData>())
+				{
+					success += SaveDataFile(f, token);
+				}
+			});
+			Log.Here().Activity($"Files saved: '{success}'.");
+			return success;
+		}
+
+		public static async Task<int> SaveDataFiles(List<LocaleFileData> dataFiles, CancellationToken? token = null)
+		{
+			int success = 0;
+			await Task.Run(() =>
+			{
+				foreach (var f in dataFiles)
+				{
+					success += SaveDataFile(f, token);
+				}
+			});
+			Log.Here().Activity($"Files saved: '{success}'.");
+			return success;
+		}
+
+		public static int SaveDataFile(LocaleFileData dataFile, CancellationToken? token = null)
+		{
+			try
+			{
+				if (dataFile.Source != null)
+				{
+					var saveFormat = dataFile.Format;
+					if (saveFormat == ResourceFormat.LSX && FileCommands.FileExtensionFound(dataFile.SourcePath, ".lsb"))
+					{
+						saveFormat = ResourceFormat.LSB;
+					}
+					Log.Here().Activity($"Saving '{dataFile.Name}' to '{dataFile.SourcePath}'.");
+					LSLib.LS.ResourceUtils.SaveResource(dataFile.Source, dataFile.SourcePath, saveFormat);
+					Log.Here().Important($"Saved '{dataFile.SourcePath}'.");
+					return 1;
+				}
+			}
+			catch (Exception ex)
+			{
+				Log.Here().Error($"Error saving localizaton resource: {ex.ToString()}");
+			}
+			return 0;
+		}
+
+		public static string ExportDataAsXML(LocaleViewData data, bool exportSourceName = true, bool exportKeyName = true)
 		{
 			string output = "<contentList>\n{0}</contentList>";
 			string entriesStr = "";
@@ -372,22 +470,22 @@ namespace SCG.Modules.DOS2DE.Utilities
 			if (data.SelectedGroup != null)
 			{
 				var fileData = data.SelectedGroup.SelectedFile;
-				if(fileData != null)
+				if (fileData != null)
 				{
 					string sourcePath = "";
 					bool findActualSource = fileData == data.SelectedGroup.CombinedEntries;
 
-					if (!findActualSource && fileData is DOS2DEStringKeyFileData keyFileData)
+					if (!findActualSource && fileData is LocaleFileData keyFileData)
 					{
 						sourcePath = EscapeXml(Path.GetFileName(keyFileData.SourcePath));
 					}
 
 					foreach (var e in fileData.Entries.Where(fd => fd.Selected))
 					{
-						if(findActualSource)
+						if (findActualSource)
 						{
 							var actualSource = data.SelectedGroup.DataFiles.Where(d => d.Entries.Contains(e)).FirstOrDefault();
-							if(actualSource is DOS2DEStringKeyFileData sourceFileData)
+							if (actualSource is LocaleFileData sourceFileData)
 							{
 								sourcePath = EscapeXml(Path.GetFileName(sourceFileData.SourcePath));
 							}
@@ -418,106 +516,6 @@ namespace SCG.Modules.DOS2DE.Utilities
 			return String.Format(output, entriesStr);
 		}
 
-		public static async Task<bool> BackupDataFiles(DOS2DELocalizationViewData data, string backupDirectory, CancellationToken? token = null)
-		{
-			try
-			{
-				if (!Directory.Exists(backupDirectory)) Directory.CreateDirectory(backupDirectory);
-
-				List<string> sourceFiles = new List<string>();
-				string sysFormat = CultureInfo.CurrentCulture.DateTimeFormat.ShortDatePattern.Replace("/", "-");
-				string archivePath = Path.Combine(backupDirectory, "LocalizationEditorBackup") + "_" + DateTime.Now.ToString(sysFormat + "_HH-mm-ss") + ".zip";
-
-				foreach (var f in data.SelectedGroup.DataFiles.OfType<DOS2DEStringKeyFileData>())
-				{
-					if (File.Exists(f.SourcePath))
-					{
-						sourceFiles.Add(f.SourcePath);
-					}
-				}
-
-				if(sourceFiles.Count > 0)
-				{
-					var result = await BackupGenerator.CreateArchiveFromFiles(sourceFiles, archivePath, token).ConfigureAwait(false);
-					Log.Here().Activity($"Localization backup result to '{archivePath}': {result.ToString()}");
-					return result != BackupResult.Error;
-				}
-				else
-				{
-					Log.Here().Activity("Skipping localization backup, as no files were found.");
-					return true;
-				}
-			}
-			catch(Exception ex)
-			{
-				Log.Here().Error($"Error backing up localization files: {ex.ToString()}");
-				return false;
-			}
-		}
-
-		public static async Task<int> SaveDataFiles(DOS2DELocalizationViewData data, CancellationToken? token = null)
-		{
-			if (data.SelectedGroup == null) return -1;
-
-			int success = 0;
-			await Task.Run(() =>
-			{
-				foreach (var f in data.SelectedGroup.DataFiles.OfType<DOS2DEStringKeyFileData>())
-				{
-					success += SaveDataFile(f, token);
-				}
-			});
-			Log.Here().Activity($"Files saved: '{success}'.");
-			return success;
-		}
-
-		public static async Task<int> SaveDataFiles(List<DOS2DEStringKeyFileData> dataFiles, CancellationToken? token = null)
-		{
-			int success = 0;
-			await Task.Run(() =>
-			{
-				foreach (var f in dataFiles)
-				{
-					success += SaveDataFile(f, token);
-				}
-			});
-			Log.Here().Activity($"Files saved: '{success}'.");
-			return success;
-		}
-
-		public static int SaveDataFile(DOS2DEStringKeyFileData dataFile, CancellationToken? token = null)
-		{
-			try
-			{
-				if (dataFile.Source != null)
-				{
-					var saveFormat = dataFile.Format;
-					if (saveFormat == ResourceFormat.LSX && FileCommands.FileExtensionFound(dataFile.SourcePath, ".lsb"))
-					{
-						saveFormat = ResourceFormat.LSB;
-					}
-					Log.Here().Activity($"Saving '{dataFile.Name}' to '{dataFile.SourcePath}'.");
-					LSLib.LS.ResourceUtils.SaveResource(dataFile.Source, dataFile.SourcePath, saveFormat);
-					Log.Here().Important($"Saved '{dataFile.SourcePath}'.");
-					return 1;
-				}
-			}
-			catch (Exception ex)
-			{
-				Log.Here().Error($"Error saving localizaton resource: {ex.ToString()}");
-			}
-			return 0;
-		}
-
-		/// <summary>
-		/// Handles are a GUID with the dashes replaces with g, and an h prepended to the front.
-		/// </summary>
-		/// <returns></returns>
-		public static string CreateHandle()
-		{
-			return Guid.NewGuid().ToString().Replace('-', 'g').Insert(0, "h");
-		}
-
 		public static Resource CreateLocalizationResource()
 		{
 			try
@@ -540,11 +538,22 @@ namespace SCG.Modules.DOS2DE.Utilities
 				return null;
 			}
 		}
+		#endregion
+
+		#region Utilities
+		/// <summary>
+		/// Handles are a GUID with the dashes replaces with g, and an h prepended to the front.
+		/// </summary>
+		/// <returns></returns>
+		public static string CreateHandle()
+		{
+			return Guid.NewGuid().ToString().Replace('-', 'g').Insert(0, "h");
+		}
 
 		public static void AddFileData(DOS2DELocalizationGroup groupData, string destinationPath, string name)
 		{
 			var resource = CreateLocalizationResource();
-			var fileData = new DOS2DEStringKeyFileData(ResourceFormat.LSX, resource, destinationPath, name);
+			var fileData = new LocaleFileData(ResourceFormat.LSX, resource, destinationPath, name);
 			LoadFromResource(fileData, resource, ResourceFormat.LSB, true);
 
 			groupData.DataFiles.Add(fileData);
@@ -566,9 +575,40 @@ namespace SCG.Modules.DOS2DE.Utilities
 			}
 			return toxml;
 		}
+		#endregion
 
+		#region Settings
+		public static void LoadSettings(DOS2DEModuleData moduleData, LocaleViewData localeData)
+		{
+			string settingsPath = Path.GetFullPath(DOS2DEDefaultPaths.LocalizationEditorSettings(moduleData));
 
-		public static void Debug_CreateEntries(ObservableRangeCollection<DOS2DEKeyEntry> Entries)
+			if(File.Exists(settingsPath))
+			{
+				Log.Here().Activity($"Loading localization editor settings from '{settingsPath}'.");
+				localeData.Settings = JsonConvert.DeserializeObject<LocaleEditorSettingsData>(File.ReadAllText(settingsPath));
+			}
+			else
+			{
+				localeData.Settings = new LocaleEditorSettingsData();
+			}
+		}
+
+		public static void SaveSettings(DOS2DEModuleData moduleData, LocaleViewData localeData)
+		{
+			string settingsPath = Path.GetFullPath(DOS2DEDefaultPaths.LocalizationEditorSettings(moduleData));
+
+			Log.Here().Activity($"Saving localization editor settings to '{settingsPath}'.");
+
+			if (localeData.Settings != null)
+			{
+				string json = JsonConvert.SerializeObject(localeData.Settings, Newtonsoft.Json.Formatting.Indented);
+				FileCommands.WriteToFile(settingsPath, json);
+			}
+		}
+		#endregion
+
+		#region Debug
+		public static void Debug_CreateEntries(ObservableRangeCollection<LocaleKeyEntry> Entries)
 		{
 			for (int i = 0; i < 4; i++)
 			{
@@ -584,7 +624,7 @@ namespace SCG.Modules.DOS2DE.Utilities
 				}
 
 				node.Attributes.Add("Content", att);
-				var entry = new DOS2DEKeyEntry(node);
+				var entry = new LocaleKeyEntry(node);
 				Entries.Add(entry);
 			}
 		}
@@ -635,5 +675,6 @@ namespace SCG.Modules.DOS2DE.Utilities
 				Log.Here().Activity($"{String.Concat(Enumerable.Repeat("\t", indent))}Attribute: {attdict.Key} | {attdict.Value.Type} = {attdict.Value.Value}");
 			}
 		}
+		#endregion
 	}
 }

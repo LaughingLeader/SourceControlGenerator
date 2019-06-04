@@ -29,6 +29,8 @@ namespace SCG.Data.View
 		public static readonly string Folder = @"pack://application:,,,/SourceControlGenerator;component/Resources/Icons/Folder.png";
 		public static readonly string GitLogo = @"pack://application:,,,/SourceControlGenerator;component/Resources/Icons/GitLogo.png";
 		public static readonly string GitLogo_Disabled = @"pack://application:,,,/SourceControlGenerator;component/Resources/Icons/GitLogo_Disabled.png";
+		public static readonly string Import = @"pack://application:,,,/SourceControlGenerator;component/Resources/Icons/Import_16x.png";
+		public static readonly string ImportFile = @"pack://application:,,,/SourceControlGenerator;component/Resources/Icons/ImportFile_16x.png";
 		public static readonly string Log_MouseOver = @"pack://application:,,,/SourceControlGenerator;component/Resources/Icons/Log_MouseOver.png";
 		public static readonly string Log_Normal = @"pack://application:,,,/SourceControlGenerator;component/Resources/Icons/Log_Normal.png";
 		public static readonly string Refresh = @"pack://application:,,,/SourceControlGenerator;component/Resources/Icons/Refresh_16x.png";

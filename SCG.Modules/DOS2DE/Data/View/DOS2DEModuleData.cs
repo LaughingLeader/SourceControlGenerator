@@ -121,7 +121,6 @@ namespace SCG.Modules.DOS2DE.Data.View
 			}
 		}
 
-
 		public string AvailableProjectsTooltip
 		{
 			get
@@ -129,7 +128,6 @@ namespace SCG.Modules.DOS2DE.Data.View
 				return NewProjectsAvailable ? DOS2DETooltips.AvailableProjects_Availability_New : DOS2DETooltips.AvailableProjects_Availability_None;
 			}
 		}
-
 
 		private bool canClickRefresh = true;
 
@@ -142,7 +140,6 @@ namespace SCG.Modules.DOS2DE.Data.View
 				RaisePropertyChanged("CanClickRefresh");
 			}
 		}
-
 
 		private ManagedProjectsData managedProjectsData;
 

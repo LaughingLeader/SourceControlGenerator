@@ -10,11 +10,15 @@ using System.Windows;
 using SCG.Data.View;
 using LSLib.LS;
 using SCG.Modules.DOS2DE.Windows;
+using SCG.Modules.DOS2DE.Core;
+using SCG.Modules.DOS2DE.Data.App;
 
 namespace SCG.Modules.DOS2DE.Data.View
 {
-	public class DOS2DELocalizationViewData : PropertyChangedBase
+	public class LocaleViewData : PropertyChangedBase
 	{
+		public LocaleEditorSettingsData Settings { get; set; }
+
 		public DOS2DEModuleData ModuleData { get; set; }
 
 		private LocaleMenuData menuData;
@@ -29,7 +33,7 @@ namespace SCG.Modules.DOS2DE.Data.View
 			}
 		}
 
-		public ObservableCollection<DOS2DELocalizationGroup> Groups { get; set; }
+		public ObservableCollection<LocaleTabGroup> Groups { get; set; }
 
 		private int selectedGroupIndex = -1;
 
@@ -51,9 +55,9 @@ namespace SCG.Modules.DOS2DE.Data.View
 			}
 		}
 
-		private DOS2DELocalizationGroup modsGroup;
+		private LocaleTabGroup modsGroup;
 
-		public DOS2DELocalizationGroup ModsGroup
+		public LocaleTabGroup ModsGroup
 		{
 			get { return modsGroup; }
 			set
@@ -63,9 +67,9 @@ namespace SCG.Modules.DOS2DE.Data.View
 			}
 		}
 
-		private DOS2DELocalizationGroup dialogGroup;
+		private LocaleTabGroup dialogGroup;
 
-		public DOS2DELocalizationGroup DialogGroup
+		public LocaleTabGroup DialogGroup
 		{
 			get { return dialogGroup; }
 			set
@@ -75,9 +79,9 @@ namespace SCG.Modules.DOS2DE.Data.View
 			}
 		}
 
-		private DOS2DELocalizationGroup publicGroup;
+		private LocaleTabGroup publicGroup;
 
-		public DOS2DELocalizationGroup PublicGroup
+		public LocaleTabGroup PublicGroup
 		{
 			get { return publicGroup; }
 			set
@@ -87,9 +91,9 @@ namespace SCG.Modules.DOS2DE.Data.View
 			}
 		}
 
-		private DOS2DELocalizationGroup combinedGroup;
+		private LocaleTabGroup combinedGroup;
 
-		public DOS2DELocalizationGroup CombinedGroup
+		public LocaleTabGroup CombinedGroup
 		{
 			get { return combinedGroup; }
 			private set
@@ -99,7 +103,7 @@ namespace SCG.Modules.DOS2DE.Data.View
 			}
 		}
 
-		public DOS2DELocalizationGroup SelectedGroup
+		public LocaleTabGroup SelectedGroup
 		{
 			get
 			{
@@ -202,7 +206,7 @@ namespace SCG.Modules.DOS2DE.Data.View
 			}
 		}
 
-		private void SelectedFileChanged(DOS2DELocalizationGroup group, IKeyFileData keyFileData)
+		private void SelectedFileChanged(LocaleTabGroup group, IKeyFileData keyFileData)
 		{
 			if (keyFileData != null)
 			{
@@ -260,12 +264,13 @@ namespace SCG.Modules.DOS2DE.Data.View
 		public ICommand GenerateHandlesCommand { get; set; }
 		public ICommand AddNewKeyCommand { get; set; }
 		public ICommand DeleteKeysCommand { get; set; }
+		public ICommand ImportFileCommand { get; set; }
 
 		public void AddNewKey()
 		{
 			if (SelectedGroup != null && SelectedGroup.SelectedFile != null)
 			{
-				if (SelectedGroup.SelectedFile is DOS2DEStringKeyFileData fileData && fileData.Format == LSLib.LS.Enums.ResourceFormat.LSB)
+				if (SelectedGroup.SelectedFile is LocaleFileData fileData && fileData.Format == LSLib.LS.Enums.ResourceFormat.LSB)
 				{
 					var rootNode = fileData.Source.Regions.First().Value;
 
@@ -287,7 +292,7 @@ namespace SCG.Modules.DOS2DE.Data.View
 							node.Attributes.Add(kp.Key, att);
 						}
 
-						DOS2DEKeyEntry localeEntry = DOS2DELocalizationEditor.LoadFromNode(node, fileData.Format);
+						LocaleKeyEntry localeEntry = DOS2DELocalizationEditor.LoadFromNode(node, fileData.Format);
 						localeEntry.Key = "NewKey" + (fileData.Entries.Count + 1);
 						localeEntry.Content = "";
 						//localeEntry.Handle = DOS2DELocalizationEditor.CreateHandle();
@@ -435,7 +440,7 @@ namespace SCG.Modules.DOS2DE.Data.View
 		{
 			if(SelectedGroup != null)
 			{
-				if (SelectedGroup.SelectedFile != null && SelectedGroup.SelectedFile is DOS2DEStringKeyFileData keyFileData)
+				if (SelectedGroup.SelectedFile != null && SelectedGroup.SelectedFile is LocaleFileData keyFileData)
 				{
 					var result = DOS2DELocalizationEditor.SaveDataFile(keyFileData);
 					if(result > 0)
@@ -453,17 +458,22 @@ namespace SCG.Modules.DOS2DE.Data.View
 			}
 		}
 
+		public void ImportFile(string path)
+		{
+
+		}
+
 		private MenuData SaveCurrentMenuData { get; set; }
 
-		public DOS2DELocalizationViewData()
+		public LocaleViewData()
 		{
 			MenuData = new LocaleMenuData();
 
-			ModsGroup = new DOS2DELocalizationGroup("Locale (Mods)");
-			DialogGroup = new DOS2DELocalizationGroup("Dialog");
-			PublicGroup = new DOS2DELocalizationGroup("Locale (Public)");
-			CombinedGroup = new DOS2DELocalizationGroup("All");
-			Groups = new ObservableCollection<DOS2DELocalizationGroup>();
+			ModsGroup = new LocaleTabGroup("Locale (Mods)");
+			DialogGroup = new LocaleTabGroup("Dialog");
+			PublicGroup = new LocaleTabGroup("Locale (Public)");
+			CombinedGroup = new LocaleTabGroup("All");
+			Groups = new ObservableCollection<LocaleTabGroup>();
 			Groups.Add(CombinedGroup);
 			Groups.Add(ModsGroup);
 			Groups.Add(PublicGroup);
@@ -479,6 +489,12 @@ namespace SCG.Modules.DOS2DE.Data.View
 			GenerateHandlesCommand = new ActionCommand(GenerateHandles);
 			AddNewKeyCommand = new ActionCommand(AddNewKey);
 			DeleteKeysCommand = new TaskCommand(DeleteSelectedKeys, LocalizationEditorWindow.instance, "Delete Keys", "Delete selected keys?", "Changes will be lost.");
+			ImportFileCommand = new OpenFileBrowserCommand(ImportFile)
+			{
+				Title = DOS2DETooltips.Button_Locale_ImportFile,
+				ParentWindow = LocalizationEditorWindow.instance,
+				UseFolderBrowser = false
+			};
 
 			SaveCurrentMenuData = new MenuData("SaveCurrent", "Save", SaveCurrentCommand, Key.S, ModifierKeys.Control);
 
@@ -491,305 +507,5 @@ namespace SCG.Modules.DOS2DE.Data.View
 		}
 	}
 
-	public class DOS2DELocalizationGroup : PropertyChangedBase
-	{
-		private string name;
-
-		public string Name
-		{
-			get { return name; }
-			set
-			{
-				name = value;
-				RaisePropertyChanged("Name");
-			}
-		}
-
-		private ObservableRangeCollection<IKeyFileData> dataFiles;
-
-		public ObservableRangeCollection<IKeyFileData> DataFiles
-		{
-			get { return dataFiles; }
-			set
-			{
-				dataFiles = value;
-				UpdateCombinedData();
-			}
-		}
-
-		public ObservableRangeCollection<IKeyFileData> Tabs { get; set; }
-
-		private IKeyFileData combinedEntries;
-
-		public IKeyFileData CombinedEntries
-		{
-			get { return combinedEntries; }
-			private set
-			{
-				combinedEntries = value;
-				RaisePropertyChanged("CombinedEntries");
-			}
-		}
-
-		public Action<DOS2DELocalizationGroup, IKeyFileData> SelectedFileChanged { get; set; }
-
-		private int selectedfileIndex = 0;
-
-		public int SelectedFileIndex
-		{
-			get { return selectedfileIndex; }
-			set
-			{
-				selectedfileIndex = value;
-				RaisePropertyChanged("SelectedFileIndex");
-				RaisePropertyChanged("SelectedFile");
-				SelectedFileChanged?.Invoke(this, SelectedFile);
-			}
-		}
-
-		public IKeyFileData SelectedFile
-		{
-			get
-			{
-				return SelectedFileIndex > -1 && Tabs.Count > 0 ? Tabs[SelectedFileIndex] : null;
-			}
-		}
-
-		public ICommand UpdateAllCommand { get; set; }
-
-		private bool visibility = true;
-
-		public bool Visibility
-		{
-			get { return visibility; }
-			set
-			{
-				visibility = value;
-				RaisePropertyChanged("Visibility");
-			}
-		}
-
-		public void UpdateCombinedData()
-		{
-			Tabs = new ObservableRangeCollection<IKeyFileData>();
-			Tabs.Add(CombinedEntries);
-			Tabs.AddRange(DataFiles);
-
-			CombinedEntries.Entries = new ObservableRangeCollection<DOS2DEKeyEntry>();
-			foreach (var obj in DataFiles)
-			{
-				CombinedEntries.Entries.AddRange(obj.Entries);
-			}
-			CombinedEntries.Entries.OrderBy(e => e.Key);
-			RaisePropertyChanged("CombinedEntries");
-			RaisePropertyChanged("Tabs");
-			Log.Here().Activity($"Updated combined entries for '{Name}'.");
-		}
-
-		public DOS2DELocalizationGroup(string name="")
-		{
-			Name = name;
-			CombinedEntries = new DOS2DEStringKeyFileDataBase("All");
-			CombinedEntries.Locked = true;
-			DataFiles = new ObservableRangeCollection<IKeyFileData>();
-			Tabs = new ObservableRangeCollection<IKeyFileData>();
-
-			UpdateAllCommand = new ActionCommand(UpdateCombinedData);
-		}
-	}
-
-	public interface IKeyFileData
-	{
-		ObservableRangeCollection<DOS2DEKeyEntry> Entries { get; set; }
-
-		string Name { get; set; }
-		bool Active { get; set; }
-		bool AllSelected { get; set; }
-		bool Locked { get; set; }
-
-		void SelectAll();
-		void SelectNone();
-	}
-
-	public class DOS2DEStringKeyFileDataBase : PropertyChangedBase, IKeyFileData
-	{
-		public ObservableRangeCollection<DOS2DEKeyEntry> Entries { get; set; }
-
-		private string name;
-
-		public string Name
-		{
-			get { return name; }
-			set
-			{
-				name = value;
-				RaisePropertyChanged("Name");
-			}
-		}
-
-		private bool active = false;
-
-		public bool Active
-		{
-			get { return active; }
-			set
-			{
-				active = value;
-				RaisePropertyChanged("Active");
-			}
-		}
-
-		private bool locked = false;
-
-		public bool Locked
-		{
-			get { return locked; }
-			set
-			{
-				locked = value;
-				RaisePropertyChanged("Locked");
-			}
-		}
-
-		public void SelectAll()
-		{
-			foreach (var entry in Entries) { entry.Selected = true; }
-		}
-
-		public void SelectNone()
-		{
-			foreach (var entry in Entries) { entry.Selected = false; }
-		}
-
-		private bool allSelected;
-
-		public bool AllSelected
-		{
-			get { return allSelected; }
-			set
-			{
-				allSelected = value;
-				RaisePropertyChanged("AllSelected");
-				if (allSelected)
-					SelectAll();
-				else
-					SelectNone();
-			}
-		}
-
-		public DOS2DEStringKeyFileDataBase(string name = "")
-		{
-			Entries = new ObservableRangeCollection<DOS2DEKeyEntry>();
-
-			Name = name;
-		}
-	}
-
-	public class DOS2DEStringKeyFileData : DOS2DEStringKeyFileDataBase
-	{
-		public LSLib.LS.Resource Source { get; private set; }
-
-		public LSLib.LS.Enums.ResourceFormat Format { get; set; }
-
-		public string SourcePath { get; set; }
-
-		public DOS2DEStringKeyFileData(LSLib.LS.Enums.ResourceFormat resourceFormat, LSLib.LS.Resource res, string sourcePath, string name = "") : base(name)
-		{
-			Source = res;
-			SourcePath = sourcePath;
-			Format = resourceFormat;
-		}
-	}
-
-	public class DOS2DEKeyEntry : SCG.Data.PropertyChangedBase
-	{
-		public LSLib.LS.Node Node { get; set; }
-
-		public LSLib.LS.NodeAttribute KeyAttribute { get; set; }
-
-		public LSLib.LS.NodeAttribute TranslatedStringAttribute { get; set; }
-
-		public LSLib.LS.TranslatedString TranslatedString { get; set; }
-
-		private bool keyIsEditable = false;
-
-		public bool KeyIsEditable
-		{
-			get { return keyIsEditable; }
-			set
-			{
-				keyIsEditable = value;
-				RaisePropertyChanged("KeyIsEditable");
-			}
-		}
-
-		private string key = "None";
-
-		public string Key
-		{
-			get { return KeyAttribute != null ? KeyAttribute.Value.ToString() : key; }
-			set
-			{
-				if (KeyAttribute != null)
-				{
-					KeyAttribute.Value = value;
-				}
-				else
-				{
-					key = value;
-				}
-
-				RaisePropertyChanged("Key");
-			}
-		}
-
-		public string Content
-		{
-			get { return TranslatedString != null ? TranslatedString.Value : "Content"; }
-			set
-			{
-				if (TranslatedString != null)
-				{
-					TranslatedString.Value = value;
-					RaisePropertyChanged("Content");
-				}
-			}
-		}
-
-		public string Handle
-		{
-			get { return TranslatedString != null ? TranslatedString.Handle : "ls::TranslatedStringRepository::s_HandleUnknown"; }
-			set
-			{
-				if (TranslatedString != null)
-				{
-					TranslatedString.Handle = value;
-					RaisePropertyChanged("Handle");
-				}
-			}
-		}
-
-		private bool selected = false;
-
-		public bool Selected
-		{
-			get { return selected; }
-			set
-			{
-				selected = value;
-				RaisePropertyChanged("Selected");
-				LocalizationEditorWindow.instance?.KeyEntrySelected(this, selected);
-			}
-		}
-
-		public DOS2DEKeyEntry(LSLib.LS.Node resNode)
-		{
-			Node = resNode;
-
-			if (resNode != null)
-			{
-
-			}
-		}
-	}
+	
 }

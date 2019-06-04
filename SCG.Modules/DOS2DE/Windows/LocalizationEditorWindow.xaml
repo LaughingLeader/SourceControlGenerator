@@ -13,7 +13,7 @@
 		xmlns:behavior="clr-namespace:SCG.Controls.Behavior;assembly=SourceControlGenerator"
 		xmlns:dgx="urn:tom-englert.de/DataGridExtensions"
 		mc:Ignorable="d"
-		d:DataContext="{d:DesignInstance data:LocalizationEditorDesignData, IsDesignTimeCreatable=True}"
+		d:DataContext="{d:DesignInstance data:LocaleEditorDesignData, IsDesignTimeCreatable=True}"
 		x:Name="LocaleWindow"
 		Closing="LocaleWindow_Closing"
 		Title="Localization Editor" Height="450" Width="800">
@@ -28,6 +28,13 @@
 			<Style TargetType="c:ImageButton" BasedOn="{StaticResource {x:Type c:ImageButton}}">
 				<Setter Property="Template" Value="{StaticResource ImageButtonTemplate}" />
 				<Setter Property="MaxSize" Value="16" />
+			</Style>
+
+			<Style x:Key="VerticalSeparator" TargetType="Rectangle">
+				<Setter Property="VerticalAlignment" Value="Stretch" />
+				<Setter Property="Width" Value="1" />
+				<Setter Property="Margin" Value="2,2,4,2" />
+				<Setter Property="Stroke" Value="Gray" />
 			</Style>
 
 			<Style x:Key="ShortcutButton" TargetType="Button">
@@ -296,9 +303,18 @@
 														Source="{x:Static vdata:IconPathData.DeleteTableRow}"
 														IsEnabled="{Binding Path=DataContext.AnySelected, RelativeSource={RelativeSource AncestorType={x:Type Window}}}"
 													/>
+													<Rectangle Style="{StaticResource VerticalSeparator}" />
 													<c:ImageButton Command="{Binding Path=DataContext.GenerateHandlesCommand, RelativeSource={RelativeSource AncestorType={x:Type Window}}}" 
 														ToolTip="{x:Static core:DOS2DETooltips.Button_Locale_GenerateHandles}"
 														Source="{x:Static vdata:IconPathData.RowUpdating}"
+													/>
+													<Rectangle Style="{StaticResource VerticalSeparator}" />
+													<c:ImageButton 
+														Command="{Binding Path=DataContext.ImportFileCommand, RelativeSource={RelativeSource AncestorType={x:Type Window}}}" 
+														CommandParameter="{x:Static core:DOS2DETooltips.Button_Locale_ImportFile}"
+														ToolTip="{x:Static core:DOS2DETooltips.Button_Locale_ImportFile}"
+														Source="{x:Static vdata:IconPathData.ImportFile}"
+														IsEnabled="{Binding Path=DataContext.CanAddKeys, RelativeSource={RelativeSource AncestorType={x:Type Window}}}"
 													/>
 												</StackPanel>
 												<Button Command="{x:Static DataGrid.SelectAllCommand}" Grid.Row="1" Focusable="false" Style="{DynamicResource {ComponentResourceKey ResourceId=DataGridSelectAllButtonStyle, TypeInTargetAssembly={x:Type DataGrid}}}" Visibility="{Binding HeadersVisibility, ConverterParameter={x:Static DataGridHeadersVisibility.All}, Converter={x:Static DataGrid.HeadersVisibilityConverter}, RelativeSource={RelativeSource AncestorType={x:Type DataGrid}}}" Width="{Binding CellsPanelHorizontalOffset, RelativeSource={RelativeSource AncestorType={x:Type DataGrid}}}"/>
@@ -417,12 +433,6 @@
 					<Setter Property="Background" Value="Transparent" />
 					<Setter Property="Orientation" Value="Horizontal" />
 					<Setter Property="HorizontalAlignment" Value="Left" />
-				</Style>
-				<Style x:Key="VerticalSeparator" TargetType="Rectangle">
-					<Setter Property="VerticalAlignment" Value="Stretch" />
-					<Setter Property="Width" Value="1" />
-					<Setter Property="Margin" Value="2,2,4,2" />
-					<Setter Property="Stroke" Value="Gray" />
 				</Style>
 				<Style TargetType="c:ImageButton" BasedOn="{StaticResource {x:Type c:ImageButton}}">
 					<Setter Property="Margin" Value="2" />

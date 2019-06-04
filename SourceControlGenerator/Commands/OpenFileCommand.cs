@@ -8,7 +8,7 @@ using System.Windows.Input;
 
 namespace SCG.Commands
 {
-	public class OpenFileBrowserCommand : BaseCommand
+	public class OpenFileCommand : BaseCommand
 	{
 		private Action<string> onLoad;
 
@@ -41,7 +41,7 @@ namespace SCG.Commands
 			}
 		}
 
-		public OpenFileBrowserCommand(Action<string> OnLoad)
+		public OpenFileCommand(Action<string> OnLoad)
 		{
 			onLoad = OnLoad;
 		}

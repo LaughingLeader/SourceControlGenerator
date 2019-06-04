@@ -28,27 +28,27 @@ namespace SCG.Modules.DOS2DE.Windows
 	{
 		public static LocalizationEditorWindow instance { get; private set; }
 		/*
-		public DOS2DELocalizationViewData LocaleData
+		public LocaleViewData LocaleData
 		{
-			get { return (DOS2DELocalizationViewData)GetValue(LocaleDataProperty); }
+			get { return (LocaleViewData)GetValue(LocaleDataProperty); }
 			set { SetValue(LocaleDataProperty, value); }
 		}
 
 		// Using a DependencyProperty as the backing store for KeywordName.  This enables animation, styling, binding, etc...
 		public static readonly DependencyProperty LocaleDataProperty =
-			DependencyProperty.Register("LocaleData", typeof(string), typeof(DOS2DELocalizationViewData), new PropertyMetadata(""));
+			DependencyProperty.Register("LocaleData", typeof(string), typeof(LocaleViewData), new PropertyMetadata(""));
 		*/
-		public DOS2DELocalizationViewData LocaleData { get; set; }
+		public LocaleViewData LocaleData { get; set; }
 
 		public LocaleExportWindow ExportWindow { get; set; }
 
-		private DOS2DEModuleData moduleData;
+		private DOS2DEModuleData ModuleData { get; set; }
 
 		public LocalizationEditorWindow(DOS2DEModuleData data)
 		{
 			InitializeComponent();
 
-			moduleData = data;
+			ModuleData = data;
 
 			ExportWindow = new LocaleExportWindow();
 			ExportWindow.Hide();
@@ -56,7 +56,7 @@ namespace SCG.Modules.DOS2DE.Windows
 			instance = this;
 		}
 
-		public void LoadData(DOS2DELocalizationViewData data)
+		public void LoadData(LocaleViewData data)
 		{
 			LocaleData = data;
 			LocaleData.UpdateCombinedGroup(true);
@@ -64,7 +64,14 @@ namespace SCG.Modules.DOS2DE.Windows
 			//currentdata.Groups = new System.Collections.ObjectModel.ObservableCollection<DOS2DELocalizationGroup>(data.Groups);
 			//currentdata.UpdateCombinedGroup(true);
 			LocaleData.MenuData.RegisterShortcuts(this);
-			LocaleData.ModuleData = moduleData;
+			LocaleData.ModuleData = ModuleData;
+
+			DOS2DELocalizationEditor.LoadSettings(ModuleData, LocaleData);
+		}
+
+		public void SaveSettings(object sender, RoutedEventArgs e)
+		{
+			DOS2DELocalizationEditor.SaveSettings(ModuleData, LocaleData);
 		}
 
 		private void Entries_SelectAll(object sender, RoutedEventArgs e)
@@ -111,7 +118,7 @@ namespace SCG.Modules.DOS2DE.Windows
 
 		private void SaveAllButton_Click(object sender, RoutedEventArgs e)
 		{
-			var backupSuccess = DOS2DELocalizationEditor.BackupDataFiles(LocaleData, moduleData.Settings.BackupRootDirectory);
+			var backupSuccess = DOS2DELocalizationEditor.BackupDataFiles(LocaleData, ModuleData.Settings.BackupRootDirectory);
 			if (backupSuccess.Result == true)
 			{
 				var successes = DOS2DELocalizationEditor.SaveDataFiles(LocaleData);
@@ -121,6 +128,7 @@ namespace SCG.Modules.DOS2DE.Windows
 
 		private void LocaleWindow_Closing(object sender, CancelEventArgs e)
 		{
+			DOS2DELocalizationEditor.SaveSettings(ModuleData, LocaleData);
 			LocaleData.MenuData.UnregisterShortcuts(this);
 		}
 
@@ -129,7 +137,7 @@ namespace SCG.Modules.DOS2DE.Windows
 			if(LocaleData.SelectedGroup != null)
 			{
 				var sourceRoot = "";
-				if (LocaleData.SelectedGroup.DataFiles.First() is DOS2DEStringKeyFileData keyFileData)
+				if (LocaleData.SelectedGroup.DataFiles.First() is LocaleFileData keyFileData)
 				{
 					sourceRoot = Path.GetDirectoryName(keyFileData.SourcePath) + @"\";
 				}
@@ -137,11 +145,11 @@ namespace SCG.Modules.DOS2DE.Windows
 				{
 					if(LocaleData.SelectedGroup == LocaleData.PublicGroup)
 					{
-						sourceRoot = Path.Combine(moduleData.Settings.DOS2DEDataDirectory, "Public");
+						sourceRoot = Path.Combine(ModuleData.Settings.DOS2DEDataDirectory, "Public");
 					}
 					else if(LocaleData.SelectedGroup == LocaleData.ModsGroup)
 					{
-						sourceRoot = Path.Combine(moduleData.Settings.DOS2DEDataDirectory, "Mods");
+						sourceRoot = Path.Combine(ModuleData.Settings.DOS2DEDataDirectory, "Mods");
 					}
 				}
 
@@ -173,7 +181,7 @@ namespace SCG.Modules.DOS2DE.Windows
 			}
 		}
 
-		public void KeyEntrySelected(DOS2DEKeyEntry keyEntry, bool selected)
+		public void KeyEntrySelected(LocaleKeyEntry keyEntry, bool selected)
 		{
 			LocaleData.UpdateAnySelected(selected);
 		}
