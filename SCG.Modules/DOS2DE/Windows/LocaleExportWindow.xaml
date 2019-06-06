@@ -5,15 +5,40 @@
 		xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 		xmlns:local="clr-namespace:SCG.Modules.DOS2DE.Windows"
 		xmlns:win="clr-namespace:SCG.Windows;assembly=SourceControlGenerator"
+		xmlns:data="clr-namespace:SCG.Modules.DOS2DE.Data.App"
+		xmlns:core="clr-namespace:SCG.Modules.DOS2DE.Core"
 		mc:Ignorable="d"
-		Title="Localization Export" Height="200" Width="400">
+		Title="Localization Export" Height="400" Width="600">
+	<win:HideWindowBase.Resources>
+		<ResourceDictionary>
+			<ResourceDictionary.MergedDictionaries>
+				<ResourceDictionary Source="pack://application:,,,/SourceControlGenerator;component/ThemeSystem/ResourceDictionary/MainAppDictionary.xaml" />
+			</ResourceDictionary.MergedDictionaries>
+		</ResourceDictionary>
+	</win:HideWindowBase.Resources>
 	<Grid>
 		<Grid.RowDefinitions>
 			<RowDefinition Height="Auto" />
 			<RowDefinition Height="*" />
 		</Grid.RowDefinitions>
 		<StackPanel Orientation="Horizontal" Grid.Row="0" Margin="4">
-			<Button Content="Copy" x:Name="CopyButton" Click="CopyButton_Click" />
+			<StackPanel.Resources>
+				<Style TargetType="CheckBox">
+					<Setter Property="VerticalAlignment" Value="Center" />
+					<Setter Property="Margin" Value="2" />
+				</Style>
+				<Style TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+					<Setter Property="Margin" Value="2,0,0,0" />
+					<Setter Property="Padding" Value="4,2" />
+				</Style>
+			</StackPanel.Resources>
+			<Button Content="Export Again" Padding="4,2" x:Name="ExportButton" Click="ExportButton_Click"/>
+			<CheckBox Content="Export Keys" IsChecked="{Binding Settings.ExportKeys, Mode=TwoWay}"
+					ToolTip="{x:Static core:DOS2DETooltips.Checkbox_Locale_ExportXML_Keys}" />
+			<CheckBox Content="Export Source" IsChecked="{Binding Settings.ExportSource, Mode=TwoWay}"
+					ToolTip="{x:Static core:DOS2DETooltips.Checkbox_Locale_ExportXML_Source}" />
+			<Rectangle Style="{StaticResource VerticalSeparator}" Margin="2,0" Width="1" />
+			<Button Content="Copy to Clipboard" x:Name="CopyButton" Click="CopyButton_Click" Padding="4,2"/>
 		</StackPanel>
 		<TextBox AllowDrop="True" IsReadOnly="False" AcceptsReturn="True" x:Name="OutputTextbox" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" Grid.Row="1"/>
 	</Grid>

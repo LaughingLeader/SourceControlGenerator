@@ -51,7 +51,7 @@ namespace SCG.Controls
 
 		// Using a DependencyProperty as the backing store for Size.  This enables animation, styling, binding, etc...
 		public static readonly DependencyProperty SizeProperty =
-			DependencyProperty.Register("MaxSize", typeof(int), typeof(ImageButton), new PropertyMetadata(0, OnSizeChanged));
+			DependencyProperty.Register("MaxSize", typeof(int), typeof(ImageButton), new PropertyMetadata(16, OnSizeChanged));
 
 		private static void OnSizeChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
 		{
@@ -61,6 +61,24 @@ namespace SCG.Controls
 				imageButton.MaxWidth = imageButton.MaxSize;
 				imageButton.MinHeight = imageButton.MaxSize;
 				imageButton.MaxHeight = imageButton.MaxSize;
+			}
+		}
+
+		public int InitialSize
+		{
+			get { return (int)GetValue(InitialSizeProperty); }
+			set { SetValue(InitialSizeProperty, value); }
+		}
+
+		public static readonly DependencyProperty InitialSizeProperty =
+			DependencyProperty.Register("InitialSize", typeof(int), typeof(ImageButton), new PropertyMetadata(16, OnInitialSizeChanged));
+
+		private static void OnInitialSizeChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
+		{
+			if (sender is ImageButton imageButton)
+			{
+				imageButton.Width = imageButton.InitialSize;
+				imageButton.Height = imageButton.InitialSize;
 			}
 		}
 

@@ -1,4 +1,6 @@
-﻿using SCG.Windows;
+﻿using SCG.Modules.DOS2DE.Utilities;
+using SCG.Modules.DOS2DE.Data.View;
+using SCG.Windows;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -32,12 +34,35 @@ namespace SCG.Modules.DOS2DE.Windows
 
 		private void CopyButton_Click(object sender, RoutedEventArgs e)
 		{
-			if(this.FindName("OutputTextbox") is TextBox outputTextbox)
+			if(FindName("OutputTextbox") is TextBox outputTextbox)
 			{
 				if(!String.IsNullOrWhiteSpace(outputTextbox.Text))
 				{
 					Clipboard.SetText(outputTextbox.Text);
 				}
+			}
+		}
+
+		private LocaleViewData localeViewData;
+
+		public LocaleViewData LocaleData
+		{
+			get { return localeViewData; }
+			set
+			{
+				localeViewData = value;
+				DataContext = localeViewData;
+			}
+		}
+
+
+		private void ExportButton_Click(object sender, RoutedEventArgs e)
+		{
+			if (LocaleData != null && FindName("OutputTextbox") is TextBox outputTextbox)
+			{
+				Log.Here().Activity("Exporting data to xml format.");
+				outputTextbox.Text = "";
+				outputTextbox.Text = LocaleEditorCommands.ExportDataAsXML(LocaleData, LocaleData.Settings.ExportSource, LocaleData.Settings.ExportKeys);
 			}
 		}
 	}

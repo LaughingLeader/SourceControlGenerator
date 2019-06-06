@@ -91,7 +91,7 @@
 							LastFileLocation="{Binding SingleModeLastFileExportPath, Mode=OneTime}"
 							DefaultFileName="{Binding SingleModeDefaultFileName}" BrowseToolTip="{x:Static core:TooltipText.MarkdownConverterSingleModeOutputFileBrowser}"
 							DefaultExt=".txt" Filters="{x:Static core:CommonFileFilters.MarkdownConverterFilesList}" OnOpen="{Binding OpenInputFileCommand}"
-							Width="Auto" MinHeight="22" />
+							Width="Auto" MinHeight="22" Height="16" />
 						<Button x:Name="SingleModeSaveButton" Grid.Column="1" Content="Export" Command="{Binding ExportSingleCommand}" IsEnabled="{Binding CanExport}" Margin="4,0,0,0" MaxHeight="{Binding Path=Height, ElementName=SingleModeFileBrowser}" />
 					</Grid>
 				</Grid>

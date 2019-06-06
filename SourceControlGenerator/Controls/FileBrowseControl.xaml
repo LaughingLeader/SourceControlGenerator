@@ -3,63 +3,116 @@
 			 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 			 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
 			 xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-			 xmlns:local="clr-namespace:SCG.Controls"
+			 xmlns:c="clr-namespace:SCG.Controls"
 			 xmlns:behavior="clr-namespace:SCG.Controls.Behavior"
 			 xmlns:conv="clr-namespace:SCG.Converters"
 			 xmlns:core="clr-namespace:SCG.Core"
+			 xmlns:vdata="clr-namespace:SCG.Data.View"
+			 xmlns:enum="clr-namespace:SCG.SCGEnum"
 			 mc:Ignorable="d" 
-			 d:DesignHeight="80" d:DesignWidth="300"
-			 Width="Auto"
+			 d:DesignHeight="22" d:DesignWidth="300"
 			 x:Name="FileBrowser"
-			 VerticalContentAlignment="Center"
-			 MinHeight="22" Height="{Binding Path=MinHeight, ElementName=FileBrowser}"
 			 BorderBrush="#FFABADB3"
+			 BorderThickness="1"
+			 Margin="0" Padding="0" 
+			 Width="Auto" Height="Auto"
+			 VerticalAlignment="Stretch"
+			 HorizontalAlignment="Stretch"
 			 >
 	<UserControl.Resources>
-		<conv:FileValidationColorConverter x:Key="FileValidationColorConverter" />
-		<conv:StringToBoolConverter x:Key="StringToBoolConverter" />
+		<ResourceDictionary>
+			<ResourceDictionary.MergedDictionaries>
+				<ResourceDictionary Source="pack://application:,,,/SourceControlGenerator;component/ThemeSystem/ResourceDictionary/MainAppDictionary.xaml" />
+			</ResourceDictionary.MergedDictionaries>
+		</ResourceDictionary>
 	</UserControl.Resources>
-	<Grid Width="Auto" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" >
+	<Grid>
 		<Grid.ColumnDefinitions>
 			<ColumnDefinition Width="*" />
-			<ColumnDefinition Width="Auto" />
+			<ColumnDefinition Width="1" />
+			<ColumnDefinition Width="Auto"/>
 		</Grid.ColumnDefinitions>
-		<Grid.RowDefinitions>
-			<RowDefinition Height="Auto" />
-		</Grid.RowDefinitions>
-		<Grid.Resources>
-			<Style x:Key="OpenBrowseButton" TargetType="{x:Type Button}" BasedOn="{StaticResource {x:Type Button}}">
-				<Setter Property="Content" Value="..." />
-				<Setter Property="VerticalContentAlignment" Value="Center"/>
-				<Setter Property="HorizontalContentAlignment" Value="Center"/>
-				<Setter Property="Padding" Value="10,-4,10,0" />
-			</Style>
-			<Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource {x:Type TextBlock}}">
-				<Setter Property="Padding" Value="2,0" />
-				<Setter Property="TextAlignment" Value="Left" />
-				<Setter Property="HorizontalAlignment" Value="Left" />
-				<Setter Property="VerticalAlignment" Value="Center" />
-			</Style>
-		</Grid.Resources>
-		<Border BorderBrush="{Binding Path=BorderBrush, ElementName=FileBrowser}" BorderThickness="1,1,0,1" Height="{Binding Path=Height, ElementName=FileBrowser}" >
-			<TextBox x:Name="FilePathDisplay" Grid.Column="0" behavior:TextBoxEnterKeyBehavior.EnterLosesFocus="True" BorderThickness="0" IsReadOnly="False" 
-					 VerticalAlignment="Center" TextAlignment="Right"
-					 Text="{Binding Path=FileLocationText, ElementName=FileBrowser, Mode=TwoWay, FallbackValue='Test'}" Background="{Binding Path=FileValidation, ElementName=FileBrowser, Converter={StaticResource FileValidationColorConverter}}" 
-					 ToolTip="{Binding Path=FileLocationText, ElementName=FileBrowser}"
-					 Tag="{Binding RelativeSource={RelativeSource Mode=Self}}"
-			>
-				<TextBox.ContextMenu>
-					<ContextMenu DataContext="{Binding Path=PlacementTarget.Tag, RelativeSource={RelativeSource Self}}" >
-						<MenuItem Header="Cut" IsEnabled="{Binding SelectedText, Converter={StaticResource StringToBoolConverter}}" Click="CutSelectedToClipboard" />
-						<MenuItem Header="Copy Selected" IsEnabled="{Binding SelectedText, Converter={StaticResource StringToBoolConverter}}" Click="CopySelectedToClipboard" />
-						<MenuItem Header="Copy All" IsEnabled="{Binding Text, Converter={StaticResource StringToBoolConverter}}" Click="CopyAllToClipboard" />
-						<MenuItem Header="Paste" IsEnabled="{Binding Source={x:Static core:AppController.Main}, Path=Data.ClipboardPopulated}" Click="PasteFromClipboard" />
-						<MenuItem Header="Paste (Replace)" IsEnabled="{Binding Source={x:Static core:AppController.Main}, Path=Data.ClipboardPopulated}" Click="ReplaceFromClipboard" />
-						<MenuItem Header="Clear" IsEnabled="{Binding Text, Converter={StaticResource StringToBoolConverter}}" Click="ClearFileLocationText" />
-					</ContextMenu>
-				</TextBox.ContextMenu>
-			</TextBox>
-		</Border>
-		<Button Height="{Binding Path=Height, ElementName=FileBrowser}" x:Name="FileBrowseButton" Grid.Column="1" Style="{StaticResource OpenBrowseButton}" BorderThickness="1,1,1,1" ToolTip="{Binding Path=BrowseToolTip, ElementName=FileBrowser}" FontSize="16" TextOptions.TextFormattingMode="Display" FontFamily="Bitter" Click="FileBrowseButton_Click" BorderBrush="{Binding Path=BorderBrush, ElementName=FilePathDisplay}" />
+		<TextBox x:Name="FilePathDisplay" Grid.Column="0" behavior:TextBoxEnterKeyBehavior.EnterLosesFocus="True" BorderThickness="0" IsReadOnly="False" 
+			VerticalAlignment="Center" TextAlignment="Right" Background="Transparent"
+			Text="{Binding Path=FileLocationText, ElementName=FileBrowser, Mode=TwoWay, FallbackValue='Test'}" 
+			ToolTip="{Binding Path=FileLocationText, ElementName=FileBrowser}"
+			Tag="{Binding RelativeSource={RelativeSource Mode=Self}}"
+		>
+			<TextBox.ContextMenu>
+				<ContextMenu DataContext="{Binding Path=PlacementTarget.Tag, RelativeSource={RelativeSource Self}}" >
+					<MenuItem Header="Cut" IsEnabled="{Binding SelectedText, Converter={StaticResource StringToBoolConverter}}" Click="CutSelectedToClipboard" />
+					<MenuItem Header="Copy Selected" IsEnabled="{Binding SelectedText, Converter={StaticResource StringToBoolConverter}}" Click="CopySelectedToClipboard" />
+					<MenuItem Header="Copy All" IsEnabled="{Binding Text, Converter={StaticResource StringToBoolConverter}}" Click="CopyAllToClipboard" />
+					<MenuItem Header="Paste" IsEnabled="{Binding Source={x:Static core:AppController.Main}, Path=Data.ClipboardPopulated}" Click="PasteFromClipboard" />
+					<MenuItem Header="Paste (Replace)" IsEnabled="{Binding Source={x:Static core:AppController.Main}, Path=Data.ClipboardPopulated}" Click="ReplaceFromClipboard" />
+					<MenuItem Header="Clear" IsEnabled="{Binding Text, Converter={StaticResource StringToBoolConverter}}" Click="ClearFileLocationText" />
+				</ContextMenu>
+			</TextBox.ContextMenu>
+		</TextBox>
+		<Rectangle Fill="{Binding Path=FileValidation, ElementName=FileBrowser, Converter={StaticResource FileValidationColorConverter}, FallbackValue=Wheat}" Grid.Row="0" />
+		<Rectangle Style="{StaticResource VerticalSeparator}" Grid.Column="1" Margin="0" Stroke="{Binding Path=BorderBrush, ElementName=FileBrowser}" />
+		<Button x:Name="FileBrowseButton" Grid.Column="2"
+			Width="Auto" Height="Auto" MinWidth="38"
+			BorderBrush="{x:Null}" BorderThickness="0"
+			ToolTip="{Binding Path=BrowseToolTip, ElementName=FileBrowser}"
+			Click="FileBrowseButton_Click"
+			VerticalContentAlignment="Center" HorizontalContentAlignment="Center"
+			Background="LightGray"
+		>
+			<Button.Resources>
+				<Style TargetType="Ellipse">
+					<Setter Property="Width" Value="{Binding CircleSize, ElementName=FileBrowser, FallbackValue=4}" />
+					<Setter Property="Height" Value="{Binding CircleSize, ElementName=FileBrowser, FallbackValue=4}" />
+					<Setter Property="Fill" Value="Black" />
+					<Setter Property="Margin" Value="1" />
+				</Style>
+			</Button.Resources>
+			<Viewbox Stretch="UniformToFill" StretchDirection="DownOnly">
+				<StackPanel Orientation="Horizontal">
+					<Ellipse/>
+					<Ellipse/>
+					<Ellipse/>
+				</StackPanel>
+			</Viewbox>
+		</Button>
+		<!--<c:ImageButton 
+			x:Name="FileBrowseButton" Grid.Column="2"
+			InitialSize="16" Margin="2"
+			ToolTip="{Binding Path=BrowseToolTip, ElementName=FileBrowser}" 
+			Source="{x:Static vdata:IconPathData.OpenFile}"
+			Click="FileBrowseButton_Click"
+		>
+			<c:ImageButton.Style>
+				<Style TargetType="{x:Type c:ImageButton}" BasedOn="{StaticResource {x:Type c:ImageButton}}">
+					<Style.Triggers>
+						<MultiDataTrigger>
+							<MultiDataTrigger.Conditions>
+								<Condition Binding="{Binding Path=BrowseType, RelativeSource={RelativeSource AncestorType={x:Type c:FileBrowseControl}}}" 
+									Value="{x:Static enum:FileBrowseType.Directory}"/>
+								<Condition Binding="{Binding Path=BrowseMode, RelativeSource={RelativeSource AncestorType={x:Type c:FileBrowseControl}}}" 
+									Value="{x:Static c:FileBrowserMode.Open}"/>
+							</MultiDataTrigger.Conditions>
+							<Setter Property="Source" Value="{x:Static vdata:IconPathData.OpenFolder}" />
+						</MultiDataTrigger>
+						<MultiDataTrigger>
+							<MultiDataTrigger.Conditions>
+								<Condition Binding="{Binding ElementName=FileBrowser, Path=BrowseType}" Value="{x:Static enum:FileBrowseType.File}"/>
+								<Condition Binding="{Binding ElementName=FileBrowser, Path=BrowseMode}" Value="{x:Static c:FileBrowserMode.Save}"/>
+							</MultiDataTrigger.Conditions>
+							<Setter Property="Source" Value="{x:Static vdata:IconPathData.SaveAs}" />
+						</MultiDataTrigger>
+						<MultiDataTrigger>
+							<MultiDataTrigger.Conditions>
+								<Condition Binding="{Binding ElementName=FileBrowser, Path=BrowseType}" Value="{x:Static enum:FileBrowseType.File}"/>
+								<Condition Binding="{Binding ElementName=FileBrowser, Path=BrowseMode}" Value="{x:Static c:FileBrowserMode.Open}"/>
+							</MultiDataTrigger.Conditions>
+							<Setter Property="Source" Value="{x:Static vdata:IconPathData.OpenFile}" />
+						</MultiDataTrigger>
+					</Style.Triggers>
+				</Style>
+			</c:ImageButton.Style>
+		</c:ImageButton>-->
+		
+		<!--<Image Source="pack://application:,,,/SourceControlGenerator;component/Resources/Icons/Folder.png" Grid.Column="2" Width="16" Height="16" Panel.ZIndex="1" />-->
 	</Grid>
 </UserControl>

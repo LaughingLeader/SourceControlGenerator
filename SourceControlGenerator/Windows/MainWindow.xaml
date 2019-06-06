@@ -189,16 +189,17 @@
 						</Style.Triggers>
 					</Style>
 				</TabItem.Resources>
-				<Grid>
+				<Grid Margin="10,0,10,0">
 					<Grid.RowDefinitions>
 						<RowDefinition Height="Auto"/>
 						<RowDefinition Height="*" />
 						<RowDefinition Height="Auto" />
 					</Grid.RowDefinitions>
-					<Grid Grid.Row="0" Width="Auto" Height="Auto" x:Name="KeywordsHeaderControls" Margin="5" >
+					<Grid Grid.Row="0" Width="Auto" Height="Auto" x:Name="KeywordsHeaderControls" Margin="0,4" >
 						<Grid.ColumnDefinitions>
 							<ColumnDefinition Width="Auto"/>
 							<ColumnDefinition Width="*"/>
+							<ColumnDefinition Width="Auto"/>
 						</Grid.ColumnDefinitions>
 						<Label x:Name="TemplateLabel" Content="Template Keywords" Grid.Column="0" Width="Auto" HorizontalAlignment="Left" VerticalAlignment="Center" ToolTip="{x:Static core:TooltipText.TemplateKeywords}" Padding="2,0,50,0">
 							<Label.Style>
@@ -211,26 +212,26 @@
 								</Style>
 							</Label.Style>
 						</Label>
-						<StackPanel Grid.Column="1" HorizontalAlignment="Right" x:Name="KeywordCommandsGrid" Orientation="Horizontal" >
+						<c:FileBrowseControl x:Name="KeywordFileBrowser" Grid.Column="1" HorizontalAlignment="Stretch"
+							OpenFileText="Select Keywords File" 
+							FileLocationText="{Binding Settings.UserKeywordsFile, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+							OnOpen="{Binding LoadKeywords}" Filters="{x:Static core:CommonFileFilters.JsonList}" />
+						<StackPanel Grid.Column="2" HorizontalAlignment="Right" x:Name="KeywordCommandsGrid" Orientation="Horizontal" 
+								Height="{Binding Path=Height, ElementName=KeywordFileBrowser}"
+							>
 							<StackPanel.Resources>
-								<Style TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
-									<Setter Property="Margin" Value="2,0" />
+								<Style TargetType="Button">
+									<Setter Property="Margin" Value="2,0,0,0" />
 									<Setter Property="Padding" Value="4,2" />
-									<Setter Property="MaxHeight" Value="{Binding Path=MaxHeight, ElementName=KeywordFileBrowser}" />
-									<Setter Property="MinHeight" Value="{Binding Path=MinHeight, ElementName=KeywordFileBrowser}" />
 									<Setter Property="BorderBrush" Value="{Binding Path=BorderBrush, ElementName=KeywordFileBrowser, FallbackValue='#FFABADB3'}" />
 								</Style>
 							</StackPanel.Resources>
-							<c:FileBrowseControl x:Name="KeywordFileBrowser" OpenFileText="Select Keywords File" FileLocationText="{Binding Settings.UserKeywordsFile, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-												OnOpen="{Binding LoadKeywords}" Filters="{x:Static core:CommonFileFilters.JsonList}"
-												 Width="400" MaxWidth="400" Margin="0,0,2,0" />
-
 							<Button x:Name="SaveKeywordsButton" Content="Save" Command="{Binding DataContext.SaveKeywordsCommand, ElementName=MainAppWindow}" />
 							<Button x:Name="SaveAsKeywordsButton" Content="Save As..." Command="{Binding DataContext.SaveKeywordsAsCommand, ElementName=MainAppWindow}" />
 							<Button Content="Default..." Click="KeywordsList_Default_Click" ToolTip="Reset Keywords to Default" />
 						</StackPanel>
 					</Grid>
-					<ScrollViewer Grid.Row="1" x:Name="KeywordListScrollViewer" Margin="10,0,10,0" VerticalScrollBarVisibility="Auto" Background="{DynamicResource {x:Static SystemColors.ControlLightBrushKey}}" >
+					<ScrollViewer Grid.Row="1" x:Name="KeywordListScrollViewer" Margin="0" VerticalScrollBarVisibility="Auto" Background="{DynamicResource {x:Static SystemColors.ControlLightBrushKey}}" >
 						<Grid x:Name="KeywordListGrid" Margin="10">
 							<Grid.RowDefinitions>
 								<RowDefinition Height="Auto" />

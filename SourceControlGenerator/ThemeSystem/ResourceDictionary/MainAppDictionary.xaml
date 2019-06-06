@@ -19,30 +19,32 @@
 	<proxy:AppControllerProxy x:Key="AppControllerProxy" Data="{x:Static core:AppController.Main}"/>
 
 	<BooleanToVisibilityConverter  x:Key="BoolToVisibilityConverter"/>
+	<cv:BindingFallbackConverter x:Key="BindingFallbackConverter"/>
+	<cv:ColorToBrushConverter x:Key="ColorToBrushConverter"/>
 	<cv:DateTimeToStringConverter x:Key="DateTimeToStringConverter"/>
 	<cv:EmptyListVisibilityConverter x:Key="EmptyListVisibilityConverter"/>
 	<cv:EmptyStringVisibilityConverter x:Key="EmptyStringVisibilityConverter"/>
 	<cv:EmptyValueVisibilityConverter x:Key="EmptyValueVisibilityConverter"/>
 	<cv:EnumDescriptionConverter x:Key="EnumDescriptionConverter"/>
+	<cv:FileValidationColorConverter x:Key="FileValidationColorConverter" />
 	<cv:FooterOutputColorConverter x:Key="FooterOutputColorConverter"/>
+	<cv:GrayscaleTintImageConverter x:Key="GrayscaleTintImageConverter"/>
+	<cv:IntToGridLengthConverter x:Key="IntToGridLengthConverter"/>
+	<cv:IntToVisibilityConverter x:Key="IntToVisibilityConverter"/>
 	<cv:ListViewStarWidthConverter x:Key="ListViewStarWidthConverter"/>
-	<cv:ObjectColorConverter x:Key="ObjectColorConverter"/>
+	<cv:LogTypeColorConverter x:Key="LogTypeColorConverter"/>
+	<cv:MultiValueToArrayConverter x:Key="MultiValueToArrayConverter"/>
 	<cv:NewlineStringConverter x:Key="NewlineStringConverter"/>
+	<cv:ObjectColorConverter x:Key="ObjectColorConverter"/>
+	<cv:ParamsToOpenFileBrowserParamsConverter x:Key="ParamsToOpenFileBrowserParamsConverter"/>
 	<cv:SettingsAttributeConverter x:Key="SettingsAttributeConverter"/>
 	<cv:SettingsAttributeValueControlConverter x:Key="SettingsAttributeValueControlConverter"/>
 	<cv:StringToBoolConverter x:Key="StringToBoolConverter" />
+	<cv:StringToCachedImageConverter x:Key="StringToCachedImageConverter"/>
 	<cv:StringToFilterConverter x:Key="StringToFilterConverter" />
 	<cv:StringToFilterListConverter x:Key="StringToFilterListConverter" />
 	<cv:TextWrapToScrollBarVisibilityConverter x:Key="TextWrapToScrollBarVisibilityConverter" />
-	<cv:IntToGridLengthConverter x:Key="IntToGridLengthConverter"/>
-	<cv:IntToVisibilityConverter x:Key="IntToVisibilityConverter"/>
 	<cv:VisibleLogsConverter x:Key="VisibleLogsConverter"/>
-	<cv:LogTypeColorConverter x:Key="LogTypeColorConverter"/>
-	<cv:StringToCachedImageConverter x:Key="StringToCachedImageConverter"/>
-	<cv:GrayscaleTintImageConverter x:Key="GrayscaleTintImageConverter"/>
-	<cv:BindingFallbackConverter x:Key="BindingFallbackConverter"/>
-	<cv:MultiValueToArrayConverter x:Key="MultiValueToArrayConverter"/>
-	<cv:ParamsToOpenFileBrowserParamsConverter x:Key="ParamsToOpenFileBrowserParamsConverter"/>
 
 	<Style TargetType="{x:Type c:TemplateKeywordControl}"/>
 	<Style TargetType="{x:Type ListViewItem}" />
@@ -51,7 +53,7 @@
 		<Setter Property="VerticalAlignment" Value="Stretch" />
 		<Setter Property="Width" Value="1" />
 		<Setter Property="Margin" Value="2,2,4,2" />
-		<Setter Property="Stroke" Value="Gray" />
+		<Setter Property="Fill" Value="Gray" />
 	</Style>
 
 	<ControlTemplate x:Key="ImageButtonTemplate" TargetType="{x:Type c:ImageButton}">
@@ -60,18 +62,21 @@
 				x:Name="ButtonImageControl"
 				Height="{Binding MaxSize, RelativeSource={RelativeSource TemplatedParent}}"
 				Width="{Binding MaxSize, RelativeSource={RelativeSource TemplatedParent}}"
-				Source="{Binding Source, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource StringToCachedImageConverter}, FallbackValue={x:Null}}"
+				Source="{Binding Source, RelativeSource={RelativeSource TemplatedParent}, 
+					Converter={StaticResource StringToCachedImageConverter}, 
+					FallbackValue='pack://application:,,,/SourceControlGenerator;component/Resources/Icons/WarningRule_16x.png'}"
 				ToolTipService.ShowOnDisabled="True" 
 			/>
 			<Rectangle x:Name="TintRect"
-				Width="{Binding MaxSize, RelativeSource={RelativeSource TemplatedParent}}" Height="{Binding MaxSize, RelativeSource={RelativeSource TemplatedParent}}"
+				Width="{Binding MaxSize, RelativeSource={RelativeSource TemplatedParent}}"
+				Height="{Binding MaxSize, RelativeSource={RelativeSource TemplatedParent}}"
 				ToolTipService.ShowOnDisabled="True" ToolTip="{Binding Path=ToolTip, ElementName=ButtonImageControl}"
-					   >
+			>
 				<Rectangle.Fill>
 					<SolidColorBrush Color="Transparent" />
 				</Rectangle.Fill>
 				<Rectangle.OpacityMask>
-					<ImageBrush ImageSource="{Binding Source, RelativeSource={RelativeSource TemplatedParent}}"/>
+					<ImageBrush ImageSource="{Binding Source, ElementName=ButtonImageControl}"/>
 				</Rectangle.OpacityMask>
 			</Rectangle>
 		</Grid>
@@ -102,11 +107,7 @@
 					<Condition Property="IsEnabled" Value="True" />
 				</MultiTrigger.Conditions>
 				<MultiTrigger.Setters>
-					<Setter TargetName="TintRect" Property="Fill">
-						<Setter.Value>
-							<SolidColorBrush Color="{Binding TintColor, RelativeSource={RelativeSource TemplatedParent}}" Opacity="0.5"/>
-						</Setter.Value>
-					</Setter>
+					<Setter TargetName="TintRect" Property="Fill" Value="{Binding TintColor, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource ColorToBrushConverter}}" />
 				</MultiTrigger.Setters>
 			</MultiTrigger>
 			<MultiTrigger>

@@ -18,6 +18,7 @@ using DataGridExtensions;
 using SCG.Data.View;
 using SCG.Core;
 using System.ComponentModel;
+using SCG.Commands;
 
 namespace SCG.Modules.DOS2DE.Windows
 {
@@ -41,6 +42,7 @@ namespace SCG.Modules.DOS2DE.Windows
 		public LocaleViewData LocaleData { get; set; }
 
 		public LocaleExportWindow ExportWindow { get; set; }
+		public LocaleOptionsWindow OptionsWindow { get; set; }
 
 		private DOS2DEModuleData ModuleData { get; set; }
 
@@ -53,7 +55,24 @@ namespace SCG.Modules.DOS2DE.Windows
 			ExportWindow = new LocaleExportWindow();
 			ExportWindow.Hide();
 
+			OptionsWindow = new LocaleOptionsWindow();
+			OptionsWindow.Hide();
+
 			instance = this;
+		}
+
+		public void TogglePreferencesWindow()
+		{
+			if(!OptionsWindow.IsVisible)
+			{
+				OptionsWindow.LoadData(LocaleData.Settings);
+				OptionsWindow.Show();
+				OptionsWindow.Owner = this;
+			}
+			else
+			{
+				OptionsWindow.Hide();
+			}
 		}
 
 		public void LoadData(LocaleViewData data)
@@ -67,6 +86,7 @@ namespace SCG.Modules.DOS2DE.Windows
 			LocaleData.MenuData.RegisterShortcuts(this);
 			LocaleData.ModuleData = ModuleData;
 
+			ExportWindow.LocaleData = LocaleData;
 		}
 
 		public void SaveSettings()

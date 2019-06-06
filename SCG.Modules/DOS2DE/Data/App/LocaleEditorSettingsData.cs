@@ -34,7 +34,7 @@ namespace SCG.Modules.DOS2DE.Data.App
 			}
 		}
 
-		private bool exportKeys = false;
+		private bool exportKeys = true;
 
 		public bool ExportKeys
 		{

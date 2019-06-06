@@ -166,8 +166,6 @@ namespace SCG.Controls
 		public static readonly DependencyProperty DefaultFileNameProperty =
 			DependencyProperty.Register("DefaultFileName", typeof(string), typeof(FileBrowseControl), new PropertyMetadata(""));
 
-
-
 		public string BrowseToolTip
 		{
 			get { return (string)GetValue(BrowseToolTipProperty); }
@@ -178,6 +176,14 @@ namespace SCG.Controls
 		public static readonly DependencyProperty BrowseToolTipProperty =
 			DependencyProperty.Register("BrowseToolTip", typeof(string), typeof(FileBrowseControl), new PropertyMetadata("Browse..."));
 
+		public int CircleSize
+		{
+			get { return (int)GetValue(CircleSizeProperty); }
+			set { SetValue(CircleSizeProperty, value); }
+		}
+
+		public static readonly DependencyProperty CircleSizeProperty =
+			DependencyProperty.Register("CircleSize", typeof(int), typeof(FileBrowseControl), new PropertyMetadata(4));
 
 		public FileBrowseControl()
 		{

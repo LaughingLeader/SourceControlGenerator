@@ -119,11 +119,11 @@
     <Compile Include="Data\App\LocaleEditorSettingsData.cs" />
     <Compile Include="Data\View\ILocaleFileData.cs" />
     <Compile Include="Data\View\LocaleEditorDesignData.cs" />
-    <Compile Include="Data\View\LocaleEditorViewData.cs" />
     <Compile Include="Data\View\LocaleFileData.cs" />
     <Compile Include="Data\View\LocaleKeyEntry.cs" />
     <Compile Include="Data\View\LocaleMenuData.cs" />
     <Compile Include="Data\View\LocaleTabGroup.cs" />
+    <Compile Include="Data\View\LocaleViewData.cs" />
     <Compile Include="Data\View\ProjectVersionData.cs" />
     <Compile Include="Module.cs" />
     <Compile Include="Controls\ProjectViewControl.xaml.cs">

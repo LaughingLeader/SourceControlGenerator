@@ -203,7 +203,11 @@
       <DependentUpon>FileGridBox.xaml</DependentUpon>
     </Compile>
     <Compile Include="Controls\ImageButton.cs" />
+    <Compile Include="Controls\Test.xaml.cs">
+      <DependentUpon>Test.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Converters\BindingFallbackConverter.cs" />
+    <Compile Include="Converters\ColorToBrushConverter.cs" />
     <Compile Include="Converters\GrayscaleTintImageConverter.cs" />
     <Compile Include="Converters\MultiValueToArrayConverter.cs" />
     <Compile Include="Converters\ParamsToOpenFileBrowserParamsConverter.cs" />
@@ -369,6 +373,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Controls\TemplateKeywordControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\Test.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -573,6 +581,15 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>
     <Resource Include="Resources\Icons\Import_16x.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Resources\Icons\OpenFile_16x.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Resources\Icons\OpenFolder_16x.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Resources\Icons\WarningRule_16x.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>
     <Content Include="Resources\Logos\DivinityOriginalSin2DE.png">

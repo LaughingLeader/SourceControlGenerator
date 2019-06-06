@@ -259,6 +259,8 @@ namespace SCG.Modules.DOS2DE.Data.View
 		public ICommand AddNewKeyCommand { get; set; }
 		public ICommand DeleteKeysCommand { get; set; }
 
+		public ICommand OpenPreferencesCommand { get; set; }
+
 		public void AddNewKey()
 		{
 			if (SelectedGroup != null && SelectedGroup.SelectedFile != null)
@@ -563,10 +565,14 @@ namespace SCG.Modules.DOS2DE.Data.View
 			AddNewKeyCommand = new ActionCommand(AddNewKey);
 			DeleteKeysCommand = new TaskCommand(DeleteSelectedKeys, LocaleEditorWindow.instance, "Delete Keys", "Delete selected keys?", "Changes will be lost.");
 
+			OpenPreferencesCommand = new ActionCommand(LocaleEditorWindow.instance.TogglePreferencesWindow);
+
 			SaveCurrentMenuData = new MenuData("SaveCurrent", "Save", SaveCurrentCommand, Key.S, ModifierKeys.Control);
 
 			MenuData.File.Add(SaveCurrentMenuData);
-			MenuData.File.Add(new MenuData("SaveAll", "Save All", SaveAllCommand, Key.S, ModifierKeys.Control | ModifierKeys.Shift));
+			MenuData.File.Add(new MenuData("File.SaveAll", "Save All", SaveAllCommand, Key.S, ModifierKeys.Control | ModifierKeys.Shift));
+
+			MenuData.Settings.Add(new MenuData("Settings.Preferences", "Preferences", OpenPreferencesCommand));
 
 			CanSave = false;
 		}

@@ -1,4 +1,5 @@
-﻿using SCG.Windows;
+﻿using SCG.Modules.DOS2DE.Data.App;
+using SCG.Windows;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,6 +24,11 @@ namespace SCG.Modules.DOS2DE.Windows
 		public LocaleOptionsWindow()
 		{
 			InitializeComponent();
+		}
+
+		public void LoadData(LocaleEditorSettingsData data)
+		{
+			DataContext = data;
 		}
 	}
 }

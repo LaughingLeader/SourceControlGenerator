@@ -36,6 +36,18 @@ namespace SCG.Modules.DOS2DE.Data.View
 			}
 		}
 
+		private MenuData settingsMenu;
+
+		public MenuData Settings
+		{
+			get { return settingsMenu; }
+			set
+			{
+				settingsMenu = value;
+				RaisePropertyChanged("Settings");
+			}
+		}
+
 		private MenuData helpMenu;
 
 		public MenuData Help
@@ -80,12 +92,14 @@ namespace SCG.Modules.DOS2DE.Data.View
 		{
 			File = new MenuData("Base.File", "File");
 			Edit = new MenuData("Base.Edit", "Edit");
+			Settings = new MenuData("Base.Settings", "Settings");
 			Help = new MenuData("Base.Help", "Help");
 
 			Menus = new ObservableCollection<MenuData>()
 			{
 				File,
 				Edit,
+				Settings,
 				Help
 			};
 		}

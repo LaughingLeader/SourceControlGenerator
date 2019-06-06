@@ -10,7 +10,7 @@
 		xmlns:controls="clr-namespace:SCG.Controls;assembly=SourceControlGenerator"
 		mc:Ignorable="d"
 		d:DataContext="{d:DesignInstance data:LocaleEditorSettingsDesignData, IsDesignTimeCreatable=True}"
-		Title="Localization Editor Settings" Height="450" Width="400">
+		Title="Localization Editor Settings" Height="200" Width="500">
 	<win:HideWindowBase.Resources>
 		<ResourceDictionary>
 			<ResourceDictionary.MergedDictionaries>
@@ -29,30 +29,25 @@
 					</Style>
 				</TabItem.Resources>
 				<StackPanel Orientation="Vertical" Margin="4">
-					<Border BorderThickness="1" BorderBrush="Gray">
-						<Grid>
-							<Grid.ColumnDefinitions>
-								<ColumnDefinition Width="*" />
-								<ColumnDefinition Width="Auto" />
-								<ColumnDefinition Width="3*" />
-							</Grid.ColumnDefinitions>
-							<TextBlock Text="Last Import" />
-							<Rectangle Grid.Column="1" Style="{StaticResource VerticalSeparator}" Margin="0" />
-							<controls:FileBrowseControl Grid.Column="2" BorderThickness="0" />
-						</Grid>
-					</Border>
+					<StackPanel.Resources>
+						<Style TargetType="controls:FileGridBox">
+							<Setter Property="FontSize" Value="12" />
+						</Style>
+					</StackPanel.Resources>
+					<controls:FileGridBox Header="Last File Import Path" FilePath="{Binding LastFileImportPath}" />
+					<controls:FileGridBox Header="Last Entry Import Path" FilePath="{Binding LastEntryImportPath}" />
 				</StackPanel>
 			</TabItem>
 			<TabItem Header="XML Export">
-				<StackPanel>
+				<StackPanel Margin="4">
 					<StackPanel.Resources>
 						<Style TargetType="CheckBox">
 							<Setter Property="Margin" Value="2,3,2,0" />
 						</Style>
 					</StackPanel.Resources>
-					<CheckBox Content="Export Keys" IsChecked="{Binding ExportKeys}"
+					<CheckBox Content="Export Keys" IsChecked="{Binding ExportKeys, Mode=TwoWay}"
 					ToolTip="{x:Static core:DOS2DETooltips.Checkbox_Locale_ExportXML_Keys}" />
-					<CheckBox Content="Export Source" IsChecked="{Binding ExportSource}"
+					<CheckBox Content="Export Source" IsChecked="{Binding ExportSource, Mode=TwoWay}"
 					ToolTip="{x:Static core:DOS2DETooltips.Checkbox_Locale_ExportXML_Source}" />
 				</StackPanel>
 			</TabItem>

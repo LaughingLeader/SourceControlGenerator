@@ -684,11 +684,6 @@
 				</Style>
 			</Grid.Resources>
 			<StackPanel x:Name="ShortcutsButtonPanel" Grid.Column="0" VerticalAlignment="Center" Margin="2" MinHeight="16">
-				<StackPanel.Resources>
-					<Style TargetType="Button" BasedOn="{StaticResource ShortcutButton}">
-						<Setter Property="Background" Value="Transparent" />
-					</Style>
-				</StackPanel.Resources>
 				<c:ImageButton 
 					Click="AddFileButton_Click"
 					IsEnabled="{Binding RelativeSource={RelativeSource AncestorType={x:Type Window}}, Path=DataContext.CanAddFile}"
@@ -711,8 +706,7 @@
 				/>
 				<c:ImageButton x:Name="SaveAllButton" Command="{Binding SaveAllCommand}" ToolTip="{x:Static core:DOS2DETooltips.Button_Locale_SaveAll}" 
 							   Source="{x:Static vdata:IconPathData.SaveAll}" />
-				<Rectangle Style="{StaticResource VerticalSeparator}" />
-
+				<!--<Rectangle Style="{StaticResource VerticalSeparator}" />-->
 			</StackPanel>
 		</Grid>
 		<TabControl Grid.Row="2" ItemsSource="{Binding Groups}" ContentTemplate="{Binding Source={StaticResource LocaleFileTabs}}"

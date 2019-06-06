@@ -5,7 +5,7 @@
 			 xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
 			 xmlns:local="clr-namespace:SCG.Controls"
 			 mc:Ignorable="d" 
-			 d:DesignHeight="450" d:DesignWidth="800"
+			 d:DesignHeight="100" d:DesignWidth="303"
 			 x:Name="ParentFileGridBox"
 			 DataContext="{Binding RelativeSource={RelativeSource Self}}"
 			 >
@@ -22,16 +22,22 @@
 		</ResourceDictionary>
 	</UserControl.Resources>
 	<StackPanel Orientation="Vertical" Margin="4">
-		<Border BorderThickness="1" BorderBrush="Gray">
+		<Border x:Name="GridBorder" BorderThickness="1" BorderBrush="Gray">
 			<Grid>
 				<Grid.ColumnDefinitions>
 					<ColumnDefinition Width="*" />
 					<ColumnDefinition Width="Auto" />
-					<ColumnDefinition Width="3*" />
+					<ColumnDefinition Width="2*" />
 				</Grid.ColumnDefinitions>
-				<TextBlock Text="{Binding Header, RelativeSource={RelativeSource AncestorType=UserControl}, TargetNullValue='Test'}" />
+				<Viewbox StretchDirection="DownOnly" Stretch="Uniform" HorizontalAlignment="Left">
+					<ContentControl Content="{Binding Header, FallbackValue='Test Path'}" FontSize="{Binding FontSize}"
+						Margin="4" 
+					/>
+				</Viewbox>
 				<Rectangle Grid.Column="1" Style="{StaticResource VerticalSeparator}" Margin="0" />
-				<local:FileBrowseControl Grid.Column="2" BorderThickness="0" FileLocationText="{Binding FilePath, RelativeSource={RelativeSource AncestorType=UserControl}}" />
+				<local:FileBrowseControl Grid.Column="2" Margin="0" BorderThickness="0" BorderBrush="{Binding BorderBrush, ElementName=GridBorder}"
+					BrowseMode="Open" CircleSize="2"
+					FileLocationText="{Binding FilePath, FallbackValue='Test'}" />
 			</Grid>
 		</Border>
 	</StackPanel>
