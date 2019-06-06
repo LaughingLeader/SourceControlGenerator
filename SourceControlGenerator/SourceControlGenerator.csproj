@@ -203,9 +203,6 @@
       <DependentUpon>FileGridBox.xaml</DependentUpon>
     </Compile>
     <Compile Include="Controls\ImageButton.cs" />
-    <Compile Include="Controls\Test.xaml.cs">
-      <DependentUpon>Test.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Converters\BindingFallbackConverter.cs" />
     <Compile Include="Converters\ColorToBrushConverter.cs" />
     <Compile Include="Converters\GrayscaleTintImageConverter.cs" />
@@ -373,10 +370,6 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Controls\TemplateKeywordControl.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Controls\Test.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
