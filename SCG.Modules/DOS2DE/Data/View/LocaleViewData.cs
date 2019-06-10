@@ -187,7 +187,7 @@ namespace SCG.Modules.DOS2DE.Data.View
 			}
 		}
 
-		private bool canAddFile = false;
+		private bool canAddFile;
 
 		public bool CanAddFile
 		{
@@ -199,7 +199,7 @@ namespace SCG.Modules.DOS2DE.Data.View
 			}
 		}
 
-		private bool canAddKeys = true;
+		private bool canAddKeys;
 
 		public bool CanAddKeys
 		{
@@ -719,8 +719,18 @@ namespace SCG.Modules.DOS2DE.Data.View
 
 			MenuData.Settings.Add(new MenuData("Settings.Preferences", "Preferences", OpenPreferencesCommand));
 
+			MenuData larianWikiMenu = new MenuData("Help.Links.LarianWiki", "Larian Wiki");
+			larianWikiMenu.Add(new MenuData("Help.Links.LarianWiki.KeyEditor", "Translated String Key Editor",
+				new ActionCommand(() => { Helpers.Web.OpenUri(@"https://docs.larian.game/Translated_string_key_editor"); })));
+			larianWikiMenu.Add(new MenuData("Help.Links.LarianWiki.LocalizationGuide", "Modding: Localization",
+				new ActionCommand(() => { Helpers.Web.OpenUri(@"https://docs.larian.game/Modding:_Localization"); })));
+
+			MenuData.Help.Add(larianWikiMenu);
+
 			CanSave = false;
 			AnySelected = false;
+			CanAddFile = false;
+			CanAddKeys = false;
 		}
 	}
 
