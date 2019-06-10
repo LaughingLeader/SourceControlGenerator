@@ -211,7 +211,7 @@ namespace SCG.Modules.DOS2DE.Data.View
 			}
 		}
 
-		private bool anySelected = false;
+		private bool anySelected;
 
 		public bool AnySelected
 		{
@@ -621,6 +621,7 @@ namespace SCG.Modules.DOS2DE.Data.View
 
 			MenuEnabledLinks[PropertyName].Add(() => {
 				mdata.IsEnabled = setEnabled();
+				//Log.Here().Activity($"Set IsEnabled for menu entry {mdata.ID} to {mdata.IsEnabled}");
 			});
 			return mdata;
 		}
@@ -719,6 +720,7 @@ namespace SCG.Modules.DOS2DE.Data.View
 			MenuData.Settings.Add(new MenuData("Settings.Preferences", "Preferences", OpenPreferencesCommand));
 
 			CanSave = false;
+			AnySelected = false;
 		}
 	}
 
