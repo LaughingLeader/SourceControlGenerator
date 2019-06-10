@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
@@ -19,9 +20,9 @@ namespace SCG.Data.View
 	[DebuggerDisplay("{Header}, Children={MenuItems.Count}")]
 	public class MenuData : PropertyChangedBase, IMenuData
 	{
-		public string ID { get; set; }
+		public string ID { get; set; } = "";
 
-		private string header;
+		private string header = "";
 
 		public string Header
 		{
@@ -40,7 +41,11 @@ namespace SCG.Data.View
 
 		public bool IsEnabled
 		{
-			get { return isEnabled; }
+			get
+			{
+				return isEnabled;
+			}
+
 			set
 			{
 				if (ClickCommand != null && isEnabled != value)
@@ -80,7 +85,7 @@ namespace SCG.Data.View
 
 		public KeyBinding InputBinding { get; set; }
 
-		private string shortcutText;
+		private string shortcutText = "";
 
 		public string ShortcutText
 		{
@@ -249,7 +254,8 @@ namespace SCG.Data.View
 			MenuItems = new ObservableCollection<IMenuData>();
 		}
 
-		public MenuData(string MenuID, string menuName, ICommand command = null, Key? shortcutKey = null, ModifierKeys? shortcutModifiers = null)
+		public MenuData(string MenuID, string menuName, ICommand command = null, 
+			Key? shortcutKey = null, ModifierKeys? shortcutModifiers = null)
 		{
 			ID = MenuID;
 			MenuItems = new ObservableCollection<IMenuData>();

@@ -17,7 +17,7 @@
 		d:DataContext="{d:DesignInstance data:LocaleEditorDesignData, IsDesignTimeCreatable=True}"
 		x:Name="LocaleWindow"
 		Closing="LocaleWindow_Closing"
-		Title="Localization Editor" Height="450" Width="800">
+		Title="{Binding WindowTitle, FallbackValue='Localization Editor'}" Height="450" Width="800">
 	<Window.Resources>
 		<ResourceDictionary>
 			<ResourceDictionary.MergedDictionaries>
@@ -307,7 +307,7 @@
 													<c:ImageButton 
 														Command="{Binding Path=DataContext.ImportKeysCommand, RelativeSource={RelativeSource AncestorType={x:Type Window}}}"
 														ToolTip_Enabled="{x:Static core:DOS2DETooltips.Button_Locale_ImportKeys}"
-														ToolTip_Disabled="{x:Static core:DOS2DETooltips.Button_Locale_ImportDisabled}"
+														ToolTip_Disabled="{x:Static core:DOS2DETooltips.Button_Locale_ImportKeys_Disabled}"
 														Source="{x:Static vdata:IconPathData.ImportFile}"
 														IsEnabled="{Binding Path=DataContext.CanAddKeys, RelativeSource={RelativeSource AncestorType={x:Type Window}}}"
 													>
@@ -695,7 +695,7 @@
 					Command="{Binding ImportFileCommand}"
 					CommandParameter="{Binding CurrentFileImportPath, Converter={StaticResource ParamsToOpenFileBrowserParamsConverter}}"
 					ToolTip_Enabled="{x:Static core:DOS2DETooltips.Button_Locale_ImportFile}"
-					ToolTip_Disabled="{x:Static core:DOS2DETooltips.Button_Locale_ImportDisabled}"
+					ToolTip_Disabled="{x:Static core:DOS2DETooltips.Button_Locale_ImportFile_Disabled}"
 					Source="{x:Static vdata:IconPathData.ImportFile}"
 					IsEnabled="{Binding CanAddFile}"
 					/>

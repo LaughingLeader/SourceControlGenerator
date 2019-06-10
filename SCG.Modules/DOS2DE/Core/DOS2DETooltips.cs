@@ -54,12 +54,13 @@ namespace SCG.Modules.DOS2DE.Core
 		public static string Button_Locale_AddFile_Disabled = "Add Locale File (Disabled for Tabs All & Dialog)";
 
 		public static string Button_Locale_AddKey = "Add Key";
-		public static string Button_Locale_AddKey_Disabled = "Add Key (Disabled for Tabs All & Dialog)";
+		public static string Button_Locale_AddKey_Disabled = "Add Key (Disabled for All & Dialog Tabs)";
 		public static string Button_Locale_DeleteKeys = "Delete Selected Keys";
 
 		public static string Button_Locale_ImportFile = "Import File...";
+		public static string Button_Locale_ImportFile_Disabled = "Import File (Disabled for the All Group Tab)";
 		public static string Button_Locale_ImportKeys = "Import Entries From File...";
-		public static string Button_Locale_ImportDisabled = "Import Disabled";
+		public static string Button_Locale_ImportKeys_Disabled = "Import Entries (Disabled for All & Dialog Files)";
 
 		//public static string Button_Locale_UnsavedChanges_Tab = "Unsaved Changes ";
 

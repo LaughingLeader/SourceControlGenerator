@@ -21,9 +21,9 @@ namespace SCG.Modules.DOS2DE.Windows
 	/// </summary>
 	public partial class LocaleOptionsWindow : HideWindowBase
 	{
-		public LocaleOptionsWindow()
+		public LocaleOptionsWindow() : base()
 		{
-			InitializeComponent();
+			
 		}
 
 		public void LoadData(LocaleEditorSettingsData data)

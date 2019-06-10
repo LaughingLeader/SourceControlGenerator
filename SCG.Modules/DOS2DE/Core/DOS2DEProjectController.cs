@@ -1104,6 +1104,7 @@ namespace SCG.Core
 				{
 					try
 					{
+						//var data = new LocaleEditorDesignData();
 						var data = await LocaleEditorCommands.LoadLocalizationDataAsync(Data.Settings.DOS2DEDataDirectory, Data.ManagedProjects.Where(p => p.Selected));
 						localizationEditorWindow.LoadData(data);
 					}
