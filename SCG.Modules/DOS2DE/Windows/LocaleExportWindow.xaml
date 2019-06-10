@@ -40,6 +40,7 @@
 			<Rectangle Style="{StaticResource VerticalSeparator}" Margin="2,0" Width="1" />
 			<Button Content="Copy to Clipboard" x:Name="CopyButton" Click="CopyButton_Click" Padding="4,2"/>
 		</StackPanel>
-		<TextBox AllowDrop="True" IsReadOnly="False" AcceptsReturn="True" x:Name="OutputTextbox" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" Grid.Row="1"/>
+		<TextBox Text="{Binding ExportText, FallbackValue=''}"
+			AllowDrop="True" IsReadOnly="False" AcceptsReturn="True" x:Name="OutputTextbox" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" Grid.Row="1"/>
 	</Grid>
 </win:HideWindowBase>

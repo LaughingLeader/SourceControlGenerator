@@ -317,8 +317,12 @@
 														</c:ImageButton.CommandParameter>
 													</c:ImageButton>
 													<Rectangle Style="{StaticResource VerticalSeparator}" />
-													<c:ImageButton x:Name="ExportButton" Click="ExportButton_Click" ToolTip="{x:Static core:DOS2DETooltips.Button_Locale_ExportToXML}" 
-														Source="{x:Static vdata:IconPathData.XSLTTemplate}" />
+													<c:ImageButton x:Name="ExportButton" 
+														Command="{Binding Path=DataContext.ExportXMLCommand, RelativeSource={RelativeSource AncestorType={x:Type Window}}}"
+														ToolTip="{x:Static core:DOS2DETooltips.Button_Locale_ExportToXML}" 
+														Source="{x:Static vdata:IconPathData.XSLTTemplate}" 
+														IsEnabled="{Binding Path=DataContext.AnySelected, RelativeSource={RelativeSource AncestorType={x:Type Window}}}"
+													/>
 												</StackPanel>
 												<Button Command="{x:Static DataGrid.SelectAllCommand}" Grid.Row="1" Focusable="false" Style="{DynamicResource {ComponentResourceKey ResourceId=DataGridSelectAllButtonStyle, TypeInTargetAssembly={x:Type DataGrid}}}" Visibility="{Binding HeadersVisibility, ConverterParameter={x:Static DataGridHeadersVisibility.All}, Converter={x:Static DataGrid.HeadersVisibilityConverter}, RelativeSource={RelativeSource AncestorType={x:Type DataGrid}}}" Width="{Binding CellsPanelHorizontalOffset, RelativeSource={RelativeSource AncestorType={x:Type DataGrid}}}"/>
 												<DataGridColumnHeadersPresenter x:Name="PART_ColumnHeadersPresenter" Grid.Row="1" Grid.Column="1" Visibility="{Binding HeadersVisibility, ConverterParameter={x:Static DataGridHeadersVisibility.Column}, Converter={x:Static DataGrid.HeadersVisibilityConverter}, RelativeSource={RelativeSource AncestorType={x:Type DataGrid}}}"/>

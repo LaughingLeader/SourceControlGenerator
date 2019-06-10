@@ -523,6 +523,7 @@ namespace SCG.Modules.DOS2DE.Data.View
 
 		public ICommand ImportFileCommand { get; set; }
 		public ICommand ImportKeysCommand { get; set; }
+		public ICommand ExportXMLCommand { get; set; }
 
 		public ICommand SaveAllCommand { get; set; }
 		public ICommand SaveCurrentCommand { get; set; }
@@ -566,6 +567,32 @@ namespace SCG.Modules.DOS2DE.Data.View
 				else
 				{
 					Log.Here().Activity("No selected file(s) found. Skipping delete operation.");
+				}
+			}
+		}
+
+		private string exportText = "";
+
+		public string ExportText
+		{
+			get { return exportText; }
+			set
+			{
+				exportText = value;
+				RaisePropertyChanged("ExportText");
+			}
+		}
+
+		public void OpenExportWindow()
+		{
+			ExportText = LocaleEditorCommands.ExportDataAsXML(this, Settings.ExportSource, Settings.ExportKeys);
+
+			if (LocaleEditorWindow.instance != null && LocaleEditorWindow.instance.ExportWindow != null)
+			{
+				if (!LocaleEditorWindow.instance.ExportWindow.IsVisible)
+				{
+					LocaleEditorWindow.instance.ExportWindow.Show();
+					LocaleEditorWindow.instance.ExportWindow.Owner = LocaleEditorWindow.instance;
 				}
 			}
 		}
@@ -625,6 +652,8 @@ namespace SCG.Modules.DOS2DE.Data.View
 				g.SelectedFileChanged = SelectedFileChanged;
 			}
 
+			ExportXMLCommand = new ActionCommand(OpenExportWindow);
+
 			ImportFileCommand = new OpenFileBrowserCommand(ImportFileAsFileData)
 			{
 				DefaultParams = new OpenFileBrowserParams()
@@ -662,6 +691,15 @@ namespace SCG.Modules.DOS2DE.Data.View
 
 			MenuData.File.Add(SaveCurrentMenuData);
 			MenuData.File.Add(new MenuData("File.SaveAll", "Save All", SaveAllCommand, Key.S, ModifierKeys.Control | ModifierKeys.Shift));
+			
+			MenuData.File.Add(CreateMenuDataWithLink(() => CanAddFile, "CanAddFile", "File.ImportFile",
+				"Import File", ImportFileCommand));
+
+			MenuData.File.Add(CreateMenuDataWithLink(() => CanAddKeys, "CanAddKeys", "File.ImportKeys",
+				"Import File as Keys", ImportKeysCommand));
+
+			MenuData.File.Add(CreateMenuDataWithLink(() => AnySelected, "AnySelected", "File.ExportSelected",
+				DOS2DETooltips.Button_Locale_ExportToXML, ExportXMLCommand, Key.E, ModifierKeys.Control | ModifierKeys.Shift));
 
 			MenuData.Edit.Add(CreateMenuDataWithLink(() => SelectedItem != null, "SelectedItem", "Edit.SelectAll", 
 				"Select All", new ActionCommand(() => { SelectedItem?.SelectAll(); }), Key.A, ModifierKeys.Control));
@@ -671,6 +709,12 @@ namespace SCG.Modules.DOS2DE.Data.View
 
 			MenuData.Edit.Add(CreateMenuDataWithLink(() => SelectedItem != null, "SelectedItem", "Edit.GenerateHandles", 
 				"Generate Handles for Selected", new ActionCommand(GenerateHandles), Key.G, ModifierKeys.Control | ModifierKeys.Shift));
+
+			MenuData.Edit.Add(CreateMenuDataWithLink(() => CanAddKeys, "CanAddKeys", "Edit.AddKey",
+				"Add Key", AddNewKeyCommand));
+
+			MenuData.Edit.Add(CreateMenuDataWithLink(() => AnySelected, "AnySelected", "Edit.DeleteKeys",
+				"Delete Selected Keys", DeleteKeysCommand));
 
 			MenuData.Settings.Add(new MenuData("Settings.Preferences", "Preferences", OpenPreferencesCommand));
 

@@ -116,26 +116,6 @@ namespace SCG.Modules.DOS2DE.Windows
 			}
 		}
 
-		private void ExportButton_Click(object sender, RoutedEventArgs e)
-		{
-			if (ExportWindow.FindName("OutputTextbox") is TextBox outputTextbox)
-			{
-				Log.Here().Activity("Exporting data to xml format.");
-				outputTextbox.Text = "";
-				outputTextbox.Text = LocaleEditorCommands.ExportDataAsXML(LocaleData, LocaleData.Settings.ExportSource, LocaleData.Settings.ExportKeys);
-			}
-			else
-			{
-				Log.Here().Activity("Failed to find textbox.");
-			}
-
-			if (!ExportWindow.IsVisible)
-			{
-				ExportWindow.Show();
-				ExportWindow.Owner = this;
-			}
-		}
-
 		private void SaveAllButton_Click(object sender, RoutedEventArgs e)
 		{
 			var backupSuccess = LocaleEditorCommands.BackupDataFiles(LocaleData, ModuleData.Settings.BackupRootDirectory);
