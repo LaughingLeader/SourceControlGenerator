@@ -148,7 +148,7 @@ namespace SCG.Windows
 			Stopwatch timer = new Stopwatch();
 			timer.Start();
 
-			var result = await BackupTest();
+			var result = await BackupTest().ConfigureAwait(false);
 
 			timer.Stop();
 

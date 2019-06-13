@@ -54,7 +54,7 @@ namespace SCG.Util
 					for(var i = 0; i < commands.Length; i++)
 					{
 						stream.WriteLine(commands[i]);
-						await Task.Delay(10);
+						await Task.Delay(10).ConfigureAwait(false);
 					}
 
 					stream.Close();
@@ -94,7 +94,7 @@ namespace SCG.Util
 
 		public static async Task<int> RunCommandLineAsync(string workingDirectory = "", params string[] commands)
 		{
-			return await RunProcessAsync(Path.Combine(Environment.SystemDirectory, "cmd.exe"), workingDirectory, commands);
+			return await RunProcessAsync(Path.Combine(Environment.SystemDirectory, "cmd.exe"), workingDirectory, commands).ConfigureAwait(false);
 		}
 
 		private static int RunProcess(Process process, params string[] commands)

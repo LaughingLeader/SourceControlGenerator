@@ -249,7 +249,7 @@ namespace SCG.Modules.DOS2DE.Controls
 
 		private async void DeselectSelectedRows()
 		{
-			await Task.Delay(200);
+			await Task.Delay(200).ConfigureAwait(false);
 
 			DataGrid managedGrid = (DataGrid)this.FindName("ManagedProjectsDataGrid");
 

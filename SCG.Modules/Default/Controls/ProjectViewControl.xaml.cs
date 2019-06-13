@@ -78,7 +78,7 @@ namespace SCG.Modules.Default.Controls
 
 		private async void DeselectSelectedRows()
 		{
-			await Task.Delay(200);
+			await Task.Delay(200).ConfigureAwait(false);
 
 			DataGrid managedGrid = (DataGrid)this.FindName("ManagedProjectsDataGrid");
 

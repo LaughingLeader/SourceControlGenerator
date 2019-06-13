@@ -90,7 +90,7 @@ namespace SCG.Core
 
 		public async void StartGitGenerationAsync()
 		{
-			var totalSuccess = await OnGitGenerationAsync();
+			var totalSuccess = await OnGitGenerationAsync().ConfigureAwait(false);
 
 			if (totalSuccess >= Data.GitGenerationSettings.ExportProjects.Count)
 			{
@@ -187,7 +187,7 @@ namespace SCG.Core
 						author = modProject.ModuleInfo.Author;
 					}
 
-					var result = await GitGenerator.InitRepository(gitProjectRootDirectory, author);
+					var result = await GitGenerator.InitRepository(gitProjectRootDirectory, author).ConfigureAwait(false);
 					if (result)
 					{
 						Log.Here().Activity("Created git repository for project ({0}) at {1}", modProject.ProjectName, gitProjectRootDirectory);
@@ -206,7 +206,7 @@ namespace SCG.Core
 					AppController.Main.UpdateProgressLog("Creating junctions...");
 
 					var sourceFolders = PrepareDirectories(modProject, Data.Settings.DirectoryLayouts);
-					var result = await GitGenerator.CreateJunctions(modProject.ProjectName, sourceFolders, Data);
+					var result = await GitGenerator.CreateJunctions(modProject.ProjectName, sourceFolders, Data).ConfigureAwait(false);
 
 					if (result)
 					{
@@ -232,7 +232,7 @@ namespace SCG.Core
 							if (templateSetting.Enabled)
 							{
 								string outputFilePath = Path.Combine(gitProjectRootDirectory, templateData.ExportPath);
-								string outputText = await GitGenerator.ReplaceKeywords(templateData.EditorText, modProject, MainAppData, Data);
+								string outputText = await GitGenerator.ReplaceKeywords(templateData.EditorText, modProject, MainAppData, Data).ConfigureAwait(false);
 								if (!FileCommands.WriteToFile(outputFilePath, outputText))
 								{
 									Log.Here().Error("[{0}] Failed to create template file at {1}", modProject.ProjectName, templateData.ExportPath);
@@ -284,7 +284,7 @@ namespace SCG.Core
 
 					if (!String.IsNullOrEmpty(outputText))
 					{
-						outputText = await GitGenerator.ReplaceKeywords(outputText, modProject, MainAppData, Data);
+						outputText = await GitGenerator.ReplaceKeywords(outputText, modProject, MainAppData, Data).ConfigureAwait(false);
 					}
 
 					string licenseFile = Path.Combine(gitProjectRootDirectory, "LICENSE");
@@ -303,7 +303,7 @@ namespace SCG.Core
 				if (generationSettings.InitGit && commitGit)
 				{
 					AppController.Main.UpdateProgressLog("Committing new files...");
-					var result = await GitGenerator.Commit(gitProjectRootDirectory, commitMessage);
+					var result = await GitGenerator.Commit(gitProjectRootDirectory, commitMessage).ConfigureAwait(false);
 					if (result)
 					{
 						AppController.Main.UpdateProgressLog($"Successfully commited git repo for project {modProject.DisplayName}.");
@@ -405,7 +405,7 @@ namespace SCG.Core
 
 			ConcurrentBag<ModProjectData> selectedProjects = new ConcurrentBag<ModProjectData>(sortedProjects);
 
-			var totalSuccess = await BackupSelectedProjectsAsync(selectedProjects);
+			var totalSuccess = await BackupSelectedProjectsAsync(selectedProjects).ConfigureAwait(false);
 			if (totalSuccess >= selectedProjects.Count)
 			{
 				if (String.IsNullOrWhiteSpace(targetBackupOutputDirectory))
@@ -453,7 +453,7 @@ namespace SCG.Core
 
 					AppController.Main.UpdateProgressMessage($"Creating archive for project {project.ProjectName}...");
 
-					var backupSuccess = await BackupProjectAsync(project, targetBackupOutputDirectory, Data.Settings.BackupMode);
+					var backupSuccess = await BackupProjectAsync(project, targetBackupOutputDirectory, Data.Settings.BackupMode).ConfigureAwait(false);
 
 					if (cancellationTokenSource.IsCancellationRequested)
 					{
@@ -593,7 +593,7 @@ namespace SCG.Core
 
 			string localModsFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), @"Larian Studios\Divinity Original Sin 2 Definitive Edition\Local Mods");
 
-			var totalSuccess = await PackageSelectedProjectsAsync(selectedProjects, localModsFolder);
+			var totalSuccess = await PackageSelectedProjectsAsync(selectedProjects, localModsFolder).ConfigureAwait(false);
 			if (totalSuccess >= selectedProjects.Count)
 			{
 				MainWindow.FooterLog($"Successfully packaged all selected projects to {localModsFolder}");
@@ -637,7 +637,7 @@ namespace SCG.Core
 
 					AppController.Main.UpdateProgressMessage($"Creating package for project {project.ProjectName}...");
 
-					var backupSuccess = await PackageProjectAsync(project, targetFolder, exportDirectories);
+					var backupSuccess = await PackageProjectAsync(project, targetFolder, exportDirectories).ConfigureAwait(false);
 
 					if (cancellationTokenSource.IsCancellationRequested)
 					{
@@ -723,7 +723,8 @@ namespace SCG.Core
 					}
 				}
 
-				var result = await DOS2DEPackageCreator.CreatePackage(Data.Settings.DOS2DEDataDirectory.Replace("/", "\\"), sourceFolders, outputPackage, IgnoredExportFiles, cancellationTokenSource.Token);
+				var result = await DOS2DEPackageCreator.CreatePackage(Data.Settings.DOS2DEDataDirectory.Replace("/", "\\"), 
+					sourceFolders, outputPackage, IgnoredExportFiles, cancellationTokenSource.Token).ConfigureAwait(false);
 				if (result)
 				{
 					return BackupResult.Success;
@@ -933,7 +934,7 @@ namespace SCG.Core
 				{
 					DOS2DECommands.LoadAll(Data);
 					Data.CanClickRefresh = true;
-				});
+				}).ConfigureAwait(false);
 			}
 			else
 			{
@@ -953,7 +954,7 @@ namespace SCG.Core
 				{
 					DOS2DECommands.RefreshAvailableProjects(Data);
 					Data.CanClickRefresh = true;
-				});
+				}).ConfigureAwait(false);
 			}
 		}
 
@@ -969,7 +970,7 @@ namespace SCG.Core
 				{
 					DOS2DECommands.RefreshManagedProjects(Data);
 					Data.CanClickRefresh = true;
-				});
+				}).ConfigureAwait(false);
 			}
 		}
 
@@ -1105,7 +1106,7 @@ namespace SCG.Core
 					try
 					{
 						//var data = new LocaleEditorDesignData();
-						var data = await LocaleEditorCommands.LoadLocalizationDataAsync(Data.Settings.DOS2DEDataDirectory, Data.ManagedProjects.Where(p => p.Selected));
+						var data = await LocaleEditorCommands.LoadLocalizationDataAsync(Data.Settings.DOS2DEDataDirectory, Data.ManagedProjects.Where(p => p.Selected)).ConfigureAwait(false);
 						localizationEditorWindow.LoadData(data);
 					}
 					catch(Exception ex)

@@ -114,11 +114,11 @@ namespace SCG.FileGen
 					foreach(var f in foldersToParse)
 					{
 						if (updateProgress) AppController.Main.UpdateProgressLog($"Searching source folder \"{Path.GetDirectoryName(f.SourcePath)}\" for files to save.");
-						await CrawlDirectoryAsync(targetFiles, f.SourcePath, "*", System.IO.SearchOption.AllDirectories, token.Value);
+						await CrawlDirectoryAsync(targetFiles, f.SourcePath, "*", System.IO.SearchOption.AllDirectories, token.Value).ConfigureAwait(false);
 					}
 
 					if (updateProgress) AppController.Main.UpdateProgressLog($"Searching repository for files to save.");
-					await CrawlDirectoryAsync(targetFiles, repoPath, "*", System.IO.SearchOption.TopDirectoryOnly, token.Value);
+					await CrawlDirectoryAsync(targetFiles, repoPath, "*", System.IO.SearchOption.TopDirectoryOnly, token.Value).ConfigureAwait(false);
 
 					if (updateProgress) AppController.Main.UpdateProgress(updateValue);
 
@@ -138,7 +138,7 @@ namespace SCG.FileGen
 									return BackupResult.Skipped;
 								}
 								//Log.Here().Important($"Adding file {f} to archive.");
-								await WriteZipAsync(zipWriter, f.Replace(rootPath, "").Replace(repoPath, ""), f, token.Value);
+								await WriteZipAsync(zipWriter, f.Replace(rootPath, "").Replace(repoPath, ""), f, token.Value).ConfigureAwait(false);
 							}
 
 							return BackupResult.Success;
@@ -206,7 +206,7 @@ namespace SCG.FileGen
 						{
 							//Log.Here().Important($"Adding file {f} to archive.");
 
-							await WriteZipAsync(zipWriter, f.Replace(directoryPath, ""), f, token.Value);
+							await WriteZipAsync(zipWriter, f.Replace(directoryPath, ""), f, token.Value).ConfigureAwait(false);
 						}
 
 						return BackupResult.Success;
@@ -304,7 +304,7 @@ namespace SCG.FileGen
 				var awaiter = childTask.GetAwaiter();
 				while (!awaiter.IsCompleted)
 				{
-					await Task.Delay(0, token);
+					await Task.Delay(0, token).ConfigureAwait(false);
 				}
 			}, token);
 
@@ -338,7 +338,7 @@ namespace SCG.FileGen
 				var awaiter = childTask.GetAwaiter();
 				while (!awaiter.IsCompleted)
 				{
-					await Task.Delay(0, token);
+					await Task.Delay(0, token).ConfigureAwait(false);
 				}
 			}, token);
 

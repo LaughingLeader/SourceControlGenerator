@@ -103,7 +103,7 @@ namespace SCG.Core
 					//Assembly.LoadFrom(module.FullName);
 				}
 
-				foreach (var task in await Task.WhenAll(tasks))
+				foreach (var task in await Task.WhenAll(tasks).ConfigureAwait(false))
 				{
 					if (task == true)
 					{
@@ -123,13 +123,13 @@ namespace SCG.Core
 			{
 				Log.Here().Important($"Attempting to load module {Name}.");
 				AssemblyLoader.Call(AppDomain.CurrentDomain, fileName, "SCG.Module", "Init");
-				return await Task.FromResult(true);
+				return await Task.FromResult(true).ConfigureAwait(false);
 			}
 			catch (Exception ex)
 			{
 				Log.Here().Error("Error loading module file {0}: {1}", fileName, ex.ToString());
 			}
-			return await Task.FromResult(false);
+			return await Task.FromResult(false).ConfigureAwait(false);
 		}
 
 		private IProjectController currentModule;
@@ -365,7 +365,7 @@ namespace SCG.Core
 		public async void FinishProgress()
 		{
 			Data.ProgressValue = Data.ProgressValueMax;
-			await Task.Delay(500);
+			await Task.Delay(500).ConfigureAwait(false);
 			await mainWindow.Dispatcher.BeginInvoke(new Action(() =>
 			{
 				Data.ProgressValue = Data.ProgressValueMax;

@@ -399,8 +399,8 @@ namespace SCG.Data.View
 				savingSettings = true;
 				//if (saveDelayTimer == null) saveDelayTimer = new Timer(_ => OnSaveTimerComplete());
 				//saveDelayTimer.Change(250, Timeout.Infinite);
-				await Task.Delay(250);
-				await Save();
+				await Task.Delay(250).ConfigureAwait(false);
+				await Save().ConfigureAwait(false);
 				savingSettings = false;
 			}
 			else
@@ -418,7 +418,7 @@ namespace SCG.Data.View
 		private async void OnSaveTimerComplete()
 		{
 			//saveDelayTimer.Change(Timeout.Infinite, Timeout.Infinite);
-			await Save();
+			await Save().ConfigureAwait(false);
 			savingSettings = false;
 		}
 

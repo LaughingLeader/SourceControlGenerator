@@ -62,7 +62,7 @@ namespace SCG.Modules.Default.Core
 
 		public async void StartGitGenerationAsync()
 		{
-			var totalSuccess = await OnGitGenerationAsync();
+			var totalSuccess = await OnGitGenerationAsync().ConfigureAwait(false);
 
 			if (totalSuccess >= Data.GitGenerationSettings.ExportProjects.Count)
 			{
@@ -149,7 +149,7 @@ namespace SCG.Modules.Default.Core
 				{
 					AppController.Main.UpdateProgress(percentageIncrement, "Initializing git repo...");
 
-					var result = await GitGenerator.InitRepository(gitProjectRootDirectory, Data.Settings.DefaultAuthor);
+					var result = await GitGenerator.InitRepository(gitProjectRootDirectory, Data.Settings.DefaultAuthor).ConfigureAwait(false);
 					if (result)
 					{
 						Log.Here().Activity("Created git repository for project ({0}) at {1}", modProject.ProjectName, gitProjectRootDirectory);
@@ -175,7 +175,7 @@ namespace SCG.Modules.Default.Core
 							if (templateSetting.Enabled)
 							{
 								string outputFilePath = Path.Combine(gitProjectRootDirectory, templateData.ExportPath);
-								string outputText = await GitGenerator.ReplaceKeywords(templateData.EditorText, modProject, MainAppData, Data);
+								string outputText = await GitGenerator.ReplaceKeywords(templateData.EditorText, modProject, MainAppData, Data).ConfigureAwait(false);
 								if (!FileCommands.WriteToFile(outputFilePath, outputText))
 								{
 									Log.Here().Error("[{0}] Failed to create template file at {1}", modProject.ProjectName, templateData.ExportPath);
@@ -227,7 +227,7 @@ namespace SCG.Modules.Default.Core
 
 					if (!String.IsNullOrEmpty(outputText))
 					{
-						outputText = await GitGenerator.ReplaceKeywords(outputText, modProject, MainAppData, Data);
+						outputText = await GitGenerator.ReplaceKeywords(outputText, modProject, MainAppData, Data).ConfigureAwait(false);
 					}
 
 					string licenseFile = Path.Combine(gitProjectRootDirectory, "LICENSE");
@@ -246,7 +246,7 @@ namespace SCG.Modules.Default.Core
 				if (generationSettings.InitGit && commitGit)
 				{
 					AppController.Main.UpdateProgress(percentageIncrement, "Committing new files...");
-					var result = await GitGenerator.Commit(gitProjectRootDirectory, commitMessage);
+					var result = await GitGenerator.Commit(gitProjectRootDirectory, commitMessage).ConfigureAwait(false);
 					if (result)
 					{
 						AppController.Main.UpdateProgressLog($"Successfully commited git repo for project {modProject.DisplayName}.");
@@ -336,7 +336,7 @@ namespace SCG.Modules.Default.Core
 		{
 			ConcurrentBag<DefaultProjectData> selectedProjects = new ConcurrentBag<DefaultProjectData>(Data.ManagedProjects.Where(p => p.Selected));
 
-			var totalSuccess = await BackupSelectedProjectsAsync(selectedProjects);
+			var totalSuccess = await BackupSelectedProjectsAsync(selectedProjects).ConfigureAwait(false);
 			if (totalSuccess >= selectedProjects.Count)
 			{
 				if (String.IsNullOrWhiteSpace(targetBackupOutputDirectory))
@@ -377,7 +377,7 @@ namespace SCG.Modules.Default.Core
 
 					AppController.Main.UpdateProgressLog("Creating archive...");
 
-					var backupSuccess = await BackupProjectAsync(project, targetBackupOutputDirectory, Data.Settings.BackupMode, totalPercentageAmount);
+					var backupSuccess = await BackupProjectAsync(project, targetBackupOutputDirectory, Data.Settings.BackupMode, totalPercentageAmount).ConfigureAwait(false);
 
 					if (backupSuccess == BackupResult.Success)
 					{

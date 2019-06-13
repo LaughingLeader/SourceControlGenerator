@@ -23,7 +23,7 @@ namespace SCG.FileGen
 				defaultText = File.ReadAllText(filePath);
 			}
 
-			defaultText = await ReplaceKeywords(defaultText, projectData, mainAppData, moduleData);
+			defaultText = await ReplaceKeywords(defaultText, projectData, mainAppData, moduleData).ConfigureAwait(false);
 
 			return defaultText;
 		}
@@ -101,7 +101,7 @@ namespace SCG.FileGen
 				if(!String.IsNullOrWhiteSpace(AuthorName)) commands.Add("git config user.name \"" + AuthorName + "\"");
 				if(!String.IsNullOrWhiteSpace(Email)) commands.Add("git config user.email \"" + Email + "\"");
 
-				var exitCode = await ProcessHelper.RunCommandLineAsync(RepoPath, commands.ToArray());
+				var exitCode = await ProcessHelper.RunCommandLineAsync(RepoPath, commands.ToArray()).ConfigureAwait(false);
 				return exitCode == 0;
 			}
 			catch(Exception ex)
@@ -116,7 +116,7 @@ namespace SCG.FileGen
 			try
 			{
 				//await ProcessHelper.RunCommandLineAsync(RepoPath, "git add -A");
-				var exitCode = await ProcessHelper.RunCommandLineAsync(RepoPath, "git add -A", "git commit -m \"" + CommitMessage + "\"");
+				var exitCode = await ProcessHelper.RunCommandLineAsync(RepoPath, "git add -A", "git commit -m \"" + CommitMessage + "\"").ConfigureAwait(false);
 				return exitCode == 0;
 			}
 			catch (Exception ex)
@@ -141,7 +141,7 @@ namespace SCG.FileGen
 					//command += " --worktree-attributes";
 				}
 
-				var exitCode = await ProcessHelper.RunCommandLineAsync(RepoPath, command);
+				var exitCode = await ProcessHelper.RunCommandLineAsync(RepoPath, command).ConfigureAwait(false);
 				return exitCode == 0;
 			}
 			catch (Exception ex)

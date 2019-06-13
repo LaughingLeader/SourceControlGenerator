@@ -114,7 +114,7 @@ namespace SCG.Modules.DOS2DE.Utilities
 					if (Directory.Exists(publicLocalePath))
 					{
 						Log.Here().Activity($"Loading localization data from '{publicLocalePath}'.");
-						var publicLocaleData = await LoadFilesAsync(publicLocalePath, token, ".lsb");
+						var publicLocaleData = await LoadFilesAsync(publicLocalePath, token, ".lsb").ConfigureAwait(false);
 						localizationData.PublicGroup.SourceDirectory = publicLocalePath;
 						localizationData.PublicGroup.DataFiles = new ObservableRangeCollection<ILocaleFileData>(publicLocaleData);
 						localizationData.PublicGroup.UpdateCombinedData();
@@ -424,7 +424,7 @@ namespace SCG.Modules.DOS2DE.Utilities
 					success += SaveDataFile(f, token);
 					f.ChangesUnsaved = false;
 				}
-			});
+			}).ConfigureAwait(false);
 			Log.Here().Activity($"Files saved: '{success}'.");
 			return success;
 		}
@@ -438,7 +438,7 @@ namespace SCG.Modules.DOS2DE.Utilities
 				{
 					success += SaveDataFile(f, token);
 				}
-			});
+			}).ConfigureAwait(false);
 			Log.Here().Activity($"Files saved: '{success}'.");
 			return success;
 		}
