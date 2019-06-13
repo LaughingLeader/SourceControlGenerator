@@ -1101,25 +1101,28 @@ namespace SCG.Core
 
 			if(!localizationEditorWindow.IsVisible)
 			{
-				AppController.Main.MainWindow.Dispatcher.BeginInvoke(new Action(async () =>
-				{
-					try
-					{
-						//var data = new LocaleEditorDesignData();
-						var data = await LocaleEditorCommands.LoadLocalizationDataAsync(Data.Settings.DOS2DEDataDirectory, Data.ManagedProjects.Where(p => p.Selected)).ConfigureAwait(false);
-						localizationEditorWindow.LoadData(data);
-					}
-					catch(Exception ex)
-					{
-						Log.Here().Error("Error loading localization data: " + ex.ToString());
-					}
-					localizationEditorWindow.Show();
-				}), DispatcherPriority.Background);
+				OpenLocalizationEditorAsync();
 			}
 			else
 			{
 				localizationEditorWindow.Close();
 			}
+		}
+
+		private async void OpenLocalizationEditorAsync()
+		{
+			var data = await LocaleEditorCommands.LoadLocalizationDataAsync(Data.Settings.DOS2DEDataDirectory, 
+				Data.ManagedProjects.Where(p => p.Selected)).ConfigureAwait(false);
+			OnDataLoaded(data);
+		}
+
+		private void OnDataLoaded(LocaleViewData data)
+		{
+			AppController.Main.MainWindow.Dispatcher.Invoke(new Action(() =>
+			{
+				localizationEditorWindow.LoadData(data);
+				localizationEditorWindow.Show();
+			}), DispatcherPriority.Normal);
 		}
 
 		private void LocalizationEditorWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)

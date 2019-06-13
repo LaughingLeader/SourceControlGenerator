@@ -41,6 +41,7 @@
 	<cv:SettingsAttributeValueControlConverter x:Key="SettingsAttributeValueControlConverter"/>
 	<cv:StringToBoolConverter x:Key="StringToBoolConverter" />
 	<cv:StringToCachedImageConverter x:Key="StringToCachedImageConverter"/>
+	<cv:StringToCachedImageFallbackConverter x:Key="StringToCachedImageFallbackConverter"/>
 	<cv:StringToFilterConverter x:Key="StringToFilterConverter" />
 	<cv:StringToFilterListConverter x:Key="StringToFilterListConverter" />
 	<cv:TextWrapToScrollBarVisibilityConverter x:Key="TextWrapToScrollBarVisibilityConverter" />
@@ -62,9 +63,7 @@
 				x:Name="ButtonImageControl"
 				Height="{Binding MaxSize, RelativeSource={RelativeSource TemplatedParent}}"
 				Width="{Binding MaxSize, RelativeSource={RelativeSource TemplatedParent}}"
-				Source="{Binding Source, RelativeSource={RelativeSource TemplatedParent}, 
-					Converter={StaticResource StringToCachedImageConverter}, 
-					FallbackValue='pack://application:,,,/SourceControlGenerator;component/Resources/Icons/WarningRule_16x.png'}"
+				Source="{Binding Source, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource StringToCachedImageConverter}}"
 				ToolTipService.ShowOnDisabled="True" 
 			/>
 			<Rectangle x:Name="TintRect"
@@ -100,6 +99,14 @@
 						</MultiBinding>
 					</Setter.Value>
 				</Setter>
+				<Setter TargetName="ButtonImageControl" Property="Source">
+					<Setter.Value>
+						<MultiBinding Converter="{StaticResource StringToCachedImageFallbackConverter}">
+							<Binding Path="Source_Disabled" RelativeSource="{RelativeSource TemplatedParent}"/>
+							<Binding Path="Source" RelativeSource="{RelativeSource TemplatedParent}"/>
+						</MultiBinding>
+					</Setter.Value>
+				</Setter>
 			</Trigger>
 			<MultiTrigger>
 				<MultiTrigger.Conditions>
@@ -131,7 +138,7 @@
 				<MultiTrigger.Setters>
 					<Setter TargetName="TintRect" Property="Fill">
 						<Setter.Value>
-							<SolidColorBrush Color="Gray" Opacity="0.25"/>
+							<SolidColorBrush Color="Gray" Opacity="0.50"/>
 						</Setter.Value>
 					</Setter>
 				</MultiTrigger.Setters>

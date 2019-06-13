@@ -41,7 +41,7 @@
 				<Setter Property="MaxHeight" Value="16" />
 				<Setter Property="Stretch" Value="UniformToFill" />
 			</Style>
-			<Style x:Key="RefreshButtonStyle" TargetType="Button" >
+			<Style x:Key="RefreshButtonStyle" TargetType="c:ImageButton" BasedOn="{StaticResource {x:Type c:ImageButton}}">
 				<Setter Property="Margin" Value="10,4,0,4" />
 				<!--<Setter Property="Template">
 					<Setter.Value>
@@ -269,20 +269,11 @@
 														Source="{x:Static vdata:IconPathData.Archive}"/>
 												<c:ImageButton x:Name="Btn_GenGit" IsEnabled="{Binding GitGenerated}" Command="{Binding OpenGitFolder}"
 													Source="{x:Static vdata:IconPathData.GitLogo}"
+													Source_Disabled="{x:Static vdata:IconPathData.GitLogo_Disabled}"
 													ToolTip_Enabled="{x:Static core:DOS2DETooltips.Button_GitFolder}"
 													ToolTip_Disabled="{x:Static core:DOS2DETooltips.Button_GitFolderDisabled}"
-															   >
-													<c:ImageButton>
-														<Style TargetType="c:ImageButton" BasedOn="{StaticResource {x:Type c:ImageButton}}">
-															<Setter Property="Template" Value="{StaticResource ImageButtonTemplate}" />
-															<Style.Triggers>
-																<Trigger Property="IsEnabled" Value="False">
-																	<Setter Property="Source" Value="{x:Static vdata:IconPathData.GitLogo_Disabled}" />
-																</Trigger>
-															</Style.Triggers>
-														</Style>
-													</c:ImageButton>
-												</c:ImageButton>
+													Template="{StaticResource ImageButtonTemplate}"
+															  />
 												<c:ImageButton x:Name="Btn_DataFolders" ToolTip="{x:Static core:DOS2DETooltips.Button_DataFolderParent}" Click="SetDataFolderContextMenuTarget"
 														Source="{x:Static vdata:IconPathData.Folder}">
 													<c:ImageButton.ContextMenu>
@@ -319,8 +310,13 @@
 														</Style>
 													</c:ImageButton.Style>
 												</c:ImageButton>
-												<c:ImageButton x:Name="Btn_OpenMarkdown" ToolTip="{x:Static core:DOS2DETooltips.Button_MarkdownConverter}" IsEnabled="{Binding GitGenerated}" Command="{Binding Path=Data.OpenProjectReadmeInMarkdownConverterCommand, Source={StaticResource AppControllerProxy}}"
-														CommandParameter="{Binding}" Source="{x:Static vdata:IconPathData.Convert}" />
+												<c:ImageButton x:Name="Btn_OpenMarkdown" 
+													ToolTip="{x:Static core:DOS2DETooltips.Button_MarkdownConverter}" 
+													IsEnabled="{Binding GitGenerated}" 
+													Command="{Binding Path=Data.OpenProjectReadmeInMarkdownConverterCommand, Source={StaticResource AppControllerProxy}}"
+													CommandParameter="{Binding}" 
+													Source="{x:Static vdata:IconPathData.Convert}"
+												/>
 												<!--<Button x:Name="Btn_PackageMod" ToolTip="{x:Static core:DOS2DETooltips.Button_PackageMod}" IsEnabled="{Binding DataContext.Settings.DivinePathSet, ElementName=ProjectViewControlMain}" Command="{Binding DataContext.PackageProjectCommand, ElementName=ProjectViewControlMain}"
 														CommandParameter="{Binding}" >
 													<Image Source="{x:Static vdata:IconPathData.Convert}" Stretch="UniformToFill"/>

@@ -23,15 +23,16 @@ namespace SCG.Controls
 		{
 			get
 			{
-				return (string)GetValue(ImageProperty);
+				return (string)GetValue(SourceImageProperty);
 			}
 			set
 			{
-				SetValue(ImageProperty, value);
+				SetValue(SourceImageProperty, value);
 			}
 		}
 
-		public static readonly DependencyProperty ImageProperty = DependencyProperty.Register("Source", typeof(string), typeof(ImageButton), new FrameworkPropertyMetadata("", FrameworkPropertyMetadataOptions.AffectsRender, OnSourceChanged));
+		public static readonly DependencyProperty SourceImageProperty = DependencyProperty.Register("Source", typeof(string), typeof(ImageButton), 
+			new FrameworkPropertyMetadata("", FrameworkPropertyMetadataOptions.AffectsRender, OnSourceChanged));
 
 		private static void OnSourceChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
 		{
@@ -42,6 +43,21 @@ namespace SCG.Controls
 			//	imageButton.CreateHoverImage();
 			//}
 		}
+
+		public string Source_Disabled
+		{
+			get
+			{
+				return (string)GetValue(SourceDisabledImageProperty);
+			}
+			set
+			{
+				SetValue(SourceDisabledImageProperty, value);
+			}
+		}
+
+		public static readonly DependencyProperty SourceDisabledImageProperty = DependencyProperty.Register("Source_Disabled", typeof(string), typeof(ImageButton),
+			new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.AffectsRender, null));
 
 		public int MaxSize
 		{
