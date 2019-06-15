@@ -1,5 +1,5 @@
 ﻿using SCG.Modules.DOS2DE.Utilities;
-using SCG.Modules.DOS2DE.Data.View;
+using SCG.Modules.DOS2DE.Data.View.Locale;
 using SCG.Windows;
 using System;
 using System.Collections.Generic;
@@ -43,9 +43,9 @@ namespace SCG.Modules.DOS2DE.Windows
 			}
 		}
 
-		private LocaleViewData localeViewData;
+		private LocaleViewModel localeViewData;
 
-		public LocaleViewData LocaleData
+		public LocaleViewModel LocaleData
 		{
 			get { return localeViewData; }
 			set

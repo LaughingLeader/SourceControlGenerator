@@ -10,9 +10,9 @@ using LSLib.LS.Enums;
 using SCG.Data.View;
 using SCG.Modules.DOS2DE.Utilities;
 
-namespace SCG.Modules.DOS2DE.Data.View
+namespace SCG.Modules.DOS2DE.Data.View.Locale
 {
-	public class LocaleEditorDesignData : LocaleViewData
+	public class LocaleEditorDesignData : LocaleViewModel
 	{
 
 		public LocaleEditorDesignData() : base()

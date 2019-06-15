@@ -17,9 +17,9 @@ using Alphaleonis.Win32.Filesystem;
 using SCG.Core;
 using System.ComponentModel;
 
-namespace SCG.Modules.DOS2DE.Data.View
+namespace SCG.Modules.DOS2DE.Data.View.Locale
 {
-	public class LocaleViewData : INotifyPropertyChanged
+	public class LocaleViewModel : INotifyPropertyChanged
 	{
 		public event PropertyChangedEventHandler PropertyChanged;
 
@@ -631,7 +631,7 @@ namespace SCG.Modules.DOS2DE.Data.View
 			throw new NotImplementedException();
 		}
 
-		public LocaleViewData()
+		public LocaleViewModel()
 		{
 			MenuData = new LocaleMenuData();
 

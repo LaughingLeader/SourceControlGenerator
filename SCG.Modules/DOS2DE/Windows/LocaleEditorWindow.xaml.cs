@@ -1,4 +1,5 @@
 ﻿using SCG.Modules.DOS2DE.Data.View;
+using SCG.Modules.DOS2DE.Data.View.Locale;
 using SCG.Modules.DOS2DE.Utilities;
 using System;
 using System.Collections.Generic;
@@ -39,7 +40,7 @@ namespace SCG.Modules.DOS2DE.Windows
 		public static readonly DependencyProperty LocaleDataProperty =
 			DependencyProperty.Register("LocaleData", typeof(string), typeof(LocaleViewData), new PropertyMetadata(""));
 		*/
-		public LocaleViewData LocaleData { get; set; }
+		public LocaleViewModel LocaleData { get; set; }
 
 		public LocaleExportWindow ExportWindow { get; set; }
 		public LocaleOptionsWindow OptionsWindow { get; set; }
@@ -75,7 +76,7 @@ namespace SCG.Modules.DOS2DE.Windows
 			}
 		}
 
-		public void LoadData(LocaleViewData data)
+		public void LoadData(LocaleViewModel data)
 		{
 			LocaleData = data;
 			LocaleEditorCommands.LoadSettings(ModuleData, LocaleData);

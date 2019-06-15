@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
 
-namespace SCG.Modules.DOS2DE.Data.View
+namespace SCG.Modules.DOS2DE.Data.View.Locale
 {
 	public class LocaleTabGroup : PropertyChangedBase
 	{

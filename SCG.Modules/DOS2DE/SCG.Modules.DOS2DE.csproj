@@ -117,13 +117,13 @@
   <ItemGroup>
     <Compile Include="Core\DOS2DEFileFilters.cs" />
     <Compile Include="Data\App\LocaleEditorSettingsData.cs" />
-    <Compile Include="Data\View\ILocaleFileData.cs" />
-    <Compile Include="Data\View\LocaleEditorDesignData.cs" />
-    <Compile Include="Data\View\LocaleFileData.cs" />
-    <Compile Include="Data\View\LocaleKeyEntry.cs" />
-    <Compile Include="Data\View\LocaleMenuData.cs" />
-    <Compile Include="Data\View\LocaleTabGroup.cs" />
-    <Compile Include="Data\View\LocaleViewData.cs" />
+    <Compile Include="Data\View\Locale\ILocaleFileData.cs" />
+    <Compile Include="Data\View\Locale\LocaleEditorDesignData.cs" />
+    <Compile Include="Data\View\Locale\LocaleFileData.cs" />
+    <Compile Include="Data\View\Locale\LocaleKeyEntry.cs" />
+    <Compile Include="Data\View\Locale\LocaleMenuData.cs" />
+    <Compile Include="Data\View\Locale\LocaleTabGroup.cs" />
+    <Compile Include="Data\View\Locale\LocaleViewModel.cs" />
     <Compile Include="Data\View\ProjectVersionData.cs" />
     <Compile Include="Module.cs" />
     <Compile Include="Controls\ProjectViewControl.xaml.cs">

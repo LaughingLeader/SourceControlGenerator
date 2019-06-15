@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.ComponentModel;
+using System.Runtime.CompilerServices;
 
 namespace SCG.Data
 {
@@ -16,7 +12,7 @@ namespace SCG.Data
 			OnPropertyChanged(propertyName);
 		}
 
-		private void OnPropertyChanged(String property)
+		private void OnPropertyChanged(string property)
 		{
 			PropertyChangedEventHandler handler = this.PropertyChanged;
 

@@ -25,6 +25,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Controls;
 using System.Windows.Threading;
+using SCG.Modules.DOS2DE.Data.View.Locale;
 
 namespace SCG.Core
 {
@@ -1116,7 +1117,7 @@ namespace SCG.Core
 			OnDataLoaded(data);
 		}
 
-		private void OnDataLoaded(LocaleViewData data)
+		private void OnDataLoaded(LocaleViewModel data)
 		{
 			AppController.Main.MainWindow.Dispatcher.Invoke(new Action(() =>
 			{

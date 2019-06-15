@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SCG.Modules.DOS2DE.Data.View
+namespace SCG.Modules.DOS2DE.Data.View.Locale
 {
 	public class BaseLocaleFileData : PropertyChangedBase, ILocaleFileData
 	{

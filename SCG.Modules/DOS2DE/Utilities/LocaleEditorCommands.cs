@@ -12,6 +12,7 @@ using LSLib.LS.Enums;
 using SCG.Core;
 using SCG.Data.App;
 using SCG.Modules.DOS2DE.Data.View;
+using SCG.Modules.DOS2DE.Data.View.Locale;
 using System.Xml;
 using System.Xml.Serialization;
 using System.Collections.ObjectModel;
@@ -27,9 +28,9 @@ namespace SCG.Modules.DOS2DE.Utilities
 	public class LocaleEditorCommands
 	{
 		#region Loading Localization Files
-		public static async Task<LocaleViewData> LoadLocalizationDataAsync(string dataRootPath, IEnumerable<ModProjectData> modProjects, CancellationToken? token = null)
+		public static async Task<LocaleViewModel> LoadLocalizationDataAsync(string dataRootPath, IEnumerable<ModProjectData> modProjects, CancellationToken? token = null)
 		{
-			LocaleViewData localizationData = new LocaleViewData();
+			LocaleViewModel localizationData = new LocaleViewModel();
 			foreach (var project in modProjects)
 			{
 				var success = await LoadProjectLocalizationDataAsync(localizationData, dataRootPath, project, token).ConfigureAwait(false);
@@ -37,7 +38,7 @@ namespace SCG.Modules.DOS2DE.Utilities
 			return localizationData;
 		}
 
-		public static async Task<bool> LoadProjectLocalizationDataAsync(LocaleViewData localizationData, string dataRootPath, ModProjectData modProjectData, CancellationToken? token = null)
+		public static async Task<bool> LoadProjectLocalizationDataAsync(LocaleViewModel localizationData, string dataRootPath, ModProjectData modProjectData, CancellationToken? token = null)
 		{
 			try
 			{
@@ -375,7 +376,7 @@ namespace SCG.Modules.DOS2DE.Utilities
 
 		#region Saving
 
-		public static async Task<bool> BackupDataFiles(LocaleViewData data, string backupDirectory, CancellationToken? token = null)
+		public static async Task<bool> BackupDataFiles(LocaleViewModel data, string backupDirectory, CancellationToken? token = null)
 		{
 			try
 			{
@@ -412,7 +413,7 @@ namespace SCG.Modules.DOS2DE.Utilities
 			}
 		}
 
-		public static async Task<int> SaveDataFiles(LocaleViewData data, CancellationToken? token = null)
+		public static async Task<int> SaveDataFiles(LocaleViewModel data, CancellationToken? token = null)
 		{
 			if (data.SelectedGroup == null) return -1;
 
@@ -467,7 +468,7 @@ namespace SCG.Modules.DOS2DE.Utilities
 			return 0;
 		}
 
-		public static string ExportDataAsXML(LocaleViewData data, bool exportSourceName = true, bool exportKeyName = true)
+		public static string ExportDataAsXML(LocaleViewModel data, bool exportSourceName = true, bool exportKeyName = true)
 		{
 			string output = "<contentList>\n{0}</contentList>";
 			string entriesStr = "";
@@ -736,7 +737,7 @@ namespace SCG.Modules.DOS2DE.Utilities
 		#endregion
 
 		#region Settings
-		public static void LoadSettings(DOS2DEModuleData moduleData, LocaleViewData localeData)
+		public static void LoadSettings(DOS2DEModuleData moduleData, LocaleViewModel localeData)
 		{
 			string settingsPath = Path.GetFullPath(DOS2DEDefaultPaths.LocalizationEditorSettings(moduleData));
 
@@ -751,7 +752,7 @@ namespace SCG.Modules.DOS2DE.Utilities
 			}
 		}
 
-		public static void SaveSettings(DOS2DEModuleData moduleData, LocaleViewData localeData)
+		public static void SaveSettings(DOS2DEModuleData moduleData, LocaleViewModel localeData)
 		{
 			string settingsPath = Path.GetFullPath(DOS2DEDefaultPaths.LocalizationEditorSettings(moduleData));
 
