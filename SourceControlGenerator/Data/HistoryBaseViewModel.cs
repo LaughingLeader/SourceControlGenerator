@@ -7,9 +7,11 @@ using Reactive.Bindings.Extensions;
 using ReactiveHistory;
 using System.Reflection;
 using System.Windows.Input;
+using System.Collections.Generic;
 
 namespace SCG.Data
 {
+	
 	public abstract class HistoryBaseViewModel : IDisposable, INotifyPropertyChanged
 	{
 		private CompositeDisposable Disposable { get; set; }
@@ -33,29 +35,32 @@ namespace SCG.Data
 			OnPropertyNotify(propertyName);
 		}
 
-		private void Snapshot<T>(T field, T value, string propertyName = null)
+		public bool UpdateWithHistory<T>(IPropertyChangedBase targetObject, string propertyName, T value)
 		{
-			if (History != null && propertyName != null)
+			var prop = this.GetType().GetProperty(propertyName, BindingFlags.Public | BindingFlags.SetProperty | BindingFlags.Instance);
+			if(prop != null && prop.CanWrite && prop.CanRead)
 			{
-				var prop = this.GetType().GetProperty(propertyName, BindingFlags.Public | BindingFlags.SetProperty | BindingFlags.Instance);
-				if (prop != null && prop.CanWrite)
+				var undoValue = prop.GetValue(targetObject);
+				var redoValue = value;
+
+				History.Snapshot(() =>
 				{
-					History.Snapshot(() =>
-					{
-						prop.SetValue(this, field);
-					}, () =>
-					{
-						prop.SetValue(this, value);
-					});
-				}
+					prop.SetValue(targetObject, undoValue);
+				}, () =>
+				{
+					prop.SetValue(targetObject, redoValue);
+				});
+
+				prop.SetValue(targetObject, value);
+				return true;
 			}
+			return false;
 		}
 
 		public bool Update<T>(ref T field, T value, [CallerMemberName] string propertyName = null)
 		{
 			if (!Equals(field, value))
 			{
-				Snapshot(field, value, propertyName);
 				field = value;
 				Notify(propertyName);
 				return true;
@@ -63,18 +68,65 @@ namespace SCG.Data
 			return false;
 		}
 
+		public void CreateSnapshot(Action undo, Action redo)
+		{
+			History.Snapshot(undo, redo);
+		}
+
+		public void UpdateList<T>(IList<T> source, IList<T> oldValue, IList<T> newValue)
+		{
+			void undo() => source = oldValue;
+			void redo() => source = newValue;
+			History.Snapshot(undo, redo);
+			source = newValue;
+		}
+
+		public void AddWithHistory<T>(IList<T> source, T item)
+		{
+			int index = source.Count;
+			void redo() => source.Insert(index, item);
+			void undo() => source.RemoveAt(index);
+			History.Snapshot(undo, redo);
+			redo();
+		}
+
+		public void RemoveWithHistory<T>(IList<T> source, T item)
+		{
+			int index = source.IndexOf(item);
+			void redo() => source.RemoveAt(index);
+			void undo() => source.Insert(index, item);
+			History.Snapshot(undo, redo);
+			redo();
+		}
+
+		public void Undo()
+		{
+			History.Undo();
+			//var canRedo = History.CanRedo.ToReadOnlyReactiveProperty().Value;
+			//Log.Here().Activity($"Undo command called. canRedo: {canRedo}");
+		}
+
+		public void Redo()
+		{
+			History.Redo();
+			//var canUndo = History.CanUndo.ToReadOnlyReactiveProperty().Value;
+			//Log.Here().Activity($"Redo command called. canUndo: {canUndo}");
+		}
+
 		public HistoryBaseViewModel()
 		{
 			Disposable = new CompositeDisposable();
 
-			History = new StackHistory().AddTo(Disposable);
+			var history = new StackHistory().AddTo(Disposable);
+			History = history;
+			
 
 			var undo = new ReactiveCommand(History.CanUndo, false);
-			undo.Subscribe(_ => History.Undo()).AddTo(this.Disposable);
+			undo.Subscribe(_ => Undo()).AddTo(this.Disposable);
 			UndoCommand = undo;
 
 			var redo = new ReactiveCommand(History.CanRedo, false);
-			redo.Subscribe(_ => History.Redo()).AddTo(this.Disposable);
+			redo.Subscribe(_ => Redo()).AddTo(this.Disposable);
 			RedoCommand = redo;
 
 			var clear = new ReactiveCommand(History.CanClear, false);

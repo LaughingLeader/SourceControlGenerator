@@ -321,6 +321,7 @@
     <Compile Include="Data\View\TextGeneratorData.cs" />
     <Compile Include="Extensions\ArrayExtensions.cs" />
     <Compile Include="Extensions\ControlExtensions.cs" />
+    <Compile Include="Extensions\ListExtensions.cs" />
     <Compile Include="Extensions\StringExtensions.cs" />
     <Compile Include="SCGEnum\BackupMode.cs" />
     <Compile Include="SCGEnum\FileValidation.cs" />

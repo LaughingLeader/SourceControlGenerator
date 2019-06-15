@@ -3,6 +3,12 @@ using System.Runtime.CompilerServices;
 
 namespace SCG.Data
 {
+	public interface IPropertyChangedBase
+	{
+		void Notify(string propertyName = null);
+		bool Update<T>(ref T field, T value, string propertyName = null);
+	}
+
 	/// <summary>
 	/// Base class for notifying property changes.
 	/// Use Update(ref field, value); when setting a property.
@@ -10,7 +16,7 @@ namespace SCG.Data
 	/// Based on: https://github.com/wieslawsoltes/ReactiveHistory/blob/master/samples/ReactiveHistorySample.Models/ObservableObject.cs
 	/// (MIT License)
 	/// </summary>
-	public abstract class PropertyChangedBase : INotifyPropertyChanged
+	public abstract class PropertyChangedBase : INotifyPropertyChanged, IPropertyChangedBase
 	{
 		public event PropertyChangedEventHandler PropertyChanged;
 

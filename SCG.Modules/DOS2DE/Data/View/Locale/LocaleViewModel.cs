@@ -16,6 +16,7 @@ using Alphaleonis.Win32;
 using Alphaleonis.Win32.Filesystem;
 using SCG.Core;
 using System.ComponentModel;
+using SCG.Extensions;
 
 namespace SCG.Modules.DOS2DE.Data.View.Locale
 {
@@ -337,14 +338,32 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			if (SelectedGroup != null && SelectedGroup.SelectedFile != null)
 			{
 				Log.Here().Activity("Generating handles...");
+
+				List<HandleHistory> lastHandles = new List<HandleHistory>();
+				List<HandleHistory> newHandles = new List<HandleHistory>();
+
 				foreach (var entry in SelectedGroup.SelectedFile.Entries.Where(e => e.Selected))
 				{
 					if (entry.Handle.Equals("ls::TranslatedStringRepository::s_HandleUnknown", StringComparison.OrdinalIgnoreCase))
 					{
+						lastHandles.Add(new HandleHistory(entry, entry.Handle));
 						entry.Handle = LocaleEditorCommands.CreateHandle();
+						newHandles.Add(new HandleHistory(entry, entry.Handle));
 						Log.Here().Activity($"[{entry.Key}] New handle generated. [{entry.Handle}]");
 					}
 				}
+
+				CreateSnapshot(() => {
+					foreach(var e in lastHandles)
+					{
+						e.Key.Handle = e.Handle;
+					}
+				}, () => {
+					foreach (var e in newHandles)
+					{
+						e.Key.Handle = e.Handle;
+					}
+				});
 			}
 			else
 			{
@@ -448,7 +467,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			var newFileDataList = LocaleEditorCommands.ImportFilesAsData(files, SelectedGroup);
 			foreach (var k in newFileDataList)
 			{
-				SelectedGroup.DataFiles.Add(k);
+				AddWithHistory(SelectedGroup.DataFiles, k);
 			}
 			SelectedGroup.ChangesUnsaved = true;
 			SelectedGroup.UpdateCombinedData();
@@ -471,7 +490,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			var newKeys = LocaleEditorCommands.ImportFilesAsEntries(files, SelectedItem as LocaleFileData);
 			foreach (var k in newKeys)
 			{
-				SelectedItem.Entries.Add(k);
+				AddWithHistory(SelectedItem.Entries, k);
 			}
 			SelectedItem.ChangesUnsaved = true;
 			SelectedGroup.UpdateCombinedData();
@@ -512,7 +531,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 				if (SelectedGroup.SelectedFile is LocaleFileData fileData && fileData.Format == LSLib.LS.Enums.ResourceFormat.LSB)
 				{
 					LocaleKeyEntry localeEntry = LocaleEditorCommands.CreateNewLocaleEntry(fileData);
-					fileData.Entries.Add(localeEntry);
+					AddWithHistory(fileData.Entries, localeEntry);
 					SelectedGroup.UpdateCombinedData();
 				}
 			}
@@ -530,7 +549,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 				{
 					foreach (var entry in SelectedGroup.SelectedFile.Entries.Where(e => e.Selected).ToList())
 					{
-						SelectedGroup.SelectedFile.Entries.Remove(entry);
+						RemoveWithHistory(SelectedGroup.SelectedFile.Entries, entry);
 					}
 
 					SelectedGroup.UpdateCombinedData();
@@ -673,7 +692,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 				DOS2DETooltips.Button_Locale_ExportToXML, ExportXMLCommand, Key.E, ModifierKeys.Control | ModifierKeys.Shift));
 
 			MenuData.Edit.Add(new MenuData("Edit.Undo", "Undo", UndoCommand, Key.Z, ModifierKeys.Control));
-			MenuData.Edit.Add(new MenuData("Edit.Redo", "Redo", UndoCommand, Key.Z, ModifierKeys.Control | ModifierKeys.Shift));
+			MenuData.Edit.Add(new MenuData("Edit.Redo", "Redo", RedoCommand, Key.Z, ModifierKeys.Control | ModifierKeys.Shift));
 
 			MenuData.Edit.Add(CreateMenuDataWithLink(() => SelectedItem != null, "SelectedItem", "Edit.SelectAll", 
 				"Select All", new ActionCommand(() => { SelectedItem?.SelectAll(); }), Key.A, ModifierKeys.Control));

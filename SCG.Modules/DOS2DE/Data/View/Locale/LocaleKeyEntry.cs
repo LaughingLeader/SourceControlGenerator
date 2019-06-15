@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace SCG.Modules.DOS2DE.Data.View.Locale
 {
-	public class LocaleKeyEntry : PropertyChangedBase
+	public class LocaleKeyEntry : PropertyChangedBase, ICloneable
 	{
 		public LSLib.LS.Node Node { get; set; }
 
@@ -88,11 +88,29 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 		public LocaleKeyEntry(LSLib.LS.Node resNode)
 		{
 			Node = resNode;
+		}
 
-			if (resNode != null)
+		public object Clone()
+		{
+			return new LocaleKeyEntry(this.Node)
 			{
+				Key = this.Key,
+				Handle = this.Handle,
+				Content = this.Content,
+				Selected = this.Selected
+			};
+		}
+	}
 
-			}
+	public struct HandleHistory
+	{
+		public LocaleKeyEntry Key { get; set; }
+		public string Handle { get; set; }
+
+		public HandleHistory(LocaleKeyEntry key, string handle)
+		{
+			Key = key;
+			Handle = handle;
 		}
 	}
 }
