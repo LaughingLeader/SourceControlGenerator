@@ -19,7 +19,7 @@ using System.ComponentModel;
 
 namespace SCG.Modules.DOS2DE.Data.View.Locale
 {
-	public class LocaleViewModel : PropertyChangedBase
+	public class LocaleViewModel : HistoryBaseViewModel
 	{
 		private Dictionary<string, List<Action>> MenuEnabledLinks = new Dictionary<string, List<Action>>();
 
@@ -601,7 +601,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			throw new NotImplementedException();
 		}
 
-		public LocaleViewModel()
+		public LocaleViewModel() : base()
 		{
 			MenuData = new LocaleMenuData();
 
@@ -671,6 +671,9 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 
 			MenuData.File.Add(CreateMenuDataWithLink(() => AnySelected, "AnySelected", "File.ExportSelected",
 				DOS2DETooltips.Button_Locale_ExportToXML, ExportXMLCommand, Key.E, ModifierKeys.Control | ModifierKeys.Shift));
+
+			MenuData.Edit.Add(new MenuData("Edit.Undo", "Undo", UndoCommand, Key.Z, ModifierKeys.Control));
+			MenuData.Edit.Add(new MenuData("Edit.Redo", "Redo", UndoCommand, Key.Z, ModifierKeys.Control | ModifierKeys.Shift));
 
 			MenuData.Edit.Add(CreateMenuDataWithLink(() => SelectedItem != null, "SelectedItem", "Edit.SelectAll", 
 				"Select All", new ActionCommand(() => { SelectedItem?.SelectAll(); }), Key.A, ModifierKeys.Control));
