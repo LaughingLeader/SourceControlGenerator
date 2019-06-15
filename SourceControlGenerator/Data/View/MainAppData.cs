@@ -34,11 +34,26 @@ namespace SCG.Data.View
 			get { return appSettings; }
 			set
 			{
-				appSettings = value;
-				RaisePropertyChanged("AppSettings");
+				Update(ref appSettings, value);
 			}
 		}
-		
+
+		public void OnSettingsLoaded()
+		{
+			if(AppSettings != null)
+			{
+				AppSettings.PropertyChanged += AppSettings_PropertyChanged;
+			}
+		}
+
+		private void AppSettings_PropertyChanged(object sender, PropertyChangedEventArgs e)
+		{
+			if(e.PropertyName == "GitInstallPath")
+			{
+				GitDetected = FileCommands.IsValidPath(AppSettings.GitInstallPath);
+			}
+		}
+
 		public ObservableImmutableList<KeywordData> GlobalKeyList { get; set; }
 		public ObservableImmutableList<KeywordData> DateKeyList { get; set; }
 
@@ -56,8 +71,7 @@ namespace SCG.Data.View
 			get { return portable; }
 			set
 			{
-				portable = value;
-				RaisePropertyChanged("Portable");
+				Update(ref portable, value);
 			}
 		}
 
@@ -68,8 +82,7 @@ namespace SCG.Data.View
 			get { return clipboardPopulated; }
 			set
 			{
-				clipboardPopulated = value;
-				RaisePropertyChanged("ClipboardPopulated");
+				Update(ref clipboardPopulated, value);
 			}
 		}
 
@@ -80,8 +93,7 @@ namespace SCG.Data.View
 			get { return windowTitle; }
 			set
 			{
-				windowTitle = value;
-				RaisePropertyChanged("WindowTitle");
+				Update(ref windowTitle, value);
 			}
 		}
 
@@ -92,8 +104,7 @@ namespace SCG.Data.View
 			get { return menuBarData; }
 			set
 			{
-				menuBarData = value;
-				RaisePropertyChanged("MenuBarData");
+				Update(ref menuBarData, value);
 			}
 		}
 
@@ -109,9 +120,8 @@ namespace SCG.Data.View
 			get { return selectedModuleData; }
 			set
 			{
-				selectedModuleData = value;
-				RaisePropertyChanged("SelectedModuleData");
-				RaisePropertyChanged("CanLoadModule");
+				Update(ref selectedModuleData, value);
+				Notify("CanLoadModule");
 			}
 		}
 
@@ -130,9 +140,8 @@ namespace SCG.Data.View
 			get { return currentModuleData; }
 			set
 			{
-				currentModuleData = value;
-				RaisePropertyChanged("CurrentModuleData");
-				RaisePropertyChanged("CurrentModuleName");
+				Update(ref currentModuleData, value);
+				Notify("CurrentModuleName");
 			}
 		}
 
@@ -151,9 +160,16 @@ namespace SCG.Data.View
 			get { return moduleIsLoaded; }
 			set
 			{
-				moduleIsLoaded = value;
-				RaisePropertyChanged("ModuleIsLoaded");
+				Update(ref moduleIsLoaded, value);
 			}
+		}
+
+		private bool gitDetected = false;
+
+		public bool GitDetected
+		{
+			get { return gitDetected; }
+			set { Update(ref gitDetected, value); }
 		}
 
 		private ICommand saveKeywordsCommand;
@@ -163,8 +179,7 @@ namespace SCG.Data.View
 			get { return saveKeywordsCommand; }
 			set
 			{
-				saveKeywordsCommand = value;
-				RaisePropertyChanged("SaveKeywordsCommand");
+				Update(ref saveKeywordsCommand, value);
 			}
 		}
 
@@ -175,11 +190,9 @@ namespace SCG.Data.View
 			get { return saveKeywordsAsCommand; }
 			set
 			{
-				saveKeywordsAsCommand = value;
-				RaisePropertyChanged("SaveKeywordsAsCommand");
+				Update(ref saveKeywordsAsCommand, value);
 			}
 		}
-
 
 		#region ProgressBar
 
@@ -190,8 +203,7 @@ namespace SCG.Data.View
 			get { return progressActive; }
 			set
 			{
-				progressActive = value;
-				RaisePropertyChanged("ProgressActive");
+				Update(ref progressActive, value);
 			}
 		}
 
@@ -203,8 +215,7 @@ namespace SCG.Data.View
 			get { return progressTitle; }
 			set
 			{
-				progressTitle = value;
-				RaisePropertyChanged("ProgressTitle");
+				Update(ref progressTitle, value);
 			}
 		}
 
@@ -215,8 +226,7 @@ namespace SCG.Data.View
 			get { return progressMessage; }
 			set
 			{
-				progressMessage = value;
-				RaisePropertyChanged("ProgressMessage");
+				Update(ref progressMessage, value);
 			}
 		}
 
@@ -227,8 +237,7 @@ namespace SCG.Data.View
 			get { return progressLog; }
 			set
 			{
-				progressLog = value;
-				RaisePropertyChanged("ProgressLog");
+				Update(ref progressLog, value);
 			}
 		}
 
@@ -240,8 +249,7 @@ namespace SCG.Data.View
 			get { return progressValue; }
 			set
 			{
-				progressValue = value;
-				RaisePropertyChanged("ProgressValue");
+				Update(ref progressValue, value);
 			}
 		}
 
@@ -252,8 +260,7 @@ namespace SCG.Data.View
 			get { return progressValueMax; }
 			set
 			{
-				progressValueMax = value;
-				RaisePropertyChanged("ProgressValueMax");
+				Update(ref progressValueMax, value);
 			}
 		}
 
@@ -265,8 +272,7 @@ namespace SCG.Data.View
 			get { return progressVisiblity; }
 			set
 			{
-				progressVisiblity = value;
-				RaisePropertyChanged("ProgressVisiblity");
+				Update(ref progressVisiblity, value);
 			}
 		}
 
@@ -277,8 +283,7 @@ namespace SCG.Data.View
 			get { return progressCancelButtonVisibility; }
 			set
 			{
-				progressCancelButtonVisibility = value;
-				RaisePropertyChanged("ProgressCancelButtonVisibility");
+				Update(ref progressCancelButtonVisibility, value);
 			}
 		}
 
@@ -289,8 +294,7 @@ namespace SCG.Data.View
 			get { return isIndeterminate; }
 			set
 			{
-				isIndeterminate = value;
-				RaisePropertyChanged("IsIndeterminate");
+				Update(ref isIndeterminate, value);
 			}
 		}
 
@@ -302,8 +306,7 @@ namespace SCG.Data.View
 			get { return progressCancelCommand; }
 			set
 			{
-				progressCancelCommand = value;
-				RaisePropertyChanged("ProgressCancelCommand");
+				Update(ref progressCancelCommand, value);
 			}
 		}
 
@@ -316,8 +319,7 @@ namespace SCG.Data.View
 			get { return moduleSelectionVisibility; }
 			set
 			{
-				moduleSelectionVisibility = value;
-				RaisePropertyChanged("ModuleSelectionVisibility");
+				Update(ref moduleSelectionVisibility, value);
 			}
 		}
 
@@ -328,8 +330,42 @@ namespace SCG.Data.View
 			get { return lockScreenVisibility; }
 			set
 			{
-				lockScreenVisibility = value;
-				RaisePropertyChanged("LockScreenVisibility");
+				Update(ref lockScreenVisibility, value);
+			}
+		}
+
+		//Footer
+		private string footerOutputDate;
+
+		public string FooterOutputDate
+		{
+			get { return footerOutputDate; }
+			set
+			{
+				Update(ref footerOutputDate, value);
+			}
+		}
+
+
+		private string footerOutputText;
+
+		public string FooterOutputText
+		{
+			get { return footerOutputText; }
+			set
+			{
+				Update(ref footerOutputText, value);
+			}
+		}
+
+		private LogType footerOutputType;
+
+		public LogType FooterOutputType
+		{
+			get { return footerOutputType; }
+			set
+			{
+				Update(ref footerOutputType, value);
 			}
 		}
 

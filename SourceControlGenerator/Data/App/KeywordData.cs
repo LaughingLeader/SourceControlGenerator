@@ -18,8 +18,7 @@ namespace SCG.Data
 			get { return keywordName; }
 			set
 			{
-				keywordName = value;
-				RaisePropertyChanged("KeywordName");
+				Update(ref keywordName, value);
 			}
 		}
 
@@ -30,8 +29,7 @@ namespace SCG.Data
 			get { return keywordValue; }
 			set
 			{
-				keywordValue = value;
-				RaisePropertyChanged("KeywordValue");
+				Update(ref keywordValue, value);
 			}
 		}
 
@@ -45,8 +43,7 @@ namespace SCG.Data
 			get { return replaceAction; }
 			set
 			{
-				replaceAction = value;
-				RaisePropertyChanged("Replace");
+				Update(ref replaceAction, value);
 			}
 		}
 

@@ -21,8 +21,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			get { return name; }
 			set
 			{
-				name = value;
-				RaisePropertyChanged("Name");
+				Update(ref name, value);
 				UpdateDisplayName();
 			}
 		}
@@ -34,8 +33,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			get { return displayName; }
 			private set
 			{
-				displayName = value;
-				RaisePropertyChanged("DisplayName");
+				Update(ref displayName, value);
 			}
 		}
 
@@ -53,8 +51,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			get { return active; }
 			set
 			{
-				active = value;
-				RaisePropertyChanged("Active");
+				Update(ref active, value);
 			}
 		}
 
@@ -65,8 +62,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			get { return locked; }
 			set
 			{
-				locked = value;
-				RaisePropertyChanged("Locked");
+				Update(ref locked, value);
 			}
 		}
 
@@ -77,8 +73,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			get { return changesUnsaved; }
 			set
 			{
-				changesUnsaved = value;
-				RaisePropertyChanged("ChangesUnsaved");
+				Update(ref changesUnsaved, value);
 				UpdateDisplayName();
 			}
 		}
@@ -100,8 +95,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			get { return allSelected; }
 			set
 			{
-				allSelected = value;
-				RaisePropertyChanged("AllSelected");
+				Update(ref allSelected, value);
 				if (allSelected)
 					SelectAll();
 				else

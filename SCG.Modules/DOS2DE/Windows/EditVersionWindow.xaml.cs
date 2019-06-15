@@ -71,7 +71,7 @@ namespace SCG.Modules.DOS2DE.Windows
 						}
 					}
 
-					SelectedProject.RaisePropertyChanged("Version");
+					SelectedProject.Notify("Version");
 				}
 			}
 			catch(Exception ex)

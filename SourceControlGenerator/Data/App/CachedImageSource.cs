@@ -20,8 +20,7 @@ namespace SCG.Data.App
 			get { return source; }
 			set
 			{
-				source = value;
-				RaisePropertyChanged("Source");
+				Update(ref source, value);
 			}
 		}
 
@@ -32,8 +31,7 @@ namespace SCG.Data.App
 			get { return sourcePath; }
 			set
 			{
-				sourcePath = value;
-				RaisePropertyChanged("SourcePath");
+				Update(ref sourcePath, value);
 			}
 		}
 

@@ -27,7 +27,7 @@ using SCG.Controls;
 
 namespace SCG.Core
 {
-   public class AppController : PropertyChangedBase
+   public class AppController
 	{
 		private static AppController _instance;
 
@@ -41,22 +41,9 @@ namespace SCG.Core
 			private set { mainWindow = value; }
 		}
 
-
 		public MainAppData Data { get; set; }
 
 		public Dictionary<string, IProjectController> ProjectControllers { get; set; }
-
-		private bool gitDetected = false;
-
-		public bool GitDetected
-		{
-			get { return gitDetected; }
-			set
-			{
-				gitDetected = value;
-				RaisePropertyChanged("GitDetected");
-			}
-		}
 
 		public ICommand OpenGitWebsiteCommand { get; private set; }
 		public ICommand SetSetupFoldersToRelativeCommand { get; private set; }
@@ -140,7 +127,6 @@ namespace SCG.Core
 			private set
 			{
 				currentModule = value;
-				RaisePropertyChanged("CurrentModule");
 			}
 
 		}
@@ -414,6 +400,8 @@ namespace SCG.Core
 				Log.Here().Warning($"Main app settings file at {DefaultPaths.MainAppSettingsFile} not found. Creating new file.");
 				Data.AppSettings = new AppSettingsData();
 			}
+
+			Data.OnSettingsLoaded();
 		}
 
 		public void SaveAppSettings()
@@ -510,7 +498,7 @@ namespace SCG.Core
 				mainWindow.LogWindow.Show();
 			}
 
-			mainWindow.RaisePropertyChanged("LogVisibleText");
+			Data.Notify("LogVisibleText");
 		}
 
 		public void MenuAction_SaveLog()
@@ -848,6 +836,13 @@ namespace SCG.Core
 			}
 		}
 
+		public void SetFooter(string message, LogType logType)
+		{
+			Data.FooterOutputText = message;
+			Data.FooterOutputType = logType;
+			Data.FooterOutputDate = DateTime.Now.ToShortTimeString();
+		}
+
 		public void OnAppLoaded()
 		{
 			if(CurrentModule != null && CurrentModule.ModuleData != null)
@@ -943,7 +938,7 @@ namespace SCG.Core
 				}
 			);
 
-			Data.MenuBarData.RaisePropertyChanged(String.Empty);
+			//Data.MenuBarData.Notify(String.Empty);
 
 			RegisterMenuShortcuts();
 		}
@@ -951,7 +946,6 @@ namespace SCG.Core
 		public AppController(MainWindow MainAppWindow)
 		{
 			_instance = this;
-			RaisePropertyChanged("Main");
 			Log.AllCallback = AddLogMessage;
 
 			Data = new MainAppData();
@@ -994,8 +988,6 @@ namespace SCG.Core
 				if(!String.IsNullOrEmpty(gitPath))
 				{
 					Data.AppSettings.GitInstallPath = gitPath;
-					RaisePropertyChanged("GitInstallPath");
-					GitDetected = true;
 					Log.Here().Important($"Git install location found at {gitPath}.");
 				}
 				else

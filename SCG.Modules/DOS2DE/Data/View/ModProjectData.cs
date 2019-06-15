@@ -29,8 +29,7 @@ namespace SCG.Modules.DOS2DE.Data.View
 			get { return projectAppData; }
 			set
 			{
-				projectAppData = value;
-				RaisePropertyChanged("ProjectAppData");
+				Update(ref projectAppData, value);
 			}
 		}
 
@@ -41,8 +40,7 @@ namespace SCG.Modules.DOS2DE.Data.View
 			get { return projectInfo; }
 			set
 			{
-				projectInfo = value;
-				RaisePropertyChanged("ProjectInfo");
+				Update(ref projectInfo, value);
 			}
 		}
 
@@ -53,10 +51,9 @@ namespace SCG.Modules.DOS2DE.Data.View
 			get { return moduleInfo; }
 			set
 			{
-				moduleInfo = value;
-				RaisePropertyChanged("ModuleInfo");
-				RaisePropertyChanged("Dependencies");
-				RaisePropertyChanged("Name");
+				Update(ref moduleInfo, value);
+				Notify("Dependencies");
+				Notify("Name");
 			}
 		}
 
@@ -128,7 +125,7 @@ namespace SCG.Modules.DOS2DE.Data.View
 				if(shortDescription == null)
 				{
 					shortDescription = ModuleInfo.Description.Truncate(30, "...");
-					RaisePropertyChanged("ShortDescription");
+					Notify("ShortDescription");
 				}
 				return shortDescription;
 			}
@@ -142,8 +139,7 @@ namespace SCG.Modules.DOS2DE.Data.View
 			get { return tooltip; }
 			set
 			{
-				tooltip = value;
-				RaisePropertyChanged("Tooltip");
+				Update(ref tooltip, value);
 			}
 		}
 
@@ -154,8 +150,7 @@ namespace SCG.Modules.DOS2DE.Data.View
 			get { return gitGenerated; }
 			set
 			{
-				gitGenerated = value;
-				RaisePropertyChanged("GitGenerated");
+				Update(ref gitGenerated, value);
 			}
 		}
 
@@ -166,9 +161,8 @@ namespace SCG.Modules.DOS2DE.Data.View
 			get { return projectVersionData; }
 			set
 			{
-				projectVersionData = value;
-				RaisePropertyChanged("VersionData");
-				RaisePropertyChanged("Version");
+				Update(ref projectVersionData, value);
+				Notify("Version");
 			}
 		}
 
@@ -184,9 +178,8 @@ namespace SCG.Modules.DOS2DE.Data.View
 			}
 			set
 			{
-				lastBackup = value;
-				RaisePropertyChanged("LastBackup");
-				RaisePropertyChanged("LastBackupText");
+				Update(ref lastBackup, value);
+				Notify("LastBackupText");
 			}
 		}
 
@@ -209,8 +202,7 @@ namespace SCG.Modules.DOS2DE.Data.View
 			get { return selected; }
 			set
 			{
-				selected = value;
-				RaisePropertyChanged("Selected");
+				Update(ref selected, value);
 			}
 
 		}
@@ -222,8 +214,7 @@ namespace SCG.Modules.DOS2DE.Data.View
 			get { return thumbnailPath; }
 			set
 			{
-				thumbnailPath = value;
-				RaisePropertyChanged("ThumbnailPath");
+				Update(ref thumbnailPath, value);
 			}
 		}
 
@@ -235,8 +226,7 @@ namespace SCG.Modules.DOS2DE.Data.View
 			get { return thumbnailExists; }
 			set
 			{
-				thumbnailExists = value;
-				RaisePropertyChanged("ThumbnailExists");
+				Update(ref thumbnailExists, value);
 			}
 		}
 
@@ -248,8 +238,7 @@ namespace SCG.Modules.DOS2DE.Data.View
 			get { return cachedImageSource; }
 			set
 			{
-				cachedImageSource = value;
-				RaisePropertyChanged("ThumbnailSource");
+				Update(ref cachedImageSource, value);
 			}
 		}
 		*/
@@ -261,8 +250,7 @@ namespace SCG.Modules.DOS2DE.Data.View
 			get { return modMetaFilePath; }
 			set
 			{
-				modMetaFilePath = value;
-				RaisePropertyChanged("ModMetaFilePath");
+				Update(ref modMetaFilePath, value);
 			}
 		}
 
@@ -273,8 +261,7 @@ namespace SCG.Modules.DOS2DE.Data.View
 			get { return projectMetaFilePath; }
 			set
 			{
-				projectMetaFilePath = value;
-				RaisePropertyChanged("ProjectMetaFilePath");
+				Update(ref projectMetaFilePath, value);
 			}
 		}
 
@@ -399,7 +386,7 @@ namespace SCG.Modules.DOS2DE.Data.View
 				var modMetaXml = XDocument.Load(ModMetaFilePath);
 				this.ModuleInfo.LoadFromXml(modMetaXml);
 				LoadDependencies(modMetaXml);
-				ModuleInfo.RaisePropertyChanged(String.Empty);
+				ModuleInfo.Notify(String.Empty);
 			}
 
 			if (File.Exists(ProjectMetaFilePath))
@@ -412,8 +399,7 @@ namespace SCG.Modules.DOS2DE.Data.View
 				stream.Close();
 
 				LoadThumbnail(projectMetaFile.Directory.FullName);
-				ProjectInfo.RaisePropertyChanged(String.Empty);
-				
+				ProjectInfo.Notify(String.Empty);
 			}
 		}
 

@@ -16,8 +16,7 @@ namespace SCG.Data.View
 			get { return fileMenu; }
 			set
 			{
-				fileMenu = value;
-				RaisePropertyChanged("File");
+				Update(ref fileMenu, value);
 			}
 		}
 
@@ -28,8 +27,7 @@ namespace SCG.Data.View
 			get { return optionsMenu; }
 			set
 			{
-				optionsMenu = value;
-				RaisePropertyChanged("Options");
+				Update(ref optionsMenu, value);
 			}
 		}
 
@@ -40,8 +38,7 @@ namespace SCG.Data.View
 			get { return toolsMenu; }
 			set
 			{
-				toolsMenu = value;
-				RaisePropertyChanged("Tools");
+				Update(ref toolsMenu, value);
 			}
 		}
 
@@ -53,8 +50,7 @@ namespace SCG.Data.View
 			get { return helpMenu; }
 			set
 			{
-				helpMenu = value;
-				RaisePropertyChanged("Help");
+				Update(ref helpMenu, value);
 			}
 		}
 

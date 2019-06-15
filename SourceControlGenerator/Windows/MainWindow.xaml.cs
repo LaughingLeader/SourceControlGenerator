@@ -191,63 +191,6 @@ namespace SCG.Windows
 			}
 		}
 
-		
-
-		private string footerOutputDate;
-
-		public string FooterOutputDate
-		{
-			get { return footerOutputDate; }
-			set
-			{
-				footerOutputDate = value;
-				RaisePropertyChanged("FooterOutputDate");
-			}
-		}
-
-
-		private string footerOutputText;
-
-		public string FooterOutputText
-		{
-			get { return footerOutputText; }
-			set
-			{
-				footerOutputText = value;
-				RaisePropertyChanged("FooterOutputText");
-			}
-		}
-
-		private LogType footerOutputType;
-
-		public LogType FooterOutputType
-		{
-			get { return footerOutputType; }
-			set
-			{
-				footerOutputType = value;
-				RaisePropertyChanged("FooterOutputType");
-			}
-		}
-
-		public event PropertyChangedEventHandler PropertyChanged;
-
-		public void RaisePropertyChanged(string propertyName)
-		{
-			OnPropertyChanged(propertyName);
-		}
-
-		private void OnPropertyChanged(String property)
-		{
-			PropertyChangedEventHandler handler = this.PropertyChanged;
-
-			if (handler != null)
-			{
-				var e = new PropertyChangedEventArgs(property);
-				handler(this, e);
-			}
-		}
-
 		private static MainWindow _instance;
 
 		public static void FooterLog(string Message, params object[] Vars)
@@ -256,9 +199,7 @@ namespace SCG.Windows
 			{
 				_instance.Dispatcher.BeginInvoke((Action)(() => {
 					Message = String.Format(Message, Vars);
-					_instance.FooterOutputText = Message;
-					_instance.FooterOutputType = LogType.Important;
-					_instance.FooterOutputDate = DateTime.Now.ToShortTimeString();
+					_instance.Controller.SetFooter(Message, LogType.Important);
 					Log.AllCallback?.Invoke(Message, LogType.Important);
 				}),
 				DispatcherPriority.Background);
@@ -271,9 +212,7 @@ namespace SCG.Windows
 			{
 				_instance.Dispatcher.BeginInvoke((Action)(() => {
 					Message = String.Format(Message, Vars);
-					_instance.FooterOutputText = Message;
-					_instance.FooterOutputType = LogType.Error;
-					_instance.FooterOutputDate = DateTime.Now.ToShortTimeString();
+					_instance.Controller.SetFooter(Message, LogType.Error);
 					Log.AllCallback?.Invoke(Message, LogType.Error);
 				}),
 				DispatcherPriority.Background);

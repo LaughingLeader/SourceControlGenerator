@@ -29,9 +29,8 @@ namespace SCG.Data.View
 			get { return settings; }
 			set
 			{
-				settings = value;
-				RaisePropertyChanged("Settings");
-				RaisePropertyChanged("ModuleSettings");
+				Update(ref settings, value);
+				Notify("ModuleSettings");
 			}
 		}
 
@@ -52,8 +51,7 @@ namespace SCG.Data.View
 			get { return gitGenerationSettings; }
 			set
 			{
-				gitGenerationSettings = value;
-				RaisePropertyChanged("GitGenerationSettings");
+				Update(ref gitGenerationSettings, value);
 			}
 		}
 
@@ -70,8 +68,7 @@ namespace SCG.Data.View
 			get { return userKeywordData; }
 			set
 			{
-				userKeywordData = value;
-				RaisePropertyChanged("UserKeywords");
+				Update(ref userKeywordData, value);
 			}
 		}
 
@@ -82,8 +79,7 @@ namespace SCG.Data.View
 			get { return newTemplateData; }
 			set
 			{
-				newTemplateData = value;
-				RaisePropertyChanged("NewTemplateData");
+				Update(ref newTemplateData, value);
 			}
 		}
 
@@ -94,8 +90,7 @@ namespace SCG.Data.View
 			get { return projectSelected; }
 			set
 			{
-				projectSelected = value;
-				RaisePropertyChanged("ProjectSelected");
+				Update(ref projectSelected, value);
 				if (projectSelected)
 				{
 					OnProjectsSelected();
@@ -118,8 +113,7 @@ namespace SCG.Data.View
 			get { return canGenerateGit; }
 			set
 			{
-				canGenerateGit = value;
-				RaisePropertyChanged("CanGenerateGit");
+				Update(ref canGenerateGit, value);
 			}
 		}
 
@@ -131,8 +125,7 @@ namespace SCG.Data.View
 			get { return loadKeywords; }
 			set
 			{
-				loadKeywords = value;
-				RaisePropertyChanged("LoadKeywords");
+				Update(ref loadKeywords, value);
 			}
 		}
 
@@ -165,8 +158,7 @@ namespace SCG.Data.View
 			get { return addTemplateControlVisible; }
 			set
 			{
-				addTemplateControlVisible = value;
-				RaisePropertyChanged("AddTemplateControlVisible");
+				Update(ref addTemplateControlVisible, value);
 			}
 		}
 
@@ -177,8 +169,7 @@ namespace SCG.Data.View
 			get { return saveSettingsCommand; }
 			set
 			{
-				saveSettingsCommand = value;
-				RaisePropertyChanged("SaveSettingsCommand");
+				Update(ref saveSettingsCommand, value);
 			}
 		}
 
@@ -189,8 +180,7 @@ namespace SCG.Data.View
 			get { return defaultSettingsCommand; }
 			set
 			{
-				defaultSettingsCommand = value;
-				RaisePropertyChanged("DefaultSettingsCommand");
+				Update(ref defaultSettingsCommand, value);
 			}
 		}
 
@@ -210,7 +200,7 @@ namespace SCG.Data.View
 		public void CreateNewTemplateData()
 		{
 			newTemplateData = new TemplateEditorData();
-			RaisePropertyChanged("NewTemplateData");
+			Notify("NewTemplateData");
 		}
 
 		public virtual void InitializeSettings()
@@ -237,7 +227,7 @@ namespace SCG.Data.View
 			if (confirmed)
 			{
 				Settings.SetToDefault(this);
-				Settings.RaisePropertyChanged(String.Empty);
+				Settings.Notify(String.Empty);
 
 				OnSettingsReverted?.Invoke(this, EventArgs.Empty);
 			}

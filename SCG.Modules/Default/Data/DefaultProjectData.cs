@@ -16,8 +16,7 @@ namespace SCG.Modules.Default.Data
 			get { return directory; }
 			set
 			{
-				directory = value;
-				RaisePropertyChanged("Directory");
+				Update(ref directory, value);
 			}
 		}
 

@@ -3,24 +3,37 @@ using System.Runtime.CompilerServices;
 
 namespace SCG.Data
 {
-	public class PropertyChangedBase : INotifyPropertyChanged
+	/// <summary>
+	/// Base class for notifying property changes.
+	/// Use Update(ref field, value); when setting a property.
+	/// Use Notify("PropertyName") when manually forcing a notification.
+	/// Based on: https://github.com/wieslawsoltes/ReactiveHistory/blob/master/samples/ReactiveHistorySample.Models/ObservableObject.cs
+	/// (MIT License)
+	/// </summary>
+	public abstract class PropertyChangedBase : INotifyPropertyChanged
 	{
 		public event PropertyChangedEventHandler PropertyChanged;
 
-		public void RaisePropertyChanged(string propertyName)
+		public virtual void OnPropertyNotify(string propertyName)
 		{
-			OnPropertyChanged(propertyName);
+
 		}
 
-		private void OnPropertyChanged(string property)
+		public void Notify([CallerMemberName] string propertyName = null)
 		{
-			PropertyChangedEventHandler handler = this.PropertyChanged;
+			PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+			OnPropertyNotify(propertyName);
+		}
 
-			if (handler != null)
+		public bool Update<T>(ref T field, T value, [CallerMemberName] string propertyName = null)
+		{
+			if (!Equals(field, value))
 			{
-				var e = new PropertyChangedEventArgs(property);
-				handler(this, e);
+				field = value;
+				Notify(propertyName);
+				return true;
 			}
+			return false;
 		}
 	}
 }

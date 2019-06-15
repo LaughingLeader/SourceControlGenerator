@@ -18,8 +18,7 @@ namespace SCG.Data.View
 			get { return name; }
 			set
 			{
-				name = value;
-				RaisePropertyChanged("Name");
+				Update(ref name, value);
 			}
 		}
 
@@ -30,8 +29,7 @@ namespace SCG.Data.View
 			get { return fileBrowseType; }
 			set
 			{
-				fileBrowseType = value;
-				RaisePropertyChanged("BrowseType");
+				Update(ref fileBrowseType, value);
 			}
 		}
 
@@ -42,8 +40,7 @@ namespace SCG.Data.View
 			get { return viewPropertyType; }
 			set
 			{
-				viewPropertyType = value;
-				RaisePropertyChanged("ViewType");
+				Update(ref viewPropertyType, value);
 			}
 		}
 
@@ -54,8 +51,7 @@ namespace SCG.Data.View
 			get { return source; }
 			set
 			{
-				source = value;
-				RaisePropertyChanged("Source");
+				Update(ref source, value);
 			}
 		}
 
@@ -66,8 +62,7 @@ namespace SCG.Data.View
 			get { return sourcePropertyInfo; }
 			set
 			{
-				sourcePropertyInfo = value;
-				RaisePropertyChanged("SourceProperty");
+				Update(ref sourcePropertyInfo, value);
 			}
 		}
 
@@ -98,8 +93,7 @@ namespace SCG.Data.View
 			get { return onOpenedCommand; }
 			set
 			{
-				onOpenedCommand = value;
-				RaisePropertyChanged("OnOpened");
+				Update(ref onOpenedCommand, value);
 			}
 		}
 

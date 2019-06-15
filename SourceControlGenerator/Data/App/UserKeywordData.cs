@@ -19,8 +19,7 @@ namespace SCG.Data
 			get { return dateCustom; }
 			set
 			{
-				dateCustom = value;
-				RaisePropertyChanged("DateCustom");
+				Update(ref dateCustom, value);
 			}
 		}
 

@@ -26,8 +26,7 @@ namespace SCG.Data
 			get { return projectAppData; }
 			set
 			{
-				projectAppData = value;
-				RaisePropertyChanged("ProjectAppData");
+				Update(ref projectAppData, value);
 			}
 		}
 
@@ -38,8 +37,7 @@ namespace SCG.Data
 			get { return projectInfo; }
 			set
 			{
-				projectInfo = value;
-				RaisePropertyChanged("ProjectInfo");
+				Update(ref projectInfo, value);
 			}
 		}
 
@@ -50,10 +48,9 @@ namespace SCG.Data
 			get { return moduleInfo; }
 			set
 			{
-				moduleInfo = value;
-				RaisePropertyChanged("ModuleInfo");
-				RaisePropertyChanged("Dependencies");
-				RaisePropertyChanged("Name");
+				Update(ref moduleInfo, value);
+				Notify("Dependencies");
+				Notify("Name");
 			}
 		}
 
@@ -64,8 +61,7 @@ namespace SCG.Data
 			get { return gitData; }
 			set
 			{
-				gitData = value;
-				RaisePropertyChanged("GitGenerated");
+				Update(ref gitData, value);
 			}
 		}
 
@@ -115,7 +111,7 @@ namespace SCG.Data
 				if(shortDescription == null)
 				{
 					shortDescription = ModuleInfo.Description.Truncate(30, "...");
-					RaisePropertyChanged("ShortDescription");
+					Notify("ShortDescription");
 				}
 				return shortDescription;
 			}
@@ -129,8 +125,7 @@ namespace SCG.Data
 			get { return tooltip; }
 			set
 			{
-				tooltip = value;
-				RaisePropertyChanged("Tooltip");
+				Update(ref tooltip, value);
 			}
 		}
 
@@ -149,8 +144,7 @@ namespace SCG.Data
 			get { return version; }
 			set
 			{
-				version = value;
-				RaisePropertyChanged("Version");
+				Update(ref version, value);
 			}
 		}
 
@@ -164,9 +158,8 @@ namespace SCG.Data
 			}
 			set
 			{
-				lastBackup = value;
-				RaisePropertyChanged("LastBackup");
-				RaisePropertyChanged("LastBackupText");
+				Update(ref lastBackup, value);
+				Notify("LastBackupText");
 			}
 		}
 
@@ -189,8 +182,7 @@ namespace SCG.Data
 			get { return selected; }
 			set
 			{
-				selected = value;
-				RaisePropertyChanged("Selected");
+				Update(ref selected, value);
 			}
 
 		}
@@ -202,8 +194,7 @@ namespace SCG.Data
 			get { return thumbnailPath; }
 			set
 			{
-				thumbnailPath = value;
-				RaisePropertyChanged("ThumbnailPath");
+				Update(ref thumbnailPath, value);
 			}
 		}
 
@@ -215,8 +206,7 @@ namespace SCG.Data
 			get { return thumbnailExists; }
 			set
 			{
-				thumbnailExists = value;
-				RaisePropertyChanged("ThumbnailExists");
+				Update(ref thumbnailExists, value);
 			}
 		}
 
@@ -227,8 +217,7 @@ namespace SCG.Data
 			get { return modMetaFilePath; }
 			set
 			{
-				modMetaFilePath = value;
-				RaisePropertyChanged("ModMetaFilePath");
+				Update(ref modMetaFilePath, value);
 			}
 		}
 
@@ -239,8 +228,7 @@ namespace SCG.Data
 			get { return projectMetaFilePath; }
 			set
 			{
-				projectMetaFilePath = value;
-				RaisePropertyChanged("ProjectMetaFilePath");
+				Update(ref projectMetaFilePath, value);
 			}
 		}
 
@@ -359,7 +347,7 @@ namespace SCG.Data
 				var modMetaXml = XDocument.Load(ModMetaFilePath);
 				this.ModuleInfo.LoadFromXml(modMetaXml);
 				LoadDependencies(modMetaXml);
-				ModuleInfo.RaisePropertyChanged(String.Empty);
+				ModuleInfo.Notify(String.Empty);
 			}
 
 			if (File.Exists(ProjectMetaFilePath))
@@ -372,7 +360,7 @@ namespace SCG.Data
 				this.ProjectInfo.LoadFromXml(projectMetaXml);
 
 				LoadThumbnail(projectMetaFile.Directory.FullName);
-				ProjectInfo.RaisePropertyChanged(String.Empty);
+				ProjectInfo.Notify(String.Empty);
 			}
 		}
 

@@ -19,8 +19,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			get { return name; }
 			set
 			{
-				name = value;
-				RaisePropertyChanged("Name");
+				Update(ref name, value);
 			}
 		}
 
@@ -31,8 +30,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			get { return sourceDirectory; }
 			set
 			{
-				sourceDirectory = value;
-				RaisePropertyChanged("SourceDirectory");
+				Update(ref sourceDirectory, value);
 			}
 		}
 
@@ -43,8 +41,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			get { return changesUnsaved; }
 			set
 			{
-				changesUnsaved = value;
-				RaisePropertyChanged("ChangesUnsaved");
+				Update(ref changesUnsaved, value);
 			}
 		}
 
@@ -69,8 +66,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			get { return combinedEntries; }
 			private set
 			{
-				combinedEntries = value;
-				RaisePropertyChanged("CombinedEntries");
+				Update(ref combinedEntries, value);
 			}
 		}
 
@@ -83,9 +79,8 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			get { return selectedfileIndex; }
 			set
 			{
-				selectedfileIndex = value;
-				RaisePropertyChanged("SelectedFileIndex");
-				RaisePropertyChanged("SelectedFile");
+				Update(ref selectedfileIndex, value);
+				Notify("SelectedFile");
 				SelectedFileChanged?.Invoke(this, SelectedFile);
 			}
 		}
@@ -107,8 +102,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			get { return visibility; }
 			set
 			{
-				visibility = value;
-				RaisePropertyChanged("Visibility");
+				Update(ref visibility, value);
 			}
 		}
 
@@ -124,8 +118,8 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 				CombinedEntries.Entries.AddRange(obj.Entries);
 			}
 			CombinedEntries.Entries.OrderBy(e => e.Key);
-			RaisePropertyChanged("CombinedEntries");
-			RaisePropertyChanged("Tabs");
+			Notify("CombinedEntries");
+			Notify("Tabs");
 			Log.Here().Activity($"Updated combined entries for '{Name}'.");
 		}
 

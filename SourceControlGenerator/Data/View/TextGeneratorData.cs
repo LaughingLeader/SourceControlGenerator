@@ -37,8 +37,11 @@ namespace SCG.Data.View
 			get { return inputData != null ? inputData.Content : ""; }
 			set
 			{
-				inputData.Content = value;
-				RaisePropertyChanged("InputText");
+				if(!Equals(inputData.Content, value))
+				{
+					inputData.Content = value;
+					Notify("InputText");
+				}
 			}
 		}
 
@@ -47,8 +50,11 @@ namespace SCG.Data.View
 			get { return outputData != null ? outputData.Content : ""; }
 			set
 			{
-				outputData.Content = value;
-				RaisePropertyChanged("OutputText");
+				if (!Equals(outputData.Content, value))
+				{
+					outputData.Content = value;
+					Notify("OutputText");
+				}
 			}
 		}
 
@@ -61,8 +67,7 @@ namespace SCG.Data.View
 			set
 			{
 				bool bSaveData = generationAmount != value;
-				generationAmount = value;
-				RaisePropertyChanged("GenerationAmount");
+				Update(ref generationAmount, value);
 
 				if (bSaveData) SaveDataEvent?.Invoke(this, new EventArgs());
 			}
@@ -77,8 +82,7 @@ namespace SCG.Data.View
 			set
 			{
 				bool bSaveData = nextKeywordType != value;
-				nextKeywordType = value;
-				RaisePropertyChanged("NextKeywordType");
+				Update(ref nextKeywordType, value);
 
 				if(bSaveData) SaveDataEvent?.Invoke(this, new EventArgs());
 			}
@@ -92,8 +96,7 @@ namespace SCG.Data.View
 			get { return inputData; }
 			set
 			{
-				inputData = value;
-				RaisePropertyChanged("InputData");
+				Update(ref inputData, value);
 			}
 		}
 
@@ -105,8 +108,7 @@ namespace SCG.Data.View
 			get { return outputData; }
 			set
 			{
-				outputData = value;
-				RaisePropertyChanged("OutputData");
+				Update(ref outputData, value);
 			}
 		}
 
@@ -125,12 +127,12 @@ namespace SCG.Data.View
 
 		private void OnInputTextChanged()
 		{
-			RaisePropertyChanged("InputText");
+			Notify("InputText");
 		}
 
 		private void OnOutputTextChanged()
 		{
-			RaisePropertyChanged("OutputText");
+			Notify("OutputText");
 		}
 
 		private void OnDataFileLoaded()
@@ -197,8 +199,7 @@ namespace SCG.Data.View
 			get { return defaultFileName; }
 			set
 			{
-				defaultFileName = value;
-				RaisePropertyChanged("DefaultFileName");
+				Update(ref defaultFileName, value);
 			}
 		}
 
@@ -210,8 +211,7 @@ namespace SCG.Data.View
 			get { return filepath; }
 			set
 			{
-				filepath = value;
-				RaisePropertyChanged("FilePath");
+				Update(ref filepath, value);
 			}
 		}
 
@@ -222,8 +222,7 @@ namespace SCG.Data.View
 			get { return defaultFilePath; }
 			set
 			{
-				defaultFilePath = value;
-				RaisePropertyChanged("DefaultFilePath");
+				Update(ref defaultFilePath, value);
 			}
 		}
 
@@ -234,8 +233,7 @@ namespace SCG.Data.View
 			get { return content; }
 			set
 			{
-				content = value;
-				RaisePropertyChanged("Content");
+				Update(ref content, value);
 				OnContentChanged?.Invoke();
 			}
 		}
@@ -247,8 +245,7 @@ namespace SCG.Data.View
 			get { return saveAsText; }
 			set
 			{
-				saveAsText = value;
-				RaisePropertyChanged("SaveAsText");
+				Update(ref saveAsText, value);
 			}
 		}
 
@@ -259,8 +256,7 @@ namespace SCG.Data.View
 			get { return openText; }
 			set
 			{
-				openText = value;
-				RaisePropertyChanged("OpenText");
+				Update(ref openText, value);
 			}
 		}
 
@@ -358,8 +354,7 @@ namespace SCG.Data.View
 			get { return inputType; }
 			set
 			{
-				inputType = value;
-				RaisePropertyChanged("InputType");
+				Update(ref inputType, value);
 			}
 		}
 
@@ -370,8 +365,7 @@ namespace SCG.Data.View
 			get { return keyword; }
 			set
 			{
-				keyword = value;
-				RaisePropertyChanged("Keyword");
+				Update(ref keyword, value);
 			}
 		}
 
@@ -382,8 +376,7 @@ namespace SCG.Data.View
 			get { return inputValue; }
 			set
 			{
-				inputValue = value;
-				RaisePropertyChanged("InputValue");
+				Update(ref inputValue, value);
 			}
 		}
 
@@ -411,8 +404,7 @@ namespace SCG.Data.View
 			get { return inputType; }
 			set
 			{
-				inputType = value;
-				RaisePropertyChanged("InputType");
+				Update(ref inputType, value);
 			}
 		}
 
@@ -423,8 +415,7 @@ namespace SCG.Data.View
 			get { return keyword; }
 			set
 			{
-				keyword = value;
-				RaisePropertyChanged("Keyword");
+				Update(ref keyword, value);
 			}
 		}
 
@@ -435,8 +426,7 @@ namespace SCG.Data.View
 			get { return startValue; }
 			set
 			{
-				startValue = value;
-				RaisePropertyChanged("StartValue");
+				Update(ref startValue, value);
 			}
 		}
 
@@ -447,8 +437,7 @@ namespace SCG.Data.View
 			get { return incrementBy; }
 			set
 			{
-				incrementBy = value;
-				RaisePropertyChanged("IncrementBy");
+				Update(ref incrementBy, value);
 			}
 		}
 

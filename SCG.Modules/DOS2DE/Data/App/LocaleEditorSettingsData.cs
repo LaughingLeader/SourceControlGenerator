@@ -17,8 +17,7 @@ namespace SCG.Modules.DOS2DE.Data.App
 			get { return lastFileImportPath; }
 			set
 			{
-				lastFileImportPath = value;
-				RaisePropertyChanged("LastFileImportPath");
+				Update(ref lastFileImportPath, value);
 			}
 		}
 
@@ -29,8 +28,7 @@ namespace SCG.Modules.DOS2DE.Data.App
 			get { return lastEntryimportPath; }
 			set
 			{
-				lastEntryimportPath = value;
-				RaisePropertyChanged("LastEntryImportPath");
+				Update(ref lastEntryimportPath, value);
 			}
 		}
 
@@ -41,8 +39,7 @@ namespace SCG.Modules.DOS2DE.Data.App
 			get { return exportKeys; }
 			set
 			{
-				exportKeys = value;
-				RaisePropertyChanged("ExportKeys");
+				Update(ref exportKeys, value);
 				Log.Here().Activity($"ExportKeys set to {exportKeys}");
 			}
 		}
@@ -54,8 +51,7 @@ namespace SCG.Modules.DOS2DE.Data.App
 			get { return exportSource; }
 			set
 			{
-				exportSource = value;
-				RaisePropertyChanged("ExportSource");
+				Update(ref exportSource, value);
 				Log.Here().Activity($"ExportSource set to {exportSource}");
 			}
 		}

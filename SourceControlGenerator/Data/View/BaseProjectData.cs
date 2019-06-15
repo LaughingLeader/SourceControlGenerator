@@ -20,8 +20,7 @@ namespace SCG.Data.View
 			get { return gitData; }
 			set
 			{
-				gitData = value;
-				RaisePropertyChanged("GitGenerated");
+				Update(ref gitData, value);
 			}
 		}
 
@@ -40,8 +39,7 @@ namespace SCG.Data.View
 			get { return projectName; }
 			set
 			{
-				projectName = value;
-				RaisePropertyChanged("ProjectName");
+				Update(ref projectName, value);
 			}
 		}
 
@@ -52,8 +50,7 @@ namespace SCG.Data.View
 			get { return displayName; }
 			set
 			{
-				displayName = value;
-				RaisePropertyChanged("DisplayName");
+				Update(ref displayName, value);
 			}
 		}
 
@@ -64,8 +61,7 @@ namespace SCG.Data.View
 			get { return uuid; }
 			set
 			{
-				uuid = value;
-				RaisePropertyChanged("UUID");
+				Update(ref uuid, value);
 			}
 		}
 
@@ -76,8 +72,7 @@ namespace SCG.Data.View
 			get { return tooltip; }
 			set
 			{
-				tooltip = value;
-				RaisePropertyChanged("Tooltip");
+				Update(ref tooltip, value);
 			}
 		}
 
@@ -91,9 +86,8 @@ namespace SCG.Data.View
 			}
 			set
 			{
-				lastBackup = value;
-				RaisePropertyChanged("LastBackup");
-				RaisePropertyChanged("LastBackupText");
+				Update(ref lastBackup, value);
+				Notify("LastBackupText");
 			}
 		}
 
@@ -116,8 +110,7 @@ namespace SCG.Data.View
 			get { return selected; }
 			set
 			{
-				selected = value;
-				RaisePropertyChanged("Selected");
+				Update(ref selected, value);
 			}
 
 		}

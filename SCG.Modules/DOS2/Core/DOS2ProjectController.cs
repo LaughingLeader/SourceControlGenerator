@@ -590,7 +590,7 @@ namespace SCG.Core
 				}
 			}
 
-			Data.RaisePropertyChanged("NewProjects");
+			Data.Notify("NewProjects");
 
 			if (bSaveData)
 			{

@@ -16,8 +16,7 @@ namespace SCG.Modules.DOS2DE.Data.View
 			get { return major; }
 			set
 			{
-				major = value;
-				RaisePropertyChanged("Major");
+				Update(ref major, value);
 				UpdateVersion();
 			}
 		}
@@ -29,8 +28,7 @@ namespace SCG.Modules.DOS2DE.Data.View
 			get { return minor; }
 			set
 			{
-				minor = value;
-				RaisePropertyChanged("Minor");
+				Update(ref minor, value);
 				UpdateVersion();
 			}
 		}
@@ -42,8 +40,7 @@ namespace SCG.Modules.DOS2DE.Data.View
 			get { return revision; }
 			set
 			{
-				revision = value;
-				RaisePropertyChanged("Revision");
+				Update(ref revision, value);
 				UpdateVersion();
 			}
 		}
@@ -55,8 +52,7 @@ namespace SCG.Modules.DOS2DE.Data.View
 			get { return build; }
 			set
 			{
-				build = value;
-				RaisePropertyChanged("Build");
+				Update(ref build, value);
 				UpdateVersion();
 			}
 		}
@@ -68,8 +64,7 @@ namespace SCG.Modules.DOS2DE.Data.View
 			get { return version; }
 			set
 			{
-				version = value;
-				RaisePropertyChanged("Version");
+				Update(ref version, value);
 			}
 		}
 
@@ -80,8 +75,7 @@ namespace SCG.Modules.DOS2DE.Data.View
 			get { return versionInt; }
 			set
 			{
-				versionInt = value;
-				RaisePropertyChanged("VersionInt");
+				Update(ref versionInt, value);
 			}
 		}
 

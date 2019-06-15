@@ -19,33 +19,18 @@ using System.ComponentModel;
 
 namespace SCG.Modules.DOS2DE.Data.View.Locale
 {
-	public class LocaleViewModel : INotifyPropertyChanged
+	public class LocaleViewModel : PropertyChangedBase
 	{
-		public event PropertyChangedEventHandler PropertyChanged;
-
 		private Dictionary<string, List<Action>> MenuEnabledLinks = new Dictionary<string, List<Action>>();
 
-		public void RaisePropertyChanged(string propertyName)
+		public override void OnPropertyNotify(string propertyName)
 		{
-			OnPropertyChanged(propertyName);
-
-			if(MenuEnabledLinks.ContainsKey(propertyName))
+			if (MenuEnabledLinks.ContainsKey(propertyName))
 			{
-				foreach(var setEnabledAction in MenuEnabledLinks[propertyName])
+				foreach (var setEnabledAction in MenuEnabledLinks[propertyName])
 				{
 					setEnabledAction.Invoke();
 				}
-			}
-		}
-
-		private void OnPropertyChanged(string property)
-		{
-			PropertyChangedEventHandler handler = this.PropertyChanged;
-
-			if (handler != null)
-			{
-				var e = new PropertyChangedEventArgs(property);
-				handler(this, e);
 			}
 		}
 
@@ -60,8 +45,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			get { return menuData; }
 			set
 			{
-				menuData = value;
-				RaisePropertyChanged("MenuData");
+				Update(ref menuData, value);
 			}
 		}
 
@@ -72,9 +56,8 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			get { return changesUnsaved; }
 			set
 			{
-				changesUnsaved = value;
-				RaisePropertyChanged("ChangesUnsaved");
-				RaisePropertyChanged("WindowTitle");
+				Update(ref changesUnsaved, value);
+				Notify("WindowTitle");
 			}
 		}
 
@@ -97,11 +80,10 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			{
 				bool updateCanSave = selectedGroupIndex != value;
 				
-				selectedGroupIndex = value;
-				RaisePropertyChanged("SelectedGroupIndex");
-				RaisePropertyChanged("SelectedGroup");
-				RaisePropertyChanged("SelectedItem");
-				RaisePropertyChanged("CurrentImportPath");
+				Update(ref selectedGroupIndex, value);
+				Notify("SelectedGroup");
+				Notify("SelectedItem");
+				Notify("CurrentImportPath");
 
 				if (updateCanSave)
 				{
@@ -117,8 +99,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			get { return modsGroup; }
 			set
 			{
-				modsGroup = value;
-				RaisePropertyChanged("ModsGroup");
+				Update(ref modsGroup, value);
 			}
 		}
 
@@ -129,8 +110,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			get { return dialogGroup; }
 			set
 			{
-				dialogGroup = value;
-				RaisePropertyChanged("DialogGroup");
+				Update(ref dialogGroup, value);
 			}
 		}
 
@@ -141,8 +121,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			get { return publicGroup; }
 			set
 			{
-				publicGroup = value;
-				RaisePropertyChanged("PublicGroup");
+				Update(ref publicGroup, value);
 			}
 		}
 
@@ -153,8 +132,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			get { return combinedGroup; }
 			private set
 			{
-				combinedGroup = value;
-				RaisePropertyChanged("CombinedGroup");
+				Update(ref combinedGroup, value);
 			}
 		}
 
@@ -181,9 +159,8 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			get { return canSave; }
 			set
 			{
-				canSave = value;
+				Update(ref canSave, value);
 				SaveCurrentMenuData.IsEnabled = canSave;
-				RaisePropertyChanged("CanSave");
 			}
 		}
 
@@ -194,8 +171,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			get { return canAddFile; }
 			set
 			{
-				canAddFile = value;
-				RaisePropertyChanged("CanAddFile");
+				Update(ref canAddFile, value);
 			}
 		}
 
@@ -206,8 +182,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			get { return canAddKeys; }
 			set
 			{
-				canAddKeys = value;
-				RaisePropertyChanged("CanAddKeys");
+				Update(ref canAddKeys, value);
 			}
 		}
 
@@ -218,8 +193,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			get { return anySelected; }
 			set
 			{
-				anySelected = value;
-				RaisePropertyChanged("AnySelected");
+				Update(ref anySelected, value);
 			}
 		}
 
@@ -270,8 +244,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			get { return outputDate; }
 			set
 			{
-				outputDate = value;
-				RaisePropertyChanged("OutputDate");
+				Update(ref outputDate, value);
 			}
 		}
 
@@ -282,8 +255,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			get { return outputText; }
 			set
 			{
-				outputText = value;
-				RaisePropertyChanged("OutputText");
+				Update(ref outputText, value);
 			}
 		}
 
@@ -294,8 +266,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			get { return outputType; }
 			set
 			{
-				outputType = value;
-				RaisePropertyChanged("OutputType");
+				Update(ref outputType, value);
 			}
 		}
 
@@ -413,8 +384,8 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 				SelectedGroupIndex = 0;
 			}
 
-			RaisePropertyChanged("CombinedGroup");
-			RaisePropertyChanged("Groups");
+			Notify("CombinedGroup");
+			Notify("Groups");
 
 			//Log.Here().Activity($"Setting selected group index to '{SelectedGroupIndex}' {CombinedGroup.Visibility}.");
 
@@ -486,8 +457,8 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			if(files.Count() > 0)
 			{
 				Settings.LastFileImportPath = Path.GetDirectoryName(files.FirstOrDefault());
-				RaisePropertyChanged("CurrentImportPath");
-				RaisePropertyChanged("CurrentFileImportPath");
+				Notify("CurrentImportPath");
+				Notify("CurrentFileImportPath");
 			}
 			LocaleEditorWindow.instance.SaveSettings();
 
@@ -508,8 +479,8 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			if (files.Count() > 0)
 			{
 				Settings.LastEntryImportPath = Path.GetDirectoryName(files.FirstOrDefault());
-				RaisePropertyChanged("CurrentImportPath");
-				RaisePropertyChanged("CurrentEntryImportPath");
+				Notify("CurrentImportPath");
+				Notify("CurrentEntryImportPath");
 			}
 			LocaleEditorWindow.instance.SaveSettings();
 
@@ -578,8 +549,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			get { return exportText; }
 			set
 			{
-				exportText = value;
-				RaisePropertyChanged("ExportText");
+				Update(ref exportText, value);
 			}
 		}
 

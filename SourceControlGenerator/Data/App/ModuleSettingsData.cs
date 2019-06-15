@@ -87,8 +87,7 @@ namespace SCG.Data
 			get { return defaultAuthor; }
 			set
 			{
-				defaultAuthor = value;
-				RaisePropertyChanged("DefaultAuthor");
+				Update(ref defaultAuthor, value);
 			}
 		}
 
@@ -101,8 +100,7 @@ namespace SCG.Data
 			get { return defaultEmail; }
 			set
 			{
-				defaultEmail = value;
-				RaisePropertyChanged("DefaultEmail");
+				Update(ref defaultEmail, value);
 			}
 		}
 
@@ -113,7 +111,7 @@ namespace SCG.Data
 		public string GitRootDirectory
 		{
 			get { return gitRootDirectory; }
-			set { gitRootDirectory = value; RaisePropertyChanged("GitRootDirectory"); }
+			set { Update(ref gitRootDirectory, value);}
 		}
 
 		private string backupRootDirectory;
@@ -125,8 +123,7 @@ namespace SCG.Data
 			get { return backupRootDirectory; }
 			set
 			{
-				backupRootDirectory = value;
-				RaisePropertyChanged("BackupRootDirectory");
+				Update(ref backupRootDirectory, value);
 			}
 		}
 
@@ -139,8 +136,7 @@ namespace SCG.Data
 			get { return templatesSettingsFile; }
 			set
 			{
-				templatesSettingsFile = value;
-				RaisePropertyChanged("TemplateSettingsFile");
+				Update(ref templatesSettingsFile, value);
 			}
 		}
 
@@ -153,8 +149,7 @@ namespace SCG.Data
 			get { return userKeywordsFile; }
 			set
 			{
-				userKeywordsFile = value;
-				RaisePropertyChanged("UserKeywordsFile");
+				Update(ref userKeywordsFile, value);
 			}
 		}
 
@@ -167,8 +162,7 @@ namespace SCG.Data
 			get { return addedProjectsFile; }
 			set
 			{
-				addedProjectsFile = value;
-				RaisePropertyChanged("AddedProjectsFile");
+				Update(ref addedProjectsFile, value);
 			}
 		}
 
@@ -181,8 +175,7 @@ namespace SCG.Data
 			get { return gitGenerationSettings; }
 			set
 			{
-				gitGenerationSettings = value;
-				RaisePropertyChanged("GitGenSettingsFile");
+				Update(ref gitGenerationSettings, value);
 			}
 		}
 
@@ -194,8 +187,7 @@ namespace SCG.Data
 			get { return lastBackupPath; }
 			set
 			{
-				lastBackupPath = value;
-				RaisePropertyChanged("LastBackupPath");
+				Update(ref lastBackupPath, value);
 			}
 		}
 
@@ -208,8 +200,7 @@ namespace SCG.Data
 			get { return firstTimeSetup; }
 			set
 			{
-				firstTimeSetup = value;
-				RaisePropertyChanged("FirstTimeSetup");
+				Update(ref firstTimeSetup, value);
 			}
 		}
 
@@ -220,8 +211,7 @@ namespace SCG.Data
 			get { return backupMode; }
 			set
 			{
-				backupMode = value;
-				RaisePropertyChanged("BackupMode");
+				Update(ref backupMode, value);
 			}
 		}
 

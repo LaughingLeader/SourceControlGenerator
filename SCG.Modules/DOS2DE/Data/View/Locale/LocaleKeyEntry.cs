@@ -26,8 +26,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			get { return keyIsEditable; }
 			set
 			{
-				keyIsEditable = value;
-				RaisePropertyChanged("KeyIsEditable");
+				Update(ref keyIsEditable, value);
 			}
 		}
 
@@ -41,13 +40,12 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 				if (KeyAttribute != null)
 				{
 					KeyAttribute.Value = value;
+					Notify("Key");
 				}
 				else
 				{
-					key = value;
+					Update(ref key, value);
 				}
-
-				RaisePropertyChanged("Key");
 			}
 		}
 
@@ -58,8 +56,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			{
 				if (TranslatedString != null)
 				{
-					TranslatedString.Value = value;
-					RaisePropertyChanged("Content");
+					Update(ref TranslatedString.Value, value);
 				}
 			}
 		}
@@ -71,8 +68,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			{
 				if (TranslatedString != null)
 				{
-					TranslatedString.Handle = value;
-					RaisePropertyChanged("Handle");
+					Update(ref TranslatedString.Handle, value);
 				}
 			}
 		}
@@ -84,8 +80,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			get { return selected; }
 			set
 			{
-				selected = value;
-				RaisePropertyChanged("Selected");
+				Update(ref selected, value);
 				LocaleEditorWindow.instance?.KeyEntrySelected(this, selected);
 			}
 		}

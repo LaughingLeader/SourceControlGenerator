@@ -23,8 +23,7 @@ namespace SCG.Modules.DOS2.Data.View
 			get { return manageButtonsText; }
 			set
 			{
-				manageButtonsText = value;
-				RaisePropertyChanged("ManageButtonsText");
+				Update(ref manageButtonsText, value);
 			}
 		}
 
@@ -35,8 +34,7 @@ namespace SCG.Modules.DOS2.Data.View
 			get { return canAddProject; }
 			set
 			{
-				canAddProject = value;
-				RaisePropertyChanged("CanAddProject");
+				Update(ref canAddProject, value);
 			}
 		}
 
@@ -48,8 +46,7 @@ namespace SCG.Modules.DOS2.Data.View
 			get { return availableProjectsToggleText; }
 			set
 			{
-				availableProjectsToggleText = value;
-				RaisePropertyChanged("AvailableProjectsToggleText");
+				Update(ref availableProjectsToggleText, value);
 			}
 		}
 
@@ -60,8 +57,7 @@ namespace SCG.Modules.DOS2.Data.View
 			get { return availableProjectsVisible; }
 			set
 			{
-				availableProjectsVisible = value;
-				RaisePropertyChanged("AvailableProjectsVisible");
+				Update(ref availableProjectsVisible, value);
 			}
 		}
 
@@ -72,9 +68,8 @@ namespace SCG.Modules.DOS2.Data.View
 			get { return newProjectsAvailable; }
 			set
 			{
-				newProjectsAvailable = value;
-				RaisePropertyChanged("NewProjectsAvailable");
-				RaisePropertyChanged("AvailableProjectsTooltip");
+				Update(ref newProjectsAvailable, value);
+				Notify("AvailableProjectsTooltip");
 			}
 		}
 
@@ -94,8 +89,7 @@ namespace SCG.Modules.DOS2.Data.View
 			get { return canClickRefresh; }
 			set
 			{
-				canClickRefresh = value;
-				RaisePropertyChanged("CanClickRefresh");
+				Update(ref canClickRefresh, value);
 			}
 		}
 
@@ -107,8 +101,7 @@ namespace SCG.Modules.DOS2.Data.View
 			get { return managedProjectsData; }
 			set
 			{
-				managedProjectsData = value;
-				RaisePropertyChanged("ManagedProjectsData");
+				Update(ref managedProjectsData, value);
 			}
 		}
 

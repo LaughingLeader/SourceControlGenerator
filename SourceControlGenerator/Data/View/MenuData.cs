@@ -32,8 +32,7 @@ namespace SCG.Data.View
 			}
 			set
 			{
-				header = value;
-				RaisePropertyChanged("Header");
+				Update(ref header, value);
 			}
 		}
 
@@ -52,8 +51,7 @@ namespace SCG.Data.View
 				{
 					ClickCommand.CanExecute(value);
 				}
-				isEnabled = value;
-				RaisePropertyChanged("IsEnabled");
+				Update(ref isEnabled, value);
 			}
 		}
 
@@ -64,9 +62,8 @@ namespace SCG.Data.View
 			get { return shortcutKey; }
 			set
 			{
-				shortcutKey = value;
-				RaisePropertyChanged("ShortcutKey");
-				RaisePropertyChanged("ShortcutText");
+				Update(ref shortcutKey, value);
+				Notify("ShortcutText");
 			}
 		}
 
@@ -77,9 +74,8 @@ namespace SCG.Data.View
 			get { return shortcutModifiers; }
 			set
 			{
-				shortcutModifiers = value;
-				RaisePropertyChanged("ShortcutModifiers");
-				RaisePropertyChanged("ShortcutText");
+				Update(ref shortcutModifiers, value);
+				Notify("ShortcutText");
 			}
 		}
 
@@ -106,8 +102,7 @@ namespace SCG.Data.View
 			}
 			set
 			{
-				shortcutText = value;
-				RaisePropertyChanged("ShortcutText");
+				Update(ref shortcutText, value);
 			}
 		}
 
@@ -120,8 +115,7 @@ namespace SCG.Data.View
 			get { return headerBinding; }
 			set
 			{
-				headerBinding = value;
-				RaisePropertyChanged("HeaderBinding");
+				Update(ref headerBinding, value);
 			}
 		}
 
@@ -132,8 +126,7 @@ namespace SCG.Data.View
 			get { return clickCommand; }
 			set
 			{
-				clickCommand = value;
-				RaisePropertyChanged("ClickCommand");
+				Update(ref clickCommand, value);
 			}
 		}
 
@@ -144,8 +137,7 @@ namespace SCG.Data.View
 			get { return module; }
 			set
 			{
-				module = value;
-				RaisePropertyChanged("Module");
+				Update(ref module, value);
 			}
 		}
 

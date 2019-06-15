@@ -163,7 +163,7 @@ namespace SCG.Modules.DOS2.Controls
 			}
 
 			Controller.Data.ProjectSelected = projectSelected;
-			Controller.Data.CanGenerateGit = canGitGenerate && AppController.Main.GitDetected;
+			Controller.Data.CanGenerateGit = canGitGenerate && AppController.Main.Data.GitDetected;
 			Controller.SelectionChanged();
 		}
 

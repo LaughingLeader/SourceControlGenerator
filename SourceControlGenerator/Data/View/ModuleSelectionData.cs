@@ -16,8 +16,7 @@ namespace SCG.Data.View
 			get { return moduleName; }
 			set
 			{
-				moduleName = value;
-				RaisePropertyChanged("ModuleName");
+				Update(ref moduleName, value);
 			}
 		}
 
@@ -28,8 +27,7 @@ namespace SCG.Data.View
 			get { return displayName; }
 			set
 			{
-				displayName = value;
-				RaisePropertyChanged("DisplayName");
+				Update(ref displayName, value);
 			}
 		}
 
@@ -40,8 +38,7 @@ namespace SCG.Data.View
 			get { return logo; }
 			set
 			{
-				logo = value;
-				RaisePropertyChanged("Logo");
+				Update(ref logo, value);
 			}
 		}
 
@@ -52,8 +49,7 @@ namespace SCG.Data.View
 			get { return logoExists; }
 			set
 			{
-				logoExists = value;
-				RaisePropertyChanged("LogoExists");
+				Update(ref logoExists, value);
 			}
 		}
 

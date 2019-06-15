@@ -30,8 +30,7 @@ namespace SCG.Modules.DOS2DE.Data.App
 			get { return dataDirectory; }
 			set
 			{
-				dataDirectory = value;
-				RaisePropertyChanged("DOS2DEDataDirectory");
+				Update(ref dataDirectory, value);
 			}
 		}
 
@@ -43,8 +42,7 @@ namespace SCG.Modules.DOS2DE.Data.App
 			get { return directoryLayoutFile; }
 			set
 			{
-				directoryLayoutFile = value;
-				RaisePropertyChanged("DirectoryLayoutFile");
+				Update(ref directoryLayoutFile, value);
 			}
 		}
 

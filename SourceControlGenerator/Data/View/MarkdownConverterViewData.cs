@@ -74,9 +74,8 @@ namespace SCG.Data.View
 			set
 			{
 				CanSaveInput = input != value && value != fileContents;
-				input = value;
-				RaisePropertyChanged("Input");
-				RaisePropertyChanged("CanPreview");
+				Update(ref input, value);
+				Notify("CanPreview");
 			}
 		}
 
@@ -87,8 +86,7 @@ namespace SCG.Data.View
 			get { return canSaveInput; }
 			set
 			{
-				canSaveInput = value;
-				RaisePropertyChanged("CanSaveInput");
+				Update(ref canSaveInput, value);
 			}
 		}
 
@@ -99,8 +97,7 @@ namespace SCG.Data.View
 			get { return output; }
 			set
 			{
-				output = value;
-				RaisePropertyChanged("Output");
+				Update(ref output, value);
 			}
 		}
 
@@ -112,8 +109,7 @@ namespace SCG.Data.View
 			get { return textWrapMode; }
 			set
 			{
-				textWrapMode = value;
-				RaisePropertyChanged("TextWrapMode");
+				Update(ref textWrapMode, value);
 			}
 		}
 
@@ -125,8 +121,7 @@ namespace SCG.Data.View
 			get { return inputType; }
 			set
 			{
-				inputType = value;
-				RaisePropertyChanged("InputType");
+				Update(ref inputType, value);
 			}
 		}
 
@@ -138,10 +133,9 @@ namespace SCG.Data.View
 			get { return mode; }
 			set
 			{
-				mode = value;
-				RaisePropertyChanged("Mode");
-				RaisePropertyChanged("SingleMode");
-				RaisePropertyChanged("BatchMode");
+				Update(ref mode, value);
+				Notify("SingleMode");
+				Notify("BatchMode");
 			}
 		}
 
@@ -185,8 +179,7 @@ namespace SCG.Data.View
 			get { return selectedFormatter; }
 			set
 			{
-				selectedFormatter = value;
-				RaisePropertyChanged("SelectedFormatter");
+				Update(ref selectedFormatter, value);
 				SelectedFormatterName = selectedFormatter.Name;
 				SingleModeDefaultFileName = SelectedFormatterName.TrimWhitespace() + ".txt";
 			}
@@ -200,8 +193,7 @@ namespace SCG.Data.View
 			get { return selectedFormatterName; }
 			set
 			{
-				selectedFormatterName = value;
-				RaisePropertyChanged("SelectedFormatterName");
+				Update(ref selectedFormatterName, value);
 			}
 		}
 
@@ -213,9 +205,8 @@ namespace SCG.Data.View
 			get { return singleModeLastFileOutputPath; }
 			set
 			{
-				singleModeLastFileOutputPath = value;
-				RaisePropertyChanged("SingleModeLastFileExportPath");
-				RaisePropertyChanged("CanSave");
+				Update(ref singleModeLastFileOutputPath, value);
+				Notify("CanSave");
 			}
 		}
 
@@ -227,8 +218,7 @@ namespace SCG.Data.View
 			get { return singleModeLastFileInputPath; }
 			set
 			{
-				singleModeLastFileInputPath = value;
-				RaisePropertyChanged("SingleModeLastFileInputPath");
+				Update(ref singleModeLastFileInputPath, value);
 			}
 		}
 
@@ -240,8 +230,7 @@ namespace SCG.Data.View
 			get { return singleModeDefaultFileName; }
 			set
 			{
-				singleModeDefaultFileName = value;
-				RaisePropertyChanged("SingleModeDefaultFileName");
+				Update(ref singleModeDefaultFileName, value);
 			}
 		}
 
@@ -641,7 +630,7 @@ namespace SCG.Data.View
 					DefaultFileName = formatter.Name.TrimWhitespace()
 				});
 			}
-			RaisePropertyChanged("BatchFormatterData");
+			Notify("BatchFormatterData");
 		}
 	}
 }

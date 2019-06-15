@@ -33,9 +33,8 @@ namespace SCG.Data.View
 			get { return isVisible; }
 			set
 			{
-				isVisible = value;
-				RaisePropertyChanged("IsVisible");
-				RaisePropertyChanged("LogVisibleText");
+				Update(ref isVisible, value);
+				Notify("LogVisibleText");
 			}
 		}
 
@@ -47,13 +46,13 @@ namespace SCG.Data.View
 		public void Add(LogData log)
 		{
 			Logs.Add(log);
-			RaisePropertyChanged("Logs");
-			RaisePropertyChanged("CanClear");
+			Notify("Logs");
+			Notify("CanClear");
 
 			if (LastLogs != null)
 			{
 				LastLogs = null;
-				RaisePropertyChanged("CanRestore");
+				Notify("CanRestore");
 			}
 		}
 
@@ -64,9 +63,9 @@ namespace SCG.Data.View
 				LastLogs = new ObservableCollection<LogData>(Logs);
 				Logs.Clear();
 
-				RaisePropertyChanged("Logs");
-				RaisePropertyChanged("CanClear");
-				RaisePropertyChanged("CanRestore");
+				Notify("Logs");
+				Notify("CanClear");
+				Notify("CanRestore");
 			}
 		}
 
@@ -81,9 +80,9 @@ namespace SCG.Data.View
 
 				LastLogs = null;
 
-				RaisePropertyChanged("Logs");
-				RaisePropertyChanged("CanClear");
-				RaisePropertyChanged("CanRestore");
+				Notify("Logs");
+				Notify("CanClear");
+				Notify("CanRestore");
 			}
 		}
 
@@ -95,12 +94,11 @@ namespace SCG.Data.View
 			set
 			{
 				var lastVal = searchText;
-				searchText = value;
-				RaisePropertyChanged("SearchText");
+				Update(ref searchText, value);
 
 				if(searchText != lastVal)
 				{
-					RaisePropertyChanged("Logs");
+					Notify("Logs");
 				}
 			}
 		}
@@ -114,8 +112,7 @@ namespace SCG.Data.View
 			get { return filterActivity; }
 			set
 			{
-				filterActivity = value;
-				RaisePropertyChanged("FilterActivity");
+				Update(ref filterActivity, value);
 				FilterChanged(LogType.Activity, filterActivity, autoRaiseLogsChanged);
 			}
 		}
@@ -127,8 +124,7 @@ namespace SCG.Data.View
 			get { return filterImportant; }
 			set
 			{
-				filterImportant = value;
-				RaisePropertyChanged("FilterImportant");
+				Update(ref filterImportant, value);
 				FilterChanged(LogType.Important, filterImportant, autoRaiseLogsChanged);
 			}
 		}
@@ -140,8 +136,7 @@ namespace SCG.Data.View
 			get { return filterWarnings; }
 			set
 			{
-				filterWarnings = value;
-				RaisePropertyChanged("FilterWarnings");
+				Update(ref filterWarnings, value);
 				FilterChanged(LogType.Warning, filterWarnings, autoRaiseLogsChanged);
 			}
 		}
@@ -153,8 +148,7 @@ namespace SCG.Data.View
 			get { return filterErrors; }
 			set
 			{
-				filterErrors = value;
-				RaisePropertyChanged("FilterErrors");
+				Update(ref filterErrors, value);
 				FilterChanged(LogType.Error, filterErrors, autoRaiseLogsChanged);
 			}
 		}
@@ -174,7 +168,7 @@ namespace SCG.Data.View
 					}
 				}
 
-				if(raiseLogsChanged && change) RaisePropertyChanged("Logs");
+				if(raiseLogsChanged && change) Notify("Logs");
 			}
 		}
 
@@ -223,11 +217,11 @@ namespace SCG.Data.View
 				log.IsVisible = log.MessageType == logType;
 			}
 
-			RaisePropertyChanged("FilterActivity");
-			RaisePropertyChanged("FilterImportant");
-			RaisePropertyChanged("FilterWarnings");
-			RaisePropertyChanged("FilterErrors");
-			RaisePropertyChanged("Logs");
+			Notify("FilterActivity");
+			Notify("FilterImportant");
+			Notify("FilterWarnings");
+			Notify("FilterErrors");
+			Notify("Logs");
 		}
 
 		public void ToggleAllFilters(bool toValue)
@@ -239,11 +233,11 @@ namespace SCG.Data.View
 				log.IsVisible = toValue;
 			}
 
-			RaisePropertyChanged("FilterActivity");
-			RaisePropertyChanged("FilterImportant");
-			RaisePropertyChanged("FilterWarnings");
-			RaisePropertyChanged("FilterErrors");
-			RaisePropertyChanged("Logs");
+			Notify("FilterActivity");
+			Notify("FilterImportant");
+			Notify("FilterWarnings");
+			Notify("FilterErrors");
+			Notify("Logs");
 		}
 
 		private object logsLock = new object();

@@ -18,8 +18,7 @@ namespace SCG.Data.App
 			get { return lastModule; }
 			set
 			{
-				lastModule = value;
-				RaisePropertyChanged("LastModule");
+				Update(ref lastModule, value);
 			}
 		}
 
@@ -30,8 +29,7 @@ namespace SCG.Data.App
 			get { return lastLogPath; }
 			set
 			{
-				lastLogPath = value;
-				RaisePropertyChanged("LastLogPath");
+				Update(ref lastLogPath, value);
 			}
 		}
 
@@ -43,9 +41,7 @@ namespace SCG.Data.App
 			get { return gitInstallPath; }
 			set
 			{
-				gitInstallPath = value;
-				AppController.Main.GitDetected = FileCommands.IsValidPath(gitInstallPath);
-				RaisePropertyChanged("GitInstallPath");
+				Update(ref gitInstallPath, value);
 			}
 		}
 	}

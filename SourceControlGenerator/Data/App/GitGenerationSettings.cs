@@ -35,8 +35,7 @@ namespace SCG.Data
 			get { return licenseType; }
 			set
 			{
-				licenseType = value;
-				RaisePropertyChanged("SelectedLicense");
+				Update(ref licenseType, value);
 			}
 		}
 
@@ -52,8 +51,7 @@ namespace SCG.Data
 			get { return createJunctions; }
 			set
 			{
-				createJunctions = value;
-				RaisePropertyChanged("CreateJunctions");
+				Update(ref createJunctions, value);
 			}
 		}
 
@@ -64,8 +62,7 @@ namespace SCG.Data
 			get { return initGit; }
 			set
 			{
-				initGit = value;
-				RaisePropertyChanged("InitGit");
+				Update(ref initGit, value);
 			}
 		}
 
@@ -76,8 +73,7 @@ namespace SCG.Data
 			get { return initialGitCommit; }
 			set
 			{
-				initialGitCommit = value;
-				RaisePropertyChanged("InitialGitCommit");
+				Update(ref initialGitCommit, value);
 			}
 		}
 
@@ -119,8 +115,7 @@ namespace SCG.Data
 			get { return id; }
 			set
 			{
-				id = value;
-				RaisePropertyChanged("ID");
+				Update(ref id, value);
 			}
 		}
 
@@ -131,8 +126,7 @@ namespace SCG.Data
 			get { return templateName; }
 			set
 			{
-				templateName = value;
-				RaisePropertyChanged("TemplateName");
+				Update(ref templateName, value);
 			}
 		}
 
@@ -143,8 +137,7 @@ namespace SCG.Data
 			get { return enabled; }
 			set
 			{
-				enabled = value;
-				RaisePropertyChanged("Enabled");
+				Update(ref enabled, value);
 			}
 		}
 
@@ -156,8 +149,7 @@ namespace SCG.Data
 			get { return tooltip; }
 			set
 			{
-				tooltip = value;
-				RaisePropertyChanged("TooltipText");
+				Update(ref tooltip, value);
 			}
 		}
 

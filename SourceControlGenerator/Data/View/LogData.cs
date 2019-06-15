@@ -31,8 +31,7 @@ namespace SCG.Data.View
 			get { return isVisible; }
 			set
 			{
-				isVisible = value;
-				RaisePropertyChanged("IsVisible");
+				Update(ref isVisible, value);
 			}
 		}
 

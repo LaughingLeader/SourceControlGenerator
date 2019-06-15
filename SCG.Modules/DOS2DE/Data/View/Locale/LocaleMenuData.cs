@@ -19,8 +19,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			get { return fileMenu; }
 			set
 			{
-				fileMenu = value;
-				RaisePropertyChanged("File");
+				Update(ref fileMenu, value);
 			}
 		}
 
@@ -31,8 +30,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			get { return editMenu; }
 			set
 			{
-				editMenu = value;
-				RaisePropertyChanged("Edit");
+				Update(ref editMenu, value);
 			}
 		}
 
@@ -43,8 +41,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			get { return settingsMenu; }
 			set
 			{
-				settingsMenu = value;
-				RaisePropertyChanged("Settings");
+				Update(ref settingsMenu, value);
 			}
 		}
 
@@ -55,8 +52,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			get { return helpMenu; }
 			set
 			{
-				helpMenu = value;
-				RaisePropertyChanged("Help");
+				Update(ref helpMenu, value);
 			}
 		}
 

@@ -20,12 +20,11 @@ namespace SCG.Data.View
 			get { return formatter; }
 			set
 			{
-				formatter = value;
+				Update(ref formatter, value);
 				Name = formatter.Name;
 				DefaultFileExtension = formatter.DefaultFileExtension;
-				RaisePropertyChanged("Formatter");
-				RaisePropertyChanged("Name");
-				RaisePropertyChanged("OpenFileText");
+				Notify("Name");
+				Notify("OpenFileText");
 			}
 		}
 
@@ -36,9 +35,8 @@ namespace SCG.Data.View
 			get { return enabled; }
 			set
 			{
-				enabled = value;
-				RaisePropertyChanged("Enabled");
-				if (parentViewData != null) parentViewData.RaisePropertyChanged("CanBatchExport");
+				Update(ref enabled, value);
+				parentViewData?.Notify("CanBatchExport");
 			}
 		}
 
@@ -49,8 +47,7 @@ namespace SCG.Data.View
 			get { return filePath; }
 			set
 			{
-				filePath = value;
-				RaisePropertyChanged("FilePath");
+				Update(ref filePath, value);
 			}
 		}
 
@@ -77,8 +74,7 @@ namespace SCG.Data.View
 			get { return lastPath; }
 			set
 			{
-				lastPath = value;
-				RaisePropertyChanged("LastPath");
+				Update(ref lastPath, value);
 			}
 		}
 
@@ -90,8 +86,7 @@ namespace SCG.Data.View
 			get { return defaultFileName; }
 			set
 			{
-				defaultFileName = value;
-				RaisePropertyChanged("DefaultFileName");
+				Update(ref defaultFileName, value);
 			}
 		}
 
@@ -103,8 +98,7 @@ namespace SCG.Data.View
 			get { return defaultFileExtension; }
 			set
 			{
-				defaultFileExtension = value;
-				RaisePropertyChanged("DefaultFileExtension");
+				Update(ref defaultFileExtension, value);
 			}
 		}
 

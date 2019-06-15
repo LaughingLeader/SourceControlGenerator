@@ -33,8 +33,7 @@ namespace SCG.Windows
 			get { return backupFolderPath; }
 			set
 			{
-				backupFolderPath = value;
-				RaisePropertyChanged("BackupFolderPath");
+				Update(ref backupFolderPath, value);
 				CanBackupFolder = FileCommands.IsValidDirectoryPath(backupFolderPath);
 			}
 		}
@@ -46,8 +45,7 @@ namespace SCG.Windows
 			get { return totalBackupTimeText; }
 			set
 			{
-				totalBackupTimeText = value;
-				RaisePropertyChanged("TotalBackupTimeText");
+				Update(ref totalBackupTimeText, value);
 			}
 		}
 
@@ -58,8 +56,7 @@ namespace SCG.Windows
 			get { return canBackupFolder; }
 			set
 			{
-				canBackupFolder = value;
-				RaisePropertyChanged("CanBackupFolder");
+				Update(ref canBackupFolder, value);
 			}
 		}
 
@@ -70,8 +67,7 @@ namespace SCG.Windows
 			get { return isBackingUp; }
 			set
 			{
-				isBackingUp = value;
-				RaisePropertyChanged("IsBackingUp");
+				Update(ref isBackingUp, value);
 
 				if (IsBackingUp)
 				{
