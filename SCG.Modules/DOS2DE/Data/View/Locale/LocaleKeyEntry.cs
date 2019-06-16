@@ -9,11 +9,24 @@ using System.Threading.Tasks;
 
 namespace SCG.Modules.DOS2DE.Data.View.Locale
 {
-	public class LocaleKeyEntry : PropertyChangedBase, ICloneable
+	public class LocaleKeyEntry : PropertyChangedHistoryBase
 	{
 		public LSLib.LS.Node Node { get; set; }
 
-		public LSLib.LS.NodeAttribute KeyAttribute { get; set; }
+		private LSLib.LS.NodeAttribute keyAttribute;
+
+		public LSLib.LS.NodeAttribute KeyAttribute
+		{
+			get { return keyAttribute; }
+			set
+			{
+				keyAttribute = KeyAttribute;
+				if (keyAttribute != null)
+				{
+					Key = (string)keyAttribute.Value;
+				}
+			}
+		}
 
 		public LSLib.LS.NodeAttribute TranslatedStringAttribute { get; set; }
 
@@ -34,17 +47,17 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 
 		public string Key
 		{
-			get { return KeyAttribute != null ? KeyAttribute.Value.ToString() : key; }
+			get { return key; }
 			set
 			{
+				if(Update(ref key, value))
+				{
+					Notify("EntryKey");
+				}
+
 				if (KeyAttribute != null)
 				{
 					KeyAttribute.Value = value;
-					Notify("Key");
-				}
-				else
-				{
-					Update(ref key, value);
 				}
 			}
 		}
@@ -56,7 +69,10 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			{
 				if (TranslatedString != null)
 				{
-					Update(ref TranslatedString.Value, value);
+					if(Update(ref TranslatedString.Value, value))
+					{
+						Notify("EntryContent");
+					}
 				}
 			}
 		}
@@ -68,7 +84,10 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			{
 				if (TranslatedString != null)
 				{
-					Update(ref TranslatedString.Handle, value);
+					if(Update(ref TranslatedString.Handle, value))
+					{
+						Notify("EntryHandle");
+					}
 				}
 			}
 		}
@@ -85,21 +104,75 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			}
 		}
 
+		#region UI Properties
+		/* 
+		Properties used by the UI interface so we can track user changes with history. 
+		*/
+
+		public string EntryKey
+		{
+			get { return Key; }
+			set
+			{
+				if(UpdateWithHistory(ref key, value, "Key"))
+				{
+					Notify("EntryKey");
+				}
+
+				if (KeyAttribute != null)
+				{
+					KeyAttribute.Value = value;
+				}
+			}
+		}
+
+		public string EntryContent
+		{
+			get { return Content; }
+			set
+			{
+				if (TranslatedString != null)
+				{
+					if(UpdateWithHistory(ref TranslatedString.Value, value, "Content"))
+					{
+						Notify("EntryContent");
+					}
+				}
+			}
+		}
+
+		public string EntryHandle
+		{
+			get { return Handle; }
+			set
+			{
+				if (TranslatedString != null)
+				{
+					if(UpdateWithHistory(ref TranslatedString.Handle, value, "Handle"))
+					{
+						Notify("EntryHandle");
+					}
+				}
+			}
+		}
+
+		#endregion
+
 		public LocaleKeyEntry(LSLib.LS.Node resNode)
 		{
 			Node = resNode;
 		}
 
-		public object Clone()
-		{
-			return new LocaleKeyEntry(this.Node)
-			{
-				Key = this.Key,
-				Handle = this.Handle,
-				Content = this.Content,
-				Selected = this.Selected
-			};
-		}
+		//public object Clone()
+		//{
+		//	return new LocaleKeyEntry(this.Node)
+		//	{
+		//		Key = this.Key,
+		//		Handle = this.Handle,
+		//		Content = this.Content,
+		//		Selected = this.Selected
+		//	};
+		//}
 	}
 
 	public struct HandleHistory

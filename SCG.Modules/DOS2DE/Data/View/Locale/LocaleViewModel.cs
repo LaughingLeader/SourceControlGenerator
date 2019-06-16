@@ -464,11 +464,17 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 
 		public void ImportFileAsFileData(IEnumerable<string> files)
 		{
+			var currentGroup = Groups.Where(g => g == SelectedGroup).First();
 			var newFileDataList = LocaleEditorCommands.ImportFilesAsData(files, SelectedGroup);
-			foreach (var k in newFileDataList)
-			{
-				AddWithHistory(SelectedGroup.DataFiles, k);
-			}
+
+			CreateSnapshot(() => {
+				currentGroup.DataFiles.RemoveRange(newFileDataList);
+			}, () => {
+				currentGroup.DataFiles.AddRange(newFileDataList);
+			});
+
+			SelectedGroup.DataFiles.AddRange(newFileDataList);
+
 			SelectedGroup.ChangesUnsaved = true;
 			SelectedGroup.UpdateCombinedData();
 			SelectedGroup.SelectLast();
@@ -487,11 +493,27 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 		public void ImportFileAsKeys(IEnumerable<string> files)
 		{
 			Log.Here().Activity("Importing keys from files...");
+
+			var currentItem = SelectedItem;
 			var newKeys = LocaleEditorCommands.ImportFilesAsEntries(files, SelectedItem as LocaleFileData);
+
+			CreateSnapshot(() => {
+				foreach(var k in newKeys)
+				{
+					currentItem.Entries.Remove(k);
+				}
+			}, () => {
+				foreach (var k in newKeys)
+				{
+					currentItem.Entries.Add(k);
+				}
+			});
+
 			foreach (var k in newKeys)
 			{
-				AddWithHistory(SelectedItem.Entries, k);
+				SelectedItem.Entries.Add(k);
 			}
+
 			SelectedItem.ChangesUnsaved = true;
 			SelectedGroup.UpdateCombinedData();
 
@@ -531,6 +553,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 				if (SelectedGroup.SelectedFile is LocaleFileData fileData && fileData.Format == LSLib.LS.Enums.ResourceFormat.LSB)
 				{
 					LocaleKeyEntry localeEntry = LocaleEditorCommands.CreateNewLocaleEntry(fileData);
+					localeEntry.SetHistoryFromObject(this);
 					AddWithHistory(fileData.Entries, localeEntry);
 					SelectedGroup.UpdateCombinedData();
 				}
@@ -692,7 +715,11 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 				DOS2DETooltips.Button_Locale_ExportToXML, ExportXMLCommand, Key.E, ModifierKeys.Control | ModifierKeys.Shift));
 
 			MenuData.Edit.Add(new MenuData("Edit.Undo", "Undo", UndoCommand, Key.Z, ModifierKeys.Control));
-			MenuData.Edit.Add(new MenuData("Edit.Redo", "Redo", RedoCommand, Key.Z, ModifierKeys.Control | ModifierKeys.Shift));
+			MenuData.Edit.Add(new MenuData("Edit.Redo", "Redo", RedoCommand, 
+				new MenuShortcutInputBinding(Key.Z, ModifierKeys.Control | ModifierKeys.Shift),
+				new MenuShortcutInputBinding(Key.Y, ModifierKeys.Control)
+				)
+			);
 
 			MenuData.Edit.Add(CreateMenuDataWithLink(() => SelectedItem != null, "SelectedItem", "Edit.SelectAll", 
 				"Select All", new ActionCommand(() => { SelectedItem?.SelectAll(); }), Key.A, ModifierKeys.Control));

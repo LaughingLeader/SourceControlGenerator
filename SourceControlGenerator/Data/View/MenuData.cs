@@ -17,6 +17,27 @@ namespace SCG.Data.View
 		string Module { get; set; }
 	}
 
+	public class MenuShortcutInputBinding
+	{
+		public Key Key { get; set; }
+		public ModifierKeys Modifiers { get; set; }
+
+		public KeyBinding InputBinding { get; set; }
+
+		public MenuShortcutInputBinding(Key key, ModifierKeys? modifiers = null)
+		{
+			Key = key;
+			if (modifiers == null)
+			{
+				Modifiers = ModifierKeys.None;
+			}
+			else
+			{
+				Modifiers = modifiers.Value;
+			}
+		}
+	}
+
 	[DebuggerDisplay("{Header}, Children={MenuItems.Count}")]
 	public class MenuData : PropertyChangedBase, IMenuData
 	{
@@ -55,31 +76,26 @@ namespace SCG.Data.View
 			}
 		}
 
-		private Key? shortcutKey;
+		public List<MenuShortcutInputBinding> Shortcuts { get; set; }
 
-		public Key? ShortcutKey
+		public MenuShortcutInputBinding AddShortcut(Key shortcutKey, ModifierKeys? shortcutModifiers = null)
 		{
-			get { return shortcutKey; }
-			set
+			var shortcut = new MenuShortcutInputBinding(shortcutKey, shortcutModifiers);
+			Shortcuts.Add(shortcut);
+			UpdateShortcutText();
+
+			if(registeredWindows.Count > 0)
 			{
-				Update(ref shortcutKey, value);
-				Notify("ShortcutText");
+				shortcut.InputBinding = new KeyBinding(ClickCommand, shortcut.Key, shortcut.Modifiers);
+
+				foreach (var window in registeredWindows)
+				{
+					window.InputBindings.Add(shortcut.InputBinding);
+				}
 			}
+
+			return shortcut;
 		}
-
-		private ModifierKeys? shortcutModifiers;
-
-		public ModifierKeys? ShortcutModifiers
-		{
-			get { return shortcutModifiers; }
-			set
-			{
-				Update(ref shortcutModifiers, value);
-				Notify("ShortcutText");
-			}
-		}
-
-		public KeyBinding InputBinding { get; set; }
 
 		private string shortcutText = "";
 
@@ -87,22 +103,37 @@ namespace SCG.Data.View
 		{
 			get
 			{
-				if(ShortcutKey != null)
-				{
-					if(ShortcutModifiers != null)
-					{
-						return SCG.App.ModifierKeysConverter.ConvertToString(ShortcutModifiers.Value) + "+" + SCG.App.KeyConverter.ConvertToString(ShortcutKey.Value);
-					}
-					else
-					{
-						return SCG.App.KeyConverter.ConvertToString(ShortcutKey.Value);
-					}
-				}
 				return shortcutText;
 			}
 			set
 			{
 				Update(ref shortcutText, value);
+			}
+		}
+
+		public void UpdateShortcutText()
+		{
+			if (Shortcuts.Count > 0)
+			{
+				var text = "";
+				for (var i = 0; i < Shortcuts.Count; i++)
+				{
+					var shortcut = Shortcuts[i];
+					if (i > 0) text += " or ";
+					if (shortcut.Modifiers != ModifierKeys.None)
+					{
+						text += SCG.App.ModifierKeysConverter.ConvertToString(shortcut.Modifiers) + "+" + SCG.App.KeyConverter.ConvertToString(shortcut.Key);
+					}
+					else
+					{
+						text += SCG.App.KeyConverter.ConvertToString(shortcut.Key);
+					}
+				}
+				ShortcutText = text;
+			}
+			else
+			{
+				ShortcutText = "";
 			}
 		}
 
@@ -163,14 +194,21 @@ namespace SCG.Data.View
 			}
 		}
 
+		private List<Window> registeredWindows;
+
 		public void RegisterInputBinding(Window window)
 		{
-			if (ShortcutKey != null && InputBinding == null)
+			if (Shortcuts.Count > 0)
 			{
-				ModifierKeys modifier = ShortcutModifiers == null ? ModifierKeys.None : ShortcutModifiers.Value;
-				var binding = new KeyBinding(ClickCommand, ShortcutKey.Value, modifier);
-				InputBinding = binding;
-				window.InputBindings.Add(binding);
+				foreach(var shortcut in Shortcuts)
+				{
+					if(shortcut.InputBinding == null)
+					{
+						shortcut.InputBinding = new KeyBinding(ClickCommand, shortcut.Key, shortcut.Modifiers);
+					}
+					//Log.Here().Activity($"Registered binding: {shortcut.Key} + {shortcut.Modifiers}");
+					window.InputBindings.Add(shortcut.InputBinding);
+				}
 			}
 
 			if(MenuItems != null)
@@ -183,13 +221,24 @@ namespace SCG.Data.View
 					}
 				}
 			}
+
+			if (!registeredWindows.Contains(window))
+			{
+				registeredWindows.Add(window);
+			}
 		}
 
 		public void UnregisterInputBinding(Window window)
 		{
-			if (InputBinding != null)
+			if (Shortcuts.Count > 0)
 			{
-				window.InputBindings.Remove(InputBinding);
+				foreach (var shortcut in Shortcuts)
+				{
+					if (shortcut.InputBinding != null)
+					{
+						window.InputBindings.Remove(shortcut.InputBinding);
+					}
+				}
 			}
 
 			if (MenuItems != null)
@@ -201,6 +250,11 @@ namespace SCG.Data.View
 						menuData.UnregisterInputBinding(window);
 					}
 				}
+			}
+
+			if(registeredWindows.Contains(window))
+			{
+				registeredWindows.Remove(window);
 			}
 		}
 
@@ -240,25 +294,54 @@ namespace SCG.Data.View
 			return this;
 		}
 
-		public MenuData(string MenuID)
+		private void Init(string MenuID, string menuName)
 		{
 			ID = MenuID;
+			Header = menuName;
+
 			MenuItems = new ObservableCollection<IMenuData>();
+			Shortcuts = new List<MenuShortcutInputBinding>();
+
+			registeredWindows = new List<Window>();
 		}
 
-		public MenuData(string MenuID, string menuName, ICommand command = null, 
+		public MenuData(string menuID)
+		{
+			Init(menuID, "");
+		}
+
+		public MenuData(string menuID, string menuName)
+		{
+			Init(menuID, menuName);
+		}
+
+		public MenuData(string menuID, string menuName, ICommand command = null, 
 			Key? shortcutKey = null, ModifierKeys? shortcutModifiers = null)
 		{
-			ID = MenuID;
-			MenuItems = new ObservableCollection<IMenuData>();
-
-			Header = menuName;
+			Init(menuID, menuName);
 
 			if (command != null) ClickCommand = command;
 
-			if (shortcutKey != null) ShortcutKey = shortcutKey;
+			if(shortcutKey != null)
+			{
+				Shortcuts.Add(new MenuShortcutInputBinding(shortcutKey.Value, shortcutModifiers));
+				UpdateShortcutText();
+			}
+		}
 
-			if (shortcutModifiers != null) ShortcutModifiers = shortcutModifiers;
+		public MenuData(string menuID, string menuName, ICommand command, params MenuShortcutInputBinding[] shortcuts)
+		{
+			Init(menuID, menuName);
+			ClickCommand = command;
+
+			if (shortcuts != null)
+			{
+				foreach(var shortcut in shortcuts)
+				{
+					Shortcuts.Add(shortcut);
+				}
+				UpdateShortcutText();
+			}
 		}
 	}
 

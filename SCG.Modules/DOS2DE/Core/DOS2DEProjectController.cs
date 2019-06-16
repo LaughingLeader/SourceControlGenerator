@@ -1178,7 +1178,7 @@ namespace SCG.Core
 					Header = "Refresh Projects",
 					MenuItems = new ObservableCollection<IMenuData>()
 					{
-						new MenuData("DOS2.RefreshAll", "Refresh All", new ActionCommand(RefreshAllProjects)) { ShortcutKey = System.Windows.Input.Key.F5 },
+						new MenuData("DOS2.RefreshAll", "Refresh All", new ActionCommand(RefreshAllProjects), System.Windows.Input.Key.F5),
 						new MenuData("DOS2.RefreshManagedData", "Refresh Managed Data", new ActionCommand(RefreshModProjects)),
 					}
 				},
@@ -1201,13 +1201,9 @@ namespace SCG.Core
 			);
 
 
-			OpenLocalizationEditorMenuData = new MenuData("DOS2.LocalizationEditor")
-			{
-				Header = "Localization Editor",
-				ClickCommand = new ActionCommand(OpenLocalizationEditor),
-				ShortcutKey = System.Windows.Input.Key.F7,
-				IsEnabled = false
-			};
+			OpenLocalizationEditorMenuData = new MenuData("DOS2.LocalizationEditor", 
+				"Localization Editor", new ActionCommand(OpenLocalizationEditor), System.Windows.Input.Key.F7);
+			OpenLocalizationEditorMenuData.IsEnabled = false;
 
 			MainAppData.MenuBarData.Tools.Register(Data.ModuleName,
 				new SeparatorData(),

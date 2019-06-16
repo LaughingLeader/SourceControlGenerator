@@ -32,9 +32,9 @@ namespace SCG.Windows
 		public void Init(AppController controller)
 		{
 			var aboutMenu = controller.Data.MenuBarData.FindByID(MenuID.About);
-			if(aboutMenu != null && aboutMenu.InputBinding != null)
+			if(aboutMenu != null)
 			{
-				InputBindings.Add(aboutMenu.InputBinding);
+				aboutMenu.RegisterInputBinding(this);
 			}
 		}
 

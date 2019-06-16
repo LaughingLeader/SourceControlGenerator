@@ -11,62 +11,13 @@ using System.Collections.Generic;
 
 namespace SCG.Data
 {
-	
-	public abstract class HistoryBaseViewModel : IDisposable, INotifyPropertyChanged
+	public abstract class HistoryBaseViewModel : PropertyChangedHistoryBase, IDisposable
 	{
 		private CompositeDisposable Disposable { get; set; }
 
 		public ICommand UndoCommand { get; set; }
 		public ICommand RedoCommand { get; set; }
 		public ICommand ClearCommand { get; set; }
-
-		private IHistory History { get; set; }
-
-		public event PropertyChangedEventHandler PropertyChanged;
-
-		public virtual void OnPropertyNotify(string propertyName)
-		{
-
-		}
-
-		public void Notify([CallerMemberName] string propertyName = null)
-		{
-			PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-			OnPropertyNotify(propertyName);
-		}
-
-		public bool UpdateWithHistory<T>(IPropertyChangedBase targetObject, string propertyName, T value)
-		{
-			var prop = this.GetType().GetProperty(propertyName, BindingFlags.Public | BindingFlags.SetProperty | BindingFlags.Instance);
-			if(prop != null && prop.CanWrite && prop.CanRead)
-			{
-				var undoValue = prop.GetValue(targetObject);
-				var redoValue = value;
-
-				History.Snapshot(() =>
-				{
-					prop.SetValue(targetObject, undoValue);
-				}, () =>
-				{
-					prop.SetValue(targetObject, redoValue);
-				});
-
-				prop.SetValue(targetObject, value);
-				return true;
-			}
-			return false;
-		}
-
-		public bool Update<T>(ref T field, T value, [CallerMemberName] string propertyName = null)
-		{
-			if (!Equals(field, value))
-			{
-				field = value;
-				Notify(propertyName);
-				return true;
-			}
-			return false;
-		}
 
 		public void CreateSnapshot(Action undo, Action redo)
 		{

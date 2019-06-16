@@ -87,9 +87,9 @@ namespace SCG.Windows
 		public void Init(AppController controller)
 		{
 			var menu = controller.Data.MenuBarData.FindByID(MenuID.TextCreator);
-			if (menu != null && menu.InputBinding != null)
+			if (menu != null)
 			{
-				InputBindings.Add(menu.InputBinding);
+				menu.RegisterInputBinding(this);
 			}
 		}
 

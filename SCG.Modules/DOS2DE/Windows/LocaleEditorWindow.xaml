@@ -390,15 +390,15 @@
 									</Style>
 								</DataGridCheckBoxColumn.CellStyle>
 							</DataGridCheckBoxColumn>
-							<DataGridTextColumn Header="Key" Binding="{Binding Key}" MinWidth="50" Width="Auto">
+							<DataGridTextColumn Header="Key" Binding="{Binding EntryKey}" MinWidth="50" Width="Auto">
 								<DataGridTextColumn.CellStyle>
 									<Style TargetType="DataGridCell" BasedOn="{StaticResource DataGrid_NoHighlight}">
 										<Setter Property="IsEnabled" Value="{Binding KeyIsEditable}" />
 									</Style>
 								</DataGridTextColumn.CellStyle>
 							</DataGridTextColumn>
-							<DataGridTextColumn Header="Content" Binding="{Binding Content}" MinWidth="50" Width="*" />
-							<DataGridTextColumn Header="Handle" Binding="{Binding Handle}" MinWidth="50" Width="Auto" />
+							<DataGridTextColumn Header="Content" Binding="{Binding EntryContent}" MinWidth="50" Width="*" />
+							<DataGridTextColumn Header="Handle" Binding="{Binding EntryHandle}" MinWidth="50" Width="Auto" />
 						</DataGrid.Columns>
 					</DataGrid>
 				</Grid>

@@ -872,20 +872,9 @@ namespace SCG.Core
 			);
 			*/
 
-			LogMenuData = new MenuData(MenuID.OpenLog)
-			{
-				Header = "Open Log Window",
-				ClickCommand = new ActionCommand(MenuAction_ToggleLogWindow),
-				ShortcutKey = Key.F8
-			};
-
-			DebugWindowMenuData = new MenuData(MenuID.ToggleDebugWindow)
-			{
-				Header = "Open Debug Window",
-				ClickCommand = new ActionCommand(MenuAction_ToggleDebugWindow),
-				ShortcutKey = Key.F8,
-				ShortcutModifiers = ModifierKeys.Alt
-			};
+			LogMenuData = new MenuData(MenuID.OpenLog, "Open Log Window", new ActionCommand(MenuAction_ToggleLogWindow), Key.F8);
+			DebugWindowMenuData = new MenuData(MenuID.ToggleDebugWindow, "Open Debug Window", 
+				new ActionCommand(MenuAction_ToggleDebugWindow), Key.F8, ModifierKeys.Alt);
 
 			//LogMenuData.SetHeaderBinding(mainWindow.LogWindow.Data, "LogVisibleText");
 
@@ -905,18 +894,8 @@ namespace SCG.Core
 			);
 
 			Data.MenuBarData.Tools.Register("Base",
-				new MenuData(MenuID.Markdown)
-				{
-					Header = "Open Markdown Converter",
-					ClickCommand = new ActionCommand(MenuAction_ToggleMarkdownWindow),
-					ShortcutKey = Key.F3
-				},
-				new MenuData(MenuID.TextCreator)
-				{
-					Header = "Open Text Generator",
-					ClickCommand = new ActionCommand(MenuAction_ToggleTextGeneratorWindow),
-					ShortcutKey = Key.F4
-				}
+				new MenuData(MenuID.Markdown, "Open Markdown Converter", new ActionCommand(MenuAction_ToggleMarkdownWindow), Key.F3),
+				new MenuData(MenuID.TextCreator, "Open Text Generator", new ActionCommand(MenuAction_ToggleTextGeneratorWindow), Key.F4)
 			);
 
 			Data.MenuBarData.Help.Register("Base",
@@ -930,12 +909,7 @@ namespace SCG.Core
 					Header = "Releases (Github)...",
 					ClickCommand = new ActionCommand(MenuAction_OpenReleasesLink)
 				},
-				new MenuData(MenuID.About)
-				{
-					Header = "About Source Control Generator",
-					ClickCommand = new ActionCommand(MenuAction_OpenAbout),
-					ShortcutKey = Key.F1
-				}
+				new MenuData(MenuID.About, "About Source Control Generator", new ActionCommand(MenuAction_OpenAbout), Key.F1)
 			);
 
 			//Data.MenuBarData.Notify(String.Empty);

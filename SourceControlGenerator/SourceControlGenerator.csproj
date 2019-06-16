@@ -301,6 +301,7 @@
     <Compile Include="Data\App\ManagedProjectsData.cs" />
     <Compile Include="Data\HistoryBaseData.cs" />
     <Compile Include="Data\HistoryBaseViewModel.cs" />
+    <Compile Include="Data\PropertyChangedHistoryBase.cs" />
     <Compile Include="Data\Proxy\AppControllerProxy.cs" />
     <Compile Include="Data\Proxy\BindingProxy.cs" />
     <Compile Include="Data\Proxy\IconProxy.cs" />

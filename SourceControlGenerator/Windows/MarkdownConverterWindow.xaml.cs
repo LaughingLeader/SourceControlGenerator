@@ -36,9 +36,9 @@ namespace SCG.Windows
 		public void Init(AppController controller)
 		{
 			var markdownMenu = controller.Data.MenuBarData.FindByID(MenuID.Markdown);
-			if (markdownMenu != null && markdownMenu.InputBinding != null)
+			if (markdownMenu != null)
 			{
-				InputBindings.Add(markdownMenu.InputBinding);
+				markdownMenu.RegisterInputBinding(this);
 			}
 		}
 

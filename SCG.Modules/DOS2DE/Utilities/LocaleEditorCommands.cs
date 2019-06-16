@@ -35,6 +35,16 @@ namespace SCG.Modules.DOS2DE.Utilities
 			{
 				var success = await LoadProjectLocalizationDataAsync(localizationData, dataRootPath, project, token).ConfigureAwait(false);
 			}
+			foreach(var g in localizationData.Groups)
+			{
+				foreach(var f in g.DataFiles)
+				{
+					foreach(var k in f.Entries)
+					{
+						k.SetHistoryFromObject(localizationData);
+					}
+				}
+			}
 			return localizationData;
 		}
 
@@ -597,12 +607,12 @@ namespace SCG.Modules.DOS2DE.Utilities
 					att.Value = new TranslatedString()
 					{
 						Value = "",
-						Handle = LocaleEditorCommands.CreateHandle()
+						Handle = CreateHandle()
 					};
 					node.Attributes.Add(kp.Key, att);
 				}
 
-				LocaleKeyEntry localeEntry = LocaleEditorCommands.LoadFromNode(node, fileData.Format);
+				LocaleKeyEntry localeEntry = LoadFromNode(node, fileData.Format);
 				localeEntry.Key = key == "NewKey" ? key + (fileData.Entries.Count + 1) : key;
 				localeEntry.Content = content;
 				return localeEntry;
