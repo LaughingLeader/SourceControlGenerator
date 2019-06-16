@@ -18,5 +18,6 @@ namespace SCG.Core
 		public static string About => "Base.About";
 		public static string Markdown => "Base.MarkdownWindowToggle";
 		public static string TextCreator => "Base.TextCreatorToggle";
+		public static string ColorPicker => "Base.ColorPickerToggle";
 	}
 }

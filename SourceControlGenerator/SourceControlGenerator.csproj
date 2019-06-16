@@ -158,10 +158,10 @@
       <HintPath>..\packages\ReactiveProperty.5.5.1\lib\net461\ReactiveProperty.NET46.dll</HintPath>
     </Reference>
     <Reference Include="ReactiveUI, Version=9.17.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\ReactiveUI.9.17.1\lib\net461\ReactiveUI.dll</HintPath>
+      <HintPath>..\packages\ReactiveUI.9.17.4\lib\net461\ReactiveUI.dll</HintPath>
     </Reference>
     <Reference Include="ReactiveUI.WPF, Version=9.17.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\ReactiveUI.WPF.9.17.1\lib\net461\ReactiveUI.WPF.dll</HintPath>
+      <HintPath>..\packages\ReactiveUI.WPF.9.17.4\lib\net461\ReactiveUI.WPF.dll</HintPath>
     </Reference>
     <Reference Include="SharpCompress, Version=0.23.0.0, Culture=neutral, PublicKeyToken=afb0a02973931d96, processorArchitecture=MSIL">
       <HintPath>..\packages\SharpCompress.0.23.0\lib\net45\SharpCompress.dll</HintPath>
@@ -225,6 +225,9 @@
     <Reference Include="WindowsBase" />
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
+    <Reference Include="WriteableBitmapEx.Wpf, Version=1.6.2.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\WriteableBitmapEx.1.6.2\lib\net40\WriteableBitmapEx.Wpf.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <ApplicationDefinition Include="App.xaml">
@@ -246,6 +249,9 @@
     <Compile Include="Controls\Behavior\MarginSetter.cs" />
     <Compile Include="Controls\Behavior\ProgressBarAnimationBehavior.cs" />
     <Compile Include="Controls\Behavior\TextBoxEnterKeyBehavior.cs" />
+    <Compile Include="Controls\ColorPickerControl.xaml.cs">
+      <DependentUpon>ColorPickerControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Controls\FileGridBox.xaml.cs">
       <DependentUpon>FileGridBox.xaml</DependentUpon>
     </Compile>
@@ -378,6 +384,9 @@
     <Compile Include="Windows\AboutWindow.xaml.cs">
       <DependentUpon>AboutWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Windows\ColorPickerWindow.xaml.cs">
+      <DependentUpon>ColorPickerWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Windows\TextGenerator.xaml.cs">
       <DependentUpon>TextGenerator.xaml</DependentUpon>
     </Compile>
@@ -403,6 +412,10 @@
     <Page Include="Controls\AddTemplateControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\ColorPickerControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="Controls\FileBrowseControl.xaml">
       <SubType>Designer</SubType>
@@ -449,6 +462,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Windows\AboutWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Windows\ColorPickerWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -636,6 +653,15 @@
     <Resource Include="Resources\Icons\WarningRule_16x.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>
+    <Resource Include="Resources\Icons\ColorPicker_16x.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Resources\Images\ColorPicker1.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Resources\Images\ColorPicker2.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
     <Content Include="Resources\Logos\DivinityOriginalSin2DE.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -701,6 +727,10 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\ColorPickerWPF\src\ColorPickerWPF\ColorPickerWPF.csproj">
+      <Project>{7028e44e-407c-4460-a51e-00171036fb36}</Project>
+      <Name>ColorPickerWPF</Name>
+    </ProjectReference>
     <ProjectReference Include="..\SCG.MarkdownConverter\SCG.MarkdownConverter.csproj">
       <Project>{139a1053-e54e-4fd7-b64a-a3f0a2cae350}</Project>
       <Name>SCG.MarkdownConverter</Name>

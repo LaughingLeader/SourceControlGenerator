@@ -70,6 +70,14 @@ namespace SCG.Windows
 			set { textGeneratorWindow = value; }
 		}
 
+		private ColorPickerWindow colorPickerWindow;
+
+		public ColorPickerWindow ColorPicker
+		{
+			get { return colorPickerWindow; }
+			set { colorPickerWindow = value; }
+		}
+
 		private GitGenerationWindow gitGenerationWindow;
 
 		public GitGenerationWindow GitGenerationWindow
@@ -109,6 +117,7 @@ namespace SCG.Windows
 			MarkdownConverterWindow = new MarkdownConverterWindow();
 			TextGeneratorWindow = new TextGenerator();
 			GitGenerationWindow = new GitGenerationWindow();
+			ColorPicker = new ColorPickerWindow();
 
 			SubWindows = new List<Window>()
 			{
@@ -116,7 +125,8 @@ namespace SCG.Windows
 				AboutWindow,
 				MarkdownConverterWindow,
 				TextGeneratorWindow,
-				GitGenerationWindow
+				GitGenerationWindow,
+				ColorPicker
 			};
 
 			foreach(var window in SubWindows)

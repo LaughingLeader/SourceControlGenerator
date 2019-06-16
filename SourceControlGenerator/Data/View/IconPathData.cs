@@ -20,6 +20,7 @@ namespace SCG.Data.View
 		public static readonly string AddRow = @"pack://application:,,,/SourceControlGenerator;component/Resources/Icons/AddRow_16x.png";
 		public static readonly string AddTextFile = @"pack://application:,,,/SourceControlGenerator;component/Resources/Icons/AddTextFile_16x.png";
 		public static readonly string Archive = @"pack://application:,,,/SourceControlGenerator;component/Resources/Icons/Archive.png";
+		public static readonly string ColorPicker = @"pack://application:,,,/SourceControlGenerator;component/Resources/Icons/ColorPicker_16x.png";
 		public static readonly string Convert = @"pack://application:,,,/SourceControlGenerator;component/Resources/Icons/Convert_16x.png";
 		public static readonly string DeleteDatabase = @"pack://application:,,,/SourceControlGenerator;component/Resources/Icons/DeleteDatabase_16x.png";
 		public static readonly string DeleteTableRow = @"pack://application:,,,/SourceControlGenerator;component/Resources/Icons/DeleteTableRow_16x.png";

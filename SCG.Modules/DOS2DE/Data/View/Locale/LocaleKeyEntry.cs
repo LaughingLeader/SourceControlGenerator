@@ -20,8 +20,8 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			get { return keyAttribute; }
 			set
 			{
-				keyAttribute = KeyAttribute;
-				if (keyAttribute != null)
+				keyAttribute = value;
+				if (keyAttribute != null && keyAttribute.Value != null)
 				{
 					Key = (string)keyAttribute.Value;
 				}
@@ -43,7 +43,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			}
 		}
 
-		private string key = "None";
+		private string key;
 
 		public string Key
 		{
@@ -111,7 +111,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 
 		public string EntryKey
 		{
-			get { return Key; }
+			get { return key; }
 			set
 			{
 				if(UpdateWithHistory(ref key, value, "Key"))
