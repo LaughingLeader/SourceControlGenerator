@@ -190,7 +190,7 @@ namespace SCG.Controls
 			}
 		}
 
-		protected void SampleImageClick(BitmapSource img, Point pos)
+		protected void SampleImageClick(BitmapSource img, Point pos, double actualWidth, double actualHeight)
 		{
 			// https://social.msdn.microsoft.com/Forums/vstudio/en-US/82a5731e-e201-4aaf-8d4b-062b138338fe/getting-pixel-information-from-a-bitmapimage?forum=wpf
 
@@ -200,10 +200,11 @@ namespace SCG.Controls
 
 			img.CopyPixels(pixels, stride, 0);
 
-
 			// Get pixel
-			var x = (int) pos.X;
-			var y = (int) pos.Y;
+			var x = (int) (pos.X / (actualWidth / img.Width));
+			var y = (int) (pos.Y / (actualHeight / img.Height));
+
+			Log.Here().Activity($"x({x}) y({y})");
 
 			int index = y*stride + 4*x;
 
@@ -216,37 +217,58 @@ namespace SCG.Controls
 			SetColor(color);
 		}
 
-
 		private void SampleImage_OnMouseDown(object sender, MouseButtonEventArgs e)
 		{
 			Mouse.Capture(this);
 
-			this.MouseMove += ColorPickerControl_MouseMove;
-			this.MouseUp += ColorPickerControl_MouseUp;
+			this.MouseMove += SampleImage_MouseMove;
+			this.MouseUp += SampleImage_MouseUp;
 		}
 
+		private void SampleImage_MouseUp(object sender, MouseButtonEventArgs e)
+		{
+			Mouse.Capture(null);
 
-		private void ColorPickerControl_MouseMove(object sender, MouseEventArgs e)
+			this.MouseMove -= SampleImage_MouseMove;
+			this.MouseUp -= SampleImage_MouseUp;
+		}
+
+		private void SampleImage_MouseMove(object sender, MouseEventArgs e)
 		{
 			var pos = e.GetPosition(SampleImage);
 			var img = SampleImage.Source as BitmapSource;
 										 
-			if (pos.X > 0 && pos.Y > 0 && pos.X < img.PixelWidth && pos.Y < img.PixelHeight)
-				SampleImageClick(img, pos);
-		}
-
-		private void ColorPickerControl_MouseUp(object sender, MouseButtonEventArgs e)
-		{
-			Mouse.Capture(null);
-			this.MouseMove -= ColorPickerControl_MouseMove;
-			this.MouseUp -= ColorPickerControl_MouseUp;
+			if (pos.X > 0 && pos.Y > 0 && pos.X < SampleImage.ActualWidth && pos.Y < SampleImage.ActualHeight)
+			{
+				SampleImageClick(img, pos, SampleImage.ActualWidth, SampleImage.ActualHeight);
+			}
 		}
 
 		private void SampleImage2_OnMouseDown(object sender, MouseButtonEventArgs e)
 		{
+			Mouse.Capture(this);
+
+			this.MouseMove += SampleImage2_MouseMove;
+			this.MouseUp += SampleImage2_MouseUp;
+		}
+
+		private void SampleImage2_MouseMove(object sender, MouseEventArgs e)
+		{
 			var pos = e.GetPosition(SampleImage2);
 			var img = SampleImage2.Source as BitmapSource;
-			SampleImageClick(img, pos);
+
+			if (pos.X > 0 && pos.Y > 0 && pos.X < SampleImage2.ActualWidth && pos.Y < SampleImage2.ActualHeight)
+			{
+				SampleImageClick(img, pos, SampleImage2.ActualWidth, SampleImage2.ActualHeight);
+			}
+		}
+
+		private void SampleImage2_MouseUp(object sender, MouseButtonEventArgs e)
+		{
+			Mouse.Capture(null);
+
+			this.MouseMove -= SampleImage2_MouseMove;
+			this.MouseUp -= SampleImage2_MouseUp;
 		}
 
 		private void Swatch_OnOnPickColor(Color color)
@@ -336,42 +358,43 @@ namespace SCG.Controls
 			//var hueChange = (int)((PickerHueSlider.Value / 360.0) * 240);
 			var sliderHue = (float) PickerHueSlider.Value;
 
-			var img = new BitmapImage(new Uri("pack://application:,,,/Resources/Images/ColorPicker2.png",UriKind.RelativeOrAbsolute));
-
-			var writableImage = BitmapFactory.ConvertToPbgra32Format(img);
-
 			if (sliderHue <= 0f || sliderHue >= 360f)
 			{
 				// No hue change just return
-				SampleImage2.Source = img;
 				return;
 			}
 
-			using (var context = writableImage.GetBitmapContext())
+			this.Dispatcher.BeginInvoke(new Action(() =>
 			{
-				long numPixels = img.PixelWidth*img.PixelHeight;
+				var img = new BitmapImage(new Uri("pack://application:,,,/Resources/Images/ColorPicker2.png",UriKind.RelativeOrAbsolute));
+				//var img = SampleImage2.Source as BitmapImage;
 
-				for (int x = 0; x < img.PixelWidth; x++)
+				var writableImage = BitmapFactory.ConvertToPbgra32Format(img);
+
+				using (var context = writableImage.GetBitmapContext())
 				{
-					for (int y = 0; y < img.PixelHeight; y++)
+					long numPixels = img.PixelWidth * img.PixelHeight;
+
+					for (int x = 0; x < img.PixelWidth; x++)
 					{
-						var pixel = writableImage.GetPixel(x, y);
+						for (int y = 0; y < img.PixelHeight; y++)
+						{
+							var pixel = writableImage.GetPixel(x, y);
 
-						var newHue = (float) (sliderHue + pixel.GetHue());
-						if (newHue >= 360)
-							newHue -= 360;
+							var newHue = (float)(sliderHue + pixel.GetHue());
+							if (newHue >= 360)
+								newHue -= 360;
 
-						var color = ColorUtil.FromAhsb((int) 255,
-							newHue, pixel.GetSaturation(), pixel.GetBrightness());
+							var color = ColorUtil.FromAhsb((int)255,
+								newHue, pixel.GetSaturation(), pixel.GetBrightness());
 
-						writableImage.SetPixel(x, y, color);
+							writableImage.SetPixel(x, y, color);
+						}
 					}
 				}
-			}
 
-
-
-			SampleImage2.Source = writableImage;
+				SampleImage2.Source = writableImage;
+			}), System.Windows.Threading.DispatcherPriority.Background);
 		}
 
 		private void LSlider_OnOnValueChanged(double value)
