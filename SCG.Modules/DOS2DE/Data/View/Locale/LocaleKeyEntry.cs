@@ -43,7 +43,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			}
 		}
 
-		private string key;
+		private string key = "None";
 
 		public string Key
 		{

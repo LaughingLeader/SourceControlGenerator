@@ -22,6 +22,7 @@ using Newtonsoft.Json;
 using SCG.Modules.DOS2DE.Data.App;
 using SCG.Modules.DOS2DE.Core;
 using SCG.Modules.DOS2DE.Windows;
+using System.Windows.Media;
 
 namespace SCG.Modules.DOS2DE.Utilities
 {
@@ -778,6 +779,8 @@ namespace SCG.Modules.DOS2DE.Utilities
 		#region Debug
 		public static void Debug_CreateEntries(ObservableRangeCollection<LocaleKeyEntry> Entries)
 		{
+			Random rnd = new Random();
+
 			for (int i = 0; i < 4; i++)
 			{
 				var node = new LSLib.LS.Node();
@@ -788,11 +791,12 @@ namespace SCG.Modules.DOS2DE.Utilities
 				if (att.Value is LSLib.LS.TranslatedString str)
 				{
 					str.Handle = handle;
-					str.Value = "Test";
+					str.Value = $"<font color='{String.Format("#{0:X6}", rnd.Next(0x1000000))}'>Test</font>";
+					str.Value += $" <font color='{String.Format("#{0:X6}", rnd.Next(0x1000000))}'>Test2</font>";
 				}
 
 				node.Attributes.Add("Content", att);
-				var entry = new LocaleKeyEntry(node);
+				var entry = LoadFromNode(node, ResourceFormat.LSB, false);
 				Entries.Add(entry);
 			}
 		}

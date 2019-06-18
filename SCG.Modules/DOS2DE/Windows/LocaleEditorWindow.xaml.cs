@@ -47,6 +47,8 @@ namespace SCG.Modules.DOS2DE.Windows
 
 		private DOS2DEModuleData ModuleData { get; set; }
 
+		
+
 		public LocaleEditorWindow(DOS2DEModuleData data)
 		{
 			InitializeComponent();
@@ -60,6 +62,16 @@ namespace SCG.Modules.DOS2DE.Windows
 			OptionsWindow.Hide();
 
 			instance = this;
+		}
+
+		public void ExpandContent(object obj)
+		{
+			if(obj is LocaleKeyEntry entry)
+			{
+				LocaleData.SelectedEntry = entry;
+				LocaleData.SelectedEntry.Notify("EntryContent");
+				ContentWindow.Show();
+			}
 		}
 
 		public void TogglePreferencesWindow()
@@ -88,6 +100,7 @@ namespace SCG.Modules.DOS2DE.Windows
 			LocaleData.ModuleData = ModuleData;
 
 			ExportWindow.LocaleData = LocaleData;
+			LocaleData.ExpandContentCommand = new ParameterCommand(ExpandContent);
 		}
 
 		public void SaveSettings()

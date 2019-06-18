@@ -24,6 +24,7 @@ namespace SCG.Data.View
 		public static readonly string Convert = @"pack://application:,,,/SourceControlGenerator;component/Resources/Icons/Convert_16x.png";
 		public static readonly string DeleteDatabase = @"pack://application:,,,/SourceControlGenerator;component/Resources/Icons/DeleteDatabase_16x.png";
 		public static readonly string DeleteTableRow = @"pack://application:,,,/SourceControlGenerator;component/Resources/Icons/DeleteTableRow_16x.png";
+		public static readonly string Ellipsis = @"pack://application:,,,/SourceControlGenerator;component/Resources/Icons/Ellipsis_16x.png";
 		public static readonly string ExpandChevronRight = @"pack://application:,,,/SourceControlGenerator;component/Resources/Icons/ExpandChevronRight_16x.png";
 		public static readonly string ExportFile = @"pack://application:,,,/SourceControlGenerator;component/Resources/Icons/ExportFile_16x.png";
 		public static readonly string FileError = @"pack://application:,,,/SourceControlGenerator;component/Resources/Icons/FileError_16x.png";

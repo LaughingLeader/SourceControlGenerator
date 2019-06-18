@@ -145,6 +145,17 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			}
 		}
 
+		private LocaleKeyEntry selectedEntry;
+
+		public LocaleKeyEntry SelectedEntry
+		{
+			get { return selectedEntry; }
+			set
+			{
+				Update(ref selectedEntry, value);
+			}
+		}
+
 		public ILocaleFileData SelectedItem
 		{
 			get
@@ -195,6 +206,17 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			set
 			{
 				Update(ref anySelected, value);
+			}
+		}
+
+		private bool contentSelected = false;
+
+		public bool ContentSelected
+		{
+			get { return contentSelected; }
+			set
+			{
+				Update(ref contentSelected, value);
 			}
 		}
 
@@ -545,6 +567,8 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 		public ICommand DeleteKeysCommand { get; set; }
 
 		public ICommand OpenPreferencesCommand { get; set; }
+
+		public ICommand ExpandContentCommand { get; set; }
 
 		public void AddNewKey()
 		{

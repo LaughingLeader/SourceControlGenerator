@@ -169,6 +169,7 @@
     </Compile>
     <Compile Include="Utilities\DOS2DEPackageCreator.cs" />
     <Compile Include="Utilities\LocaleEditorCommands.cs" />
+    <Compile Include="Utilities\LocalizationTextFormatter.cs" />
     <Compile Include="Windows\EditVersionWindow.xaml.cs">
       <DependentUpon>EditVersionWindow.xaml</DependentUpon>
     </Compile>

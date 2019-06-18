@@ -29,14 +29,11 @@ namespace SCG
 			base.OnStartup(e);
 		}
 
-		public static KeyConverter KeyConverter { get; private set; }
-		public static ModifierKeysConverter ModifierKeysConverter { get; private set; }
+		public static KeyConverter KeyConverter { get; private set; } = new KeyConverter();
+		public static ModifierKeysConverter ModifierKeysConverter { get; private set; } = new ModifierKeysConverter();
 
 		public App()
 		{
-			KeyConverter = new KeyConverter();
-			ModifierKeysConverter = new ModifierKeysConverter();
-
 			ThemeController.Init(this);
 			SCG.Helpers.Init();
 			FileCommands.Init();

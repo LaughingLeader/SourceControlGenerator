@@ -62,6 +62,9 @@ namespace SCG.Modules.DOS2DE.Core
 		public static string Button_Locale_ImportKeys = "Import Entries From File...";
 		public static string Button_Locale_ImportKeys_Disabled = "Import Entries (Disabled for All & Dialog Files)";
 
+		public static string Button_Locale_InsertFontText = "Wrap selected text around an HTML <font> tag\nThis action will use the selected color";
+		public static string Button_Locale_ExpandText = "Expand Text";
+
 		//public static string Button_Locale_UnsavedChanges_Tab = "Unsaved Changes ";
 
 		public static string Checkbox_Locale_ExportXML_Keys = "Export key names as attributes in each xml node.\nEnable this if you want to keep track of what each handle is for.";

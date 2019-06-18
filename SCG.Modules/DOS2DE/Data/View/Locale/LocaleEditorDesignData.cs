@@ -46,6 +46,9 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			}
 
 			UpdateCombinedGroup(true);
+
+			//SelectedGroupIndex = 1;
+			//SelectedGroup.SelectedFileIndex = 2;
 		}
 	}
 }
