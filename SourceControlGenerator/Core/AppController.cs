@@ -566,17 +566,6 @@ namespace SCG.Core
 				mainWindow.TextGeneratorWindow.Hide();
 			}
 		}
-		public void MenuAction_ToggleColorPickerWindow()
-		{
-			if (!mainWindow.ColorPicker.IsVisible)
-			{
-				mainWindow.ColorPicker.Show();
-			}
-			else
-			{
-				mainWindow.ColorPicker.Hide();
-			}
-		}
 
 		public void MenuAction_OpenAbout()
 		{
@@ -906,8 +895,7 @@ namespace SCG.Core
 
 			Data.MenuBarData.Tools.Register("Base",
 				new MenuData(MenuID.Markdown, "Open Markdown Converter", new ActionCommand(MenuAction_ToggleMarkdownWindow), Key.F3),
-				new MenuData(MenuID.TextCreator, "Open Text Generator", new ActionCommand(MenuAction_ToggleTextGeneratorWindow), Key.F4),
-				new MenuData(MenuID.ColorPicker, "Open Color Picker", new ActionCommand(MenuAction_ToggleColorPickerWindow))
+				new MenuData(MenuID.TextCreator, "Open Text Generator", new ActionCommand(MenuAction_ToggleTextGeneratorWindow), Key.F4)
 			);
 
 			Data.MenuBarData.Help.Register("Base",

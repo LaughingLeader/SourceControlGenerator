@@ -228,6 +228,21 @@
     <Reference Include="WriteableBitmapEx.Wpf, Version=1.6.2.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\WriteableBitmapEx.1.6.2\lib\net40\WriteableBitmapEx.Wpf.dll</HintPath>
     </Reference>
+    <Reference Include="Xceed.Wpf.AvalonDock, Version=3.5.0.0, Culture=neutral, PublicKeyToken=3e4669d2f30244f4, processorArchitecture=MSIL">
+      <HintPath>..\packages\Extended.Wpf.Toolkit.3.5.0\lib\net40\Xceed.Wpf.AvalonDock.dll</HintPath>
+    </Reference>
+    <Reference Include="Xceed.Wpf.AvalonDock.Themes.Aero, Version=3.5.0.0, Culture=neutral, PublicKeyToken=3e4669d2f30244f4, processorArchitecture=MSIL">
+      <HintPath>..\packages\Extended.Wpf.Toolkit.3.5.0\lib\net40\Xceed.Wpf.AvalonDock.Themes.Aero.dll</HintPath>
+    </Reference>
+    <Reference Include="Xceed.Wpf.AvalonDock.Themes.Metro, Version=3.5.0.0, Culture=neutral, PublicKeyToken=3e4669d2f30244f4, processorArchitecture=MSIL">
+      <HintPath>..\packages\Extended.Wpf.Toolkit.3.5.0\lib\net40\Xceed.Wpf.AvalonDock.Themes.Metro.dll</HintPath>
+    </Reference>
+    <Reference Include="Xceed.Wpf.AvalonDock.Themes.VS2010, Version=3.5.0.0, Culture=neutral, PublicKeyToken=3e4669d2f30244f4, processorArchitecture=MSIL">
+      <HintPath>..\packages\Extended.Wpf.Toolkit.3.5.0\lib\net40\Xceed.Wpf.AvalonDock.Themes.VS2010.dll</HintPath>
+    </Reference>
+    <Reference Include="Xceed.Wpf.Toolkit, Version=3.5.0.0, Culture=neutral, PublicKeyToken=3e4669d2f30244f4, processorArchitecture=MSIL">
+      <HintPath>..\packages\Extended.Wpf.Toolkit.3.5.0\lib\net40\Xceed.Wpf.Toolkit.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <ApplicationDefinition Include="App.xaml">
@@ -249,9 +264,6 @@
     <Compile Include="Controls\Behavior\MarginSetter.cs" />
     <Compile Include="Controls\Behavior\ProgressBarAnimationBehavior.cs" />
     <Compile Include="Controls\Behavior\TextBoxEnterKeyBehavior.cs" />
-    <Compile Include="Controls\ColorPickerControl.xaml.cs">
-      <DependentUpon>ColorPickerControl.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Controls\FileGridBox.xaml.cs">
       <DependentUpon>FileGridBox.xaml</DependentUpon>
     </Compile>
@@ -384,9 +396,6 @@
     <Compile Include="Windows\AboutWindow.xaml.cs">
       <DependentUpon>AboutWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Windows\ColorPickerWindow.xaml.cs">
-      <DependentUpon>ColorPickerWindow.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Windows\TextGenerator.xaml.cs">
       <DependentUpon>TextGenerator.xaml</DependentUpon>
     </Compile>
@@ -412,10 +421,6 @@
     <Page Include="Controls\AddTemplateControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Controls\ColorPickerControl.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
     </Page>
     <Page Include="Controls\FileBrowseControl.xaml">
       <SubType>Designer</SubType>
@@ -462,10 +467,6 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Windows\AboutWindow.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Windows\ColorPickerWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -727,10 +728,6 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\ColorPickerWPF\src\ColorPickerWPF\ColorPickerWPF.csproj">
-      <Project>{7028e44e-407c-4460-a51e-00171036fb36}</Project>
-      <Name>ColorPickerWPF</Name>
-    </ProjectReference>
     <ProjectReference Include="..\SCG.MarkdownConverter\SCG.MarkdownConverter.csproj">
       <Project>{139a1053-e54e-4fd7-b64a-a3f0a2cae350}</Project>
       <Name>SCG.MarkdownConverter</Name>

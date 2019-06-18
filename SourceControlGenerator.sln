@@ -15,8 +15,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SCG.Modules.Default", "SCG.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SCG.Modules.DOS2", "SCG.Modules\DOS2\SCG.Modules.DOS2.csproj", "{7653F93F-78A9-4D82-9289-C40FBD3FF3F6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ColorPickerWPF", "ColorPickerWPF\src\ColorPickerWPF\ColorPickerWPF.csproj", "{7028E44E-407C-4460-A51E-00171036FB36}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -97,18 +95,6 @@ Global
 		{7653F93F-78A9-4D82-9289-C40FBD3FF3F6}.Release|x64.ActiveCfg = Release|Any CPU
 		{7653F93F-78A9-4D82-9289-C40FBD3FF3F6}.Release|x86.ActiveCfg = Release|x86
 		{7653F93F-78A9-4D82-9289-C40FBD3FF3F6}.Release|x86.Build.0 = Release|x86
-		{7028E44E-407C-4460-A51E-00171036FB36}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{7028E44E-407C-4460-A51E-00171036FB36}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{7028E44E-407C-4460-A51E-00171036FB36}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{7028E44E-407C-4460-A51E-00171036FB36}.Debug|x64.Build.0 = Debug|Any CPU
-		{7028E44E-407C-4460-A51E-00171036FB36}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{7028E44E-407C-4460-A51E-00171036FB36}.Debug|x86.Build.0 = Debug|Any CPU
-		{7028E44E-407C-4460-A51E-00171036FB36}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{7028E44E-407C-4460-A51E-00171036FB36}.Release|Any CPU.Build.0 = Release|Any CPU
-		{7028E44E-407C-4460-A51E-00171036FB36}.Release|x64.ActiveCfg = Release|Any CPU
-		{7028E44E-407C-4460-A51E-00171036FB36}.Release|x64.Build.0 = Release|Any CPU
-		{7028E44E-407C-4460-A51E-00171036FB36}.Release|x86.ActiveCfg = Release|Any CPU
-		{7028E44E-407C-4460-A51E-00171036FB36}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
