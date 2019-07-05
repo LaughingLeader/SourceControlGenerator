@@ -11,6 +11,8 @@ using SCG.Collections;
 using SCG.Commands;
 using SCG.Interfaces;
 using Newtonsoft.Json;
+using SCG.Windows;
+using SCG.Core;
 
 namespace SCG.Data.View
 {
@@ -247,7 +249,11 @@ namespace SCG.Data.View
 
 			LoadKeywords = new ActionCommand(() => { FileCommands.Load.LoadUserKeywords(this); });
 
-			SaveSettingsCommand = new ActionCommand(() => FileCommands.Save.SaveModuleSettings(this));
+			SaveSettingsCommand = new ActionCommand(() => 
+			{
+				FileCommands.Save.SaveModuleSettings(this);
+				AppController.Main?.SaveAppSettings();
+			});
 			DefaultSettingsCommand = new TaskCommand(RevertSettingsToDefault, null, "Reset Settings?", "Revert settings to default?", "Changes will be lost.");
 		}
 	}
