@@ -665,13 +665,14 @@ namespace SCG.Core
 
 		#endregion
 
-		public void MakeSettingsFoldersToPortable()
+		public void MakeSettingsFolderPortable()
 		{
 			DefaultPaths.RootFolder = DefaultPaths.DefaultPortableRootFolder;
 			if(CurrentModule != null && CurrentModule.ModuleData != null && CurrentModule.ModuleData.ModuleSettings != null)
 			{
 				CurrentModule.ModuleData.ModuleSettings.SetToDefault(CurrentModule.ModuleData);
 			}
+			FileCommands.WriteToFile(Path.Combine(Directory.GetCurrentDirectory(), DefaultPaths.PortableSettingsFile), "");
 		}
 
 		public void SwitchSettingsFoldersToMyDocuments()
@@ -932,7 +933,7 @@ namespace SCG.Core
 			OpenGitWebsiteCommand = new ActionCommand(() => { Helpers.Web.OpenUri("https://git-scm.com/downloads"); });
 
 			SetSetupFoldersToMyDocumentsCommand = new ActionCommand(SwitchSettingsFoldersToMyDocuments);
-			SetSetupFoldersToRelativeCommand = new ActionCommand(MakeSettingsFoldersToPortable);
+			SetSetupFoldersToRelativeCommand = new ActionCommand(MakeSettingsFolderPortable);
 
 			OpenProjectReadmeInMarkdownConverterCommand = new ParameterCommand(OpenProjectReadmeInMarkdownConverter);
 
