@@ -431,11 +431,11 @@
 			</Grid.Resources>
 
 			<Border Grid.Column="0" BorderThickness="1,1,0,1" BorderBrush="{DynamicResource {x:Static SystemColors.ActiveBorderBrushKey}}">
-				<TextBlock x:Name="FooterOuputTextboxDate" Text="{Binding Path=Data.FooterOutputDate, ElementName=MainAppWindow}" TextAlignment="Center" Background="{x:Null}" />
+				<TextBlock x:Name="FooterOuputTextboxDate" Text="{Binding FooterOutputDate}" TextAlignment="Center" Background="{x:Null}" />
 			</Border>
 			<Border Grid.Column="1" BorderThickness="1" BorderBrush="{DynamicResource {x:Static SystemColors.ActiveBorderBrushKey}}">
-				<TextBlock x:Name="FooterOuputTextboxText" Text="{Binding Path=Data.FooterOutputText, ElementName=MainAppWindow}" TextAlignment="Left" 
-					Foreground="{Binding Path=Data.FooterOutputType, ElementName=MainAppWindow, Converter={StaticResource FooterOutputColorConverter}}" 
+				<TextBlock x:Name="FooterOuputTextboxText" Text="{Binding FooterOutputText}" TextAlignment="Left" 
+					Foreground="{Binding FooterOutputType, Converter={StaticResource FooterOutputColorConverter}}" 
 					Background="{x:Null}" Padding="4,0,0,0" />
 			</Border>
 		</Grid>
