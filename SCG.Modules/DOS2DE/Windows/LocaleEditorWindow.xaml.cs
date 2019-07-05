@@ -44,6 +44,7 @@ namespace SCG.Modules.DOS2DE.Windows
 
 		public LocaleExportWindow ExportWindow { get; set; }
 		public LocaleOptionsWindow OptionsWindow { get; set; }
+		public LocaleContentWindow ContentWindow { get; set; }
 
 		private DOS2DEModuleData ModuleData { get; set; }
 
@@ -61,6 +62,9 @@ namespace SCG.Modules.DOS2DE.Windows
 			OptionsWindow = new LocaleOptionsWindow();
 			OptionsWindow.Hide();
 
+			ContentWindow = new LocaleContentWindow();
+			ContentWindow.Hide();
+
 			instance = this;
 		}
 
@@ -70,7 +74,16 @@ namespace SCG.Modules.DOS2DE.Windows
 			{
 				LocaleData.SelectedEntry = entry;
 				LocaleData.SelectedEntry.Notify("EntryContent");
-				ContentWindow.Show();
+				ContentWindow.DataContext = LocaleData.SelectedEntry;
+				if(!ContentWindow.IsVisible)
+				{
+					ContentWindow.Show();
+					ContentWindow.Owner = this;
+				}
+			}
+			else
+			{
+				ContentWindow.Hide();
 			}
 		}
 

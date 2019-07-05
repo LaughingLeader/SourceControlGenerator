@@ -140,7 +140,6 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			CombinedEntries.Locked = true;
 			DataFiles = new ObservableRangeCollection<ILocaleFileData>();
 			Tabs = new ObservableRangeCollection<ILocaleFileData>();
-
 			UpdateAllCommand = new ActionCommand(UpdateCombinedData);
 		}
 	}

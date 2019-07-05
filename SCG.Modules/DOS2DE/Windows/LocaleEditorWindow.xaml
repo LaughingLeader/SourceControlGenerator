@@ -385,14 +385,16 @@
 					<DataGrid x:Name="LocaleEntryDataGrid"
 						GotFocus="LocaleEntryDataGrid_GotFocus"
 						ItemsSource="{Binding Entries}" 
-						FrozenColumnCount="1" BorderThickness="0"
-						AutoGenerateColumns="False" CanUserAddRows="True"
-						CanUserDeleteRows="True" CanUserResizeRows="True"
+						BorderThickness="0"
+						AutoGenerateColumns="False" 
+						CanUserAddRows="False" CanUserDeleteRows="False"
+						CanUserResizeRows="True"
 						VirtualizingPanel.IsVirtualizingWhenGrouping="True"
 						dgx:DataGridFilter.IsAutoFilterEnabled="True"
 						dgx:DataGridFilter.ContentFilterFactory="{StaticResource RegexContentFilterFactory}"
 						Grid.Row="1"
 						Style="{StaticResource LocaleDataGridStyle}"
+						
 					>
 						<DataGrid.Resources>
 							<behavior:DataContextSpy x:Key="FileData" DataContext="{Binding}" />
@@ -417,7 +419,7 @@
 									</Style>
 								</DataGridTextColumn.CellStyle>
 							</DataGridTextColumn>
-							<DataGridTemplateColumn Header="Content" MinWidth="50" Width="*">
+							<DataGridTemplateColumn Header="Content" Width="*">
 								<DataGridTemplateColumn.CellTemplate>
 									<DataTemplate>
 										<Grid>
@@ -444,7 +446,7 @@
 									</DataTemplate>
 								</DataGridTemplateColumn.CellTemplate>
 							</DataGridTemplateColumn>
-							<DataGridTextColumn Header="Handle" Binding="{Binding EntryHandle}" MinWidth="50" Width="Auto" />
+							<DataGridTextColumn Header="Handle" Binding="{Binding EntryHandle}" Width="150" />
 						</DataGrid.Columns>
 					</DataGrid>
 				</Grid>
@@ -784,10 +786,10 @@
 						   />
 			</Border>
 		</Grid>
-		<xctk:WindowContainer>
+		<!--<xctk:WindowContainer>
 			<xctk:ChildWindow x:Name="ContentWindow" Caption="Content" Width="800" Height="600" IsModal="False">
 				<TextBlock Text="{Binding Source=SelectedEntry, Path=EntryContent, Mode=TwoWay, TargetNullValue='null', FallbackValue='test'}" />
 			</xctk:ChildWindow>
-		</xctk:WindowContainer>
+		</xctk:WindowContainer>-->
 	</Grid>
 </Window>
