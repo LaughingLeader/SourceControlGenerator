@@ -51,7 +51,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 
 		public LocaleMenuData MenuData
 		{
-			get { return menuData; }
+			get => menuData;
 			set
 			{
 				this.RaiseAndSetIfChanged(ref menuData, value);
@@ -62,7 +62,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 
 		public bool ChangesUnsaved
 		{
-			get { return changesUnsaved; }
+			get => changesUnsaved;
 			set
 			{
 				this.RaiseAndSetIfChanged(ref changesUnsaved, value);
@@ -84,7 +84,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 
 		public int SelectedGroupIndex
 		{
-			get { return selectedGroupIndex; }
+			get => selectedGroupIndex;
 			set
 			{
 				bool updateCanSave = selectedGroupIndex != value;
@@ -105,7 +105,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 
 		public LocaleTabGroup ModsGroup
 		{
-			get { return modsGroup; }
+			get => modsGroup;
 			set
 			{
 				this.RaiseAndSetIfChanged(ref modsGroup, value);
@@ -116,7 +116,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 
 		public LocaleTabGroup DialogGroup
 		{
-			get { return dialogGroup; }
+			get => dialogGroup;
 			set
 			{
 				this.RaiseAndSetIfChanged(ref dialogGroup, value);
@@ -127,7 +127,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 
 		public LocaleTabGroup PublicGroup
 		{
-			get { return publicGroup; }
+			get => publicGroup;
 			set
 			{
 				this.RaiseAndSetIfChanged(ref publicGroup, value);
@@ -138,7 +138,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 
 		public LocaleTabGroup CombinedGroup
 		{
-			get { return combinedGroup; }
+			get => combinedGroup;
 			private set
 			{
 				this.RaiseAndSetIfChanged(ref combinedGroup, value);
@@ -157,7 +157,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 
 		public LocaleKeyEntry SelectedEntry
 		{
-			get { return selectedEntry; }
+			get => selectedEntry;
 			set
 			{
 				this.RaiseAndSetIfChanged(ref selectedEntry, value);
@@ -188,7 +188,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 
 		public bool CanSave
 		{
-			get { return canSave; }
+			get => canSave;
 			set
 			{
 				this.RaiseAndSetIfChanged(ref canSave, value);
@@ -200,7 +200,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 
 		public bool CanAddFile
 		{
-			get { return canAddFile; }
+			get => canAddFile;
 			set
 			{
 				this.RaiseAndSetIfChanged(ref canAddFile, value);
@@ -211,7 +211,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 
 		public bool CanAddKeys
 		{
-			get { return canAddKeys; }
+			get => canAddKeys;
 			set
 			{
 				this.RaiseAndSetIfChanged(ref canAddKeys, value);
@@ -222,7 +222,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 
 		public bool AnySelected
 		{
-			get { return anySelected; }
+			get => anySelected;
 			set
 			{
 				this.RaiseAndSetIfChanged(ref anySelected, value);
@@ -233,7 +233,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 
 		public bool ContentSelected
 		{
-			get { return contentSelected; }
+			get => contentSelected;
 			set
 			{
 				this.RaiseAndSetIfChanged(ref contentSelected, value);
@@ -244,7 +244,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 
 		public bool ContentFocused
 		{
-			get { return contentFocused; }
+			get => contentFocused;
 			set
 			{
 				this.RaiseAndSetIfChanged(ref contentFocused, value);
@@ -255,7 +255,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 
 		public bool ContentLightMode
 		{
-			get { return contentLightMode; }
+			get => contentLightMode;
 			set
 			{
 				this.RaiseAndSetIfChanged(ref contentLightMode, value);
@@ -317,7 +317,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 
 		public string OutputDate
 		{
-			get { return outputDate; }
+			get => outputDate;
 			set
 			{
 				this.RaiseAndSetIfChanged(ref outputDate, value);
@@ -328,7 +328,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 
 		public string OutputText
 		{
-			get { return outputText; }
+			get => outputText;
 			set
 			{
 				this.RaiseAndSetIfChanged(ref outputText, value);
@@ -339,7 +339,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 
 		public LogType OutputType
 		{
-			get { return outputType; }
+			get => outputType;
 			set
 			{
 				this.RaiseAndSetIfChanged(ref outputType, value);
@@ -729,7 +729,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 
 		public string ExportText
 		{
-			get { return exportText; }
+			get => exportText;
 			set
 			{
 				this.RaiseAndSetIfChanged(ref exportText, value);
