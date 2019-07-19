@@ -56,7 +56,7 @@ namespace SCG
 		private void _logHere(LogType logType, string Message, params object[] Vars)
 		{
 			//Path.GetFileName(_filePath)
-			Message = String.Format(Message, Vars);
+			if (Vars.Length > 0) Message = String.Format(Message, Vars);
 			if (Log.traceCaller)
 			{
 				string FinalMessage = !string.IsNullOrEmpty(messageFormat) ? String.Format("{0}:{1}({2}): {3}", _filename, _memberName, _lineNumber, Message) : Message;
