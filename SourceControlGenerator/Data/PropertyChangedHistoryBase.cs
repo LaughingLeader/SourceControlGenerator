@@ -1,10 +1,12 @@
 ﻿using ReactiveHistory;
+using ReactiveUI;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -16,35 +18,40 @@ namespace SCG.Data
 		void SetHistoryFromObject(IPropertyChangedHistoryBase obj);
 	}
 
-	public abstract class PropertyChangedHistoryBase : INotifyPropertyChanged, IPropertyChangedBase, IPropertyChangedHistoryBase
+	public abstract class PropertyChangedHistoryBase : ReactiveObject, IPropertyChangedHistoryBase
 	{
+		[IgnoreDataMember]
 		public IHistory History { get; set; }
-
-		public event PropertyChangedEventHandler PropertyChanged;
 
 		public void SetHistoryFromObject(IPropertyChangedHistoryBase obj)
 		{
 			History = obj.History;
 		}
 
-		public virtual void OnPropertyNotify(string propertyName)
-		{
+		//public void Notify([CallerMemberName] string propertyName = null)
+		//{
+		//	this.RaisePropertyChanged(propertyName);
+		//}
 
-		}
-
-		public void Notify([CallerMemberName] string propertyName = null)
-		{
-			PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-			OnPropertyNotify(propertyName);
-		}
+		//public void Update<T>(ref T field, T value, [CallerMemberName] string propertyName = null)
+		//{
+		//	this.RaiseAndSetIfChanged(ref field, value, propertyName);
+		//}
 
 		private bool SetProperty<T>(object targetObject, string propertyName, T value, bool notify = true)
 		{
 			var prop = this.GetType().GetProperty(propertyName, BindingFlags.Public | BindingFlags.SetProperty | BindingFlags.Instance);
 			if (prop != null && prop.CanWrite)
 			{
+				if (notify)
+				{
+					this.RaisePropertyChanging(propertyName);
+				}
 				prop.SetValue(this, value);
-				if (notify) Notify(propertyName);
+				if (notify)
+				{
+					this.RaisePropertyChanged(propertyName);
+				}
 				return true;
 			}
 			return false;
@@ -55,19 +62,15 @@ namespace SCG.Data
 			var field = this.GetType().GetField(fieldName, BindingFlags.NonPublic | BindingFlags.Instance);
 			if (field != null)
 			{
+				if (notify && propertyName != null)
+				{
+					this.RaisePropertyChanging(propertyName);
+				}
 				field.SetValue(this, value);
-				if (notify && propertyName != null) Notify(propertyName);
-				return true;
-			}
-			return false;
-		}
-
-		public bool Update<T>(ref T field, T value, [CallerMemberName] string propertyName = null)
-		{
-			if (!Equals(field, value))
-			{
-				field = value;
-				Notify(propertyName);
+				if (notify && propertyName != null)
+				{
+					this.RaisePropertyChanged(propertyName);
+				}
 				return true;
 			}
 			return false;
@@ -91,8 +94,7 @@ namespace SCG.Data
 					});
 				}
 
-				field = value;
-				Notify(propertyName);
+				this.RaiseAndSetIfChanged(ref field, value);
 				return true;
 			}
 			return false;
@@ -116,8 +118,7 @@ namespace SCG.Data
 					});
 				}
 
-				field = value;
-				Notify(thisPropertyName);
+				this.RaiseAndSetIfChanged(ref field, value);
 				return true;
 			}
 			return false;
@@ -141,8 +142,7 @@ namespace SCG.Data
 					});
 				}
 
-				field = value;
-				Notify(propertyName);
+				this.RaiseAndSetIfChanged(ref field, value);
 				return true;
 			}
 			return false;

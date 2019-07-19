@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using ReactiveUI;
 
 namespace SCG.Modules.DOS2DE.Data.View.Locale
 {
@@ -39,7 +40,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			get { return keyIsEditable; }
 			set
 			{
-				Update(ref keyIsEditable, value);
+				this.RaiseAndSetIfChanged(ref keyIsEditable, value);
 			}
 		}
 
@@ -50,10 +51,8 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			get { return key; }
 			set
 			{
-				if(Update(ref key, value))
-				{
-					Notify("EntryKey");
-				}
+				this.RaiseAndSetIfChanged(ref key, value);
+				this.RaisePropertyChanged("EntryKey");
 
 				if (KeyAttribute != null)
 				{
@@ -69,10 +68,8 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			{
 				if (TranslatedString != null)
 				{
-					if(Update(ref TranslatedString.Value, value))
-					{
-						Notify("EntryContent");
-					}
+					this.RaiseAndSetIfChanged(ref TranslatedString.Value, value);
+					this.RaisePropertyChanged("EntryContent");
 				}
 			}
 		}
@@ -84,10 +81,8 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			{
 				if (TranslatedString != null)
 				{
-					if(Update(ref TranslatedString.Handle, value))
-					{
-						Notify("EntryHandle");
-					}
+					this.RaiseAndSetIfChanged(ref TranslatedString.Handle, value);
+					this.RaisePropertyChanged("EntryHandle");
 				}
 			}
 		}
@@ -99,7 +94,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			get { return selected; }
 			set
 			{
-				Update(ref selected, value);
+				this.RaiseAndSetIfChanged(ref selected, value);
 				LocaleEditorWindow.instance?.KeyEntrySelected(this, selected);
 			}
 		}
@@ -114,9 +109,9 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			get { return key; }
 			set
 			{
-				if(UpdateWithHistory(ref key, value, "Key"))
+				if (this.UpdateWithHistory(ref key, value, "Key"))
 				{
-					Notify("EntryKey");
+					this.RaisePropertyChanged("EntryKey");
 				}
 
 				if (KeyAttribute != null)
@@ -133,9 +128,9 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			{
 				if (TranslatedString != null)
 				{
-					if(UpdateWithHistory(ref TranslatedString.Value, value, "Content"))
+					if(this.UpdateWithHistory(ref TranslatedString.Value, value, "Content"))
 					{
-						Notify("EntryContent");
+						this.RaisePropertyChanged("EntryContent");
 					}
 				}
 			}
@@ -148,9 +143,9 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			{
 				if (TranslatedString != null)
 				{
-					if(UpdateWithHistory(ref TranslatedString.Handle, value, "Handle"))
+					if(this.UpdateWithHistory(ref TranslatedString.Handle, value, "Handle"))
 					{
-						Notify("EntryHandle");
+						this.RaisePropertyChanged("EntryHandle");
 					}
 				}
 			}
