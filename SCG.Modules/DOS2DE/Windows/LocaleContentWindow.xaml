@@ -24,19 +24,47 @@
 		<StackPanel Orientation="Horizontal">
 			<Button Padding="0" Margin="2"
 				ToolTip="{x:Static core:DOS2DETooltips.Button_Locale_InsertFontText}"
-				Command="{Binding Path=DataContext.AddFontTag, ElementName=ContentWindow}"
-			>
+				Command="{Binding AddFontTagCommand}">
 				<Button.Content>
 					<Label Content="&lt;font&gt;" FontSize="8" Margin="0" />
 				</Button.Content>
 			</Button>
-			<xctk:ColorPicker Margin="2" Width="75"/>
+			<xctk:ColorPicker x:Name="FontColorPicker" Margin="2" Width="75" SelectedColor="{Binding SelectedColor}"/>
 		</StackPanel>
-		<xctk:RichTextBox x:Name="EntryContentTextBlock" Grid.Row="1"
-				Text="{Binding Path=DataContext.EntryContent, ElementName=ContentWindow, UpdateSourceTrigger=PropertyChanged, TargetNullValue={StaticResource ContestTestString}}"
-				BorderThickness="0" BorderBrush="{x:Null}" FontSize="12" TextFormatter="{StaticResource LocalizationTextFormatter}"
-				HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto"
-			>
-		</xctk:RichTextBox>
+		<Border Grid.Row="2" BorderThickness="1,0,1,1">
+			<xctk:RichTextBox Grid.Row="1"
+				x:Name="EntryContentRichTextBox"
+				Text="{Binding Path=Entry, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+				TextFormatter="{StaticResource LocalizationTextFormatter}"
+				SelectionChanged="EntryContent_SelectionChanged"
+				BorderThickness="0" BorderBrush="{x:Null}"
+				Margin="1" Block.LineHeight="2"
+				Background="Transparent"
+				Tag="{Binding ViewModel}"
+				FontSize="{Binding ContentFontSize, FallbackValue=12, TargetNullValue=12}"
+				AcceptsReturn="True" AcceptsTab="True"
+								>
+				<xctk:RichTextBox.Resources>
+					<!--<Style TargetType="ScrollViewer">
+										<Setter Property="MinWidth" Value="2000" />
+									</Style>-->
+				</xctk:RichTextBox.Resources>
+				<xctk:RichTextBox.ContextMenu>
+					<ContextMenu>
+						<MenuItem Command="ApplicationCommands.Cut" />
+						<MenuItem Command="ApplicationCommands.Copy" />
+						<MenuItem Command="ApplicationCommands.Paste" />
+						<MenuItem Command="ApplicationCommands.SelectAll" />
+						<MenuItem Header="Toggle Light/Dark Mode" Command="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.Tag.ToggleContentLightModeCommand}" />
+						<MenuItem Header="Font Size">
+							<MenuItem Header="12" CommandParameter="12" Command="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.Tag.ChangeContentFontSizeCommand}" />
+							<MenuItem Header="16" CommandParameter="16" Command="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.Tag.ChangeContentFontSizeCommand}" />
+							<MenuItem Header="24" CommandParameter="24" Command="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.Tag.ChangeContentFontSizeCommand}" />
+							<MenuItem Header="32" CommandParameter="32" Command="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.Tag.ChangeContentFontSizeCommand}" />
+						</MenuItem>
+					</ContextMenu>
+				</xctk:RichTextBox.ContextMenu>
+			</xctk:RichTextBox>
+		</Border>
 	</Grid>
 </win:HideWindowBase>
