@@ -30,10 +30,10 @@ namespace SCG.Modules.DOS2DE.Utilities
 			return new TextRange(start, end);
 		}
 
+		private const string pattern = @"(<font\scolor='#)([0-9A-F]{6})('>)(.*?)(<\/font>)";
+
 		private IEnumerable<LocaleLocalizationFontTextRange> GetAllFontRanges(FlowDocument document)
 		{
-			var pattern = @"(<font\scolor='#)([0-9A-F]{6})('>)(\w+)(<\/font>)";
-
 			var ranges = new List<LocaleLocalizationFontTextRange>();
 
 			TextPointer pointer = document.ContentStart;
@@ -109,9 +109,9 @@ namespace SCG.Modules.DOS2DE.Utilities
 					}
 				}
 			}
-			catch(Exception ex)
+			catch(NullReferenceException ex)
 			{
-				Log.Here().Error($"Error formatting localization text: {ex.ToString()}");
+
 			}
 		}
 	}
