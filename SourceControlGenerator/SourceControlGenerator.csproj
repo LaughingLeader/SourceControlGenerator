@@ -342,6 +342,7 @@
     <Compile Include="Data\View\SettingsEntryData.cs" />
     <Compile Include="Data\View\TextGeneratorData.cs" />
     <Compile Include="Extensions\ArrayExtensions.cs" />
+    <Compile Include="Extensions\ColorExtensions.cs" />
     <Compile Include="Extensions\ControlExtensions.cs" />
     <Compile Include="Extensions\ListExtensions.cs" />
     <Compile Include="Extensions\StringExtensions.cs" />

@@ -251,7 +251,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			}
 		}
 
-		private bool contentLightMode = false;
+		private bool contentLightMode = true;
 
 		public bool ContentLightMode
 		{
