@@ -30,7 +30,7 @@ namespace SCG.Modules.DOS2DE.Utilities
 			return new TextRange(start, end);
 		}
 
-		private const string pattern = @"(<font\scolor='#)([0-9A-F]{6})('>)(.*?)(<\/font>)";
+		private const string pattern = @"<font\scolor='#([0-9A-F]{6})'.*?>(.*?)<\/font>";
 
 		private IEnumerable<LocaleLocalizationFontTextRange> GetAllFontRanges(FlowDocument document)
 		{
@@ -45,8 +45,8 @@ namespace SCG.Modules.DOS2DE.Utilities
 					MatchCollection matches = Regex.Matches(textRun, pattern, RegexOptions.IgnoreCase);
 					foreach (Match match in matches)
 					{
-						var hexColor = match.Groups[2];
-						var content = match.Groups[4];
+						var hexColor = match.Groups[1];
+						var content = match.Groups[2];
 
 						var startHex = hexColor.Index;
 						var endHex = hexColor.Length;
@@ -81,6 +81,7 @@ namespace SCG.Modules.DOS2DE.Utilities
 			{
 				//if the text is null/empty clear the contents of the RTB. If you were to pass a null/empty string
 				//to the TextRange.Load method an exception would occur.
+
 				if (String.IsNullOrEmpty(text))
 				{
 					document.Blocks.Clear();
