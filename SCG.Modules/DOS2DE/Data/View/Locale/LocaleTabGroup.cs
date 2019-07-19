@@ -1,4 +1,5 @@
-﻿using SCG.Commands;
+﻿using DynamicData.Binding;
+using SCG.Commands;
 using SCG.Data;
 using System;
 using System.Collections.Generic;
@@ -45,9 +46,9 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			}
 		}
 
-		private ObservableRangeCollection<ILocaleFileData> dataFiles;
+		private ObservableCollectionExtended<ILocaleFileData> dataFiles;
 
-		public ObservableRangeCollection<ILocaleFileData> DataFiles
+		public ObservableCollectionExtended<ILocaleFileData> DataFiles
 		{
 			get { return dataFiles; }
 			set
@@ -57,7 +58,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			}
 		}
 
-		public ObservableRangeCollection<ILocaleFileData> Tabs { get; set; }
+		public ObservableCollectionExtended<ILocaleFileData> Tabs { get; set; }
 
 		private ILocaleFileData combinedEntries;
 
@@ -108,11 +109,11 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 
 		public void UpdateCombinedData()
 		{
-			Tabs = new ObservableRangeCollection<ILocaleFileData>();
+			Tabs = new ObservableCollectionExtended<ILocaleFileData>();
 			Tabs.Add(CombinedEntries);
 			Tabs.AddRange(DataFiles);
 
-			CombinedEntries.Entries = new ObservableRangeCollection<LocaleKeyEntry>();
+			CombinedEntries.Entries = new ObservableCollectionExtended<LocaleKeyEntry>();
 			foreach (var obj in DataFiles)
 			{
 				CombinedEntries.Entries.AddRange(obj.Entries);
@@ -135,11 +136,12 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 
 		public LocaleTabGroup(string name = "")
 		{
+			
 			Name = name;
 			CombinedEntries = new BaseLocaleFileData("All");
 			CombinedEntries.Locked = true;
-			DataFiles = new ObservableRangeCollection<ILocaleFileData>();
-			Tabs = new ObservableRangeCollection<ILocaleFileData>();
+			DataFiles = new ObservableCollectionExtended<ILocaleFileData>();
+			Tabs = new ObservableCollectionExtended<ILocaleFileData>();
 			UpdateAllCommand = new ActionCommand(UpdateCombinedData);
 		}
 	}

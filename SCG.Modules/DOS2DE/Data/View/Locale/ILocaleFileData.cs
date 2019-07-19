@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DynamicData.Binding;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -9,7 +10,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 {
 	public interface ILocaleFileData
 	{
-		ObservableRangeCollection<LocaleKeyEntry> Entries { get; set; }
+		ObservableCollectionExtended<LocaleKeyEntry> Entries { get; set; }
 
 		string SourcePath { get; set; }
 		string Name { get; set; }

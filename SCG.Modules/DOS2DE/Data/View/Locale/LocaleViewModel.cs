@@ -17,12 +17,16 @@ using Alphaleonis.Win32.Filesystem;
 using SCG.Core;
 using System.ComponentModel;
 using SCG.Extensions;
+using DynamicData.Binding;
+using ReactiveUI;
 
 namespace SCG.Modules.DOS2DE.Data.View.Locale
 {
 	public class LocaleViewModel : HistoryBaseViewModel
 	{
 		private Dictionary<string, List<Action>> MenuEnabledLinks = new Dictionary<string, List<Action>>();
+
+		private LocaleEditorWindow view;
 
 		public override void OnPropertyNotify(string propertyName)
 		{
@@ -70,7 +74,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			}
 		}
 
-		public ObservableCollection<LocaleTabGroup> Groups { get; set; }
+		public ObservableCollectionExtended<LocaleTabGroup> Groups { get; set; }
 
 		private int selectedGroupIndex = -1;
 
@@ -395,7 +399,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 
 		public void UpdateCombinedGroup(bool updateCombinedEntries = false)
 		{
-			CombinedGroup.DataFiles = new ObservableRangeCollection<ILocaleFileData>();
+			CombinedGroup.DataFiles = new ObservableCollectionExtended<ILocaleFileData>();
 			CombinedGroup.DataFiles.AddRange(ModsGroup.DataFiles);
 			CombinedGroup.DataFiles.AddRange(PublicGroup.DataFiles);
 			CombinedGroup.DataFiles.AddRange(DialogGroup.DataFiles);
@@ -484,13 +488,71 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			}
 		}
 
+		private bool NameExistsInData(string name)
+		{
+			return SelectedGroup?.DataFiles.Any(f => f.Name.Equals(name, StringComparison.OrdinalIgnoreCase)) == true;
+		}
+
+		private string GetNewFileName(string rootPath, string baseName, string extension = ".lsb")
+		{
+			var checkPath = Path.Combine(rootPath, baseName, extension);
+
+			var originalBase = baseName;
+			int checks = 1;
+			while (File.Exists(checkPath) || NameExistsInData(baseName + extension))
+			{
+				baseName = originalBase + checks;
+				checkPath = Path.Combine(rootPath, baseName, extension);
+				checks++;
+			}
+
+			return baseName + extension;
+		}
+
+		public void AddFileToSelectedGroup()
+		{
+			if (SelectedGroup != null)
+			{
+				var sourceRoot = "";
+				if (SelectedGroup.DataFiles.First() is LocaleFileData keyFileData)
+				{
+					sourceRoot = Path.GetDirectoryName(keyFileData.SourcePath) + @"\";
+				}
+				else
+				{
+					if (SelectedGroup == PublicGroup)
+					{
+						sourceRoot = Path.Combine(ModuleData.Settings.DOS2DEDataDirectory, "Public");
+					}
+					else if (SelectedGroup == ModsGroup)
+					{
+						sourceRoot = Path.Combine(ModuleData.Settings.DOS2DEDataDirectory, "Mods");
+					}
+				}
+
+				string newFileName = GetNewFileName(sourceRoot, "NewFile");
+
+				FileCommands.Save.OpenDialog(this.view, "Create Localization File...", sourceRoot, (string savePath) => {
+					var fileData = LocaleEditorCommands.CreateFileData(savePath, Path.GetFileName(savePath));
+					SelectedGroup.DataFiles.Add(fileData);
+					SelectedGroup.UpdateCombinedData();
+					SelectedGroup.SelectedFileIndex = SelectedGroup.Tabs.Count - 1;
+				}, newFileName, "Larian Localization File (*.lsb)|*.lsb");
+			}
+		}
+
 		public void ImportFileAsFileData(IEnumerable<string> files)
 		{
 			var currentGroup = Groups.Where(g => g == SelectedGroup).First();
 			var newFileDataList = LocaleEditorCommands.ImportFilesAsData(files, SelectedGroup);
 
 			CreateSnapshot(() => {
-				currentGroup.DataFiles.RemoveRange(newFileDataList);
+				var list = currentGroup.DataFiles.ToList();
+				foreach(var entry in newFileDataList)
+				{
+					if (list.Contains(entry)) list.Remove(entry);
+				}
+				currentGroup.DataFiles = new ObservableCollectionExtended<ILocaleFileData>(list);
 			}, () => {
 				currentGroup.DataFiles.AddRange(newFileDataList);
 			});
@@ -555,6 +617,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 		//private MenuData SelectNoneMenuData { get; set; }
 		//private MenuData GenerateHandlesMenuData { get; set; }
 
+		public ICommand AddFileCommand { get; set; }
 		public ICommand ImportFileCommand { get; set; }
 		public ICommand ImportKeysCommand { get; set; }
 		public ICommand ExportXMLCommand { get; set; }
@@ -662,9 +725,15 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			return mdata;
 		}
 
-		private void LocaleViewData_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+		public void OnViewLoaded(LocaleEditorWindow v, DOS2DEModuleData moduleData)
 		{
-			throw new NotImplementedException();
+			view = v;
+
+			ModuleData = moduleData;
+			LocaleEditorCommands.LoadSettings(ModuleData, this);
+			MenuData.RegisterShortcuts(view);
+
+			UpdateCombinedGroup(true);
 		}
 
 		public LocaleViewModel() : base()
@@ -676,7 +745,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			PublicGroup = new LocaleTabGroup("Locale (Public)");
 			DialogGroup = new LocaleTabGroup("Dialog");
 
-			Groups = new ObservableCollection<LocaleTabGroup>
+			Groups = new ObservableCollectionExtended<LocaleTabGroup>
 			{
 				CombinedGroup,
 				ModsGroup,
@@ -689,7 +758,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 				g.SelectedFileChanged = SelectedFileChanged;
 			}
 
-			ExportXMLCommand = new ActionCommand(OpenExportWindow);
+			ExportXMLCommand = ReactiveCommand.Create(OpenExportWindow);
 
 			ImportFileCommand = new OpenFileBrowserCommand(ImportFileAsFileData)
 			{
@@ -715,14 +784,14 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 				}
 			};
 
-			SaveAllCommand = new ActionCommand(SaveAll);
-			SaveCurrentCommand = new ActionCommand(SaveCurrent);
-			GenerateHandlesCommand = new ActionCommand(GenerateHandles);
-			AddNewKeyCommand = new ActionCommand(AddNewKey);
+			SaveAllCommand = ReactiveCommand.Create(SaveAll);
+			SaveCurrentCommand = ReactiveCommand.Create(SaveCurrent);
+			GenerateHandlesCommand = ReactiveCommand.Create(GenerateHandles);
+			AddNewKeyCommand = ReactiveCommand.Create(AddNewKey);
 			DeleteKeysCommand = new TaskCommand(DeleteSelectedKeys, LocaleEditorWindow.instance, "Delete Keys", 
 				"Delete selected keys?", "Changes will be lost.");
 
-			OpenPreferencesCommand = new ActionCommand(() => { LocaleEditorWindow.instance?.TogglePreferencesWindow(); });
+			OpenPreferencesCommand = ReactiveCommand.Create(() => { LocaleEditorWindow.instance?.TogglePreferencesWindow(); });
 
 			SaveCurrentMenuData = new MenuData("SaveCurrent", "Save", SaveCurrentCommand, Key.S, ModifierKeys.Control);
 
@@ -746,13 +815,13 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			);
 
 			MenuData.Edit.Add(CreateMenuDataWithLink(() => SelectedItem != null, "SelectedItem", "Edit.SelectAll", 
-				"Select All", new ActionCommand(() => { SelectedItem?.SelectAll(); }), Key.A, ModifierKeys.Control));
+				"Select All", ReactiveCommand.Create(() => { SelectedItem?.SelectAll(); }), Key.A, ModifierKeys.Control));
 
 			MenuData.Edit.Add(CreateMenuDataWithLink(() => SelectedItem != null, "SelectedItem", "Edit.SelectNone", 
-				"Select None", new ActionCommand(() => { SelectedItem?.SelectNone(); }), Key.D, ModifierKeys.Control));
+				"Select None", ReactiveCommand.Create(() => { SelectedItem?.SelectNone(); }), Key.D, ModifierKeys.Control));
 
 			MenuData.Edit.Add(CreateMenuDataWithLink(() => SelectedItem != null, "SelectedItem", "Edit.GenerateHandles", 
-				"Generate Handles for Selected", new ActionCommand(GenerateHandles), Key.G, ModifierKeys.Control | ModifierKeys.Shift));
+				"Generate Handles for Selected", ReactiveCommand.Create(GenerateHandles), Key.G, ModifierKeys.Control | ModifierKeys.Shift));
 
 			MenuData.Edit.Add(CreateMenuDataWithLink(() => CanAddKeys, "CanAddKeys", "Edit.AddKey",
 				"Add Key", AddNewKeyCommand));
@@ -764,9 +833,9 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 
 			MenuData larianWikiMenu = new MenuData("Help.Links.LarianWiki", "Larian Wiki");
 			larianWikiMenu.Add(new MenuData("Help.Links.LarianWiki.KeyEditor", "Translated String Key Editor",
-				new ActionCommand(() => { Helpers.Web.OpenUri(@"https://docs.larian.game/Translated_string_key_editor"); })));
+				ReactiveCommand.Create(() => { Helpers.Web.OpenUri(@"https://docs.larian.game/Translated_string_key_editor"); })));
 			larianWikiMenu.Add(new MenuData("Help.Links.LarianWiki.LocalizationGuide", "Modding: Localization",
-				new ActionCommand(() => { Helpers.Web.OpenUri(@"https://docs.larian.game/Modding:_Localization"); })));
+				ReactiveCommand.Create(() => { Helpers.Web.OpenUri(@"https://docs.larian.game/Modding:_Localization"); })));
 
 			MenuData.Help.Add(larianWikiMenu);
 

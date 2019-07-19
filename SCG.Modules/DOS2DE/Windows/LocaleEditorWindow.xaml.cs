@@ -20,17 +20,18 @@ using SCG.Data.View;
 using SCG.Core;
 using System.ComponentModel;
 using SCG.Commands;
+using ReactiveUI;
 
 namespace SCG.Modules.DOS2DE.Windows
 {
 	/// <summary>
 	/// Interaction logic for LocaleEditorWindow.xaml
 	/// </summary>
-	public partial class LocaleEditorWindow : Window
+	public partial class LocaleEditorWindow : ReactiveWindow<LocaleViewModel>
 	{
 		public static LocaleEditorWindow instance { get; private set; }
 		/*
-		public LocaleViewData LocaleData
+		public LocaleViewData ViewModel
 		{
 			get { return (LocaleViewData)GetValue(LocaleDataProperty); }
 			set { SetValue(LocaleDataProperty, value); }
@@ -38,17 +39,15 @@ namespace SCG.Modules.DOS2DE.Windows
 
 		// Using a DependencyProperty as the backing store for KeywordName.  This enables animation, styling, binding, etc...
 		public static readonly DependencyProperty LocaleDataProperty =
-			DependencyProperty.Register("LocaleData", typeof(string), typeof(LocaleViewData), new PropertyMetadata(""));
+			DependencyProperty.Register("ViewModel", typeof(string), typeof(LocaleViewData), new PropertyMetadata(""));
 		*/
-		public LocaleViewModel LocaleData { get; set; }
+		//public LocaleViewModel ViewModel { get; set; }
 
 		public LocaleExportWindow ExportWindow { get; set; }
 		public LocaleOptionsWindow OptionsWindow { get; set; }
 		public LocaleContentWindow ContentWindow { get; set; }
 
 		private DOS2DEModuleData ModuleData { get; set; }
-
-		
 
 		public LocaleEditorWindow(DOS2DEModuleData data)
 		{
@@ -66,15 +65,21 @@ namespace SCG.Modules.DOS2DE.Windows
 			ContentWindow.Hide();
 
 			instance = this;
+
+			this.WhenActivated((disposable) =>
+			{
+				
+
+			});
 		}
 
 		public void ExpandContent(object obj)
 		{
 			if(obj is LocaleKeyEntry entry)
 			{
-				LocaleData.SelectedEntry = entry;
-				LocaleData.SelectedEntry.Notify("EntryContent");
-				ContentWindow.DataContext = LocaleData.SelectedEntry;
+				ViewModel.SelectedEntry = entry;
+				ViewModel.SelectedEntry.Notify("EntryContent");
+				ContentWindow.DataContext = ViewModel.SelectedEntry;
 				if(!ContentWindow.IsVisible)
 				{
 					ContentWindow.Show();
@@ -91,7 +96,7 @@ namespace SCG.Modules.DOS2DE.Windows
 		{
 			if(!OptionsWindow.IsVisible)
 			{
-				OptionsWindow.LoadData(LocaleData.Settings);
+				OptionsWindow.LoadData(ViewModel.Settings);
 				OptionsWindow.Show();
 				OptionsWindow.Owner = this;
 			}
@@ -103,22 +108,23 @@ namespace SCG.Modules.DOS2DE.Windows
 
 		public void LoadData(LocaleViewModel data)
 		{
-			LocaleData = data;
-			LocaleEditorCommands.LoadSettings(ModuleData, LocaleData);
-			LocaleData.UpdateCombinedGroup(true);
-			DataContext = LocaleData;
-			//currentdata.Groups = new System.Collections.ObjectModel.ObservableCollection<DOS2DELocalizationGroup>(data.Groups);
-			//currentdata.UpdateCombinedGroup(true);
-			LocaleData.MenuData.RegisterShortcuts(this);
-			LocaleData.ModuleData = ModuleData;
+			ViewModel = data;
 
-			ExportWindow.LocaleData = LocaleData;
-			LocaleData.ExpandContentCommand = new ParameterCommand(ExpandContent);
+			ViewModel.OnViewLoaded(this, ModuleData);
+
+			ViewModel.ExpandContentCommand = new ParameterCommand(ExpandContent);
+
+			this.OneWayBind(this.ViewModel, vm => vm.SaveCurrentCommand, view => view.SaveButton);
+			this.OneWayBind(this.ViewModel, vm => vm.SaveAllCommand, view => view.SaveAllButton);
+			this.OneWayBind(this.ViewModel, vm => vm.ImportFileCommand, view => view.ImportFileButton);
+
+			DataContext = ViewModel;
+			ExportWindow.LocaleData = ViewModel;
 		}
 
 		public void SaveSettings()
 		{
-			LocaleEditorCommands.SaveSettings(ModuleData, LocaleData);
+			LocaleEditorCommands.SaveSettings(ModuleData, ViewModel);
 		}
 
 		private void Entries_SelectAll(object sender, RoutedEventArgs e)
@@ -145,71 +151,18 @@ namespace SCG.Modules.DOS2DE.Windows
 
 		private void SaveAllButton_Click(object sender, RoutedEventArgs e)
 		{
-			var backupSuccess = LocaleEditorCommands.BackupDataFiles(LocaleData, ModuleData.Settings.BackupRootDirectory);
+			var backupSuccess = LocaleEditorCommands.BackupDataFiles(ViewModel, ModuleData.Settings.BackupRootDirectory);
 			if (backupSuccess.Result == true)
 			{
-				var successes = LocaleEditorCommands.SaveDataFiles(LocaleData);
+				var successes = LocaleEditorCommands.SaveDataFiles(ViewModel);
 				Log.Here().Important($"Saved {successes} localization files.");
 			}
 		}
 
 		private void LocaleWindow_Closing(object sender, CancelEventArgs e)
 		{
-			LocaleEditorCommands.SaveSettings(ModuleData, LocaleData);
-			LocaleData.MenuData.UnregisterShortcuts(this);
-		}
-
-		private bool NameExistsInData(string name)
-		{
-			return LocaleData.SelectedGroup.DataFiles.Any(f => f.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
-		}
-
-		private string GetNewFileName(string rootPath, string baseName, string extension = ".lsb")
-		{
-			var checkPath = Path.Combine(rootPath, baseName, extension);
-
-			var originalBase = baseName;
-			int checks = 1;
-			while (File.Exists(checkPath) || NameExistsInData(baseName + extension))
-			{
-				baseName = originalBase + checks;
-				checkPath = Path.Combine(rootPath, baseName, extension);
-				checks++;
-			}
-
-			return baseName + extension;
-		}
-
-		private void AddFileButton_Click(object sender, RoutedEventArgs e)
-		{
-			if(LocaleData.SelectedGroup != null)
-			{
-				var sourceRoot = "";
-				if (LocaleData.SelectedGroup.DataFiles.First() is LocaleFileData keyFileData)
-				{
-					sourceRoot = Path.GetDirectoryName(keyFileData.SourcePath) + @"\";
-				}
-				else
-				{
-					if(LocaleData.SelectedGroup == LocaleData.PublicGroup)
-					{
-						sourceRoot = Path.Combine(ModuleData.Settings.DOS2DEDataDirectory, "Public");
-					}
-					else if(LocaleData.SelectedGroup == LocaleData.ModsGroup)
-					{
-						sourceRoot = Path.Combine(ModuleData.Settings.DOS2DEDataDirectory, "Mods");
-					}
-				}
-
-				string newFileName = GetNewFileName(sourceRoot, "NewFile");
-
-				FileCommands.Save.OpenDialog(this, "Create Localization File...", sourceRoot, (string savePath) => {
-					var fileData = LocaleEditorCommands.CreateFileData(savePath, Path.GetFileName(savePath));
-					LocaleData.SelectedGroup.DataFiles.Add(fileData);
-					LocaleData.SelectedGroup.UpdateCombinedData();
-					LocaleData.SelectedGroup.SelectedFileIndex = LocaleData.SelectedGroup.Tabs.Count - 1;
-				}, newFileName, "Larian Localization File (*.lsb)|*.lsb");
-			}
+			LocaleEditorCommands.SaveSettings(ModuleData, ViewModel);
+			ViewModel.MenuData.UnregisterShortcuts(this);
 		}
 
 		/// <summary>
@@ -236,7 +189,7 @@ namespace SCG.Modules.DOS2DE.Windows
 
 		public void KeyEntrySelected(LocaleKeyEntry keyEntry, bool selected)
 		{
-			LocaleData.UpdateAnySelected(selected);
+			ViewModel.UpdateAnySelected(selected);
 		}
 	}
 }

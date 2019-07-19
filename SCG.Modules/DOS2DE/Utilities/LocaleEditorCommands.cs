@@ -23,6 +23,7 @@ using SCG.Modules.DOS2DE.Data.App;
 using SCG.Modules.DOS2DE.Core;
 using SCG.Modules.DOS2DE.Windows;
 using System.Windows.Media;
+using DynamicData.Binding;
 
 namespace SCG.Modules.DOS2DE.Utilities
 {
@@ -128,7 +129,7 @@ namespace SCG.Modules.DOS2DE.Utilities
 						Log.Here().Activity($"Loading localization data from '{publicLocalePath}'.");
 						var publicLocaleData = await LoadFilesAsync(publicLocalePath, token, ".lsb").ConfigureAwait(false);
 						localizationData.PublicGroup.SourceDirectory = publicLocalePath;
-						localizationData.PublicGroup.DataFiles = new ObservableRangeCollection<ILocaleFileData>(publicLocaleData);
+						localizationData.PublicGroup.DataFiles = new ObservableCollectionExtended<ILocaleFileData>(publicLocaleData);
 						localizationData.PublicGroup.UpdateCombinedData();
 					}
 					else
@@ -281,7 +282,7 @@ namespace SCG.Modules.DOS2DE.Utilities
 
 				if (sort)
 				{
-					stringKeyFileData.Entries = new ObservableRangeCollection<LocaleKeyEntry>(stringKeyFileData.Entries.OrderBy(e => e.Key).ToList());
+					stringKeyFileData.Entries = new ObservableCollectionExtended<LocaleKeyEntry>(stringKeyFileData.Entries.OrderBy(e => e.Key).ToList());
 				}
 
 				return true;
@@ -777,7 +778,7 @@ namespace SCG.Modules.DOS2DE.Utilities
 		#endregion
 
 		#region Debug
-		public static void Debug_CreateEntries(ObservableRangeCollection<LocaleKeyEntry> Entries)
+		public static void Debug_CreateEntries(ObservableCollectionExtended<LocaleKeyEntry> Entries)
 		{
 			Random rnd = new Random();
 
