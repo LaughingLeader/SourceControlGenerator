@@ -185,12 +185,8 @@
 					Tag="{Binding Path=DataContext, RelativeSource={RelativeSource AncestorType={x:Type Window}}}"
 					FontSize="{Binding Path=DataContext.ContentFontSize, RelativeSource={RelativeSource AncestorType={x:Type Window}}, FallbackValue=12, TargetNullValue=12}"
 					AcceptsReturn="True" AcceptsTab="True"
+					IsUndoEnabled="False"
 				>
-				<xctk:RichTextBox.Resources>
-					<!--<Style TargetType="ScrollViewer">
-										<Setter Property="MinWidth" Value="2000" />
-									</Style>-->
-				</xctk:RichTextBox.Resources>
 				<i:Interaction.Behaviors>
 					<behavior:RichTextBoxSelectionBehavior SelectedText="{Binding Path=DataContext.SelectedText, Mode=OneWayToSource, RelativeSource={RelativeSource AncestorType={x:Type Window}}}" />
 				</i:Interaction.Behaviors>

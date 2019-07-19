@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Input;
 
 namespace SCG.Modules.DOS2DE.Data.View.Locale
 {
@@ -68,19 +69,19 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			return null;
 		}
 
-		public void RegisterShortcuts(Window window)
+		public void RegisterShortcuts(InputBindingCollection InputBindings)
 		{
 			foreach (var menu in Menus)
 			{
-				menu.RegisterInputBinding(window);
+				menu.RegisterInputBinding(InputBindings);
 			}
 		}
 
-		public void UnregisterShortcuts(Window window)
+		public void UnregisterShortcuts(InputBindingCollection InputBindings)
 		{
 			foreach (var menu in Menus)
 			{
-				menu.UnregisterInputBinding(window);
+				menu.UnregisterInputBinding(InputBindings);
 			}
 		}
 

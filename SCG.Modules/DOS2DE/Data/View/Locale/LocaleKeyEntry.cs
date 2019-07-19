@@ -68,6 +68,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			{
 				if (TranslatedString != null)
 				{
+					Log.Here().Activity($"Content is changing| {TranslatedString.Value} => {value}");
 					this.RaiseAndSetIfChanged(ref TranslatedString.Value, value);
 					this.RaisePropertyChanged("EntryContent");
 				}
@@ -128,8 +129,10 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			{
 				if (TranslatedString != null)
 				{
+					var last = TranslatedString.Value;
 					if(this.UpdateWithHistory(ref TranslatedString.Value, value, "Content"))
 					{
+						Log.Here().Activity($"Saving history for EntryContent| {last} => {value}");
 						this.RaisePropertyChanged("EntryContent");
 					}
 				}

@@ -851,10 +851,13 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 
 			ModuleData = moduleData;
 			LocaleEditorCommands.LoadSettings(ModuleData, this);
-			MenuData.RegisterShortcuts(view);
+			MenuData.RegisterShortcuts(view.InputBindings);
 
 			UpdateCombinedGroup(true);
 		}
+
+		public MenuData UndoMenuData { get; private set; }
+		public MenuData RedoMenuData { get; private set; }
 
 		public LocaleViewModel() : base()
 		{
@@ -940,12 +943,13 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			MenuData.File.Add(CreateMenuDataWithLink(() => AnySelected, "AnySelected", "File.ExportSelected",
 				DOS2DETooltips.Button_Locale_ExportToXML, ExportXMLCommand, Key.E, ModifierKeys.Control | ModifierKeys.Shift));
 
-			MenuData.Edit.Add(new MenuData("Edit.Undo", "Undo", UndoCommand, Key.Z, ModifierKeys.Control));
-			MenuData.Edit.Add(new MenuData("Edit.Redo", "Redo", RedoCommand, 
-				new MenuShortcutInputBinding(Key.Z, ModifierKeys.Control | ModifierKeys.Shift),
-				new MenuShortcutInputBinding(Key.Y, ModifierKeys.Control)
-				)
-			);
+			UndoMenuData = new MenuData("Edit.Undo", "Undo", UndoCommand, Key.Z, ModifierKeys.Control);
+			RedoMenuData = new MenuData("Edit.Redo", "Redo", RedoCommand,
+					new MenuShortcutInputBinding(Key.Z, ModifierKeys.Control | ModifierKeys.Shift),
+					new MenuShortcutInputBinding(Key.Y, ModifierKeys.Control)
+				);
+			MenuData.Edit.Add(UndoMenuData);
+			MenuData.Edit.Add(RedoMenuData);
 
 			MenuData.Edit.Add(CreateMenuDataWithLink(() => SelectedItem != null, "SelectedItem", "Edit.SelectAll", 
 				"Select All", ReactiveCommand.Create(() => { SelectedItem?.SelectAll(); }), Key.A, ModifierKeys.Control));

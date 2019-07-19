@@ -134,6 +134,17 @@ namespace SCG.Modules.DOS2DE.Windows
 
 		private void EntryContentRichTextBox_Loaded(object sender, RoutedEventArgs e)
 		{
+			if(sender is RichTextBox richTextBox)
+			{
+				/* Undo/Redo is disable in via xaml for this box, as otherwise the TextFormatter gets tracked and
+				 * outputs the internal undo commands to the history of the key entry. 
+				 * Here we're binding the global Undo/Redo as input keys in the RichTextBox.
+				*/
+
+				ViewModel.UndoMenuData.RegisterInputBinding(richTextBox.InputBindings);
+				ViewModel.RedoMenuData.RegisterInputBinding(richTextBox.InputBindings);
+			}
+			
 			//if (!selectedTextObservables.Any(o => o.View == sender) && sender is RichTextBox richTextBox)
 			//{
 			//	selectedTextObservables.Add(new ViewObservableProperty {
@@ -146,6 +157,11 @@ namespace SCG.Modules.DOS2DE.Windows
 
 		private void EntryContentRichTextBox_Unloaded(object sender, RoutedEventArgs e)
 		{
+			if (sender is RichTextBox richTextBox)
+			{
+				ViewModel.UndoMenuData.UnregisterInputBinding(richTextBox.InputBindings);
+				ViewModel.RedoMenuData.UnregisterInputBinding(richTextBox.InputBindings);
+			}
 			//var vo = selectedTextObservables.FirstOrDefault(x => x.View == sender);
 			//if(vo.PropertyHelper != null)
 			//{
@@ -195,7 +211,7 @@ namespace SCG.Modules.DOS2DE.Windows
 		private void LocaleWindow_Closing(object sender, CancelEventArgs e)
 		{
 			LocaleEditorCommands.SaveSettings(ModuleData, ViewModel);
-			ViewModel.MenuData.UnregisterShortcuts(this);
+			ViewModel.MenuData.UnregisterShortcuts(this.InputBindings);
 		}
 
 		/// <summary>
