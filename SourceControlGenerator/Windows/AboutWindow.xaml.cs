@@ -34,7 +34,7 @@ namespace SCG.Windows
 			var aboutMenu = controller.Data.MenuBarData.FindByID(MenuID.About);
 			if(aboutMenu != null)
 			{
-				aboutMenu.RegisterInputBinding(this);
+				aboutMenu.RegisterInputBinding(this.InputBindings);
 			}
 		}
 

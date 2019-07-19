@@ -110,7 +110,7 @@ namespace SCG.Windows
 		public void Init(MenuData menuData, Action onClose)
 		{
 			//InputBindings.AddRange(menuData.Shortcuts.Where(s => s.InputBinding != null).Select(s => s.InputBinding).ToList());
-			menuData.RegisterInputBinding(this);
+			menuData.RegisterInputBinding(this.InputBindings);
 			OnClose = onClose;
 		}
 

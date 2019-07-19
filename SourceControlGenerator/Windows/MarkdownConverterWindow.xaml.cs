@@ -38,7 +38,7 @@ namespace SCG.Windows
 			var markdownMenu = controller.Data.MenuBarData.FindByID(MenuID.Markdown);
 			if (markdownMenu != null)
 			{
-				markdownMenu.RegisterInputBinding(this);
+				markdownMenu.RegisterInputBinding(this.InputBindings);
 			}
 		}
 
@@ -54,7 +54,7 @@ namespace SCG.Windows
 
 			foreach (var menu in ViewData.TopMenus)
 			{
-				menu.RegisterInputBinding(this);
+				menu.RegisterInputBinding(this.InputBindings);
 			}
 		}
 

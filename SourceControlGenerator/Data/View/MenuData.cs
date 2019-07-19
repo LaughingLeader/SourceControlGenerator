@@ -84,13 +84,13 @@ namespace SCG.Data.View
 			Shortcuts.Add(shortcut);
 			UpdateShortcutText();
 
-			if(registeredWindows.Count > 0)
+			if(registeredInputCollections.Count > 0)
 			{
 				shortcut.InputBinding = new KeyBinding(ClickCommand, shortcut.Key, shortcut.Modifiers);
 
-				foreach (var window in registeredWindows)
+				foreach (var InputBindings in registeredInputCollections)
 				{
-					window.InputBindings.Add(shortcut.InputBinding);
+					InputBindings.Add(shortcut.InputBinding);
 				}
 			}
 
@@ -194,9 +194,9 @@ namespace SCG.Data.View
 			}
 		}
 
-		private List<Window> registeredWindows;
+		private List<InputBindingCollection> registeredInputCollections = new List<InputBindingCollection>();
 
-		public void RegisterInputBinding(Window window)
+		public void RegisterInputBinding(InputBindingCollection InputBindings)
 		{
 			if (Shortcuts.Count > 0)
 			{
@@ -207,7 +207,7 @@ namespace SCG.Data.View
 						shortcut.InputBinding = new KeyBinding(ClickCommand, shortcut.Key, shortcut.Modifiers);
 					}
 					//Log.Here().Activity($"Registered binding: {shortcut.Key} + {shortcut.Modifiers}");
-					window.InputBindings.Add(shortcut.InputBinding);
+					InputBindings.Add(shortcut.InputBinding);
 				}
 			}
 
@@ -217,18 +217,18 @@ namespace SCG.Data.View
 				{
 					if(menu is MenuData menuData)
 					{
-						menuData.RegisterInputBinding(window);
+						menuData.RegisterInputBinding(InputBindings);
 					}
 				}
 			}
 
-			if (!registeredWindows.Contains(window))
+			if (!registeredInputCollections.Contains(InputBindings))
 			{
-				registeredWindows.Add(window);
+				registeredInputCollections.Add(InputBindings);
 			}
 		}
 
-		public void UnregisterInputBinding(Window window)
+		public void UnregisterInputBinding(InputBindingCollection InputBindings)
 		{
 			if (Shortcuts.Count > 0)
 			{
@@ -236,7 +236,7 @@ namespace SCG.Data.View
 				{
 					if (shortcut.InputBinding != null)
 					{
-						window.InputBindings.Remove(shortcut.InputBinding);
+						InputBindings.Remove(shortcut.InputBinding);
 					}
 				}
 			}
@@ -247,14 +247,14 @@ namespace SCG.Data.View
 				{
 					if (menu is MenuData menuData)
 					{
-						menuData.UnregisterInputBinding(window);
+						menuData.UnregisterInputBinding(InputBindings);
 					}
 				}
 			}
 
-			if(registeredWindows.Contains(window))
+			if(registeredInputCollections.Contains(InputBindings))
 			{
-				registeredWindows.Remove(window);
+				registeredInputCollections.Remove(InputBindings);
 			}
 		}
 
@@ -301,8 +301,6 @@ namespace SCG.Data.View
 
 			MenuItems = new ObservableCollection<IMenuData>();
 			Shortcuts = new List<MenuShortcutInputBinding>();
-
-			registeredWindows = new List<Window>();
 		}
 
 		public MenuData(string menuID)

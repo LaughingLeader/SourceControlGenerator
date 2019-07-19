@@ -44,7 +44,7 @@ namespace SCG.Windows
 
 		public void Init(AppController controller)
 		{
-			controller.LogMenuData.RegisterInputBinding(this);
+			controller.LogMenuData.RegisterInputBinding(this.InputBindings);
 			controller.LogMenuData.Header = Data.LogVisibleText;
 		}
 

@@ -602,7 +602,7 @@ namespace SCG.Core
 			{
 				foreach(var menu in Data.MenuBarData.Menus)
 				{
-					menu.RegisterInputBinding(mainWindow);
+					menu.RegisterInputBinding(mainWindow.InputBindings);
 				}
 			}
 		}
@@ -613,7 +613,7 @@ namespace SCG.Core
 			{
 				foreach (var menu in Data.MenuBarData.Menus.Where(m => m.Module == ModuleName))
 				{
-					menu.UnregisterInputBinding(mainWindow);
+					menu.UnregisterInputBinding(mainWindow.InputBindings);
 				}
 			}
 		}
