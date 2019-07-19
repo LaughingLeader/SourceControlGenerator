@@ -147,7 +147,7 @@
 	</ControlTemplate>
 
 	<!-- Default Style for Image Button -->
-	<Style TargetType="{x:Type c:ImageButton}" BasedOn="{x:Null}">
+	<Style TargetType="{x:Type c:ImageButton}">
 		<Setter Property="Template" Value="{StaticResource ImageButtonTemplate}" />
 		<Setter Property="ToolTipService.ShowOnDisabled" Value="True" />
 	</Style>

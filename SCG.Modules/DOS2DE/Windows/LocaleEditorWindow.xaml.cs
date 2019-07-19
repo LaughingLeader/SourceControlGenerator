@@ -22,6 +22,7 @@ using System.ComponentModel;
 using SCG.Commands;
 using ReactiveUI;
 using SCG.Extensions;
+using System.Reactive.Disposables;
 
 namespace SCG.Modules.DOS2DE.Windows
 {
@@ -73,22 +74,23 @@ namespace SCG.Modules.DOS2DE.Windows
 			});
 		}
 
-		public void ExpandContent(object obj)
+		public void PopoutContentWindow(LocaleKeyEntry entry)
 		{
-			if(obj is LocaleKeyEntry entry)
+			if(ContentWindow.ViewModel == null)
 			{
-				ViewModel.SelectedEntry = entry;
-				ViewModel.SelectedEntry.RaisePropertyChanged("EntryContent");
-				ContentWindow.DataContext = ViewModel.SelectedEntry;
-				if(!ContentWindow.IsVisible)
+				ContentWindow.ViewModel = new LocaleContentWindowViewModel()
 				{
-					ContentWindow.Show();
-					ContentWindow.Owner = this;
-				}
+					ContentFontSize = ViewModel.ContentFontSize,
+					ContentLightMode = ViewModel.ContentLightMode,
+					Entry = entry,
+					SelectedColor = ViewModel.SelectedColor
+				};
 			}
-			else
+			if (!ContentWindow.IsVisible)
 			{
-				ContentWindow.Hide();
+				ContentWindow.Activate();
+				ContentWindow.Show();
+				ContentWindow.Owner = this;
 			}
 		}
 
@@ -112,7 +114,7 @@ namespace SCG.Modules.DOS2DE.Windows
 
 			ViewModel.OnViewLoaded(this, ModuleData);
 
-			ViewModel.ExpandContentCommand = new ParameterCommand(ExpandContent);
+			ViewModel.PopoutContentCommand = ReactiveCommand.Create(() => PopoutContentWindow(ViewModel.SelectedEntry), ViewModel.CanExecutePopoutContentCommand);
 
 			this.OneWayBind(this.ViewModel, vm => vm.SaveCurrentCommand, view => view.SaveButton.Command);
 			this.OneWayBind(this.ViewModel, vm => vm.SaveAllCommand, view => view.SaveAllButton.Command);
@@ -120,6 +122,37 @@ namespace SCG.Modules.DOS2DE.Windows
 
 			DataContext = ViewModel;
 			ExportWindow.LocaleData = ViewModel;
+		}
+
+		private struct ViewObservableProperty
+		{
+			public object View;
+			public ObservableAsPropertyHelper<string> PropertyHelper;
+		}
+
+		private List<ViewObservableProperty> selectedTextObservables = new List<ViewObservableProperty>();
+
+		private void EntryContentRichTextBox_Loaded(object sender, RoutedEventArgs e)
+		{
+			//if (!selectedTextObservables.Any(o => o.View == sender) && sender is RichTextBox richTextBox)
+			//{
+			//	selectedTextObservables.Add(new ViewObservableProperty {
+			//		View = richTextBox,
+			//		PropertyHelper = richTextBox.WhenAnyValue(v => v.Selection.Text).ToProperty(ViewModel, "SelectedText")
+			//	});
+			//	//Log.Here().Activity("Added new RichTextBox ObservableAsPropertyHelper");
+			//}
+		}
+
+		private void EntryContentRichTextBox_Unloaded(object sender, RoutedEventArgs e)
+		{
+			//var vo = selectedTextObservables.FirstOrDefault(x => x.View == sender);
+			//if(vo.PropertyHelper != null)
+			//{
+			//	vo.PropertyHelper.Dispose();
+			//	selectedTextObservables.Remove(vo);
+			//	//Log.Here().Activity("Removed RichTextBox ObservableAsPropertyHelper");
+			//}
 		}
 
 		public void SaveSettings()
@@ -195,7 +228,7 @@ namespace SCG.Modules.DOS2DE.Windows
 
 		private void EntryDataGrid_RowFocused(object sender, RoutedEventArgs e)
 		{
-			Log.Here().Activity($"EntryDataGrid_RowFocused: {sender} | {e.Source}");
+			//Log.Here().Activity($"EntryDataGrid_RowFocused: {sender} | {e.Source}");
 			if(sender is DataGridRow row)
 			{
 				if(row.DataContext is LocaleKeyEntry localeKeyEntry)
@@ -213,8 +246,6 @@ namespace SCG.Modules.DOS2DE.Windows
 			if (sender is TextBox textBox)
 			{
 				lastFocusedContentBox = textBox;
-				//ViewModel.SelectedEntry = (LocaleKeyEntry)textBox.Tag;
-				Log.Here().Activity($"Tag: {textBox.Tag}");
 			}
 			else if (sender is Xceed.Wpf.Toolkit.RichTextBox rtb)
 			{
@@ -250,53 +281,6 @@ namespace SCG.Modules.DOS2DE.Windows
 			if (sender is TextBox textBox)
 			{
 				ViewModel.ContentSelected = textBox.SelectedText != string.Empty;
-			}
-		}
-
-		public void AddFontTag()
-		{
-			string color = "#FFFFFF";
-			if (colorPicker != null && colorPicker.SelectedColor.HasValue)
-			{
-				color = colorPicker.SelectedColor.Value.ToHexString();
-			}
-
-			if (lastFocusedRichTextBox != null)
-			{
-				//Log.Here().Activity($"Content box selected: {lastFocusedRichTextBox.Selection.Text}");
-
-				if (lastFocusedRichTextBox.Selection.Text != string.Empty)
-				{
-					int start = lastFocusedRichTextBox.Text.IndexOf(lastFocusedRichTextBox.Selection.Text);
-
-					string text = lastFocusedRichTextBox.Text;
-					string fontStartText = $"<font color='{color}'>";
-					text = text.Insert(start, fontStartText);
-
-					int end = start + fontStartText.Length + lastFocusedRichTextBox.Selection.Text.Length;
-					text = text.Insert(end, @"</font>");
-
-					lastFocusedRichTextBox.Text = text;
-
-					//Log.Here().Activity($"Content box text set to: {text} | Start {start} End {end}");
-				}
-			}
-
-			if (lastFocusedContentBox != null)
-			{
-				if (lastFocusedContentBox.SelectedText != string.Empty)
-				{
-					int start = lastFocusedContentBox.Text.IndexOf(lastFocusedContentBox.SelectedText);
-
-					string text = lastFocusedContentBox.Text;
-					string fontStartText = $"<font color='{color}'>";
-					text = text.Insert(start, fontStartText);
-
-					int end = start + fontStartText.Length + lastFocusedContentBox.SelectedText.Length;
-					text = text.Insert(end, @"</font>");
-
-					lastFocusedContentBox.Text = text;
-				}
 			}
 		}
 

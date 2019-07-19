@@ -20,6 +20,7 @@ using SCG.Extensions;
 using DynamicData.Binding;
 using ReactiveUI;
 using System.Reactive;
+using System.Windows.Media;
 
 namespace SCG.Modules.DOS2DE.Data.View.Locale
 {
@@ -270,6 +271,28 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			set
 			{
 				this.RaiseAndSetIfChanged(ref contentFontSize, value);
+			}
+		}
+
+		private System.Windows.Media.Color? selectedColor;
+
+		public System.Windows.Media.Color? SelectedColor
+		{
+			get => selectedColor;
+			set
+			{
+				this.RaiseAndSetIfChanged(ref selectedColor, value);
+			}
+		}
+
+		private string selectedText = "";
+
+		public string SelectedText
+		{
+			get => selectedText;
+			set
+			{
+				this.RaiseAndSetIfChanged(ref selectedText, value);
 			}
 		}
 
@@ -680,12 +703,16 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 
 		public ICommand OpenPreferencesCommand { get; set; }
 
-		public ICommand ExpandContentCommand { get; set; }
+		//public ICommand ExpandContentCommand { get; set; }
 
 		public ICommand AddFontTagCommand { get; set; }
 
+		// Content Context Menu
 		public ICommand ToggleContentLightModeCommand { get; set; }
 		public ICommand ChangeContentFontSizeCommand { get; set; }
+		public ICommand PopoutContentCommand { get; set; }
+
+		public IObservable<bool> CanExecutePopoutContentCommand { get; private set; }
 
 		public void AddNewKey()
 		{
@@ -750,6 +777,45 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			}
 		}
 
+		public void AddFontTag()
+		{
+			//We get/set Content here instead of EntryContent so we don't create double histories.
+			if (SelectedEntry != null && SelectedText != string.Empty)
+			{
+				var lastSelected = SelectedEntry;
+				var lastText = SelectedEntry.Content;
+
+				void undo()
+				{
+					if(lastSelected != null)
+					{
+						lastSelected.Content = lastText;
+					}
+				}
+
+				void redo()
+				{
+					string color = SelectedColor == null ? "#FFFFFF" : SelectedColor.Value.ToHexString();
+
+					int start = SelectedEntry.Content.IndexOf(SelectedText);
+
+					string text = SelectedEntry.Content;
+					string fontStartText = $"<font color='{color}'>";
+					text = text.Insert(start, fontStartText);
+
+					int end = start + fontStartText.Length + SelectedText.Length;
+					text = text.Insert(end, @"</font>");
+
+					SelectedEntry.Content = text;
+
+					//Log.Here().Activity($"Content box text set to: {text} | Start {start} End {end}");
+				}
+
+				CreateSnapshot(undo, redo);
+				redo();
+			}
+		}
+
 		/// <summary>
 		/// Creates a new MenuData whose IsEnabled property is linked to a property in this view data.
 		/// When the property in this class changes, the linked menudata's IsEnabled will update accordingly.
@@ -782,8 +848,6 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 		public void OnViewLoaded(LocaleEditorWindow v, DOS2DEModuleData moduleData)
 		{
 			view = v;
-
-			AddFontTagCommand = ReactiveCommand.Create(view.AddFontTag);
 
 			ModuleData = moduleData;
 			LocaleEditorCommands.LoadSettings(ModuleData, this);
@@ -850,6 +914,8 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 
 			OpenPreferencesCommand = ReactiveCommand.Create(() => { LocaleEditorWindow.instance?.TogglePreferencesWindow(); });
 
+			AddFontTagCommand = ReactiveCommand.Create(AddFontTag);
+
 			ToggleContentLightModeCommand = ReactiveCommand.Create(() => ContentLightMode = !ContentLightMode);
 			ChangeContentFontSizeCommand = ReactiveCommand.Create<string>((fontSizeStr) => {
 				this.RaisePropertyChanging("ContentFontSize");
@@ -915,15 +981,21 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 
 			this.WhenAny(vm => vm.SelectedEntry.EntryContent, vm => vm.Value).Subscribe((o) => {
 				this.RaisePropertyChanged("SelectedEntryContent");
-				Log.Here().Activity("EntryContent changed! Raising SelectedEntryContent change");
 			});
 
-			this.WhenAny(vm => vm.SelectedItem, vm => vm.Value).Subscribe((o) => {
-				ContentSelected = false;
-				ContentFocused = false;
-				SelectedEntry = null;
-				Log.Here().Activity("Selected file changed");
-			});
+			void clearSelectedEntry()
+			{
+				if(SelectedEntry != null)
+				{
+					ContentSelected = false;
+					ContentFocused = false;
+					SelectedEntry = null;
+				}
+			}
+
+			this.WhenAnyValue(vm => vm.SelectedItem, vm => vm.SelectedGroup).Subscribe((o) => clearSelectedEntry());
+
+			CanExecutePopoutContentCommand = this.WhenAny(vm => vm.SelectedEntry, e => e.Value != null);
 		}
 	}
 

@@ -266,6 +266,7 @@
     <Compile Include="Controls\Behavior\ListBoxSelectionBehavior.cs" />
     <Compile Include="Controls\Behavior\MarginSetter.cs" />
     <Compile Include="Controls\Behavior\ProgressBarAnimationBehavior.cs" />
+    <Compile Include="Controls\Behavior\RichTextBoxSelectionBehavior.cs" />
     <Compile Include="Controls\Behavior\TextBoxEnterKeyBehavior.cs" />
     <Compile Include="Controls\FileGridBox.xaml.cs">
       <DependentUpon>FileGridBox.xaml</DependentUpon>

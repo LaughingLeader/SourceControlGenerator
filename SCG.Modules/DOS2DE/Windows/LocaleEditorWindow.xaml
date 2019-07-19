@@ -15,6 +15,7 @@
 		xmlns:win="clr-namespace:SCG.Windows;assembly=SourceControlGenerator"
 		xmlns:c="clr-namespace:SCG.Controls;assembly=SourceControlGenerator"
 		xmlns:behavior="clr-namespace:SCG.Controls.Behavior;assembly=SourceControlGenerator"
+		xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
 		xmlns:dgx="urn:tom-englert.de/DataGridExtensions"
 		xmlns:sys="clr-namespace:System;assembly=mscorlib"
 		xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
@@ -31,10 +32,10 @@
 
 			<dgx:RegexContentFilterFactory x:Key="RegexContentFilterFactory" />
 			<util:LocalizationTextFormatter x:Key="LocalizationTextFormatter" />
-
-			<Style TargetType="c:ImageButton" BasedOn="{StaticResource {x:Type c:ImageButton}}">
+			<Style TargetType="{x:Type c:ImageButton}" >
 				<Setter Property="Template" Value="{StaticResource ImageButtonTemplate}" />
 				<Setter Property="MaxSize" Value="16" />
+				<Setter Property="ToolTipService.ShowOnDisabled" Value="True" />
 			</Style>
 
 			<Style x:Key="ShortcutButton" TargetType="Button">
@@ -168,7 +169,51 @@
 					/>
 				</StackPanel>
 			</Grid>
-			
+			<xctk:RichTextBox 
+					x:Name="EntryContentRichTextBox"
+					x:Key="EntryContentRichTextBox"
+					Text="{Binding Path=DataContext.SelectedEntryContent, UpdateSourceTrigger=PropertyChanged,
+						RelativeSource={RelativeSource AncestorType={x:Type Window}}}"
+					TextFormatter="{StaticResource LocalizationTextFormatter}"
+					GotFocus="EntryContent_GotFocus"
+					LostFocus="EntryContent_LostFocus"
+					SelectionChanged="EntryContent_SelectionChanged"
+					Loaded="EntryContentRichTextBox_Loaded" Unloaded="EntryContentRichTextBox_Unloaded"
+					BorderThickness="0" BorderBrush="{x:Null}"
+					Margin="1" Block.LineHeight="2"
+					Background="Transparent"
+					Tag="{Binding Path=DataContext, RelativeSource={RelativeSource AncestorType={x:Type Window}}}"
+					FontSize="{Binding Path=DataContext.ContentFontSize, RelativeSource={RelativeSource AncestorType={x:Type Window}}, FallbackValue=12, TargetNullValue=12}"
+					AcceptsReturn="True" AcceptsTab="True"
+				>
+				<xctk:RichTextBox.Resources>
+					<!--<Style TargetType="ScrollViewer">
+										<Setter Property="MinWidth" Value="2000" />
+									</Style>-->
+				</xctk:RichTextBox.Resources>
+				<i:Interaction.Behaviors>
+					<behavior:RichTextBoxSelectionBehavior SelectedText="{Binding Path=DataContext.SelectedText, Mode=OneWayToSource, RelativeSource={RelativeSource AncestorType={x:Type Window}}}" />
+				</i:Interaction.Behaviors>
+				<xctk:RichTextBox.ContextMenu>
+					<ContextMenu>
+						<MenuItem Command="ApplicationCommands.Cut" />
+						<MenuItem Command="ApplicationCommands.Copy" />
+						<MenuItem Command="ApplicationCommands.Paste" />
+						<MenuItem Command="ApplicationCommands.SelectAll" />
+						<MenuItem Header="Display Content in Separate Window" Command="{Binding Path=PlacementTarget.Tag.PopoutContentCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+						<MenuItem Header="Toggle Light/Dark Mode"
+											Command="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, 
+													Path=PlacementTarget.Tag.ToggleContentLightModeCommand}" />
+						<MenuItem Header="Font Size">
+							<MenuItem Header="12" CommandParameter="12" Command="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.Tag.ChangeContentFontSizeCommand}" />
+							<MenuItem Header="16" CommandParameter="16" Command="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.Tag.ChangeContentFontSizeCommand}" />
+							<MenuItem Header="24" CommandParameter="24" Command="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.Tag.ChangeContentFontSizeCommand}" />
+							<MenuItem Header="32" CommandParameter="32" Command="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.Tag.ChangeContentFontSizeCommand}" />
+						</MenuItem>
+					</ContextMenu>
+				</xctk:RichTextBox.ContextMenu>
+			</xctk:RichTextBox>
+
 			<Style x:Key="LocaleGroupTabControl" TargetType="{x:Type TabControl}">
 				<Setter Property="Padding" Value="0"/>
 				<Setter Property="HorizontalContentAlignment" Value="Center"/>
@@ -498,44 +543,7 @@
 						<GridSplitter Grid.Row="1" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Height="3" Background="{Binding ElementName=LocaleEntryDataGrid, Path=BorderBrush}" />
 						<Border Grid.Row="2" 
 							BorderThickness="1,0,1,1" BorderBrush="{Binding ElementName=LocaleEntryDataGrid, Path=BorderBrush}">
-							<xctk:RichTextBox Grid.Row="1"
-									x:Name="EntryContentRichTextBox"
-									Text="{Binding Path=DataContext.SelectedEntryContent, UpdateSourceTrigger=PropertyChanged,
-										RelativeSource={RelativeSource AncestorType={x:Type Window}}}"
-									TextFormatter="{StaticResource LocalizationTextFormatter}"
-									GotFocus="EntryContent_GotFocus"
-									LostFocus="EntryContent_LostFocus"
-									SelectionChanged="EntryContent_SelectionChanged"
-									BorderThickness="0" BorderBrush="{x:Null}"
-									Margin="1" Block.LineHeight="2"
-									Background="Transparent"
-									Tag="{Binding Path=DataContext, RelativeSource={RelativeSource AncestorType={x:Type Window}}}"
-									FontSize="{Binding Path=DataContext.ContentFontSize, RelativeSource={RelativeSource AncestorType={x:Type Window}}, FallbackValue=12, TargetNullValue=12}"
-									AcceptsReturn="True" AcceptsTab="True"
-								>
-								<xctk:RichTextBox.Resources>
-									<!--<Style TargetType="ScrollViewer">
-										<Setter Property="MinWidth" Value="2000" />
-									</Style>-->
-								</xctk:RichTextBox.Resources>
-								<xctk:RichTextBox.ContextMenu>
-									<ContextMenu>
-										<MenuItem Command="ApplicationCommands.Cut" />
-										<MenuItem Command="ApplicationCommands.Copy" />
-										<MenuItem Command="ApplicationCommands.Paste" />
-										<MenuItem Command="ApplicationCommands.SelectAll" />
-										<MenuItem Header="Toggle Light/Dark Mode"
-											Command="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, 
-													Path=PlacementTarget.Tag.ToggleContentLightModeCommand}" />
-										<MenuItem Header="Font Size">
-											<MenuItem Header="12" CommandParameter="12" Command="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.Tag.ChangeContentFontSizeCommand}" />
-											<MenuItem Header="16" CommandParameter="16" Command="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.Tag.ChangeContentFontSizeCommand}" />
-											<MenuItem Header="24" CommandParameter="24" Command="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.Tag.ChangeContentFontSizeCommand}" />
-											<MenuItem Header="32" CommandParameter="32" Command="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.Tag.ChangeContentFontSizeCommand}" />
-										</MenuItem>
-									</ContextMenu>
-								</xctk:RichTextBox.ContextMenu>
-							</xctk:RichTextBox>
+							<ContentPresenter Grid.Row="1" Content="{StaticResource EntryContentRichTextBox}" />
 						</Border>
 					</Grid>
 				</Grid>
