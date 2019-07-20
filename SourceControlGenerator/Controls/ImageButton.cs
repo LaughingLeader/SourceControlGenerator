@@ -17,6 +17,8 @@ namespace SCG.Controls
 		static ImageButton()
 		{
 			DefaultStyleKeyProperty.OverrideMetadata(typeof(ImageButton), new FrameworkPropertyMetadata(typeof(ImageButton)));
+
+			ToolTipService.ShowOnDisabledProperty.OverrideMetadata(typeof(ImageButton), new FrameworkPropertyMetadata(true));
 		}
 
 		public string Source
@@ -128,9 +130,17 @@ namespace SCG.Controls
 		public static readonly DependencyProperty TintColorProperty =
 			DependencyProperty.Register("TintColor", typeof(Color), typeof(ImageButton), new PropertyMetadata(Colors.LightBlue));
 
-		public ImageButton() : base()
+		public ImageButton()
 		{
-			
+			Template = Application.Current.TryFindResource("ImageButtonTemplate") as ControlTemplate;
+
+			if(MaxSize > 0)
+			{
+				MinWidth = MaxSize;
+				MaxWidth = MaxSize;
+				MinHeight = MaxSize;
+				MaxHeight = MaxSize;
+			}
 		}
 
 		//public void CreateGreyImage()

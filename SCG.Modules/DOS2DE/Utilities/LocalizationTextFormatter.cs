@@ -112,7 +112,7 @@ namespace SCG.Modules.DOS2DE.Utilities
 			}
 			catch(NullReferenceException ex)
 			{
-
+				Log.Here().Error($"Error formatting text: {ex.ToString()}");
 			}
 		}
 	}

@@ -61,14 +61,14 @@
 		<Grid>
 			<Image
 				x:Name="ButtonImageControl"
-				Height="{Binding MaxSize, RelativeSource={RelativeSource TemplatedParent}}"
-				Width="{Binding MaxSize, RelativeSource={RelativeSource TemplatedParent}}"
+				Width="{Binding Width, RelativeSource={RelativeSource TemplatedParent}}"
+				Height="{Binding Height, RelativeSource={RelativeSource TemplatedParent}}"
 				Source="{Binding Source, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource StringToCachedImageConverter}}"
 				ToolTipService.ShowOnDisabled="True" 
 			/>
 			<Rectangle x:Name="TintRect"
-				Width="{Binding MaxSize, RelativeSource={RelativeSource TemplatedParent}}"
-				Height="{Binding MaxSize, RelativeSource={RelativeSource TemplatedParent}}"
+				Width="{Binding Width, RelativeSource={RelativeSource TemplatedParent}}"
+				Height="{Binding Height, RelativeSource={RelativeSource TemplatedParent}}"
 				ToolTipService.ShowOnDisabled="True" ToolTip="{Binding Path=ToolTip, ElementName=ButtonImageControl}"
 			>
 				<Rectangle.Fill>
@@ -147,9 +147,10 @@
 	</ControlTemplate>
 
 	<!-- Default Style for Image Button -->
-	<Style TargetType="{x:Type c:ImageButton}">
+	<Style TargetType="{x:Type c:ImageButton}" x:Key="DefaultImageButtonStyle">
 		<Setter Property="Template" Value="{StaticResource ImageButtonTemplate}" />
 		<Setter Property="ToolTipService.ShowOnDisabled" Value="True" />
+		<Setter Property="MaxSize" Value="16" />
 	</Style>
 
 	<!-- Style to hide tool tips that have an empty content. -->
@@ -295,8 +296,10 @@
 
 	<HierarchicalDataTemplate DataType="{x:Type data:MenuData}" ItemsSource="{Binding MenuItems}" >
 		<!--<TextBlock Text="{Binding Header, FallbackValue='Null'}"/>-->
-		<MenuItem Header="{Binding Header}" Command="{Binding ClickCommand}" InputGestureText="{Binding ShortcutText}" IsEnabled="{Binding IsEnabled}" UsesItemContainerTemplate="True" ItemContainerTemplateSelector="{StaticResource MenuItemContainerTemplateSelector}" />
+		<MenuItem Header="{Binding Header}" Command="{Binding ClickCommand}" InputGestureText="{Binding ShortcutText}" IsEnabled="{Binding IsEnabled}" 
+			UsesItemContainerTemplate="True" ItemContainerTemplateSelector="{StaticResource MenuItemContainerTemplateSelector}" />
 	</HierarchicalDataTemplate>
+
 	<DataTemplate DataType="{x:Type data:SeparatorData}">
 		<Separator />
 	</DataTemplate>

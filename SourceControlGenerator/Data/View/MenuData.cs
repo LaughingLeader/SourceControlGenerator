@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DynamicData.Binding;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -76,7 +77,10 @@ namespace SCG.Data.View
 			}
 		}
 
-		public List<MenuShortcutInputBinding> Shortcuts { get; set; }
+		public List<MenuShortcutInputBinding> Shortcuts { get; set; } = new List<MenuShortcutInputBinding>();
+		public ObservableCollectionExtended<IMenuData> MenuItems { get; set; } = new ObservableCollectionExtended<IMenuData>();
+
+		private List<InputBindingCollection> registeredInputCollections = new List<InputBindingCollection>();
 
 		public MenuShortcutInputBinding AddShortcut(Key shortcutKey, ModifierKeys? shortcutModifiers = null)
 		{
@@ -172,8 +176,6 @@ namespace SCG.Data.View
 			}
 		}
 
-		public ObservableCollection<IMenuData> MenuItems { get; set; }
-
 		public void SetHeaderBinding(object Source, string Path, BindingMode bindingMode = BindingMode.Default, UpdateSourceTrigger updateSourceTrigger = UpdateSourceTrigger.PropertyChanged)
 		{
 			Binding binding = new Binding();
@@ -193,8 +195,6 @@ namespace SCG.Data.View
 				MenuItems.Add(menuItem);
 			}
 		}
-
-		private List<InputBindingCollection> registeredInputCollections = new List<InputBindingCollection>();
 
 		public void RegisterInputBinding(InputBindingCollection InputBindings)
 		{
@@ -298,9 +298,6 @@ namespace SCG.Data.View
 		{
 			ID = MenuID;
 			Header = menuName;
-
-			MenuItems = new ObservableCollection<IMenuData>();
-			Shortcuts = new List<MenuShortcutInputBinding>();
 		}
 
 		public MenuData(string menuID)

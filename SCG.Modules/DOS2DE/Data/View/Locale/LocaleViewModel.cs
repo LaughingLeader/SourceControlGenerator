@@ -66,16 +66,25 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			get => changesUnsaved;
 			set
 			{
-				this.RaiseAndSetIfChanged(ref changesUnsaved, value);
-				this.RaisePropertyChanged("WindowTitle");
+				if(this.RaiseAndSetIfChanged(ref changesUnsaved, value) == true)
+				{
+					WindowTitle = "*Localization Editor";
+				}
+				else
+				{
+					WindowTitle = "Localization Editor";
+				}
 			}
 		}
 
+		private string windowTitle = "Localization Editor";
+
 		public string WindowTitle
 		{
-			get
+			get => windowTitle;
+			private set
 			{
-				return !ChangesUnsaved ? "Localization Editor" : "*Localization Editor";
+				this.RaiseAndSetIfChanged(ref windowTitle, value);
 			}
 		}
 
@@ -166,7 +175,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			}
 		}
 
-		private ILocaleFileData _selectedItem;
+		private ILocaleFileData _selectedItem = null;
 
 		public ILocaleFileData SelectedItem => _selectedItem;
 

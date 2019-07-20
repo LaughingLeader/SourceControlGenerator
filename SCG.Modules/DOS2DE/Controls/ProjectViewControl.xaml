@@ -41,7 +41,7 @@
 				<Setter Property="MaxHeight" Value="16" />
 				<Setter Property="Stretch" Value="UniformToFill" />
 			</Style>
-			<Style x:Key="RefreshButtonStyle" TargetType="c:ImageButton" BasedOn="{StaticResource {x:Type c:ImageButton}}">
+			<Style x:Key="RefreshButtonStyle" TargetType="{x:Type c:ImageButton}">
 				<Setter Property="Margin" Value="10,4,0,4" />
 				<!--<Setter Property="Template">
 					<Setter.Value>
@@ -260,11 +260,6 @@
 									<DataGridTemplateColumn.CellTemplate>
 										<DataTemplate>
 											<StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center" >
-												<StackPanel.Resources>
-													<Style TargetType="c:ImageButton" BasedOn="{StaticResource {x:Type c:ImageButton}}">
-														<Setter Property="MaxSize" Value="16" />
-													</Style>
-												</StackPanel.Resources>
 												<c:ImageButton x:Name="Btn_Backup" ToolTip="{x:Static core:DOS2DETooltips.Button_BackupFolder}" Command="{Binding OpenBackupFolder}"
 														Source="{x:Static vdata:IconPathData.Archive}"/>
 												<c:ImageButton x:Name="Btn_GenGit" IsEnabled="{Binding GitGenerated}" Command="{Binding OpenGitFolder}"
@@ -285,7 +280,7 @@
 														</ContextMenu>
 													</c:ImageButton.ContextMenu>
 													<c:ImageButton.Style>
-														<Style TargetType="{x:Type c:ImageButton}" BasedOn="{StaticResource {x:Type c:ImageButton}}">
+														<Style TargetType="{x:Type c:ImageButton}">
 															<Style.Triggers>
 																<EventTrigger RoutedEvent="Click">
 																	<EventTrigger.Actions>

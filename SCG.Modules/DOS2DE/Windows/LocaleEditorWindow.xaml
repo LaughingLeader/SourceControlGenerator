@@ -16,8 +16,6 @@
 		xmlns:c="clr-namespace:SCG.Controls;assembly=SourceControlGenerator"
 		xmlns:behavior="clr-namespace:SCG.Controls.Behavior;assembly=SourceControlGenerator"
 		xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
-		xmlns:dgx="urn:tom-englert.de/DataGridExtensions"
-		xmlns:sys="clr-namespace:System;assembly=mscorlib"
 		xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
 		mc:Ignorable="d"
 		d:DataContext="{d:DesignInstance data:LocaleEditorDesignData, IsDesignTimeCreatable=True}"
@@ -29,14 +27,7 @@
 				<ResourceDictionary Source="pack://application:,,,/SourceControlGenerator;component/ThemeSystem/ResourceDictionary/MainAppDictionary.xaml" />
 				<ResourceDictionary Source="pack://application:,,,/SourceControlGenerator;component/ThemeSystem/ResourceDictionary/ScrollbarStyles.xaml" />
 			</ResourceDictionary.MergedDictionaries>
-
-			<dgx:RegexContentFilterFactory x:Key="RegexContentFilterFactory" />
 			<util:LocalizationTextFormatter x:Key="LocalizationTextFormatter" />
-			<Style TargetType="{x:Type c:ImageButton}" >
-				<Setter Property="Template" Value="{StaticResource ImageButtonTemplate}" />
-				<Setter Property="MaxSize" Value="16" />
-				<Setter Property="ToolTipService.ShowOnDisabled" Value="True" />
-			</Style>
 
 			<Style x:Key="ShortcutButton" TargetType="Button">
 				<Setter Property="MinHeight" Value="16" />
@@ -122,7 +113,7 @@
 				</StackPanel>
 				<StackPanel Orientation="Horizontal" Margin="2">
 					<StackPanel.Resources>
-						<Style TargetType="c:ImageButton" BasedOn="{StaticResource {x:Type c:ImageButton}}">
+						<Style TargetType="{x:Type c:ImageButton}" BasedOn="{StaticResource DefaultImageButtonStyle}">
 							<Setter Property="TintColor" Value="Lime" />
 							<Setter Property="Margin" Value="2" />
 						</Style>
@@ -134,13 +125,13 @@
 						ToolTip_Disabled="{x:Static core:DOS2DETooltips.Button_Locale_AddKey_Disabled}"
 						Source="{x:Static vdata:IconPathData.AddRow}"
 						IsEnabled="{Binding Path=DataContext.CanAddKeys, RelativeSource={RelativeSource AncestorType={x:Type Window}}}"
-														/>
+					/>
 					<c:ImageButton 
 						Command="{Binding Path=DataContext.DeleteKeysCommand, RelativeSource={RelativeSource AncestorType={x:Type Window}}}" 
 						ToolTip="{x:Static core:DOS2DETooltips.Button_Locale_DeleteKeys}"
 						Source="{x:Static vdata:IconPathData.DeleteTableRow}"
 						IsEnabled="{Binding Path=DataContext.AnySelected, RelativeSource={RelativeSource AncestorType={x:Type Window}}}"
-													/>
+					/>
 					<Rectangle Style="{StaticResource VerticalSeparator}" />
 					<c:ImageButton 
 						Command="{Binding Path=DataContext.GenerateHandlesCommand, RelativeSource={RelativeSource AncestorType={x:Type Window}}}" 
@@ -474,15 +465,13 @@
 								CanUserAddRows="False" CanUserDeleteRows="False"
 								CanUserResizeRows="True"
 								VirtualizingPanel.IsVirtualizingWhenGrouping="True"
-								dgx:DataGridFilter.IsAutoFilterEnabled="True"
-								dgx:DataGridFilter.ContentFilterFactory="{StaticResource RegexContentFilterFactory}"
 								Style="{StaticResource LocaleDataGridStyle}"
 						>
 							<DataGrid.Resources>
 								<behavior:DataContextSpy x:Key="FileData" DataContext="{Binding}" />
 							</DataGrid.Resources>
 							<DataGrid.Columns>
-								<DataGridCheckBoxColumn MinWidth="25" CanUserResize="False" dgx:DataGridFilterColumn.IsFilterVisible="False" 
+								<DataGridCheckBoxColumn MinWidth="25" CanUserResize="False" 
 									Binding="{Binding Selected, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" >
 									<DataGridCheckBoxColumn.Header>
 										<CheckBox IsChecked="{Binding Source={StaticResource FileData}, Path=DataContext.AllSelected, Mode=TwoWay}"
@@ -824,35 +813,37 @@
 					<Setter Property="Orientation" Value="Horizontal" />
 					<Setter Property="HorizontalAlignment" Value="Left" />
 				</Style>
-				<Style TargetType="c:ImageButton" BasedOn="{StaticResource {x:Type c:ImageButton}}">
+				<Style TargetType="{x:Type c:ImageButton}" BasedOn="{StaticResource DefaultImageButtonStyle}">
 					<Setter Property="Margin" Value="2" />
 				</Style>
 			</Grid.Resources>
 			<StackPanel x:Name="ShortcutsButtonPanel" Grid.Column="0" VerticalAlignment="Center" Margin="2" MinHeight="16">
-				<c:ImageButton 
+				<c:ImageButton
+					x:Name="AddFileButton"
 					IsEnabled="{Binding RelativeSource={RelativeSource AncestorType={x:Type Window}}, Path=DataContext.CanAddFile}"
 					ToolTip_Enabled="{x:Static core:DOS2DETooltips.Button_Locale_AddFile}"
 					ToolTip_Disabled="{x:Static core:DOS2DETooltips.Button_Locale_AddFile_Disabled}"
 					Source="{x:Static vdata:IconPathData.AddFile}"
-					x:Name="AddFileButton"
 				/>
-				<c:ImageButton 
+				<c:ImageButton
+					x:Name="ImportFileButton"
 					Command="{Binding ImportFileCommand}"
 					CommandParameter="{Binding CurrentFileImportPath, Converter={StaticResource ParamsToOpenFileBrowserParamsConverter}}"
 					ToolTip_Enabled="{x:Static core:DOS2DETooltips.Button_Locale_ImportFile}"
 					ToolTip_Disabled="{x:Static core:DOS2DETooltips.Button_Locale_ImportFile_Disabled}"
 					Source="{x:Static vdata:IconPathData.ImportFile}"
 					IsEnabled="{Binding CanAddFile}"
-					x:Name="ImportFileButton"
 					/>
-				<c:ImageButton Command="{Binding SaveCurrentCommand}" IsEnabled="{Binding CanSave}" 
+				<c:ImageButton
+					x:Name="SaveButton"
+					Command="{Binding SaveCurrentCommand}" IsEnabled="{Binding CanSave}" 
 					Source="{x:Static vdata:IconPathData.Save}"
 					ToolTip_Enabled="{x:Static core:DOS2DETooltips.Button_Locale_SaveCurrent}"
 					ToolTip_Disabled="{x:Static core:DOS2DETooltips.Button_Locale_SaveCurrent_Disabled}"
-					x:Name="SaveButton"
 				/>
-				<c:ImageButton x:Name="SaveAllButton" Command="{Binding SaveAllCommand}" ToolTip="{x:Static core:DOS2DETooltips.Button_Locale_SaveAll}" 
-							   Source="{x:Static vdata:IconPathData.SaveAll}" />
+				<c:ImageButton
+					x:Name="SaveAllButton" 
+					Command="{Binding SaveAllCommand}" ToolTip="{x:Static core:DOS2DETooltips.Button_Locale_SaveAll}" Source="{x:Static vdata:IconPathData.SaveAll}" />
 				<!--<Rectangle Style="{StaticResource VerticalSeparator}" />-->
 			</StackPanel>
 		</Grid>

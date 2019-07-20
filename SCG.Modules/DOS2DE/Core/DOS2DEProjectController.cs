@@ -26,6 +26,7 @@ using System.Threading.Tasks;
 using System.Windows.Controls;
 using System.Windows.Threading;
 using SCG.Modules.DOS2DE.Data.View.Locale;
+using DynamicData.Binding;
 
 namespace SCG.Core
 {
@@ -1176,7 +1177,7 @@ namespace SCG.Core
 				new MenuData("DOS2.RefreshProjects")
 				{
 					Header = "Refresh Projects",
-					MenuItems = new ObservableCollection<IMenuData>()
+					MenuItems = new ObservableCollectionExtended<IMenuData>()
 					{
 						new MenuData("DOS2.RefreshAll", "Refresh All", new ActionCommand(RefreshAllProjects), System.Windows.Input.Key.F5),
 						new MenuData("DOS2.RefreshManagedData", "Refresh Managed Data", new ActionCommand(RefreshModProjects)),

@@ -15,7 +15,6 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using Alphaleonis.Win32.Filesystem;
 using SCG.Windows;
-using DataGridExtensions;
 using SCG.Data.View;
 using SCG.Core;
 using System.ComponentModel;
@@ -23,6 +22,7 @@ using SCG.Commands;
 using ReactiveUI;
 using SCG.Extensions;
 using System.Reactive.Disposables;
+using SCG.Controls;
 
 namespace SCG.Modules.DOS2DE.Windows
 {
@@ -51,11 +51,26 @@ namespace SCG.Modules.DOS2DE.Windows
 
 		private DOS2DEModuleData ModuleData { get; set; }
 
+		public LocaleEditorWindow()
+		{
+			Init();
+		}
+
 		public LocaleEditorWindow(DOS2DEModuleData data)
 		{
-			InitializeComponent();
-
 			ModuleData = data;
+
+			Init();
+
+			this.WhenActivated((disposable) =>
+			{
+				
+			});
+		}
+
+		private void Init()
+		{
+			InitializeComponent();
 
 			ExportWindow = new LocaleExportWindow();
 			ExportWindow.Hide();
@@ -67,11 +82,6 @@ namespace SCG.Modules.DOS2DE.Windows
 			ContentWindow.Hide();
 
 			instance = this;
-
-			this.WhenActivated((disposable) =>
-			{
-				
-			});
 		}
 
 		public void PopoutContentWindow(LocaleKeyEntry entry)
@@ -108,6 +118,29 @@ namespace SCG.Modules.DOS2DE.Windows
 			}
 		}
 
+		private bool TryFindName<T>(string name, out T target) where T : FrameworkElement
+		{
+			var element = this.FindName(name);
+			target = (T)element;
+			return element != null;
+		}
+
+		private bool HasNamedElement(string name)
+		{
+			var element = this.FindName(name);
+			return element != null;
+		}
+
+		public T GetElement<T>(string name)
+		{
+			var element = this.FindName(name);
+			return (T)element;
+		}
+
+		private ImageButton saveButton;
+		private ImageButton saveAllButton;
+		private ImageButton importFileButton;
+
 		public void LoadData(LocaleViewModel data)
 		{
 			ViewModel = data;
@@ -116,9 +149,21 @@ namespace SCG.Modules.DOS2DE.Windows
 
 			ViewModel.PopoutContentCommand = ReactiveCommand.Create(() => PopoutContentWindow(ViewModel.SelectedEntry), ViewModel.CanExecutePopoutContentCommand);
 
-			this.OneWayBind(this.ViewModel, vm => vm.SaveCurrentCommand, view => view.SaveButton.Command);
-			this.OneWayBind(this.ViewModel, vm => vm.SaveAllCommand, view => view.SaveAllButton.Command);
-			this.OneWayBind(this.ViewModel, vm => vm.ImportFileCommand, view => view.ImportFileButton.Command);
+			if(this.TryFindName("SaveButton", out saveButton))
+			{
+				this.OneWayBind(this.ViewModel, vm => vm.SaveCurrentCommand, view => view.saveButton.Command);
+			}
+
+			if (this.TryFindName("SaveAllButton", out saveAllButton))
+			{
+				this.OneWayBind(this.ViewModel, vm => vm.SaveCurrentCommand, view => view.saveAllButton.Command);
+			}
+
+			if (this.TryFindName("ImportFileButton", out importFileButton))
+			{
+				this.OneWayBind(this.ViewModel, vm => vm.SaveCurrentCommand, view => view.importFileButton.Command);
+			}
+
 
 			DataContext = ViewModel;
 			ExportWindow.LocaleData = ViewModel;
@@ -126,8 +171,8 @@ namespace SCG.Modules.DOS2DE.Windows
 
 		private struct ViewObservableProperty
 		{
-			public object View;
-			public ObservableAsPropertyHelper<string> PropertyHelper;
+			public object View { get; set; }
+			public ObservableAsPropertyHelper<string> PropertyHelper { get; set; }
 		}
 
 		private List<ViewObservableProperty> selectedTextObservables = new List<ViewObservableProperty>();

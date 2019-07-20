@@ -28,7 +28,7 @@ namespace SCG.FileGen
 			return defaultText;
 		}
 
-		public static async Task<bool> CreateJunctions(string ProjectName, List<JunctionData> SourceFolders, IModuleData moduleData)
+		public static bool CreateJunctions(string ProjectName, List<JunctionData> SourceFolders, IModuleData moduleData)
 		{
 			if(SourceFolders != null && SourceFolders.Count > 0)
 			{
@@ -156,7 +156,7 @@ namespace SCG.FileGen
 			return k != null && !String.IsNullOrEmpty(k.KeywordName) && !String.IsNullOrEmpty(k.KeywordValue);
 		}
 
-		public static async Task<string> ReplaceKeywords(string sourceText, IProjectData projectData, MainAppData mainAppData, IModuleData moduleData)
+		public static string ReplaceKeywords(string sourceText, IProjectData projectData, MainAppData mainAppData, IModuleData moduleData)
 		{
 			string replacedText = sourceText;
 

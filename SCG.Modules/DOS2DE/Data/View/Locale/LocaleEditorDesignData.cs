@@ -49,6 +49,8 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 
 			//SelectedGroupIndex = 1;
 			//SelectedGroup.SelectedFileIndex = 2;
+
+			System.Diagnostics.Trace.WriteLine("Design data test");
 		}
 	}
 }

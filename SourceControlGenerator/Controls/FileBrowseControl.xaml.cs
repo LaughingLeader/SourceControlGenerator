@@ -423,7 +423,7 @@ namespace SCG.Controls
 			AutoScrollTextbox();
 		}
 
-		private async void AutoScrollTextbox()
+		private void AutoScrollTextbox()
 		{
 			if (!String.IsNullOrEmpty(FileLocationText))
 			{
