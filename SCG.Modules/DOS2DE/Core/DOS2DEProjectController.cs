@@ -4,7 +4,7 @@ using SCG.Data.App;
 using SCG.Data.View;
 using SCG.FileGen;
 using SCG.Interfaces;
-using SCG.Modules.DOS2DE.Controls;
+using SCG.Modules.DOS2DE.Views;
 using SCG.Modules.DOS2DE.Core;
 using SCG.Modules.DOS2DE.Data.View;
 using SCG.Modules.DOS2DE.Utilities;
@@ -27,14 +27,13 @@ using System.Windows.Controls;
 using System.Windows.Threading;
 using SCG.Modules.DOS2DE.Data.View.Locale;
 using DynamicData.Binding;
+using ReactiveUI;
 
 namespace SCG.Core
 {
 	public class DOS2DEProjectController : IProjectController
 	{
-		private ProjectViewControl projectViewControl;
-
-		private LocaleEditorWindow localizationEditorWindow;
+		private DOS2DEProjectsView projectViewControl;
 
 		public MainAppData MainAppData { get; set; }
 		public DOS2DEModuleData Data { get; set; }
@@ -987,7 +986,7 @@ namespace SCG.Core
 
 		public UserControl GetProjectView(MainWindow mainWindow)
 		{
-			if (projectViewControl == null) projectViewControl = new ProjectViewControl(mainWindow, this);
+			if (projectViewControl == null) projectViewControl = new DOS2DEProjectsView(mainWindow, this);
 
 			return projectViewControl;
 		}
@@ -1093,45 +1092,6 @@ namespace SCG.Core
 			}
 		}
 
-		public void OpenLocalizationEditor()
-		{
-			if (localizationEditorWindow == null)
-			{
-				localizationEditorWindow = new LocaleEditorWindow(Data);
-				localizationEditorWindow.Closing += LocalizationEditorWindow_Closing;
-			}
-
-			if(!localizationEditorWindow.IsVisible)
-			{
-				OpenLocalizationEditorAsync();
-			}
-			else
-			{
-				localizationEditorWindow.Close();
-			}
-		}
-
-		private async void OpenLocalizationEditorAsync()
-		{
-			var data = await LocaleEditorCommands.LoadLocalizationDataAsync(Data.Settings.DOS2DEDataDirectory, 
-				Data.ManagedProjects.Where(p => p.Selected)).ConfigureAwait(false);
-			OnDataLoaded(data);
-		}
-
-		private void OnDataLoaded(LocaleViewModel data)
-		{
-			AppController.Main.MainWindow.Dispatcher.Invoke(new Action(() =>
-			{
-				localizationEditorWindow.LoadData(data);
-				localizationEditorWindow.Show();
-			}), DispatcherPriority.Normal);
-		}
-
-		private void LocalizationEditorWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
-		{
-			localizationEditorWindow = null;
-		}
-
 		private MenuData BackupSelectedMenuData { get; set; }
 		private MenuData BackupSelectedToMenuData { get; set; }
 		private MenuData StartGitGenerationMenuData { get; set; }
@@ -1203,7 +1163,7 @@ namespace SCG.Core
 
 
 			OpenLocalizationEditorMenuData = new MenuData("DOS2.LocalizationEditor", 
-				"Localization Editor", new ActionCommand(OpenLocalizationEditor), System.Windows.Input.Key.F7);
+				"Localization Editor", ReactiveCommand.Create(DOS2DEProjectsView.ToggleDOS2DELocalizationEditor), System.Windows.Input.Key.F7);
 			OpenLocalizationEditorMenuData.IsEnabled = false;
 
 			MainAppData.MenuBarData.Tools.Register(Data.ModuleName,

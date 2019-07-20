@@ -1,24 +1,27 @@
-﻿<UserControl x:Name="ProjectViewControlMain" x:Class="SCG.Modules.DOS2DE.Controls.ProjectViewControl"
-			 xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-			 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-			 xmlns:PresentationOptions="http://schemas.microsoft.com/winfx/2006/xaml/presentation/options" 
-			 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-			 xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-			 xmlns:local="clr-namespace:SCG.Modules.DOS2DE.Controls"
-			 xmlns:core="clr-namespace:SCG.Modules.DOS2DE.Core"
-			 xmlns:scg="clr-namespace:SCG;assembly=SourceControlGenerator"
-			 xmlns:scgcore="clr-namespace:SCG.Core;assembly=SourceControlGenerator"
-			 xmlns:c="clr-namespace:SCG.Controls;assembly=SourceControlGenerator"
-			 xmlns:cb="clr-namespace:SCG.Controls.Behavior;assembly=SourceControlGenerator"
-			 xmlns:cv="clr-namespace:SCG.Converters;assembly=SourceControlGenerator"
-			 xmlns:data="clr-namespace:SCG.Modules.DOS2DE.Data.View"
-			 xmlns:vdata="clr-namespace:SCG.Data.View;assembly=SourceControlGenerator"
-			 xmlns:proxy="clr-namespace:SCG.Data.Proxy;assembly=SourceControlGenerator"
-			 mc:Ignorable="d" 
-			 d:DesignHeight="500" d:DesignWidth="900"
-			 d:DataContext="{x:Static local:ProjectViewControl.TestData}"
-			 KeyDown="ProjectViewControlMain_KeyDown" KeyUp="ProjectViewControlMain_KeyUp" Foreground="{x:Null}" Loaded="ProjectViewControlMain_Loaded"
-			 >
+﻿<local:DOS2DEProjectsViewBase
+			x:Class="SCG.Modules.DOS2DE.Views.DOS2DEProjectsView"
+			xmlns:reactiveui="http://reactiveui.net"
+			xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+			xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+			xmlns:PresentationOptions="http://schemas.microsoft.com/winfx/2006/xaml/presentation/options" 
+			xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+			xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+			xmlns:local="clr-namespace:SCG.Modules.DOS2DE.Views"
+			xmlns:core="clr-namespace:SCG.Modules.DOS2DE.Core"
+			xmlns:scg="clr-namespace:SCG;assembly=SourceControlGenerator"
+			xmlns:scgcore="clr-namespace:SCG.Core;assembly=SourceControlGenerator"
+			xmlns:c="clr-namespace:SCG.Controls;assembly=SourceControlGenerator"
+			xmlns:cb="clr-namespace:SCG.Controls.Behavior;assembly=SourceControlGenerator"
+			xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
+			xmlns:cv="clr-namespace:SCG.Converters;assembly=SourceControlGenerator"
+			xmlns:data="clr-namespace:SCG.Modules.DOS2DE.Data.View"
+			xmlns:vdata="clr-namespace:SCG.Data.View;assembly=SourceControlGenerator"
+			xmlns:proxy="clr-namespace:SCG.Data.Proxy;assembly=SourceControlGenerator"
+			mc:Ignorable="d" 
+			d:DesignHeight="500" d:DesignWidth="900"
+			d:DataContext="{d:DesignInstance local:DOS2DEProjectsViewTestData, IsDesignTimeCreatable=True}"
+			KeyDown="ProjectView_KeyDown" KeyUp="ProjectView_KeyUp" Foreground="{x:Null}"
+>
 	<UserControl.Resources>
 		<ResourceDictionary>
 			<ResourceDictionary.MergedDictionaries>
@@ -260,27 +263,21 @@
 									<DataGridTemplateColumn.CellTemplate>
 										<DataTemplate>
 											<StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center" >
-												<c:ImageButton x:Name="Btn_Backup" ToolTip="{x:Static core:DOS2DETooltips.Button_BackupFolder}" Command="{Binding OpenBackupFolder}"
-														Source="{x:Static vdata:IconPathData.Archive}"/>
-												<c:ImageButton x:Name="Btn_GenGit" IsEnabled="{Binding GitGenerated}" Command="{Binding OpenGitFolder}"
-													Source="{x:Static vdata:IconPathData.GitLogo}"
-													Source_Disabled="{x:Static vdata:IconPathData.GitLogo_Disabled}"
-													ToolTip_Enabled="{x:Static core:DOS2DETooltips.Button_GitFolder}"
-													ToolTip_Disabled="{x:Static core:DOS2DETooltips.Button_GitFolderDisabled}"
-													Template="{StaticResource ImageButtonTemplate}"
-															  />
-												<c:ImageButton x:Name="Btn_DataFolders" ToolTip="{x:Static core:DOS2DETooltips.Button_DataFolderParent}" Click="SetDataFolderContextMenuTarget"
-														Source="{x:Static vdata:IconPathData.Folder}">
+												<c:ImageButton x:Name="Btn_DataFolders"
+													ToolTip="{x:Static core:DOS2DETooltips.Button_DataFolderParent}" 
+													Click="SetDataFolderContextMenuTarget"
+													Source="{x:Static vdata:IconPathData.Folder}"
+													>
 													<c:ImageButton.ContextMenu>
 														<ContextMenu>
-															<MenuItem x:Name="Btn_EditorFolder" Header="{x:Static core:DOS2DETooltips.Button_DataFolderEditor}" Command="{Binding OpenEditorFolder}" />
-															<MenuItem x:Name="Btn_ModsFolder" Header="{x:Static core:DOS2DETooltips.Button_DataFolderMods}" Command="{Binding OpenModsFolder}" />
-															<MenuItem x:Name="Btn_ProjectFolder" Header="{x:Static core:DOS2DETooltips.Button_DataFolderProject}" Command="{Binding OpenProjectFolder}" />
-															<MenuItem x:Name="Btn_PublicFolder" Header="{x:Static core:DOS2DETooltips.Button_DataFolderPublic}" Command="{Binding OpenPublicFolder}" />
+															<MenuItem x:Name="Btn_EditorFolder" Header="{x:Static core:DOS2DETooltips.Button_DataFolderEditor}" Command="{Binding OpenEditorFolder}" CommandParameter="{Binding}" />
+															<MenuItem x:Name="Btn_ModsFolder" Header="{x:Static core:DOS2DETooltips.Button_DataFolderMods}" Command="{Binding OpenModsFolder}" CommandParameter="{Binding}" />
+															<MenuItem x:Name="Btn_ProjectFolder" Header="{x:Static core:DOS2DETooltips.Button_DataFolderProject}" Command="{Binding OpenProjectFolder}" CommandParameter="{Binding}" />
+															<MenuItem x:Name="Btn_PublicFolder" Header="{x:Static core:DOS2DETooltips.Button_DataFolderPublic}" Command="{Binding OpenPublicFolder}" CommandParameter="{Binding}" />
 														</ContextMenu>
 													</c:ImageButton.ContextMenu>
 													<c:ImageButton.Style>
-														<Style TargetType="{x:Type c:ImageButton}">
+														<Style TargetType="{x:Type c:ImageButton}" BasedOn="{StaticResource DefaultImageButtonStyle}">
 															<Style.Triggers>
 																<EventTrigger RoutedEvent="Click">
 																	<EventTrigger.Actions>
@@ -294,25 +291,37 @@
 																	</EventTrigger.Actions>
 																</EventTrigger>
 															</Style.Triggers>
-															<Setter Property="ContextMenu">
-																<Setter.Value>
-																	<ContextMenu>
-																		<MenuItem />
-																		<MenuItem />
-																	</ContextMenu>
-																</Setter.Value>
-															</Setter>
 														</Style>
 													</c:ImageButton.Style>
 												</c:ImageButton>
+												<c:ImageButton x:Name="Btn_Backup" 
+													ToolTip="{x:Static core:DOS2DETooltips.Button_BackupFolder}" 
+													Command="{Binding OpenBackupFolder}" CommandParameter="{Binding}"
+													Source="{x:Static vdata:IconPathData.Archive}"
+												/>
+												<c:ImageButton x:Name="Btn_GenGit" IsEnabled="{Binding GitGenerated}" 
+													Command="{Binding OpenGitFolder}" CommandParameter="{Binding}"
+													Source="{x:Static vdata:IconPathData.GitLogo}"
+													Source_Disabled="{x:Static vdata:IconPathData.GitLogo_Disabled}"
+													ToolTip_Enabled="{x:Static core:DOS2DETooltips.Button_GitFolder}"
+													ToolTip_Disabled="{x:Static core:DOS2DETooltips.Button_GitFolderDisabled}"
+													Template="{StaticResource ImageButtonTemplate}"
+													cb:ImageButtonHoverOnDisabled.Enable="True"
+												/>
+												<c:ImageButton x:Name="Btn_OpenLocaleEditor" 
+													ToolTip="{x:Static core:DOS2DETooltips.Button_OpenLocaleEditor}" 
+													Command="{Binding OpenInLocalizationEditorCommand}"
+													CommandParameter="{Binding}" 
+													Source="{x:Static vdata:IconPathData.OpenLocalizationEditor}"
+												/>
 												<c:ImageButton x:Name="Btn_OpenMarkdown" 
 													ToolTip="{x:Static core:DOS2DETooltips.Button_MarkdownConverter}" 
-													IsEnabled="{Binding GitGenerated}" 
+													IsEnabled="{Binding GitGenerated}" Visibility="{Binding GitGenerated, Converter={StaticResource BoolToVisibilityConverter}}"
 													Command="{Binding Path=Data.OpenProjectReadmeInMarkdownConverterCommand, Source={StaticResource AppControllerProxy}}"
-													CommandParameter="{Binding}" 
+													CommandParameter="{Binding}"
 													Source="{x:Static vdata:IconPathData.Convert}"
 												/>
-												<!--<Button x:Name="Btn_PackageMod" ToolTip="{x:Static core:DOS2DETooltips.Button_PackageMod}" IsEnabled="{Binding DataContext.Settings.DivinePathSet, ElementName=ProjectViewControlMain}" Command="{Binding DataContext.PackageProjectCommand, ElementName=ProjectViewControlMain}"
+												<!--<Button x:Name="Btn_PackageMod" ToolTip="{x:Static core:DOS2DETooltips.Button_PackageMod}" IsEnabled="{Binding DataContext.Settings.DivinePathSet, ElementName=ProjectView}" Command="{Binding DataContext.PackageProjectCommand, ElementName=ProjectView}"
 														CommandParameter="{Binding}" >
 													<Image Source="{x:Static vdata:IconPathData.Convert}" Stretch="UniformToFill"/>
 												</Button>
@@ -468,4 +477,4 @@
 			</Grid>
 		</Grid>
 	</Grid>
-</UserControl>
+</local:DOS2DEProjectsViewBase>

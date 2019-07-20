@@ -16,7 +16,9 @@ using SCG.Modules.DOS2DE.Core;
 using SCG.Interfaces;
 using SCG.Data;
 using SCG.Data.App;
-using SCG.Modules.DOS2DE.Controls;
+using SCG.Modules.DOS2DE.Views;
+using ReactiveUI;
+using System.Reactive;
 
 namespace SCG.Modules.DOS2DE.Data.View
 {
@@ -267,18 +269,13 @@ namespace SCG.Modules.DOS2DE.Data.View
 
 
 		public ICommand OpenBackupFolder { get; private set; }
-
 		public ICommand OpenGitFolder { get; private set; }
-
 		public ICommand OpenModsFolder { get; private set; }
-
 		public ICommand OpenPublicFolder { get; private set; }
-
 		public ICommand OpenEditorFolder { get; private set; }
-
 		public ICommand OpenProjectFolder { get; private set; }
-
 		public ICommand EditProjectVersion { get; private set; }
+		public ICommand OpenInLocalizationEditorCommand { get; private set; }
 
 		private void openBackupFolder()
 		{
@@ -313,14 +310,16 @@ namespace SCG.Modules.DOS2DE.Data.View
 			//OpenEditorFolder = new CallbackCommand();
 			//OpenProjectFolder = new CallbackCommand();
 
-			OpenBackupFolder = new ActionCommand(() => { DOS2DECommands.OpenBackupFolder(this); });
-			OpenGitFolder = new ActionCommand(() => { DOS2DECommands.OpenGitFolder(this); });
-			OpenModsFolder = new ActionCommand(() => { DOS2DECommands.OpenModsFolder(this); });
-			OpenPublicFolder = new ActionCommand(() => { DOS2DECommands.OpenPublicFolder(this); });
-			OpenEditorFolder = new ActionCommand(() => { DOS2DECommands.OpenEditorFolder(this); });
-			OpenProjectFolder = new ActionCommand(() => { DOS2DECommands.OpenProjectFolder(this); });
+			OpenBackupFolder = ReactiveCommand.Create<ModProjectData>(DOS2DECommands.OpenBackupFolder);
+			OpenGitFolder = ReactiveCommand.Create<ModProjectData>(DOS2DECommands.OpenGitFolder);
+			OpenModsFolder = ReactiveCommand.Create<ModProjectData>(DOS2DECommands.OpenModsFolder);
+			OpenPublicFolder = ReactiveCommand.Create<ModProjectData>(DOS2DECommands.OpenPublicFolder);
+			OpenEditorFolder = ReactiveCommand.Create<ModProjectData>(DOS2DECommands.OpenEditorFolder);
+			OpenProjectFolder = ReactiveCommand.Create<ModProjectData>(DOS2DECommands.OpenProjectFolder);
 
-			EditProjectVersion = new ActionCommand(() => { ProjectViewControl.EditProjectVersion(this); });
+			EditProjectVersion = ReactiveCommand.Create<ModProjectData>(DOS2DEProjectsView.EditProjectVersion);
+
+			OpenInLocalizationEditorCommand = ReactiveCommand.CreateFromTask<ModProjectData, Unit>(DOS2DEProjectsView.OpenLocalizationEditorForProject);
 
 			//RaisePropertyChanged("OpenBackupFolder");
 			//RaisePropertyChanged("OpenModsFolder");

@@ -27,37 +27,27 @@ using Alphaleonis.Win32.Filesystem;
 using System.Windows.Threading;
 using SCG.Util;
 using SCG.Collections;
+using ReactiveUI;
+using SCG.Modules.DOS2DE.Data.View.Locale;
+using SCG.Modules.DOS2DE.Utilities;
+using System.Reactive;
+using System.Reactive.Linq;
 
-namespace SCG.Modules.DOS2DE.Controls
+namespace SCG.Modules.DOS2DE.Views
 {
-	/// <summary>
-	/// Interaction logic for ProjectViewControl.xaml
-	/// </summary>
-	public partial class ProjectViewControl : UserControl
+	public class DOS2DEProjectsViewTestData : DOS2DEModuleData
 	{
-		public DOS2DEProjectController Controller { get; private set; }
-		public MainWindow MainWindow { get; private set; }
-		public EditVersionWindow EditVersionWindow { get; private set; }
-
-		//private bool gridSplitterMoving = false;
-
-		public static DOS2DEModuleData TestData { get; private set; } = createTestData();
-
-		private static DOS2DEModuleData createTestData()
+		public DOS2DEProjectsViewTestData()
 		{
-			DOS2DEModuleData testData = new DOS2DEModuleData();
+			ModProjects = createTestProjects();
 
-			testData.ModProjects = createTestProjects();
-			
-			foreach(var project in testData.ModProjects)
+			foreach (var project in ModProjects)
 			{
-				testData.ManagedProjects.Add(project);
+				ManagedProjects.Add(project);
 			}
-
-			return testData;
 		}
 
-		private static ObservableImmutableList<ModProjectData> createTestProjects()
+		private ObservableImmutableList<ModProjectData> createTestProjects()
 		{
 			ObservableImmutableList<ModProjectData> projects = new ObservableImmutableList<ModProjectData>();
 
@@ -93,10 +83,32 @@ namespace SCG.Modules.DOS2DE.Controls
 
 			return projects;
 		}
+	}
 
-		private static ProjectViewControl _instance { get; set; }
+	/// <summary>
+	/// Needed so the XAML designer can render ReactiveUserControl.
+	/// </summary>
+	public class DOS2DEProjectsViewBase : ReactiveUserControl<DOS2DEModuleData> { }
 
-		public ProjectViewControl(MainWindow mainAppWindow, DOS2DEProjectController controller)
+	/// <summary>
+	/// Interaction logic for ProjectViewControl.xaml
+	/// </summary>
+	public partial class DOS2DEProjectsView : DOS2DEProjectsViewBase
+	{
+		public DOS2DEProjectController Controller { get; private set; }
+		public MainWindow MainWindow { get; private set; }
+		public EditVersionWindow EditVersionWindow { get; private set; }
+
+		public LocaleEditorWindow LocaleEditorWindow { get; private set; }
+
+		private static DOS2DEProjectsView _instance { get; set; }
+
+		public DOS2DEProjectsView()
+		{
+			InitializeComponent();
+		}
+
+		public DOS2DEProjectsView(MainWindow mainAppWindow, DOS2DEProjectController controller)
 		{
 			InitializeComponent();
 
@@ -108,7 +120,8 @@ namespace SCG.Modules.DOS2DE.Controls
 			EditVersionWindow = new EditVersionWindow();
 			EditVersionWindow.Hide();
 
-			DataContext = Controller.Data;
+			this.ViewModel = Controller.Data;
+			DataContext = this.ViewModel;
 
 			ToggleAvailableProjectsView(Controller.Data.NewProjectsAvailable);
 
@@ -122,16 +135,69 @@ namespace SCG.Modules.DOS2DE.Controls
 			*/
 		}
 
+
+		private void InitLocalizationEditor()
+		{
+			LocaleEditorWindow = new LocaleEditorWindow(this.ViewModel);
+			LocaleEditorWindow.Closing += LocalizationEditorWindow_Closing;
+		}
+
+		public void ToggleLocalizationEditor()
+		{
+			if (LocaleEditorWindow == null)
+			{
+				InitLocalizationEditor();
+			}
+
+			if (!LocaleEditorWindow.IsVisible)
+			{
+				OpenLocalizationEditorAsync();
+			}
+			else
+			{
+				LocaleEditorWindow.Close();
+			}
+		}
+
+		public static void ToggleDOS2DELocalizationEditor()
+		{
+			_instance?.ToggleLocalizationEditor();
+		}
+
+		public void OpenLocalizationEditorWithData(LocaleViewModel data)
+		{
+			if (LocaleEditorWindow == null) InitLocalizationEditor();
+			LocaleEditorWindow.LoadData(data);
+			if (!LocaleEditorWindow.IsVisible)
+			{
+				LocaleEditorWindow.Show();
+			}
+		}
+
+		public static async Task<Unit> OpenLocalizationEditorForProject(ModProjectData modData)
+		{
+			var data = await LocaleEditorCommands.LoadLocalizationDataAsync(_instance.ViewModel.Settings.DOS2DEDataDirectory, modData).ConfigureAwait(false);
+			_instance.MainWindow.Dispatcher.Invoke(new Action(() => _instance.OpenLocalizationEditorWithData(data)), DispatcherPriority.Normal);
+			return Unit.Default;
+		}
+
+		private async void OpenLocalizationEditorAsync()
+		{
+			var data = await LocaleEditorCommands.LoadLocalizationDataAsync(ViewModel.Settings.DOS2DEDataDirectory,
+				ViewModel.ManagedProjects.Where(p => p.Selected)).ConfigureAwait(false);
+			_instance.MainWindow.Dispatcher.Invoke(new Action(() => OpenLocalizationEditorWithData(data)), DispatcherPriority.Normal);
+		}
+
+		private void LocalizationEditorWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+		{
+			LocaleEditorWindow = null;
+		}
+
 		public static void EditProjectVersion(ModProjectData projectData)
 		{
 			_instance.EditVersionWindow.LoadData(projectData);
 			_instance.EditVersionWindow.Owner = _instance.MainWindow;
 			_instance.EditVersionWindow.Show();
-		}
-
-		private void ProjectViewControlMain_Loaded(object sender, RoutedEventArgs e)
-		{
-			
 		}
 
 		private void AvailableProjectsList_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -394,7 +460,7 @@ namespace SCG.Modules.DOS2DE.Controls
 		}
 
 
-		private void ProjectViewControlMain_KeyDown(object sender, KeyEventArgs e)
+		private void ProjectView_KeyDown(object sender, KeyEventArgs e)
 		{
 			if(e.Key == Key.LeftShift || e.Key == Key.RightShift)
 			{
@@ -402,7 +468,7 @@ namespace SCG.Modules.DOS2DE.Controls
 			}
 		}
 
-		private void ProjectViewControlMain_KeyUp(object sender, KeyEventArgs e)
+		private void ProjectView_KeyUp(object sender, KeyEventArgs e)
 		{
 			if (e.Key == Key.LeftShift || e.Key == Key.RightShift)
 			{
