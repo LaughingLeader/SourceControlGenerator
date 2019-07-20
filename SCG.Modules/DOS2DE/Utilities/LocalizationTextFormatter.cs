@@ -30,7 +30,7 @@ namespace SCG.Modules.DOS2DE.Utilities
 			return new TextRange(start, end);
 		}
 
-		private const string pattern = @"<font\scolor='#([0-9A-F]{6})'.*?>(.*?)<\/font>";
+		private const string pattern = @"<font\s*color='#([0-9A-Fa-f]{6})'.*?>(.*?)<\/font>";
 
 		private IEnumerable<LocaleLocalizationFontTextRange> GetAllFontRanges(FlowDocument document)
 		{
