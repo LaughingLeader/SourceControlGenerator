@@ -48,18 +48,18 @@ namespace SCG.Modules.DOS2DE.Utilities
 						var hexColor = match.Groups[1];
 						var content = match.Groups[2];
 
-						var startHex = hexColor.Index;
-						var endHex = hexColor.Length;
+						//var startHex = hexColor.Index;
+						//var endHex = hexColor.Length;
 						var startContent = content.Index;
 						var endContent = content.Length;
 
 						var color = (Color)ColorConverter.ConvertFromString("#FF" + hexColor.Value);
 
-						ranges.Add(new LocaleLocalizationFontTextRange()
-						{
-							Range = GetRange(pointer, startHex, endHex),
-							Color = color
-						});
+						//ranges.Add(new LocaleLocalizationFontTextRange()
+						//{
+						//	Range = GetRange(pointer, startHex, endHex),
+						//	Color = color
+						//});
 
 						ranges.Add(new LocaleLocalizationFontTextRange()
 						{
