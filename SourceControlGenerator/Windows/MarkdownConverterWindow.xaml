@@ -10,12 +10,14 @@
 		xmlns:local="clr-namespace:SCG.Windows"
 		xmlns:vdata="clr-namespace:SCG.Data.View"
 		xmlns:scg="clr-namespace:SCG"
-		xmlns:markwpf="clr-namespace:Markdig.Wpf;assembly=Markdig.Wpf"
 		mc:Ignorable="d"
 		Title="Markdown Converter" Height="768" Width="1200">
 	<local:HideWindowBase.Resources>
 		<converter:FormatterToFormatterDataConverter x:Key="FormatterToFormatterDataConverter" />
 		<vdata:MarkdownConverterModeToColumnWidthConverter x:Key="MarkdownConverterModeToColumnWidthConverter" />
+		<converter:MarkdownToFlowDocumentConverter x:Key="MarkdownToFlowDocumentConverter" />
+
+
 	</local:HideWindowBase.Resources>
 	<local:HideWindowBase.InputBindings>
 		<KeyBinding Key="Tab" Modifiers="Shift" Command="{Binding NextModeCommand}" />
@@ -183,11 +185,12 @@
 							<TabItem.Header>
 								<Label x:Name="InputPreviewLabel" Content="Preview" MouseLeftButtonDown="InputPreviewLabel_MouseLeftButtonDown" />
 							</TabItem.Header>
-							<markwpf:MarkdownViewer x:Name="MarkdownViewer" Markdown="{Binding Input}" BorderThickness="0">
-								<markwpf:MarkdownViewer.Resources>
-									<ResourceDictionary Source="pack://application:,,,/Markdig.Wpf;component/Themes/generic.xaml" />
-								</markwpf:MarkdownViewer.Resources>
-							</markwpf:MarkdownViewer>
+							<FlowDocumentScrollViewer x:Name="MarkdownViewer" Document="{Binding Input, Converter={StaticResource MarkdownToFlowDocumentConverter}}" 
+								BorderThickness="0" VerticalScrollBarVisibility="Disabled" HorizontalScrollBarVisibility="Disabled">
+								<FlowDocumentScrollViewer.Resources>
+									<ResourceDictionary Source="pack://application:,,,/Neo.Markdig.Xaml;component/Themes/generic.xaml" />
+								</FlowDocumentScrollViewer.Resources>
+							</FlowDocumentScrollViewer>
 						</TabItem>
 					</TabControl>
 				</Grid>
@@ -198,10 +201,6 @@
 						<RowDefinition Height="*" />
 					</Grid.RowDefinitions>
 					<ScrollViewer VerticalScrollBarVisibility="Auto" Visibility="{Binding BatchMode, FallbackValue=Collapsed}" BorderThickness="1" BorderBrush="Red" >
-						<ScrollViewer.Resources>
-							<!--- Makes the file browser column fit available space -->
-							<ColumnDefinition x:Key="FileBrowserColumn" Width="2*" />
-						</ScrollViewer.Resources>
 						<ItemsControl x:Name="BatchFormattersControl" ItemsSource="{Binding BatchFormatterData}" Margin="4,0,4,0" Grid.IsSharedSizeScope="True">
 							<ItemsControl.ItemTemplate>
 								<DataTemplate>
@@ -209,7 +208,7 @@
 										<Grid.ColumnDefinitions>
 											<ColumnDefinition Width="Auto" />
 											<ColumnDefinition SharedSizeGroup="Name" Width="Auto" />
-											<ColumnDefinition Width="{Binding Source={StaticResource FileBrowserColumn}}" />
+											<ColumnDefinition Width="2*" />
 											<ColumnDefinition Width="Auto" />
 										</Grid.ColumnDefinitions>
 										<CheckBox IsChecked="{Binding Enabled, Mode=TwoWay}" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="4" />

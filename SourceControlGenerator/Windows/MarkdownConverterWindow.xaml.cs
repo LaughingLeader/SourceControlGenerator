@@ -1,16 +1,11 @@
-﻿using System;
-using Alphaleonis.Win32.Filesystem;
-using System.Reflection;
-using System.Text;
-using System.Windows;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Xaml;
+﻿using Alphaleonis.Win32.Filesystem;
 using SCG.Commands;
 using SCG.Core;
 using SCG.Data.View;
-using Markdig;
-using XamlReader = System.Windows.Markup.XamlReader;
+
+using System;
+using System.Windows;
+using System.Windows.Input;
 
 namespace SCG.Windows
 {
@@ -55,6 +50,11 @@ namespace SCG.Windows
 			foreach (var menu in ViewData.TopMenus)
 			{
 				menu.RegisterInputBinding(this.InputBindings);
+			}
+
+			if(File.Exists(ViewData.SingleModeLastFileInputPath))
+			{
+				ViewData.LoadInputFile(ViewData.SingleModeLastFileInputPath);
 			}
 		}
 
