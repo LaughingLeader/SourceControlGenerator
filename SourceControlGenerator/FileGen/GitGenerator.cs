@@ -16,14 +16,14 @@ namespace SCG.FileGen
 {
 	public static class GitGenerator
 	{
-		public static async Task<string> GenerateTemplateFile(string defaultText, string filePath, IProjectData projectData, MainAppData mainAppData, IModuleData moduleData)
+		public static string GenerateTemplateFile(string defaultText, string filePath, IProjectData projectData, MainAppData mainAppData, IModuleData moduleData)
 		{
 			if (!string.IsNullOrEmpty(filePath) && File.Exists(filePath))
 			{
 				defaultText = File.ReadAllText(filePath);
 			}
 
-			defaultText = await ReplaceKeywords(defaultText, projectData, mainAppData, moduleData).ConfigureAwait(false);
+			defaultText = ReplaceKeywords(defaultText, projectData, mainAppData, moduleData);
 
 			return defaultText;
 		}

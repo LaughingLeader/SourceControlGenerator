@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SCG.Data.View;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -13,7 +14,12 @@ namespace SCG.Controls
 		public override DataTemplate SelectTemplate(object item, ItemsControl parentItemsControl)
 		{
 			var key = new DataTemplateKey(item.GetType());
-			return (DataTemplate)parentItemsControl.FindResource(key);
+			if(key != null)
+			{
+				var template = (DataTemplate)parentItemsControl.FindResource(key);
+				if (template != null) return template;
+			}
+			return base.SelectTemplate(item, parentItemsControl);
 		}
 	}
 }

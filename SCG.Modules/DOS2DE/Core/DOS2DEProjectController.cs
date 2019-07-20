@@ -208,7 +208,7 @@ namespace SCG.Core
 					AppController.Main.UpdateProgressLog("Creating junctions...");
 
 					var sourceFolders = PrepareDirectories(modProject, Data.Settings.DirectoryLayouts);
-					var result = await GitGenerator.CreateJunctions(modProject.ProjectName, sourceFolders, Data).ConfigureAwait(false);
+					var result = GitGenerator.CreateJunctions(modProject.ProjectName, sourceFolders, Data);
 
 					if (result)
 					{
@@ -234,7 +234,7 @@ namespace SCG.Core
 							if (templateSetting.Enabled)
 							{
 								string outputFilePath = Path.Combine(gitProjectRootDirectory, templateData.ExportPath);
-								string outputText = await GitGenerator.ReplaceKeywords(templateData.EditorText, modProject, MainAppData, Data).ConfigureAwait(false);
+								string outputText = GitGenerator.ReplaceKeywords(templateData.EditorText, modProject, MainAppData, Data);
 								if (!FileCommands.WriteToFile(outputFilePath, outputText))
 								{
 									Log.Here().Error("[{0}] Failed to create template file at {1}", modProject.ProjectName, templateData.ExportPath);
@@ -286,7 +286,7 @@ namespace SCG.Core
 
 					if (!String.IsNullOrEmpty(outputText))
 					{
-						outputText = await GitGenerator.ReplaceKeywords(outputText, modProject, MainAppData, Data).ConfigureAwait(false);
+						outputText = GitGenerator.ReplaceKeywords(outputText, modProject, MainAppData, Data);
 					}
 
 					string licenseFile = Path.Combine(gitProjectRootDirectory, "LICENSE");

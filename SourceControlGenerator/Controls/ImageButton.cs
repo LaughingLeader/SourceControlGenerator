@@ -132,6 +132,7 @@ namespace SCG.Controls
 
 		public ImageButton()
 		{
+			/*
 			Template = Application.Current.TryFindResource("ImageButtonTemplate") as ControlTemplate;
 
 			if(MaxSize > 0)
@@ -141,6 +142,7 @@ namespace SCG.Controls
 				MinHeight = MaxSize;
 				MaxHeight = MaxSize;
 			}
+			*/
 		}
 
 		//public void CreateGreyImage()

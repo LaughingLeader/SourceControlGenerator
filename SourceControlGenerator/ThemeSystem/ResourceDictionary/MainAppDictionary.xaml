@@ -61,14 +61,14 @@
 		<Grid>
 			<Image
 				x:Name="ButtonImageControl"
-				Width="{Binding Width, RelativeSource={RelativeSource TemplatedParent}}"
-				Height="{Binding Height, RelativeSource={RelativeSource TemplatedParent}}"
+				Width="{Binding MaxSize, RelativeSource={RelativeSource TemplatedParent}}"
+				Height="{Binding MaxSize, RelativeSource={RelativeSource TemplatedParent}}"
 				Source="{Binding Source, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource StringToCachedImageConverter}}"
-				ToolTipService.ShowOnDisabled="True" 
+				ToolTipService.ShowOnDisabled="True"
 			/>
 			<Rectangle x:Name="TintRect"
-				Width="{Binding Width, RelativeSource={RelativeSource TemplatedParent}}"
-				Height="{Binding Height, RelativeSource={RelativeSource TemplatedParent}}"
+				Width="{Binding MaxSize, RelativeSource={RelativeSource TemplatedParent}}"
+				Height="{Binding MaxSize, RelativeSource={RelativeSource TemplatedParent}}"
 				ToolTipService.ShowOnDisabled="True" ToolTip="{Binding Path=ToolTip, ElementName=ButtonImageControl}"
 			>
 				<Rectangle.Fill>
@@ -147,6 +147,11 @@
 	</ControlTemplate>
 
 	<!-- Default Style for Image Button -->
+	<Style TargetType="{x:Type c:ImageButton}">
+		<Setter Property="Template" Value="{StaticResource ImageButtonTemplate}" />
+		<Setter Property="ToolTipService.ShowOnDisabled" Value="True" />
+		<Setter Property="MaxSize" Value="16" />
+	</Style>
 	<Style TargetType="{x:Type c:ImageButton}" x:Key="DefaultImageButtonStyle">
 		<Setter Property="Template" Value="{StaticResource ImageButtonTemplate}" />
 		<Setter Property="ToolTipService.ShowOnDisabled" Value="True" />
