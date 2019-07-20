@@ -243,6 +243,7 @@
     </Compile>
     <Compile Include="Controls\AutoScrollingTextbox.cs" />
     <Compile Include="Controls\Behavior\ComboBoxWidthFromItemsBehavior.cs" />
+    <Compile Include="Controls\Behavior\ImageButtonDisabledHoverBehavior.cs" />
     <Compile Include="Controls\Behavior\ListBoxSelectionBehavior.cs" />
     <Compile Include="Controls\Behavior\MarginSetter.cs" />
     <Compile Include="Controls\Behavior\ProgressBarAnimationBehavior.cs" />
@@ -519,161 +520,73 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Resources\Icons\Archive.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="Resources\Icons\Activity_16x.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="Resources\Icons\AddGrey_16x.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="Resources\Icons\Add_16x.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="Resources\Icons\Convert_16x.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="Resources\Icons\ExpandChevronRight_16x.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="Resources\Icons\ExportFile_16x.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="Resources\Icons\FileError_16x.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="Resources\Icons\GitLogo.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="Resources\Icons\RunChecked_16x.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="Resources\Icons\SaveAll_16x.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="Resources\Icons\SaveAs_16x.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="Resources\Icons\SaveClose_16x.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="Resources\Icons\SaveFileDialogControl_16x.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="Resources\Icons\SaveGrey_16x.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="Resources\Icons\SaveStatusBar1_16x.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="Resources\Icons\SaveTable_16x.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="Resources\Icons\Save_16x.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="Resources\Icons\WriteToDatabase_16x.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="Resources\Icons\XMLFile_16x.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="Resources\Icons\XMLTransformation_16x.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="Resources\Icons\XSLTTemplate_16x.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Resource>
+    <Resource Include="Resources\Icons\Archive.png" />
+    <Resource Include="Resources\Icons\Activity_16x.png" />
+    <Resource Include="Resources\Icons\AddGrey_16x.png" />
+    <Resource Include="Resources\Icons\Add_16x.png" />
+    <Resource Include="Resources\Icons\Convert_16x.png" />
+    <Resource Include="Resources\Icons\ExpandChevronRight_16x.png" />
+    <Resource Include="Resources\Icons\ExportFile_16x.png" />
+    <Resource Include="Resources\Icons\FileError_16x.png" />
+    <Resource Include="Resources\Icons\GitLogo.png" />
+    <Resource Include="Resources\Icons\RunChecked_16x.png" />
+    <Resource Include="Resources\Icons\SaveAll_16x.png" />
+    <Resource Include="Resources\Icons\SaveAs_16x.png" />
+    <Resource Include="Resources\Icons\SaveClose_16x.png" />
+    <Resource Include="Resources\Icons\SaveFileDialogControl_16x.png" />
+    <Resource Include="Resources\Icons\SaveGrey_16x.png" />
+    <Resource Include="Resources\Icons\SaveStatusBar1_16x.png" />
+    <Resource Include="Resources\Icons\SaveTable_16x.png" />
+    <Resource Include="Resources\Icons\Save_16x.png" />
+    <Resource Include="Resources\Icons\WriteToDatabase_16x.png" />
+    <Resource Include="Resources\Icons\XMLFile_16x.png" />
+    <Resource Include="Resources\Icons\XMLTransformation_16x.png" />
+    <Resource Include="Resources\Icons\XSLTTemplate_16x.png" />
     <Content Include="Data\View\IconPathData.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>IconPathData.cs</LastGenOutput>
     </Content>
-    <Resource Include="Resources\Icons\AddBinaryFile_16x.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="Resources\Icons\AddDataItem_16x.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="Resources\Icons\AddFile_16x.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="Resources\Icons\AddFolder_16x.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="Resources\Icons\AddItem_16x.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="Resources\Icons\AddRow_16x.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="Resources\Icons\AddTextFile_16x.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="Resources\Icons\DeleteDatabase_16x.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="Resources\Icons\DeleteTableRow_16x.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="Resources\Icons\RemoveRow_16x.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="Resources\Icons\Rename_16x.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="Resources\Icons\RowUpdating_16x.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="Resources\Icons\ImportFile_16x.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="Resources\Icons\Import_16x.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="Resources\Icons\OpenFile_16x.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="Resources\Icons\OpenFolder_16x.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="Resources\Icons\WarningRule_16x.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="Resources\Icons\ColorPicker_16x.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Resource>
+    <Resource Include="Resources\Icons\AddBinaryFile_16x.png" />
+    <Resource Include="Resources\Icons\AddDataItem_16x.png" />
+    <Resource Include="Resources\Icons\AddFile_16x.png" />
+    <Resource Include="Resources\Icons\AddFolder_16x.png" />
+    <Resource Include="Resources\Icons\AddItem_16x.png" />
+    <Resource Include="Resources\Icons\AddRow_16x.png" />
+    <Resource Include="Resources\Icons\AddTextFile_16x.png" />
+    <Resource Include="Resources\Icons\DeleteDatabase_16x.png" />
+    <Resource Include="Resources\Icons\DeleteTableRow_16x.png" />
+    <Resource Include="Resources\Icons\RemoveRow_16x.png" />
+    <Resource Include="Resources\Icons\Rename_16x.png" />
+    <Resource Include="Resources\Icons\RowUpdating_16x.png" />
+    <Resource Include="Resources\Icons\ImportFile_16x.png" />
+    <Resource Include="Resources\Icons\Import_16x.png" />
+    <Resource Include="Resources\Icons\OpenFile_16x.png" />
+    <Resource Include="Resources\Icons\OpenFolder_16x.png" />
+    <Resource Include="Resources\Icons\WarningRule_16x.png" />
+    <Resource Include="Resources\Icons\ColorPicker_16x.png" />
     <Resource Include="Resources\Images\ColorPicker1.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>
     <Resource Include="Resources\Images\ColorPicker2.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>
-    <Resource Include="Resources\Icons\Ellipsis_16x.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Resource>
+    <Resource Include="Resources\Icons\Ellipsis_16x.png" />
+    <Resource Include="Resources\Icons\StringData_16x.png" />
+    <Resource Include="Resources\Icons\OpenLocalizationEditor_16x.png" />
     <Content Include="Resources\Logos\DivinityOriginalSin2DE.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Resource Include="SourceControlGenerator_Icon.ico" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Resources\Icons\Log_MouseOver.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="Resources\Icons\Log_Normal.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Resource>
+    <Resource Include="Resources\Icons\Log_MouseOver.png" />
+    <Resource Include="Resources\Icons\Log_Normal.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Resources\Icons\GitLogo_Disabled.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Resource>
+    <Resource Include="Resources\Icons\GitLogo_Disabled.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Resources\Icons\Folder.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Resource>
+    <Resource Include="Resources\Icons\Folder.png" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\License_Apache.txt" />
@@ -688,12 +601,8 @@
     <None Include="Resources\Templates.xml" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Resources\Icons\Refresh_16x.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="Resources\Icons\Star_16x.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Resource>
+    <Resource Include="Resources\Icons\Refresh_16x.png" />
+    <Resource Include="Resources\Icons\Star_16x.png" />
     <Content Include="Resources\Logos\Blank.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

@@ -6,6 +6,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using SCG.Data;
 using SCG.Extensions;
+using ReactiveUI;
 
 namespace SCG.Controls
 {
@@ -118,17 +119,27 @@ namespace SCG.Controls
 		public static readonly DependencyProperty ToolTip_DisabledProperty =
 			DependencyProperty.Register("ToolTip_Disabled", typeof(string), typeof(ImageButton), new PropertyMetadata(null));
 
-
-
 		public Color TintColor
 		{
 			get { return (Color)GetValue(TintColorProperty); }
 			set { SetValue(TintColorProperty, value); }
 		}
 
-		// Using a DependencyProperty as the backing store for TintColor.  This enables animation, styling, binding, etc...
 		public static readonly DependencyProperty TintColorProperty =
 			DependencyProperty.Register("TintColor", typeof(Color), typeof(ImageButton), new PropertyMetadata(Colors.LightBlue));
+
+		/// <summary>
+		/// Allows bypassing the fact that IsMouseOver stops updating when the button is disabled.
+		/// Bind this property to a parent control, such as a ContentControl.
+		/// </summary>
+		public bool IsHovered
+		{
+			get { return (bool)GetValue(IsHoveredProperty); }
+			set { SetValue(IsHoveredProperty, value); }
+		}
+
+		public static readonly DependencyProperty IsHoveredProperty =
+			DependencyProperty.Register("IsHovered", typeof(bool), typeof(ImageButton), new PropertyMetadata(false));
 
 		public ImageButton()
 		{
@@ -143,6 +154,13 @@ namespace SCG.Controls
 				MaxHeight = MaxSize;
 			}
 			*/
+
+			IsMouseDirectlyOverChanged += ImageButton_IsMouseDirectlyOverChanged;
+		}
+
+		private void ImageButton_IsMouseDirectlyOverChanged(object sender, DependencyPropertyChangedEventArgs e)
+		{
+			IsHovered = (bool)e.NewValue;
 		}
 
 		//public void CreateGreyImage()

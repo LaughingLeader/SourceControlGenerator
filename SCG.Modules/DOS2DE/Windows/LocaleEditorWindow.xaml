@@ -14,7 +14,7 @@
 		xmlns:conv="clr-namespace:SCG.Converters;assembly=SourceControlGenerator"
 		xmlns:win="clr-namespace:SCG.Windows;assembly=SourceControlGenerator"
 		xmlns:c="clr-namespace:SCG.Controls;assembly=SourceControlGenerator"
-		xmlns:behavior="clr-namespace:SCG.Controls.Behavior;assembly=SourceControlGenerator"
+		xmlns:cb="clr-namespace:SCG.Controls.Behavior;assembly=SourceControlGenerator"
 		xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
 		xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
 		mc:Ignorable="d"
@@ -125,12 +125,14 @@
 						ToolTip_Disabled="{x:Static core:DOS2DETooltips.Button_Locale_AddKey_Disabled}"
 						Source="{x:Static vdata:IconPathData.AddRow}"
 						IsEnabled="{Binding Path=DataContext.CanAddKeys, RelativeSource={RelativeSource AncestorType={x:Type Window}}}"
+						cb:ImageButtonHoverOnDisabled.Enable="True"
 					/>
 					<c:ImageButton 
 						Command="{Binding Path=DataContext.DeleteKeysCommand, RelativeSource={RelativeSource AncestorType={x:Type Window}}}" 
 						ToolTip="{x:Static core:DOS2DETooltips.Button_Locale_DeleteKeys}"
 						Source="{x:Static vdata:IconPathData.DeleteTableRow}"
 						IsEnabled="{Binding Path=DataContext.AnySelected, RelativeSource={RelativeSource AncestorType={x:Type Window}}}"
+						cb:ImageButtonHoverOnDisabled.Enable="True"
 					/>
 					<Rectangle Style="{StaticResource VerticalSeparator}" />
 					<c:ImageButton 
@@ -145,6 +147,7 @@
 						ToolTip_Disabled="{x:Static core:DOS2DETooltips.Button_Locale_ImportKeys_Disabled}"
 						Source="{x:Static vdata:IconPathData.ImportFile}"
 						IsEnabled="{Binding Path=DataContext.CanAddKeys, RelativeSource={RelativeSource AncestorType={x:Type Window}}}"
+						cb:ImageButtonHoverOnDisabled.Enable="True"
 					>
 						<c:ImageButton.CommandParameter>
 							<Binding Path="DataContext.CurrentEntryImportPath" RelativeSource="{RelativeSource AncestorType={x:Type Window}}"
@@ -157,6 +160,7 @@
 						ToolTip="{x:Static core:DOS2DETooltips.Button_Locale_ExportToXML}" 
 						Source="{x:Static vdata:IconPathData.XSLTTemplate}" 
 						IsEnabled="{Binding Path=DataContext.AnySelected, RelativeSource={RelativeSource AncestorType={x:Type Window}}}"
+						cb:ImageButtonHoverOnDisabled.Enable="True"
 					/>
 				</StackPanel>
 			</Grid>
@@ -179,7 +183,7 @@
 					IsUndoEnabled="False"
 				>
 				<i:Interaction.Behaviors>
-					<behavior:RichTextBoxSelectionBehavior SelectedText="{Binding Path=DataContext.SelectedText, Mode=OneWayToSource, RelativeSource={RelativeSource AncestorType={x:Type Window}}}" />
+					<cb:RichTextBoxSelectionBehavior SelectedText="{Binding Path=DataContext.SelectedText, Mode=OneWayToSource, RelativeSource={RelativeSource AncestorType={x:Type Window}}}" />
 				</i:Interaction.Behaviors>
 				<xctk:RichTextBox.ContextMenu>
 					<ContextMenu>
@@ -468,7 +472,7 @@
 								Style="{StaticResource LocaleDataGridStyle}"
 						>
 							<DataGrid.Resources>
-								<behavior:DataContextSpy x:Key="FileData" DataContext="{Binding}" />
+								<cb:DataContextSpy x:Key="FileData" DataContext="{Binding}" />
 							</DataGrid.Resources>
 							<DataGrid.Columns>
 								<DataGridCheckBoxColumn MinWidth="25" CanUserResize="False" 
@@ -820,10 +824,11 @@
 			<StackPanel x:Name="ShortcutsButtonPanel" Grid.Column="0" VerticalAlignment="Center" Margin="2" MinHeight="16">
 				<c:ImageButton
 					x:Name="AddFileButton"
-					IsEnabled="{Binding RelativeSource={RelativeSource AncestorType={x:Type Window}}, Path=DataContext.CanAddFile}"
 					ToolTip_Enabled="{x:Static core:DOS2DETooltips.Button_Locale_AddFile}"
 					ToolTip_Disabled="{x:Static core:DOS2DETooltips.Button_Locale_AddFile_Disabled}"
-					Source="{x:Static vdata:IconPathData.AddFile}"
+					Source="{x:Static vdata:IconPathData.AddFile}" 
+					IsEnabled="{Binding RelativeSource={RelativeSource AncestorType={x:Type Window}}, Path=DataContext.CanAddFile}"
+					cb:ImageButtonHoverOnDisabled.Enable="True"
 				/>
 				<c:ImageButton
 					x:Name="ImportFileButton"
@@ -833,13 +838,16 @@
 					ToolTip_Disabled="{x:Static core:DOS2DETooltips.Button_Locale_ImportFile_Disabled}"
 					Source="{x:Static vdata:IconPathData.ImportFile}"
 					IsEnabled="{Binding CanAddFile}"
+					cb:ImageButtonHoverOnDisabled.Enable="True"
 					/>
 				<c:ImageButton
 					x:Name="SaveButton"
-					Command="{Binding SaveCurrentCommand}" IsEnabled="{Binding CanSave}" 
+					Command="{Binding SaveCurrentCommand}" 
 					Source="{x:Static vdata:IconPathData.Save}"
 					ToolTip_Enabled="{x:Static core:DOS2DETooltips.Button_Locale_SaveCurrent}"
 					ToolTip_Disabled="{x:Static core:DOS2DETooltips.Button_Locale_SaveCurrent_Disabled}"
+					IsEnabled="{Binding CanSave}"
+					cb:ImageButtonHoverOnDisabled.Enable="True"
 				/>
 				<c:ImageButton
 					x:Name="SaveAllButton" 

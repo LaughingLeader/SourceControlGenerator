@@ -58,18 +58,21 @@
 	</Style>
 
 	<ControlTemplate x:Key="ImageButtonTemplate" TargetType="{x:Type c:ImageButton}">
-		<Grid>
+		<Grid x:Name="ParentGrid">
 			<Image
 				x:Name="ButtonImageControl"
 				Width="{Binding MaxSize, RelativeSource={RelativeSource TemplatedParent}}"
 				Height="{Binding MaxSize, RelativeSource={RelativeSource TemplatedParent}}"
 				Source="{Binding Source, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource StringToCachedImageConverter}}"
 				ToolTipService.ShowOnDisabled="True"
+				Stretch="UniformToFill"
+				RenderOptions.BitmapScalingMode="HighQuality"
 			/>
 			<Rectangle x:Name="TintRect"
 				Width="{Binding MaxSize, RelativeSource={RelativeSource TemplatedParent}}"
 				Height="{Binding MaxSize, RelativeSource={RelativeSource TemplatedParent}}"
 				ToolTipService.ShowOnDisabled="True" ToolTip="{Binding Path=ToolTip, ElementName=ButtonImageControl}"
+				Opacity="0.75"
 			>
 				<Rectangle.Fill>
 					<SolidColorBrush Color="Transparent" />
@@ -119,20 +122,20 @@
 			</MultiTrigger>
 			<MultiTrigger>
 				<MultiTrigger.Conditions>
-					<Condition Property="IsMouseOver" Value="True" />
+					<Condition Property="IsHovered" Value="True" />
 					<Condition Property="IsEnabled" Value="False" />
 				</MultiTrigger.Conditions>
 				<MultiTrigger.Setters>
 					<Setter TargetName="TintRect" Property="Fill">
 						<Setter.Value>
-							<SolidColorBrush Color="Black" Opacity="0.10"/>
+							<SolidColorBrush Color="WhiteSmoke" Opacity="0.48" />
 						</Setter.Value>
 					</Setter>
 				</MultiTrigger.Setters>
 			</MultiTrigger>
 			<MultiTrigger>
 				<MultiTrigger.Conditions>
-					<Condition Property="IsMouseOver" Value="False" />
+					<Condition Property="IsHovered" Value="False" />
 					<Condition Property="IsEnabled" Value="False" />
 				</MultiTrigger.Conditions>
 				<MultiTrigger.Setters>

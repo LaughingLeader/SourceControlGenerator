@@ -30,6 +30,23 @@ namespace SCG.Modules.DOS2DE.Utilities
 	public class LocaleEditorCommands
 	{
 		#region Loading Localization Files
+		public static async Task<LocaleViewModel> LoadLocalizationDataAsync(string dataRootPath, ModProjectData modProject, CancellationToken? token = null)
+		{
+			LocaleViewModel localizationData = new LocaleViewModel();
+			var success = await LoadProjectLocalizationDataAsync(localizationData, dataRootPath, modProject, token).ConfigureAwait(false);
+			foreach (var g in localizationData.Groups)
+			{
+				foreach (var f in g.DataFiles)
+				{
+					foreach (var k in f.Entries)
+					{
+						k.SetHistoryFromObject(localizationData);
+					}
+				}
+			}
+			return localizationData;
+		}
+
 		public static async Task<LocaleViewModel> LoadLocalizationDataAsync(string dataRootPath, IEnumerable<ModProjectData> modProjects, CancellationToken? token = null)
 		{
 			LocaleViewModel localizationData = new LocaleViewModel();
@@ -37,11 +54,11 @@ namespace SCG.Modules.DOS2DE.Utilities
 			{
 				var success = await LoadProjectLocalizationDataAsync(localizationData, dataRootPath, project, token).ConfigureAwait(false);
 			}
-			foreach(var g in localizationData.Groups)
+			foreach (var g in localizationData.Groups)
 			{
-				foreach(var f in g.DataFiles)
+				foreach (var f in g.DataFiles)
 				{
-					foreach(var k in f.Entries)
+					foreach (var k in f.Entries)
 					{
 						k.SetHistoryFromObject(localizationData);
 					}

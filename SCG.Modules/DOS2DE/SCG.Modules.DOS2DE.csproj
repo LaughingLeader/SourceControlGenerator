@@ -154,9 +154,6 @@
     <Compile Include="Data\View\Locale\LocaleViewModel.cs" />
     <Compile Include="Data\View\ProjectVersionData.cs" />
     <Compile Include="Module.cs" />
-    <Compile Include="Controls\ProjectViewControl.xaml.cs">
-      <DependentUpon>ProjectViewControl.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Core\DOS2DECommands.cs" />
     <Compile Include="Core\DOS2DEDefaultPaths.cs" />
     <Compile Include="Core\DOS2DEProjectController.cs" />
@@ -183,6 +180,9 @@
     <Compile Include="Utilities\DOS2DEPackageCreator.cs" />
     <Compile Include="Utilities\LocaleEditorCommands.cs" />
     <Compile Include="Utilities\LocalizationTextFormatter.cs" />
+    <Compile Include="Views\DOS2DEProjectsView.xaml.cs">
+      <DependentUpon>DOS2DEProjectsView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Windows\EditVersionWindow.xaml.cs">
       <DependentUpon>EditVersionWindow.xaml</DependentUpon>
     </Compile>
@@ -238,9 +238,9 @@
     <Resource Include="Resources\DefaultReadme.txt" />
   </ItemGroup>
   <ItemGroup>
-    <Page Include="Controls\ProjectViewControl.xaml">
-      <SubType>Designer</SubType>
+    <Page Include="Views\DOS2DEProjectsView.xaml">
       <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="Windows\EditVersionWindow.xaml">
       <SubType>Designer</SubType>
@@ -271,6 +271,9 @@
     <Resource Include="Resources\DefaultLocaleResource.lsx">
       <SubType>Designer</SubType>
     </Resource>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Controls\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
