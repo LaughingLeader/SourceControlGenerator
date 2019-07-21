@@ -256,6 +256,7 @@
     <Compile Include="Converters\BindingFallbackConverter.cs" />
     <Compile Include="Converters\ColorToBrushConverter.cs" />
     <Compile Include="Converters\GrayscaleTintImageConverter.cs" />
+    <Compile Include="Converters\HtmlToFlowDocumentConverter.cs" />
     <Compile Include="Converters\MarkdownToFlowDocumentConverter.cs" />
     <Compile Include="Converters\MultiValueToArrayConverter.cs" />
     <Compile Include="Converters\ParamsToOpenFileBrowserParamsConverter.cs" />

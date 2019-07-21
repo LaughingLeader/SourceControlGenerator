@@ -13,11 +13,12 @@
 		mc:Ignorable="d"
 		Title="Markdown Converter" Height="768" Width="1200">
 	<local:HideWindowBase.Resources>
-		<converter:FormatterToFormatterDataConverter x:Key="FormatterToFormatterDataConverter" />
-		<vdata:MarkdownConverterModeToColumnWidthConverter x:Key="MarkdownConverterModeToColumnWidthConverter" />
-		<converter:MarkdownToFlowDocumentConverter x:Key="MarkdownToFlowDocumentConverter" />
-
-
+		<ResourceDictionary>
+			<ResourceDictionary.MergedDictionaries>
+				<ResourceDictionary Source="pack://application:,,,/SourceControlGenerator;component/ThemeSystem/ResourceDictionary/MainAppDictionary.xaml" />
+			</ResourceDictionary.MergedDictionaries>
+			<vdata:MarkdownConverterModeToColumnWidthConverter x:Key="MarkdownConverterModeToColumnWidthConverter" />
+		</ResourceDictionary>
 	</local:HideWindowBase.Resources>
 	<local:HideWindowBase.InputBindings>
 		<KeyBinding Key="Tab" Modifiers="Shift" Command="{Binding NextModeCommand}" />

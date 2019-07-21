@@ -46,6 +46,9 @@
 	<cv:StringToFilterListConverter x:Key="StringToFilterListConverter" />
 	<cv:TextWrapToScrollBarVisibilityConverter x:Key="TextWrapToScrollBarVisibilityConverter" />
 	<cv:VisibleLogsConverter x:Key="VisibleLogsConverter"/>
+	<cv:FormatterToFormatterDataConverter x:Key="FormatterToFormatterDataConverter" />
+	<cv:MarkdownToFlowDocumentConverter x:Key="MarkdownToFlowDocumentConverter" />
+	<cv:HtmlToFlowDocumentConverter x:Key="HtmlToFlowDocumentConverter" />
 
 	<Style TargetType="{x:Type c:TemplateKeywordControl}"/>
 	<Style TargetType="{x:Type ListViewItem}" />
