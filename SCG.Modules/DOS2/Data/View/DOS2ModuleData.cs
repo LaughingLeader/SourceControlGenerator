@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Data;
+using ReactiveUI;
 using SCG.Collections;
 using SCG.Commands;
 using SCG.Data;
@@ -23,7 +24,7 @@ namespace SCG.Modules.DOS2.Data.View
 			get { return manageButtonsText; }
 			set
 			{
-				Update(ref manageButtonsText, value);
+				this.RaiseAndSetIfChanged(ref manageButtonsText, value);
 			}
 		}
 
@@ -34,7 +35,7 @@ namespace SCG.Modules.DOS2.Data.View
 			get { return canAddProject; }
 			set
 			{
-				Update(ref canAddProject, value);
+				this.RaiseAndSetIfChanged(ref canAddProject, value);
 			}
 		}
 
@@ -46,7 +47,7 @@ namespace SCG.Modules.DOS2.Data.View
 			get { return availableProjectsToggleText; }
 			set
 			{
-				Update(ref availableProjectsToggleText, value);
+				this.RaiseAndSetIfChanged(ref availableProjectsToggleText, value);
 			}
 		}
 
@@ -57,7 +58,7 @@ namespace SCG.Modules.DOS2.Data.View
 			get { return availableProjectsVisible; }
 			set
 			{
-				Update(ref availableProjectsVisible, value);
+				this.RaiseAndSetIfChanged(ref availableProjectsVisible, value);
 			}
 		}
 
@@ -68,8 +69,8 @@ namespace SCG.Modules.DOS2.Data.View
 			get { return newProjectsAvailable; }
 			set
 			{
-				Update(ref newProjectsAvailable, value);
-				Notify("AvailableProjectsTooltip");
+				this.RaiseAndSetIfChanged(ref newProjectsAvailable, value);
+				this.RaisePropertyChanged("AvailableProjectsTooltip");
 			}
 		}
 
@@ -89,7 +90,7 @@ namespace SCG.Modules.DOS2.Data.View
 			get { return canClickRefresh; }
 			set
 			{
-				Update(ref canClickRefresh, value);
+				this.RaiseAndSetIfChanged(ref canClickRefresh, value);
 			}
 		}
 
@@ -101,7 +102,7 @@ namespace SCG.Modules.DOS2.Data.View
 			get { return managedProjectsData; }
 			set
 			{
-				Update(ref managedProjectsData, value);
+				this.RaiseAndSetIfChanged(ref managedProjectsData, value);
 			}
 		}
 

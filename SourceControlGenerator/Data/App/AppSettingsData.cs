@@ -44,5 +44,22 @@ namespace SCG.Data.App
 				Update(ref gitInstallPath, value);
 			}
 		}
+#if Debug
+		private bool logDisabled = true;
+#else
+		private bool logDisabled = false;
+#endif
+
+		[VisibleToView("Log Enabled")]
+		public bool LogDisabled
+		{
+			get => logDisabled;
+			set
+			{
+				Update(ref logDisabled, value);
+				Log.Enabled = !LogDisabled;
+			}
+		}
+
 	}
 }

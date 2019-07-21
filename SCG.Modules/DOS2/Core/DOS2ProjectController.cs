@@ -21,6 +21,8 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Controls;
+using ReactiveUI;
+using DynamicData.Binding;
 
 namespace SCG.Core
 {
@@ -195,7 +197,7 @@ namespace SCG.Core
 					AppController.Main.UpdateProgressLog("Creating junctions...");
 
 					var sourceFolders = PrepareDirectories(modProject, Data.Settings.DirectoryLayouts);
-					var result = await GitGenerator.CreateJunctions(modProject.ProjectName, sourceFolders, Data);
+					var result = GitGenerator.CreateJunctions(modProject.ProjectName, sourceFolders, Data);
 
 					if (result)
 					{
@@ -221,7 +223,7 @@ namespace SCG.Core
 							if (templateSetting.Enabled)
 							{
 								string outputFilePath = Path.Combine(gitProjectRootDirectory, templateData.ExportPath);
-								string outputText = await GitGenerator.ReplaceKeywords(templateData.EditorText, modProject, MainAppData, Data);
+								string outputText = GitGenerator.ReplaceKeywords(templateData.EditorText, modProject, MainAppData, Data);
 								if (!FileCommands.WriteToFile(outputFilePath, outputText))
 								{
 									Log.Here().Error("[{0}] Failed to create template file at {1}", modProject.ProjectName, templateData.ExportPath);
@@ -273,7 +275,7 @@ namespace SCG.Core
 
 					if (!String.IsNullOrEmpty(outputText))
 					{
-						outputText = await GitGenerator.ReplaceKeywords(outputText, modProject, MainAppData, Data);
+						outputText = GitGenerator.ReplaceKeywords(outputText, modProject, MainAppData, Data);
 					}
 
 					string licenseFile = Path.Combine(gitProjectRootDirectory, "LICENSE");
@@ -590,7 +592,7 @@ namespace SCG.Core
 				}
 			}
 
-			Data.Notify("NewProjects");
+			Data.RaisePropertyChanged("NewProjects");
 
 			if (bSaveData)
 			{
@@ -904,9 +906,9 @@ namespace SCG.Core
 				new MenuData("DOS2.RefreshProjects")
 				{
 					Header = "Refresh Projects",
-					MenuItems = new ObservableCollection<IMenuData>()
+					MenuItems = new ObservableCollectionExtended<IMenuData>()
 					{
-						new MenuData("DOS2.RefreshAll", "Refresh All", new ActionCommand(RefreshAllProjects)) { ShortcutKey = System.Windows.Input.Key.F5 },
+						new MenuData("DOS2.RefreshAll", "Refresh All", new ActionCommand(RefreshAllProjects), System.Windows.Input.Key.F5),
 						new MenuData("DOS2.RefreshManagedData", "Refresh Managed Data", new ActionCommand(RefreshModProjects)),
 					}
 				},

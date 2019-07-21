@@ -389,6 +389,7 @@ namespace SCG.Core
 				{
 					Log.Here().Activity($"Loading main app settings from {DefaultPaths.MainAppSettingsFile}");
 					Data.AppSettings = JsonConvert.DeserializeObject<AppSettingsData>(File.ReadAllText(DefaultPaths.MainAppSettingsFile));
+					Log.Enabled = !Data.AppSettings.LogDisabled;
 				}
 				catch(Exception ex)
 				{

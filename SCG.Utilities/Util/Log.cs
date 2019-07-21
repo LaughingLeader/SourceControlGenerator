@@ -88,7 +88,7 @@ namespace SCG
 		/// <param name="Message">The message to log.</param>
 		public void Activity(String Message, params object[] Vars)
 		{
-			if (Log.traceActivity)
+			if (Log.Enabled && Log.traceActivity)
 			{
 				_logHere(LogType.Activity, Message, Vars);
 			}
@@ -100,7 +100,10 @@ namespace SCG
 		/// <param name="Message">The message to log.</param>
 		public void Important(String Message, params object[] Vars)
 		{
-			_logHere(LogType.Important, Message, Vars);
+			if (Log.Enabled && Log.traceActivity)
+			{
+				_logHere(LogType.Important, Message, Vars);
+			}
 		}
 
 		/// <summary>
@@ -109,7 +112,7 @@ namespace SCG
 		/// <param name="Message">The message to log.</param>
 		public void Warning(String Message, params object[] Vars)
 		{
-			if (Log.traceActivity || Log.traceErrors) _logHere(LogType.Warning, Message, Vars);
+			if (Log.Enabled && (Log.traceActivity || Log.traceErrors)) _logHere(LogType.Warning, Message, Vars);
 		}
 
 		/// <summary>
@@ -132,6 +135,7 @@ namespace SCG
 		public static bool traceActivity = true;
 		public static bool traceErrors = true;
 		public static bool traceCaller = true;
+		public static bool Enabled { get; set; } = true;
 
 		public static LogContext Here([CallerMemberName] string MemberName = "", [CallerFilePath] string FilePath = "", [CallerLineNumber] int LineNumber = 0)
 		{
