@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Alphaleonis.Win32.Filesystem;
 using SCG.Interfaces;
+using SCG.Modules.DOS2DE.Data.View;
 
 namespace SCG.Modules.DOS2DE.Core
 {
@@ -19,6 +21,11 @@ namespace SCG.Modules.DOS2DE.Core
 		public static string LocalizationEditorSettings(IModuleData Data)
 		{
 			return DefaultPaths.ModuleSettingsFolder(Data) + @"\LocalizationEditorSettings.txt";
+		}
+
+		public static string CustomLocaleDirectory(DOS2DEModuleData Data, ModProjectData modProject)
+		{
+			return Path.Combine(Data.Settings.GitRootDirectory, modProject.ProjectName, @"LocaleEditor\");
 		}
 	}
 }

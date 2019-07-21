@@ -10,7 +10,7 @@ using ReactiveUI;
 
 namespace SCG.Modules.DOS2DE.Data.View.Locale
 {
-	public class LocaleKeyEntry : PropertyChangedHistoryBase
+	public class LocaleNodeKeyEntry : BaseLocaleKeyEntry, ILocaleKeyEntry
 	{
 		public LSLib.LS.Node Node { get; set; }
 
@@ -33,15 +33,9 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 
 		public LSLib.LS.TranslatedString TranslatedString { get; set; }
 
-		private bool keyIsEditable = false;
-
-		public bool KeyIsEditable
+		public override void OnSelected(bool isSelected)
 		{
-			get { return keyIsEditable; }
-			set
-			{
-				this.RaiseAndSetIfChanged(ref keyIsEditable, value);
-			}
+			LocaleEditorWindow.instance?.KeyEntrySelected(this, isSelected);
 		}
 
 		private string key = "None";
@@ -85,18 +79,6 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 					this.RaiseAndSetIfChanged(ref TranslatedString.Handle, value);
 					this.RaisePropertyChanged("EntryHandle");
 				}
-			}
-		}
-
-		private bool selected = false;
-
-		public bool Selected
-		{
-			get { return selected; }
-			set
-			{
-				this.RaiseAndSetIfChanged(ref selected, value);
-				LocaleEditorWindow.instance?.KeyEntrySelected(this, selected);
 			}
 		}
 
@@ -156,7 +138,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 
 		#endregion
 
-		public LocaleKeyEntry(LSLib.LS.Node resNode)
+		public LocaleNodeKeyEntry(LSLib.LS.Node resNode)
 		{
 			Node = resNode;
 		}
@@ -171,17 +153,5 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 		//		Selected = this.Selected
 		//	};
 		//}
-	}
-
-	public struct HandleHistory
-	{
-		public LocaleKeyEntry Key { get; set; }
-		public string Handle { get; set; }
-
-		public HandleHistory(LocaleKeyEntry key, string handle)
-		{
-			Key = key;
-			Handle = handle;
-		}
 	}
 }

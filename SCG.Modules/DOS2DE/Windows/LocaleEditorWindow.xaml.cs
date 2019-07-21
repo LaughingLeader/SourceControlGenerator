@@ -84,7 +84,7 @@ namespace SCG.Modules.DOS2DE.Windows
 			instance = this;
 		}
 
-		public void PopoutContentWindow(LocaleKeyEntry entry)
+		public void PopoutContentWindow(LocaleNodeKeyEntry entry)
 		{
 			if(ContentWindow.ViewModel == null)
 			{
@@ -281,7 +281,7 @@ namespace SCG.Modules.DOS2DE.Windows
 			}
 		}
 
-		public void KeyEntrySelected(LocaleKeyEntry keyEntry, bool selected)
+		public void KeyEntrySelected(ILocaleKeyEntry keyEntry, bool selected)
 		{
 			ViewModel.UpdateAnySelected(selected);
 			if (selected) ViewModel.SelectedEntry = keyEntry;
@@ -292,7 +292,7 @@ namespace SCG.Modules.DOS2DE.Windows
 			//Log.Here().Activity($"EntryDataGrid_RowFocused: {sender} | {e.Source}");
 			if(sender is DataGridRow row)
 			{
-				if(row.DataContext is LocaleKeyEntry localeKeyEntry)
+				if(row.DataContext is LocaleNodeKeyEntry localeKeyEntry)
 				{
 					ViewModel.SelectedEntry = localeKeyEntry;
 				}

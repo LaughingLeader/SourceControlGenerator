@@ -30,10 +30,10 @@ namespace SCG.Modules.DOS2DE.Utilities
 	public class LocaleEditorCommands
 	{
 		#region Loading Localization Files
-		public static async Task<LocaleViewModel> LoadLocalizationDataAsync(string dataRootPath, ModProjectData modProject, CancellationToken? token = null)
+		public static async Task<LocaleViewModel> LoadLocalizationDataAsync(DOS2DEModuleData vm, ModProjectData modProject, CancellationToken? token = null)
 		{
 			LocaleViewModel localizationData = new LocaleViewModel();
-			var success = await LoadProjectLocalizationDataAsync(localizationData, dataRootPath, modProject, token).ConfigureAwait(false);
+			var success = await LoadProjectLocalizationDataAsync(localizationData, vm, modProject, token).ConfigureAwait(false);
 			foreach (var g in localizationData.Groups)
 			{
 				foreach (var f in g.DataFiles)
@@ -47,12 +47,12 @@ namespace SCG.Modules.DOS2DE.Utilities
 			return localizationData;
 		}
 
-		public static async Task<LocaleViewModel> LoadLocalizationDataAsync(string dataRootPath, IEnumerable<ModProjectData> modProjects, CancellationToken? token = null)
+		public static async Task<LocaleViewModel> LoadLocalizationDataAsync(DOS2DEModuleData vm, IEnumerable<ModProjectData> modProjects, CancellationToken? token = null)
 		{
 			LocaleViewModel localizationData = new LocaleViewModel();
 			foreach (var project in modProjects)
 			{
-				var success = await LoadProjectLocalizationDataAsync(localizationData, dataRootPath, project, token).ConfigureAwait(false);
+				var success = await LoadProjectLocalizationDataAsync(localizationData, vm, project, token).ConfigureAwait(false);
 			}
 			foreach (var g in localizationData.Groups)
 			{
@@ -67,7 +67,7 @@ namespace SCG.Modules.DOS2DE.Utilities
 			return localizationData;
 		}
 
-		public static async Task<bool> LoadProjectLocalizationDataAsync(LocaleViewModel localizationData, string dataRootPath, ModProjectData modProjectData, CancellationToken? token = null)
+		public static async Task<bool> LoadProjectLocalizationDataAsync(LocaleViewModel localizationData, DOS2DEModuleData vm, ModProjectData modProjectData, CancellationToken? token = null)
 		{
 			try
 			{
@@ -79,6 +79,8 @@ namespace SCG.Modules.DOS2DE.Utilities
 					return false;
 				}
 
+				string dataRootPath = vm.Settings.DOS2DEDataDirectory;
+
 				if (!dataRootPath.EndsWith(Path.DirectorySeparatorChar.ToString()))
 				{
 					dataRootPath += Path.DirectorySeparatorChar;
@@ -86,9 +88,11 @@ namespace SCG.Modules.DOS2DE.Utilities
 
 				string modsRoot = Path.GetFullPath(Path.Combine(dataRootPath, "Mods", modProjectData.FolderName));
 				string publicRoot = Path.GetFullPath(Path.Combine(dataRootPath, "Public", modProjectData.FolderName));
+				string customLocaleDir = DOS2DEDefaultPaths.CustomLocaleDirectory(vm, modProjectData);
 
 				bool modsExists = Directory.Exists(modsRoot);
 				bool publicExists = Directory.Exists(publicRoot);
+				bool customExists = Directory.Exists(customLocaleDir);
 
 				if (!modsExists && !publicExists)
 				{
@@ -161,6 +165,12 @@ namespace SCG.Modules.DOS2DE.Utilities
 					localizationData.PublicGroup.Visibility = false;
 				}
 
+				if(customExists)
+				{
+					var customFiles = await LoadCustomFilesAsync(customLocaleDir, modProjectData);
+					
+				}
+
 				localizationData.CombinedGroup.UpdateCombinedData();
 				//localizationData.UpdateCombinedGroup();
 
@@ -182,24 +192,15 @@ namespace SCG.Modules.DOS2DE.Utilities
 			}
 		}
 
-		private static async Task<List<LocaleFileData>> LoadFilesAsync(string directoryPath, CancellationToken? token = null, params string[] fileExtensions)
+		private static async Task<List<LocaleNodeFileData>> LoadFilesAsync(string directoryPath, CancellationToken? token = null, params string[] fileExtensions)
 		{
-			List<LocaleFileData> stringKeyData = new List<LocaleFileData>();
+			List<LocaleNodeFileData> stringKeyData = new List<LocaleNodeFileData>();
 
 			var filters = new DirectoryEnumerationFilters()
 			{
 				InclusionFilter = f =>
 				{
-					if(FileCommands.FileExtensionFound(f.FileName, fileExtensions))
-					{
-						//Log.Here().Activity($"Matched extension '{String.Join(",", fileExtensions)}' in file '{f.FileName}'|'{f.FullPath}'");
-						return true;
-					}
-					else
-					{
-						//Log.Here().Activity($"Did not find extension '{String.Join(",", fileExtensions)}' in file '{f.FileName}'|'{f.FullPath}'");
-						return false;
-					}
+					return FileCommands.FileExtensionFound(f.FileName, fileExtensions);
 				},
 				ErrorFilter = delegate (int errorCode, string errorMessage, string pathProcessed)
 				{
@@ -229,7 +230,67 @@ namespace SCG.Modules.DOS2DE.Utilities
 			return stringKeyData;
 		}
 
-		public static async Task<LocaleFileData> LoadResourceAsync(string path, CancellationToken? token = null)
+		public static async Task<List<LocaleCustomFileData>> LoadCustomFilesAsync(string customLocaleDir, ModProjectData modProject)
+		{
+			List<LocaleCustomFileData> customFiles = new List<LocaleCustomFileData>();
+
+			var filters = new DirectoryEnumerationFilters()
+			{
+				InclusionFilter = f =>
+				{
+					return FileCommands.FileExtensionFound(f.FileName, ".json");
+				},
+				ErrorFilter = delegate (int errorCode, string errorMessage, string pathProcessed)
+				{
+					var gotException = errorCode == 5;
+
+					if (gotException)
+					{
+						Log.Here().Error($"Error reading file at '{pathProcessed}': [{errorCode}]({errorMessage})");
+					}
+
+					return gotException;
+				},
+				RecursionFilter = f =>
+				{
+					return true;
+				}
+			};
+			var files = Directory.EnumerateFiles(customLocaleDir, Alphaleonis.Win32.Filesystem.DirectoryEnumerationOptions.Recursive, filters);
+			var targetFiles = new ConcurrentBag<string>(files);
+			foreach (var filePath in targetFiles)
+			{
+				var data = await LoadCustomFileAsync(filePath).ConfigureAwait(false);
+				if (data != null)
+				{
+					customFiles.Add(data);
+				}
+			}
+
+			if (customFiles.Count > 0) customFiles = customFiles.OrderBy(f => f.Name).ToList();
+
+			return customFiles;
+		}
+
+		private static async Task<LocaleCustomFileData> LoadCustomFileAsync(string path)
+		{
+			using (var reader = File.OpenText(path))
+			{
+				var fileText = await reader.ReadToEndAsync();
+				try
+				{
+					LocaleCustomFileData fileData = await Task.Run(() => JsonConvert.DeserializeObject<LocaleCustomFileData>(fileText)).ConfigureAwait(false);
+					return fileData;
+				}
+				catch(Exception ex)
+				{
+					Log.Here().Error($"Error deserializing '{path}': {ex.ToString()}");
+					return null;
+				}
+			}
+		}
+
+		public static async Task<LocaleNodeFileData> LoadResourceAsync(string path, CancellationToken? token = null)
 		{
 			return await Task.Run(() =>
 			{
@@ -241,7 +302,7 @@ namespace SCG.Modules.DOS2DE.Utilities
 
 				var resource = LSLib.LS.ResourceUtils.LoadResource(path, resourceFormat);
 
-				var data = new LocaleFileData(resourceFormat, resource, path, Path.GetFileName(path));
+				var data = new LocaleNodeFileData(resourceFormat, resource, path, Path.GetFileName(path));
 				LoadFromResource(data, resource, resourceFormat);
 				
 				//foreach (var entry in data.Entries)
@@ -253,7 +314,7 @@ namespace SCG.Modules.DOS2DE.Utilities
 			}).ConfigureAwait(false);
 		}
 
-		public static bool LoadFromResource(LocaleFileData stringKeyFileData, Resource resource, ResourceFormat resourceFormat, bool sort = true)
+		public static bool LoadFromResource(LocaleNodeFileData stringKeyFileData, Resource resource, ResourceFormat resourceFormat, bool sort = true)
 		{
 			try
 			{
@@ -264,7 +325,7 @@ namespace SCG.Modules.DOS2DE.Utilities
 					{
 						foreach (var node in entry.Value)
 						{
-							LocaleKeyEntry localeEntry = LoadFromNode(node, resourceFormat);
+							LocaleNodeKeyEntry localeEntry = LoadFromNode(node, resourceFormat);
 							stringKeyFileData.Entries.Add(localeEntry);
 						}
 
@@ -285,7 +346,7 @@ namespace SCG.Modules.DOS2DE.Utilities
 
 					foreach(var node in stringNodes)
 					{
-						LocaleKeyEntry localeEntry = LoadFromNode(node, resourceFormat);
+						LocaleNodeKeyEntry localeEntry = LoadFromNode(node, resourceFormat);
 						stringKeyFileData.Entries.Add(localeEntry);
 					}
 
@@ -299,7 +360,7 @@ namespace SCG.Modules.DOS2DE.Utilities
 
 				if (sort)
 				{
-					stringKeyFileData.Entries = new ObservableCollectionExtended<LocaleKeyEntry>(stringKeyFileData.Entries.OrderBy(e => e.Key).ToList());
+					stringKeyFileData.Entries = new ObservableCollectionExtended<ILocaleKeyEntry>(stringKeyFileData.Entries.OrderBy(e => e.Key).ToList());
 				}
 
 				return true;
@@ -311,11 +372,11 @@ namespace SCG.Modules.DOS2DE.Utilities
 			}
 		}
 
-		public static LocaleKeyEntry LoadFromNode(Node node, ResourceFormat resourceFormat, bool generateNewHandle = false)
+		public static LocaleNodeKeyEntry LoadFromNode(Node node, ResourceFormat resourceFormat, bool generateNewHandle = false)
 		{
 			if (resourceFormat == ResourceFormat.LSB)
 			{
-				LocaleKeyEntry localeEntry = new LocaleKeyEntry(node);
+				LocaleNodeKeyEntry localeEntry = new LocaleNodeKeyEntry(node);
 				NodeAttribute keyAtt = null;
 				NodeAttribute contentAtt = null;
 				node.Attributes.TryGetValue("UUID", out keyAtt);
@@ -350,7 +411,7 @@ namespace SCG.Modules.DOS2DE.Utilities
 			}
 			else if (resourceFormat == ResourceFormat.LSJ || resourceFormat == ResourceFormat.LSX)
 			{
-				LocaleKeyEntry localeEntry = new LocaleKeyEntry(node);
+				LocaleNodeKeyEntry localeEntry = new LocaleNodeKeyEntry(node);
 				
 				localeEntry.KeyIsEditable = false;
 				localeEntry.Key = "Dialog Text";
@@ -415,7 +476,7 @@ namespace SCG.Modules.DOS2DE.Utilities
 				string sysFormat = CultureInfo.CurrentCulture.DateTimeFormat.ShortDatePattern.Replace("/", "-");
 				string archivePath = Path.Combine(backupDirectory, "LocalizationEditorBackup") + "_" + DateTime.Now.ToString(sysFormat + "_HH-mm-ss") + ".zip";
 
-				foreach (var f in data.SelectedGroup.DataFiles.OfType<LocaleFileData>())
+				foreach (var f in data.SelectedGroup.DataFiles.OfType<LocaleNodeFileData>())
 				{
 					if (File.Exists(f.SourcePath))
 					{
@@ -449,7 +510,7 @@ namespace SCG.Modules.DOS2DE.Utilities
 			int success = 0;
 			await Task.Run(() =>
 			{
-				foreach (var f in data.SelectedGroup.DataFiles.OfType<LocaleFileData>())
+				foreach (var f in data.SelectedGroup.DataFiles.OfType<LocaleNodeFileData>())
 				{
 					success += SaveDataFile(f, token);
 					f.ChangesUnsaved = false;
@@ -459,7 +520,7 @@ namespace SCG.Modules.DOS2DE.Utilities
 			return success;
 		}
 
-		public static async Task<int> SaveDataFiles(List<LocaleFileData> dataFiles, CancellationToken? token = null)
+		public static async Task<int> SaveDataFiles(List<LocaleNodeFileData> dataFiles, CancellationToken? token = null)
 		{
 			int success = 0;
 			await Task.Run(() =>
@@ -473,7 +534,7 @@ namespace SCG.Modules.DOS2DE.Utilities
 			return success;
 		}
 
-		public static int SaveDataFile(LocaleFileData dataFile, CancellationToken? token = null)
+		public static int SaveDataFile(LocaleNodeFileData dataFile, CancellationToken? token = null)
 		{
 			try
 			{
@@ -510,7 +571,7 @@ namespace SCG.Modules.DOS2DE.Utilities
 					string sourcePath = "";
 					bool findActualSource = fileData == data.SelectedGroup.CombinedEntries;
 
-					if (!findActualSource && fileData is LocaleFileData keyFileData)
+					if (!findActualSource && fileData is LocaleNodeFileData keyFileData)
 					{
 						sourcePath = EscapeXml(Path.GetFileName(keyFileData.SourcePath));
 					}
@@ -520,7 +581,7 @@ namespace SCG.Modules.DOS2DE.Utilities
 						if (findActualSource)
 						{
 							var actualSource = data.SelectedGroup.DataFiles.Where(d => d.Entries.Contains(e)).FirstOrDefault();
-							if (actualSource is LocaleFileData sourceFileData)
+							if (actualSource is LocaleNodeFileData sourceFileData)
 							{
 								sourcePath = EscapeXml(Path.GetFileName(sourceFileData.SourcePath));
 							}
@@ -585,10 +646,10 @@ namespace SCG.Modules.DOS2DE.Utilities
 			return Guid.NewGuid().ToString().Replace('-', 'g').Insert(0, "h");
 		}
 
-		public static LocaleFileData CreateFileData(string destinationPath, string name)
+		public static LocaleNodeFileData CreateFileData(string destinationPath, string name)
 		{
 			var resource = CreateLocalizationResource();
-			var fileData = new LocaleFileData(ResourceFormat.LSX, resource, destinationPath, name);
+			var fileData = new LocaleNodeFileData(ResourceFormat.LSX, resource, destinationPath, name);
 			LoadFromResource(fileData, resource, ResourceFormat.LSB, true);
 			fileData.ChangesUnsaved = true;
 			return fileData;
@@ -609,11 +670,11 @@ namespace SCG.Modules.DOS2DE.Utilities
 			return toxml;
 		}
 
-		public static LocaleKeyEntry CreateNewLocaleEntry(LocaleFileData fileData, string key = "NewKey", string content = "")
+		public static LocaleNodeKeyEntry CreateNewLocaleEntry(LocaleNodeFileData fileData, string key = "NewKey", string content = "")
 		{
 			var rootNode = fileData.Source.Regions.First().Value;
 
-			var refNode = fileData.Entries.Where(f => f.Node != null).FirstOrDefault().Node;
+			var refNode = fileData.Entries.Cast<LocaleNodeKeyEntry>().FirstOrDefault(f => f.Node != null)?.Node;
 			if (refNode != null)
 			{
 				var node = new Node();
@@ -631,7 +692,7 @@ namespace SCG.Modules.DOS2DE.Utilities
 					node.Attributes.Add(kp.Key, att);
 				}
 
-				LocaleKeyEntry localeEntry = LoadFromNode(node, fileData.Format);
+				LocaleNodeKeyEntry localeEntry = LoadFromNode(node, fileData.Format);
 				localeEntry.Key = key == "NewKey" ? key + (fileData.Entries.Count + 1) : key;
 				localeEntry.Content = content;
 				return localeEntry;
@@ -665,7 +726,7 @@ namespace SCG.Modules.DOS2DE.Utilities
 						{
 							string sourcePath = Path.Combine(groupData.SourceDirectory, Path.GetFileNameWithoutExtension(path), ".lsb");
 							string name = Path.GetFileName(path);
-							LocaleFileData fileData = CreateFileData(sourcePath, name);
+							LocaleNodeFileData fileData = CreateFileData(sourcePath, name);
 
 							int lineNum = 0;
 							while((line = stream.ReadLine()) != null)
@@ -705,9 +766,9 @@ namespace SCG.Modules.DOS2DE.Utilities
 			return newFileDataList;
 		}
 
-		public static List<LocaleKeyEntry> ImportFilesAsEntries(IEnumerable<string> files, LocaleFileData fileData)
+		public static List<ILocaleKeyEntry> ImportFilesAsEntries(IEnumerable<string> files, LocaleNodeFileData fileData)
 		{
-			List<LocaleKeyEntry> newEntryList = new List<LocaleKeyEntry>();
+			List<ILocaleKeyEntry> newEntryList = new List<ILocaleKeyEntry>();
 			try
 			{
 				foreach(var path in files)
@@ -795,7 +856,7 @@ namespace SCG.Modules.DOS2DE.Utilities
 		#endregion
 
 		#region Debug
-		public static void Debug_CreateEntries(ObservableCollectionExtended<LocaleKeyEntry> Entries)
+		public static void Debug_CreateEntries(ObservableCollectionExtended<ILocaleKeyEntry> Entries)
 		{
 			Random rnd = new Random();
 

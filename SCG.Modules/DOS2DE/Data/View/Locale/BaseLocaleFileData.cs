@@ -1,4 +1,5 @@
 ﻿using DynamicData.Binding;
+using Newtonsoft.Json;
 using SCG.Data;
 using System;
 using System.Collections.Generic;
@@ -9,14 +10,17 @@ using System.Threading.Tasks;
 
 namespace SCG.Modules.DOS2DE.Data.View.Locale
 {
+	[JsonObject(MemberSerialization.OptIn)]
 	public class BaseLocaleFileData : PropertyChangedBase, ILocaleFileData
 	{
-		public ObservableCollectionExtended<LocaleKeyEntry> Entries { get; set; }
+		[JsonProperty]
+		public ObservableCollectionExtended<ILocaleKeyEntry> Entries { get; set; } = new ObservableCollectionExtended<ILocaleKeyEntry>();
 
 		public string SourcePath { get; set; }
 
 		private string name;
 
+		[JsonProperty]
 		public string Name
 		{
 			get { return name; }
@@ -106,23 +110,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 
 		public BaseLocaleFileData(string name = "")
 		{
-			Entries = new ObservableCollectionExtended<LocaleKeyEntry>();
-
 			Name = name;
-		}
-	}
-
-	public class LocaleFileData : BaseLocaleFileData
-	{
-		public LSLib.LS.Resource Source { get; private set; }
-
-		public LSLib.LS.Enums.ResourceFormat Format { get; set; }
-
-		public LocaleFileData(LSLib.LS.Enums.ResourceFormat resourceFormat, LSLib.LS.Resource res, string sourcePath, string name = "") : base(name)
-		{
-			Source = res;
-			SourcePath = sourcePath;
-			Format = resourceFormat;
 		}
 	}
 }

@@ -176,7 +176,7 @@ namespace SCG.Modules.DOS2DE.Views
 
 		public static async Task<Unit> OpenLocalizationEditorForProject(ModProjectData modData)
 		{
-			var data = await LocaleEditorCommands.LoadLocalizationDataAsync(_instance.ViewModel.Settings.DOS2DEDataDirectory, modData).ConfigureAwait(false);
+			var data = await LocaleEditorCommands.LoadLocalizationDataAsync(_instance.ViewModel, modData).ConfigureAwait(false);
 			_instance.MainWindow.Dispatcher.Invoke(new Action(() => {
 				_instance.OpenLocalizationEditorWithData(data);
 			}), DispatcherPriority.Normal);
@@ -185,7 +185,7 @@ namespace SCG.Modules.DOS2DE.Views
 
 		private async void OpenLocalizationEditorAsync()
 		{
-			var data = await LocaleEditorCommands.LoadLocalizationDataAsync(ViewModel.Settings.DOS2DEDataDirectory,
+			var data = await LocaleEditorCommands.LoadLocalizationDataAsync(ViewModel,
 				ViewModel.ManagedProjects.Where(p => p.Selected)).ConfigureAwait(false);
 			_instance.MainWindow.Dispatcher.Invoke(new Action(() => OpenLocalizationEditorWithData(data)), DispatcherPriority.Normal);
 		}

@@ -21,9 +21,9 @@ namespace SCG.Modules.DOS2DE.Windows
 {
 	public class LocaleContentWindowViewModel : HistoryBaseViewModel
 	{
-		private LocaleKeyEntry entry;
+		private LocaleNodeKeyEntry entry;
 
-		public LocaleKeyEntry Entry
+		public LocaleNodeKeyEntry Entry
 		{
 			get => entry;
 			set

@@ -32,7 +32,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 
 		private void LocaleViewModel_PropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
-			if(e.PropertyName != null)
+			if (e.PropertyName != null)
 			{
 				if (MenuEnabledLinks.ContainsKey(e.PropertyName))
 				{
@@ -66,7 +66,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			get => changesUnsaved;
 			set
 			{
-				if(this.RaiseAndSetIfChanged(ref changesUnsaved, value) == true)
+				if (this.RaiseAndSetIfChanged(ref changesUnsaved, value) == true)
 				{
 					WindowTitle = "*Localization Editor";
 				}
@@ -143,6 +143,21 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 				this.RaiseAndSetIfChanged(ref publicGroup, value);
 			}
 		}
+		private LocaleTabGroup customGroup;
+
+		public LocaleTabGroup CustomGroup
+		{
+			get => customGroup;
+			set
+			{
+				this.RaiseAndSetIfChanged(ref customGroup, value);
+			}
+		}
+
+		private List<LocaleTabGroup> GetCoreGroups()
+		{
+			return new List<LocaleTabGroup>() { PublicGroup, ModsGroup, DialogGroup, CustomGroup };
+		}
 
 		private LocaleTabGroup combinedGroup;
 
@@ -163,9 +178,9 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			}
 		}
 
-		private LocaleKeyEntry selectedEntry;
+		private ILocaleKeyEntry selectedEntry;
 
-		public LocaleKeyEntry SelectedEntry
+		public ILocaleKeyEntry SelectedEntry
 		{
 			get => selectedEntry;
 			set
@@ -423,7 +438,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 		{
 			get
 			{
-				if (SelectedItem != null && SelectedItem is LocaleFileData data)
+				if (SelectedItem != null && SelectedItem is LocaleNodeFileData data)
 				{
 					return Path.GetDirectoryName(data.SourcePath);
 				}
@@ -463,22 +478,23 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			}
 		}
 
+
 		public void GenerateHandles()
 		{
 			if (SelectedGroup != null && SelectedGroup.SelectedFile != null)
 			{
 				Log.Here().Activity("Generating handles...");
 
-				List<HandleHistory> lastHandles = new List<HandleHistory>();
-				List<HandleHistory> newHandles = new List<HandleHistory>();
+				List<LocaleHandleHistory> lastHandles = new List<LocaleHandleHistory>();
+				List<LocaleHandleHistory> newHandles = new List<LocaleHandleHistory>();
 
 				foreach (var entry in SelectedGroup.SelectedFile.Entries.Where(e => e.Selected))
 				{
 					if (entry.Handle.Equals("ls::TranslatedStringRepository::s_HandleUnknown", StringComparison.OrdinalIgnoreCase))
 					{
-						lastHandles.Add(new HandleHistory(entry, entry.Handle));
+						lastHandles.Add(new LocaleHandleHistory(entry, entry.Handle));
 						entry.Handle = LocaleEditorCommands.CreateHandle();
-						newHandles.Add(new HandleHistory(entry, entry.Handle));
+						newHandles.Add(new LocaleHandleHistory(entry, entry.Handle));
 						Log.Here().Activity($"[{entry.Key}] New handle generated. [{entry.Handle}]");
 					}
 				}
@@ -507,6 +523,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			CombinedGroup.DataFiles.AddRange(ModsGroup.DataFiles);
 			CombinedGroup.DataFiles.AddRange(PublicGroup.DataFiles);
 			CombinedGroup.DataFiles.AddRange(DialogGroup.DataFiles);
+			CombinedGroup.DataFiles.AddRange(CustomGroup.DataFiles);
 			CombinedGroup.Visibility = MultipleGroupsEntriesFilled();
 
 			if (!CombinedGroup.Visibility)
@@ -570,7 +587,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 		{
 			if(SelectedGroup != null)
 			{
-				if (SelectedGroup.SelectedFile != null && SelectedGroup.SelectedFile is LocaleFileData keyFileData)
+				if (SelectedGroup.SelectedFile != null && SelectedGroup.SelectedFile is LocaleNodeFileData keyFileData)
 				{
 					var result = LocaleEditorCommands.SaveDataFile(keyFileData);
 					if(result > 0)
@@ -618,7 +635,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			if (SelectedGroup != null)
 			{
 				var sourceRoot = "";
-				if (SelectedGroup.DataFiles.First() is LocaleFileData keyFileData)
+				if (SelectedGroup.DataFiles.First() is LocaleNodeFileData keyFileData)
 				{
 					sourceRoot = Path.GetDirectoryName(keyFileData.SourcePath) + @"\";
 				}
@@ -683,7 +700,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			Log.Here().Activity("Importing keys from files...");
 
 			var currentItem = SelectedItem;
-			var newKeys = LocaleEditorCommands.ImportFilesAsEntries(files, SelectedItem as LocaleFileData);
+			var newKeys = LocaleEditorCommands.ImportFilesAsEntries(files, SelectedItem as LocaleNodeFileData);
 
 			CreateSnapshot(() => {
 				foreach(var k in newKeys)
@@ -750,9 +767,9 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 		{
 			if (SelectedGroup != null && SelectedGroup.SelectedFile != null)
 			{
-				if (SelectedGroup.SelectedFile is LocaleFileData fileData && fileData.Format == LSLib.LS.Enums.ResourceFormat.LSB)
+				if (SelectedGroup.SelectedFile is LocaleNodeFileData fileData && fileData.Format == LSLib.LS.Enums.ResourceFormat.LSB)
 				{
-					LocaleKeyEntry localeEntry = LocaleEditorCommands.CreateNewLocaleEntry(fileData);
+					LocaleNodeKeyEntry localeEntry = LocaleEditorCommands.CreateNewLocaleEntry(fileData);
 					localeEntry.SetHistoryFromObject(this);
 					AddWithHistory(fileData.Entries, localeEntry);
 					SelectedGroup.UpdateCombinedData();
@@ -916,13 +933,15 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			ModsGroup = new LocaleTabGroup("Locale (Mods)");
 			PublicGroup = new LocaleTabGroup("Locale (Public)");
 			DialogGroup = new LocaleTabGroup("Dialog");
+			CustomGroup = new LocaleTabGroup("Custom");
 
 			Groups = new ObservableCollectionExtended<LocaleTabGroup>
 			{
 				CombinedGroup,
 				ModsGroup,
 				PublicGroup,
-				DialogGroup
+				DialogGroup,
+				CustomGroup
 			};
 
 			foreach (var g in Groups)
