@@ -1033,6 +1033,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 
 			this.WhenAny(vm => vm.SelectedEntry.EntryContent, vm => vm.Value).Subscribe((o) => {
 				this.RaisePropertyChanged("SelectedEntryContent");
+				this.RaisePropertyChanged("SelectedEntryHtmlContent");
 			});
 
 			void clearSelectedEntry()
