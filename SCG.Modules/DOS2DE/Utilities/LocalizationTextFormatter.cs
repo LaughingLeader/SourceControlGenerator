@@ -14,6 +14,7 @@ namespace SCG.Modules.DOS2DE.Utilities
 	{
 		public TextRange Range;
 		public Color Color;
+		public double Size;
 	}
 
 	public class LocalizationTextFormatter : ITextFormatter
@@ -88,25 +89,13 @@ namespace SCG.Modules.DOS2DE.Utilities
 				}
 				else
 				{
-					bool whiteDetected = false;
-
 					TextRange tr = new TextRange(document.ContentStart, document.ContentEnd);
 					tr.Text = text;
 
 					var ranges = GetAllFontRanges(document);
 					foreach (var range in ranges)
 					{
-						if (range.Color == Colors.White)
-						{
-							whiteDetected = true;
-						}
-
 						range.Range.ApplyPropertyValue(TextElement.ForegroundProperty, new SolidColorBrush(range.Color));
-					}
-
-					if (whiteDetected)
-					{
-						tr.ApplyPropertyValue(TextElement.BackgroundProperty, new SolidColorBrush(Colors.LightGray));
 					}
 				}
 			}

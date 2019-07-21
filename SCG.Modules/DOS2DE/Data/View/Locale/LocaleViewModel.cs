@@ -172,6 +172,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			{
 				this.RaiseAndSetIfChanged(ref selectedEntry, value);
 				this.RaisePropertyChanged("SelectedEntryContent");
+				this.RaisePropertyChanged("SelectedEntryHtmlContent");
 			}
 		}
 
@@ -191,6 +192,14 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 				{
 					SelectedEntry.EntryContent = value;
 				}
+			}
+		}
+
+		public string SelectedEntryHtmlContent
+		{
+			get
+			{
+				return $"<body>{SelectedEntry?.EntryContent}</body>";
 			}
 		}
 
@@ -821,6 +830,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 					string color = SelectedColor == null ? "#FFFFFF" : SelectedColor.Value.ToHexString();
 
 					int start = SelectedEntry.Content.IndexOf(SelectedText);
+					if (start <= -1) start = 0;
 
 					string text = SelectedEntry.Content;
 					string fontStartText = $"<font color='{color}'>";

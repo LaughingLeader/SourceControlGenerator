@@ -18,7 +18,8 @@ namespace SCG.Converters
 	{
 		public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
 		{
-			var pipeline = new MarkdownPipelineBuilder().Configure(".html").Build();
+			var pipeline = new MarkdownPipelineBuilder().UseEmphasisExtras().UseGridTables().UsePipeTables().UseTaskLists().UseAutoLinks().Build();
+
 			var doc = MarkdownXaml.ToFlowDocument((string)value, pipeline);
 			return doc;
 		}

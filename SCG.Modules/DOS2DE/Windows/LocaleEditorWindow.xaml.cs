@@ -328,8 +328,11 @@ namespace SCG.Modules.DOS2DE.Windows
 				lastFocusedRichTextBox = null;
 			}
 
-			ViewModel.ContentFocused = false;
-			ViewModel.ContentSelected = false;
+			if(lastFocusedContentBox == null && lastFocusedRichTextBox == null)
+			{
+				ViewModel.ContentFocused = false;
+				ViewModel.ContentSelected = false;
+			}
 		}
 
 		private void EntryContent_SelectionChanged(object sender, RoutedEventArgs e)

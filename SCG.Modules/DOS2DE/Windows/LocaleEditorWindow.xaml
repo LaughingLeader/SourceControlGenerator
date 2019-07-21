@@ -17,7 +17,9 @@
 		xmlns:cb="clr-namespace:SCG.Controls.Behavior;assembly=SourceControlGenerator"
 		xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
 		xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
+		xmlns:html="clr-namespace:TheArtOfDev.HtmlRenderer.WPF;assembly=HtmlRenderer.WPF"
 		mc:Ignorable="d"
+		xmlns:clr="clr-namespace:System;assembly=mscorlib"
 		d:DataContext="{d:DesignInstance data:LocaleEditorDesignData, IsDesignTimeCreatable=True}"
 		Closing="LocaleWindow_Closing"
 		Title="{Binding WindowTitle, FallbackValue='Localization Editor'}" Height="525" Width="960">
@@ -28,6 +30,16 @@
 				<ResourceDictionary Source="pack://application:,,,/SourceControlGenerator;component/ThemeSystem/ResourceDictionary/ScrollbarStyles.xaml" />
 			</ResourceDictionary.MergedDictionaries>
 			<util:LocalizationTextFormatter x:Key="LocalizationTextFormatter" />
+			<clr:String x:Key="HtmlPreviewStyleSheet">
+body {
+  color: #a49d97;
+  margin-top: 4px;
+  margin-bottom: 4px;
+  margin-right: 4px;
+  margin-left: 4px;
+  font-size: 18;
+}
+</clr:String>
 
 			<Style x:Key="ShortcutButton" TargetType="Button">
 				<Setter Property="MinHeight" Value="16" />
@@ -163,14 +175,34 @@
 					/>
 				</StackPanel>
 			</Grid>
-			<FlowDocumentScrollViewer x:Key="EntryContentPreview" Document="{Binding Path=DataContext.SelectedEntryContent, UpdateSourceTrigger=PropertyChanged,
-						RelativeSource={RelativeSource AncestorType={x:Type Window}}, Converter={StaticResource HtmlToFlowDocumentConverter}}" 
-						BorderThickness="0" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto"
+			<html:HtmlPanel
+				x:Key="EntryContentPreview" 
+				x:Name="EntryContentPreviewHtmlPanel" 
+				Text="{Binding Path=DataContext.SelectedEntryHtmlContent, UpdateSourceTrigger=PropertyChanged, Mode=OneWay, RelativeSource={RelativeSource AncestorType={x:Type Window}}}"
+				BorderThickness="0" BorderBrush="{x:Null}"
+				Block.LineHeight="2"
+				Background="#BF020202"
+				Padding="6"
+				BaseStylesheet="{StaticResource HtmlPreviewStyleSheet}"
 			>
-				<FlowDocumentScrollViewer.Resources>
-					<ResourceDictionary Source="pack://application:,,,/Neo.Markdig.Xaml;component/Themes/generic.xaml" />
-				</FlowDocumentScrollViewer.Resources>
-			</FlowDocumentScrollViewer>
+				<html:HtmlPanel.Resources>
+					<Style TargetType="TextBlock">
+						<Setter Property="TextAlignment" Value="Center" />
+					</Style>
+				</html:HtmlPanel.Resources></html:HtmlPanel>
+			<!--<xctk:RichTextBox 
+				x:Key="EntryContentPreview" 
+				x:Name="EntryContentPreviewRichTextBox" 
+				Text="{Binding Path=DataContext.SelectedEntryContent, UpdateSourceTrigger=PropertyChanged, RelativeSource={RelativeSource AncestorType={x:Type Window}}}"
+				TextFormatter="{StaticResource LocalizationPreviewTextFormatter}"
+				BorderThickness="0" BorderBrush="{x:Null}"
+				VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto"
+				IsReadOnly="True"
+				IsReadOnlyCaretVisible="True"
+				Margin="1" Block.LineHeight="2"
+				Background="Transparent"
+				IsUndoEnabled="False"
+			/>-->
 			<xctk:RichTextBox 
 					x:Name="EntryContentRichTextBox"
 					x:Key="EntryContentRichTextBox"
@@ -541,23 +573,25 @@
 						<Border Grid.Row="2" 
 							BorderThickness="1,0,1,1" BorderBrush="{Binding ElementName=LocaleEntryDataGrid, Path=BorderBrush}">
 							<Grid>
-								<Grid.Resources>
-									<Style TargetType="{x:Type ContentPresenter}">
-										<Style.Triggers>
-											<DataTrigger Binding="{Binding Path=IsChecked, ElementName=PreviewToggleButton}" Value="True" >
-												<Setter Property="Content" Value="{StaticResource EntryContentPreview}" />
-											</DataTrigger>
-											<DataTrigger Binding="{Binding Path=IsChecked, ElementName=PreviewToggleButton}" Value="False" >
-												<Setter Property="Content" Value="{StaticResource EntryContentRichTextBox}" />
-											</DataTrigger>
-										</Style.Triggers>
-									</Style>
-								</Grid.Resources>
 								<Grid.ColumnDefinitions>
 									<ColumnDefinition Width="Auto" />
 									<ColumnDefinition Width="*" />
 								</Grid.ColumnDefinitions>
-								<ContentPresenter Grid.Column="1" Content="" />
+								
+								<ContentControl Grid.Column="1">
+									<ContentControl.Style>
+										<Style TargetType="{x:Type ContentControl}">
+											<Style.Triggers>
+												<DataTrigger Binding="{Binding Path=DataContext.ContentPreviewModeEnabled, RelativeSource={RelativeSource AncestorType={x:Type Window}}}" Value="True" >
+													<Setter Property="Content" Value="{StaticResource EntryContentPreview}" />
+												</DataTrigger>
+												<DataTrigger Binding="{Binding Path=DataContext.ContentPreviewModeEnabled, RelativeSource={RelativeSource AncestorType={x:Type Window}}}" Value="False" >
+													<Setter Property="Content" Value="{StaticResource EntryContentRichTextBox}" />
+												</DataTrigger>
+											</Style.Triggers>
+										</Style>
+										</ContentControl.Style>
+								</ContentControl>
 								<ToggleButton
 									x:Name="PreviewToggleButton"
 									IsChecked="{Binding Path=DataContext.ContentPreviewModeEnabled, RelativeSource={RelativeSource AncestorType={x:Type Window}}}"

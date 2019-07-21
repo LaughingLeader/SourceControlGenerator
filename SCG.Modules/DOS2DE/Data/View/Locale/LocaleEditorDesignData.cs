@@ -51,6 +51,8 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			//SelectedGroup.SelectedFileIndex = 2;
 
 			System.Diagnostics.Trace.WriteLine("Design data test");
+
+			SelectedEntry = CombinedGroup.Tabs.First().Entries.First();
 		}
 	}
 }
