@@ -1,4 +1,5 @@
 ﻿using DynamicData.Binding;
+using ReactiveUI;
 using SCG.Commands;
 using SCG.Data;
 using System;
@@ -11,7 +12,7 @@ using System.Windows.Input;
 
 namespace SCG.Modules.DOS2DE.Data.View.Locale
 {
-	public class LocaleTabGroup : PropertyChangedBase
+	public class LocaleTabGroup : ReactiveObject
 	{
 		private string name;
 
@@ -20,20 +21,11 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			get { return name; }
 			set
 			{
-				Update(ref name, value);
+				this.RaiseAndSetIfChanged(ref name, value);
 			}
 		}
 
-		private string sourceDirectory;
-
-		public string SourceDirectory
-		{
-			get { return sourceDirectory; }
-			set
-			{
-				Update(ref sourceDirectory, value);
-			}
-		}
+		public List<string> SourceDirectories { get; set; } = new List<string>();
 
 		private bool changesUnsaved = true;
 
@@ -42,7 +34,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			get { return changesUnsaved; }
 			set
 			{
-				Update(ref changesUnsaved, value);
+				this.RaiseAndSetIfChanged(ref changesUnsaved, value);
 			}
 		}
 
@@ -67,7 +59,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			get { return combinedEntries; }
 			private set
 			{
-				Update(ref combinedEntries, value);
+				this.RaiseAndSetIfChanged(ref combinedEntries, value);
 			}
 		}
 
@@ -80,8 +72,8 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			get { return selectedfileIndex; }
 			set
 			{
-				Update(ref selectedfileIndex, value);
-				Notify("SelectedFile");
+				this.RaiseAndSetIfChanged(ref selectedfileIndex, value);
+				this.RaisePropertyChanged("SelectedFile");
 				SelectedFileChanged?.Invoke(this, SelectedFile);
 			}
 		}
@@ -103,8 +95,16 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			get { return visibility; }
 			set
 			{
-				Update(ref visibility, value);
+				this.RaiseAndSetIfChanged(ref visibility, value);
 			}
+		}
+
+		private bool canAddFiles = false;
+
+		public bool CanAddFiles
+		{
+			get => canAddFiles;
+			set { this.RaiseAndSetIfChanged(ref canAddFiles, value); }
 		}
 
 		public void UpdateCombinedData()
@@ -113,14 +113,14 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			Tabs.Add(CombinedEntries);
 			Tabs.AddRange(DataFiles);
 
-			CombinedEntries.Entries = new ObservableCollectionExtended<LocaleNodeKeyEntry>();
+			CombinedEntries.Entries = new ObservableCollectionExtended<ILocaleKeyEntry>();
 			foreach (var obj in DataFiles)
 			{
 				CombinedEntries.Entries.AddRange(obj.Entries);
 			}
 			CombinedEntries.Entries.OrderBy(e => e.Key);
-			Notify("CombinedEntries");
-			Notify("Tabs");
+			this.RaisePropertyChanged("CombinedEntries");
+			this.RaisePropertyChanged("Tabs");
 			Log.Here().Activity($"Updated combined entries for '{Name}'.");
 		}
 
@@ -136,7 +136,6 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 
 		public LocaleTabGroup(string name = "")
 		{
-			
 			Name = name;
 			CombinedEntries = new BaseLocaleFileData("All");
 			CombinedEntries.Locked = true;

@@ -18,6 +18,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 		bool AllSelected { get; set; }
 		bool Locked { get; set; }
 		bool ChangesUnsaved { get; set; }
+		bool CanClose { get; set; }
 
 		void SelectAll();
 		void SelectNone();

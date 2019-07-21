@@ -54,6 +54,8 @@ namespace SCG.Modules.DOS2DE.Core
 		public static string Button_Locale_AddFile = "Add Locale File";
 		public static string Button_Locale_AddFile_Disabled = "Add Locale File (Disabled for Tabs All & Dialog)";
 
+		public static string Button_Locale_CloseFileTab = "Close Tab";
+
 		public static string Button_Locale_AddKey = "Add Key";
 		public static string Button_Locale_AddKey_Disabled = "Add Key (Disabled for All & Dialog Tabs)";
 		public static string Button_Locale_DeleteKeys = "Delete Selected Keys";

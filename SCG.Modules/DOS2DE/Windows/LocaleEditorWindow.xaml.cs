@@ -84,7 +84,7 @@ namespace SCG.Modules.DOS2DE.Windows
 			instance = this;
 		}
 
-		public void PopoutContentWindow(LocaleNodeKeyEntry entry)
+		public void PopoutContentWindow(ILocaleKeyEntry entry)
 		{
 			if(ContentWindow.ViewModel == null)
 			{

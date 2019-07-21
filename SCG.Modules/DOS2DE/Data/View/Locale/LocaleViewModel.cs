@@ -143,9 +143,9 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 				this.RaiseAndSetIfChanged(ref publicGroup, value);
 			}
 		}
-		private LocaleTabGroup customGroup;
+		private CustomLocaleTabGroup customGroup;
 
-		public LocaleTabGroup CustomGroup
+		public CustomLocaleTabGroup CustomGroup
 		{
 			get => customGroup;
 			set
@@ -444,7 +444,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 				}
 				else if (SelectedGroup != null)
 				{
-					return SelectedGroup.SourceDirectory;
+					return SelectedGroup.SourceDirectories.FirstOrDefault();
 				}
 				return Directory.GetCurrentDirectory();
 			}
@@ -739,6 +739,8 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 		//private MenuData GenerateHandlesMenuData { get; set; }
 
 		public ICommand AddFileCommand { get; set; }
+		public ICommand AddFileToGroupCommand { get; set; }
+		public ICommand CloseFileCommand { get; set; }
 		public ICommand ImportFileCommand { get; set; }
 		public ICommand ImportKeysCommand { get; set; }
 		public ICommand ExportXMLCommand { get; set; }
@@ -824,6 +826,39 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 					LocaleEditorWindow.instance.ExportWindow.Owner = LocaleEditorWindow.instance;
 				}
 			}
+		}
+
+		public Unit AddCustomFileToGroup(CustomLocaleTabGroup group)
+		{
+
+			return Unit.Default;
+		}
+
+		public Unit CloseFileInGroup(ILocaleFileData fileData)
+		{
+			LocaleTabGroup target = GetCoreGroups().FirstOrDefault(g => g.DataFiles.Contains(fileData));
+
+			if (target != null)
+			{
+				if (!fileData.ChangesUnsaved)
+				{
+					target.DataFiles.Remove(fileData);
+					target.UpdateCombinedData();
+				}
+				else
+				{
+					FileCommands.OpenConfirmationDialog(LocaleEditorWindow.instance, "Confirm Close", $"Close {fileData.Name}?", "Unsaved changes will be lost.", new Action<bool>((b) =>
+					{
+						if (b)
+						{
+							target.DataFiles.Remove(fileData);
+							target.UpdateCombinedData();
+						}
+					}));
+				}
+			}
+			
+			return Unit.Default;
 		}
 
 		public void AddFontTag()
@@ -933,7 +968,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			ModsGroup = new LocaleTabGroup("Locale (Mods)");
 			PublicGroup = new LocaleTabGroup("Locale (Public)");
 			DialogGroup = new LocaleTabGroup("Dialog");
-			CustomGroup = new LocaleTabGroup("Custom");
+			CustomGroup = new CustomLocaleTabGroup("Custom");
 
 			Groups = new ObservableCollectionExtended<LocaleTabGroup>
 			{
@@ -974,6 +1009,9 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 					StartDirectory = CurrentEntryImportPath
 				}
 			};
+
+			AddFileToGroupCommand = ReactiveCommand.Create<CustomLocaleTabGroup, Unit>(AddCustomFileToGroup);
+			CloseFileCommand = ReactiveCommand.Create<ILocaleFileData, Unit>(CloseFileInGroup);
 
 			SaveAllCommand = ReactiveCommand.Create(SaveAll);
 			SaveCurrentCommand = ReactiveCommand.Create(SaveCurrent);

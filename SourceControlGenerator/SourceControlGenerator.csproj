@@ -580,6 +580,8 @@
     <Resource Include="Resources\Icons\Ellipsis_16x.png" />
     <Resource Include="Resources\Icons\StringData_16x.png" />
     <Resource Include="Resources\Icons\OpenLocalizationEditor_16x.png" />
+    <Resource Include="Resources\Icons\Close1_16x.png" />
+    <Resource Include="Resources\Icons\Close2_Red_16x.png" />
     <Content Include="Resources\Logos\DivinityOriginalSin2DE.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

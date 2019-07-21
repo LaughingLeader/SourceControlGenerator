@@ -1,5 +1,6 @@
 ﻿using DynamicData.Binding;
 using Newtonsoft.Json;
+using ReactiveUI;
 using SCG.Data;
 using System;
 using System.Collections.Generic;
@@ -11,7 +12,7 @@ using System.Threading.Tasks;
 namespace SCG.Modules.DOS2DE.Data.View.Locale
 {
 	[JsonObject(MemberSerialization.OptIn)]
-	public class BaseLocaleFileData : PropertyChangedBase, ILocaleFileData
+	public class BaseLocaleFileData : ReactiveObject, ILocaleFileData
 	{
 		[JsonProperty]
 		public ObservableCollectionExtended<ILocaleKeyEntry> Entries { get; set; } = new ObservableCollectionExtended<ILocaleKeyEntry>();
@@ -26,7 +27,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			get { return name; }
 			set
 			{
-				Update(ref name, value);
+				this.RaiseAndSetIfChanged(ref name, value);
 				UpdateDisplayName();
 			}
 		}
@@ -38,7 +39,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			get { return displayName; }
 			private set
 			{
-				Update(ref displayName, value);
+				this.RaiseAndSetIfChanged(ref displayName, value);
 			}
 		}
 
@@ -56,7 +57,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			get { return active; }
 			set
 			{
-				Update(ref active, value);
+				this.RaiseAndSetIfChanged(ref active, value);
 			}
 		}
 
@@ -67,7 +68,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			get { return locked; }
 			set
 			{
-				Update(ref locked, value);
+				this.RaiseAndSetIfChanged(ref locked, value);
 			}
 		}
 
@@ -78,9 +79,17 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			get { return changesUnsaved; }
 			set
 			{
-				Update(ref changesUnsaved, value);
+				this.RaiseAndSetIfChanged(ref changesUnsaved, value);
 				UpdateDisplayName();
 			}
+		}
+
+		private bool canClose = false;
+
+		public bool CanClose
+		{
+			get => canClose;
+			set { this.RaiseAndSetIfChanged(ref canClose, value); }
 		}
 
 		public void SelectAll()
@@ -100,7 +109,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			get { return allSelected; }
 			set
 			{
-				Update(ref allSelected, value);
+				this.RaiseAndSetIfChanged(ref allSelected, value);
 				if (allSelected)
 					SelectAll();
 				else

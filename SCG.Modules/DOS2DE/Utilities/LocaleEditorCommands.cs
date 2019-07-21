@@ -109,7 +109,7 @@ namespace SCG.Modules.DOS2DE.Utilities
 					{
 						Log.Here().Activity($"Loading localization data from '{modsLocalePath}'.");
 						var modsLocaleData = await LoadFilesAsync(modsLocalePath, token, ".lsb").ConfigureAwait(false);
-						localizationData.ModsGroup.SourceDirectory = modsLocalePath;
+						localizationData.ModsGroup.SourceDirectories.Add(modsLocalePath);
 						localizationData.ModsGroup.DataFiles.AddRange(modsLocaleData);
 						localizationData.ModsGroup.UpdateCombinedData();
 					}
@@ -125,7 +125,7 @@ namespace SCG.Modules.DOS2DE.Utilities
 						var dialogLocaleData = await LoadFilesAsync(dialogLocalePath, token, ".lsj").ConfigureAwait(false);
 						//Lock dialog files, as adding a new entry is more complicated than simply adding a key.
 						dialogLocaleData.ForEach(f => f.Locked = true);
-						localizationData.DialogGroup.SourceDirectory = dialogLocalePath;
+						localizationData.DialogGroup.SourceDirectories.Add(dialogLocalePath);
 						localizationData.DialogGroup.DataFiles.AddRange(dialogLocaleData);
 						localizationData.DialogGroup.UpdateCombinedData();
 					}
@@ -149,8 +149,8 @@ namespace SCG.Modules.DOS2DE.Utilities
 					{
 						Log.Here().Activity($"Loading localization data from '{publicLocalePath}'.");
 						var publicLocaleData = await LoadFilesAsync(publicLocalePath, token, ".lsb").ConfigureAwait(false);
-						localizationData.PublicGroup.SourceDirectory = publicLocalePath;
-						localizationData.PublicGroup.DataFiles = new ObservableCollectionExtended<ILocaleFileData>(publicLocaleData);
+						localizationData.PublicGroup.SourceDirectories.Add(publicLocalePath);
+						localizationData.PublicGroup.DataFiles.AddRange(publicLocaleData);
 						localizationData.PublicGroup.UpdateCombinedData();
 					}
 					else
@@ -168,7 +168,8 @@ namespace SCG.Modules.DOS2DE.Utilities
 				if(customExists)
 				{
 					var customFiles = await LoadCustomFilesAsync(customLocaleDir, modProjectData);
-					
+					localizationData.CustomGroup.DataFiles.AddRange(customFiles);
+					localizationData.CustomGroup.UpdateCombinedData();
 				}
 
 				localizationData.CombinedGroup.UpdateCombinedData();
@@ -280,6 +281,7 @@ namespace SCG.Modules.DOS2DE.Utilities
 				try
 				{
 					LocaleCustomFileData fileData = await Task.Run(() => JsonConvert.DeserializeObject<LocaleCustomFileData>(fileText)).ConfigureAwait(false);
+					fileData.CanClose = true;
 					return fileData;
 				}
 				catch(Exception ex)
@@ -700,6 +702,44 @@ namespace SCG.Modules.DOS2DE.Utilities
 			return null;
 		}
 
+		private static LocaleNodeFileData CreateNodeFileDataFromTextual(System.IO.StreamReader stream, string sourceDirectory, string filePath, char delimiter)
+		{
+			//For exporting to lsb later
+			string futureSourcePath = Path.Combine(sourceDirectory, Path.GetFileNameWithoutExtension(filePath), ".lsb");
+
+			string name = Path.GetFileName(filePath);
+			LocaleNodeFileData fileData = CreateFileData(futureSourcePath, name);
+
+			int lineNum = 0;
+			string line = String.Empty;
+
+			while ((line = stream.ReadLine()) != null)
+			{
+				lineNum += 1;
+				// Skip top line, as it typically describes the columns
+				Log.Here().Activity(line);
+				if (lineNum == 1 && line.Contains("Key\tContent")) continue;
+				var parts = line.Split(delimiter);
+
+				var key = parts.ElementAtOrDefault(0);
+				var content = parts.ElementAtOrDefault(1);
+
+				if (key == null) key = "NewKey";
+				if (content == null) content = "";
+
+				var entry = CreateNewLocaleEntry(fileData, key, content);
+				fileData.Entries.Add(entry);
+			}
+
+			//Remove the empty default new key
+			if (fileData.Entries.Count > 1)
+			{
+				fileData.Entries.Remove(fileData.Entries.First());
+			}
+
+			return fileData;
+		}
+
 		public static List<ILocaleFileData> ImportFilesAsData(IEnumerable<string> files, LocaleTabGroup groupData)
 		{
 			List<ILocaleFileData> newFileDataList = new List<ILocaleFileData>();
@@ -720,40 +760,14 @@ namespace SCG.Modules.DOS2DE.Utilities
 					{
 						char delimiter = '\t';
 						if (FileCommands.FileExtensionFound(path, ".csv")) delimiter = ',';
-
-						string line = String.Empty;
+						
 						using (var stream = new System.IO.StreamReader(path))
 						{
-							string sourcePath = Path.Combine(groupData.SourceDirectory, Path.GetFileNameWithoutExtension(path), ".lsb");
-							string name = Path.GetFileName(path);
-							LocaleNodeFileData fileData = CreateFileData(sourcePath, name);
-
-							int lineNum = 0;
-							while((line = stream.ReadLine()) != null)
+							foreach(var sourceDir in groupData.SourceDirectories)
 							{
-								lineNum += 1;
-								// Skip top line, as it typically describes the columns
-								Log.Here().Activity(line);
-								if (lineNum == 1 && line.Contains("Key\tContent")) continue;
-								var parts = line.Split(delimiter);
-
-								var key = parts.ElementAtOrDefault(0);
-								var content = parts.ElementAtOrDefault(1);
-
-								if (key == null) key = "NewKey";
-								if (content == null) content = "";
-
-								var entry = CreateNewLocaleEntry(fileData, key, content);
-								fileData.Entries.Add(entry);
+								var fileData = CreateNodeFileDataFromTextual(stream, sourceDir, path, delimiter);
+								newFileDataList.Add(fileData);
 							}
-
-							//Remove the empty default new key
-							if(fileData.Entries.Count > 1)
-							{
-								fileData.Entries.Remove(fileData.Entries.First());
-							}
-
-							newFileDataList.Add(fileData);
 						}
 					}
 				}

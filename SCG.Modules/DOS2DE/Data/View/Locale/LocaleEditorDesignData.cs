@@ -26,7 +26,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 
 			ModsGroup.DataFiles.Add(new BaseLocaleFileData("Skills") { ChangesUnsaved = true });
 			ModsGroup.DataFiles.Add(new BaseLocaleFileData("Statuses"));
-			for(var i = 1; i < 20; i++)
+			for(var i = 1; i < 4; i++)
 			{
 				ModsGroup.DataFiles.Add(new BaseLocaleFileData("Potionslalalalala" + i));
 			}

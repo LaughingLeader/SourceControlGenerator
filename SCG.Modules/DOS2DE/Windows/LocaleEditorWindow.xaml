@@ -334,18 +334,26 @@ body {
 									Height="Auto"
 									ResizeDirection="Columns" />
 								<Grid Grid.Column="0" Grid.Row="0" x:Name="headerGrid">
-									<ScrollViewer
+									<Grid.RowDefinitions>
+										<RowDefinition Height="*" />
+										<RowDefinition Height="Auto" />
+									</Grid.RowDefinitions>
+									<Button x:Name="AddFileToGroupButton" Content="Add" Grid.Row="1" 
+										Command="{Binding Path=DataContext.AddFileToGroupCommand, RelativeSource={RelativeSource AncestorType={x:Type Window}}}" 
+										CommandParameter="{Binding}"
+										Visibility="{Binding CanAddFiles, Converter={StaticResource BoolToVisibilityConverter}, FallbackValue=Visible}" />
+									<ScrollViewer Grid.Row="0"
 										ScrollViewer.CanContentScroll="True" VerticalAlignment="Top"
 										ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
-										<TabPanel x:Name="headerPanel" Background="Transparent"
-												  IsItemsHost="true" KeyboardNavigation.TabIndex="1" Panel.ZIndex="1"
-											/>
 										<ScrollViewer.Resources>
 											<Style TargetType="{x:Type ScrollBar}" BasedOn="{StaticResource SkinnyScrollbarStyle}">
 												<Setter Property="SnapsToDevicePixels" Value="True"/>
 												<Setter Property="OverridesDefaultStyle" Value="true"/>
 											</Style>
 										</ScrollViewer.Resources>
+										<UniformGrid Columns="1" x:Name="headerPanel" Background="Transparent"
+											IsItemsHost="true" KeyboardNavigation.TabIndex="1" Panel.ZIndex="1"
+										/>
 									</ScrollViewer>
 								</Grid>
 								<Border x:Name="contentPanel" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{TemplateBinding Background}" 
@@ -813,7 +821,6 @@ body {
 									<Setter Property="BorderThickness" TargetName="innerBorder" Value="1,1,1,0"/>
 									<Setter Property="BorderThickness" TargetName="mainBorder" Value="1,1,1,0"/>
 								</MultiDataTrigger>
-
 								<DataTrigger Binding="{Binding ChangesUnsaved}" Value="True">
 									<Setter TargetName="innerBorder" Property="BorderBrush" Value="#FFFF6565"/>
 								</DataTrigger>
@@ -832,26 +839,46 @@ body {
 						SelectedIndex="{Binding SelectedFileIndex}"
 						BorderThickness="1" Margin="0" Padding="0"
 						Style="{StaticResource TabControlFileData}"
-						HorizontalContentAlignment="Left"
+						HorizontalContentAlignment="Stretch"
 					>
 						<TabControl.Resources>
 							<Style TargetType="TabItem" BasedOn="{StaticResource TabItemFileDataStyle}">
 								<Setter Property="HeaderTemplate">
 									<Setter.Value>
 										<DataTemplate>
-											<TextBlock 
-												Text="{Binding DisplayName}"
-												ToolTip="{Binding SourcePath}"
-												TextAlignment="Left"
-												Margin="4,0,0,0"
-												x:Name="headerText"
-											>
-												<TextBlock.Resources>
-													<Style TargetType="ToolTip">
-														<Setter Property="Visibility" Value="{Binding SourcePath, Converter={StaticResource EmptyStringVisibilityConverter}}" />
-													</Style>
-												</TextBlock.Resources>
-											</TextBlock>
+											<Grid>
+												<Grid.ColumnDefinitions>
+													<ColumnDefinition Width="*" SharedSizeGroup="FileTabText" />
+													<ColumnDefinition Width="Auto" />
+												</Grid.ColumnDefinitions>
+												<!--<Rectangle Grid.Column="0" Fill="Red" />
+												<Rectangle Grid.Column="1" Fill="Lime" />-->
+												<c:ImageButton
+													x:Name="CloseFileTabButton"
+													ToolTip="{x:Static core:DOS2DETooltips.Button_Locale_CloseFileTab}"
+													Source="{x:Static vdata:IconPathData.Close1}"
+													Visibility="{Binding CanClose, Converter={StaticResource BoolToVisibilityConverter}, FallbackValue=Collapsed}"
+													Command="{Binding Path=CloseFileCommand, RelativeSource={RelativeSource AncestorType={x:Type Window}}}"
+													CommandParameter="{Binding}"
+													HorizontalAlignment="Right"
+													Margin="0,0,-4,0"
+													Grid.Column="1" 
+												/>
+												<TextBlock
+													Text="{Binding DisplayName}"
+													ToolTip="{Binding SourcePath}"
+													TextAlignment="Left"
+													Margin="4,0,0,0"
+													x:Name="headerText"
+													HorizontalAlignment="Left"
+												>
+													<TextBlock.Resources>
+														<Style TargetType="ToolTip">
+															<Setter Property="Visibility" Value="{Binding SourcePath, Converter={StaticResource EmptyStringVisibilityConverter}}" />
+														</Style>
+													</TextBlock.Resources>
+												</TextBlock>
+											</Grid>
 											<DataTemplate.Triggers>
 												<DataTrigger Binding="{Binding ChangesUnsaved}" Value="True">
 													<Setter TargetName="headerText" Property="Foreground" Value="#FF459727"/>

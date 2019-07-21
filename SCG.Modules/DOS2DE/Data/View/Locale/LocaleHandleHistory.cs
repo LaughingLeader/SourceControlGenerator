@@ -8,7 +8,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 {
 	public struct LocaleHandleHistory
 	{
-		public LocaleNodeKeyEntry Key { get; set; }
+		public ILocaleKeyEntry Key { get; set; }
 		public string Handle { get; set; }
 
 		public LocaleHandleHistory(ILocaleKeyEntry key, string handle)
