@@ -120,7 +120,8 @@ body {
 							<Label Content="&lt;font&gt;" FontSize="8" Margin="0" />
 						</Button.Content>
 					</Button>
-					<xctk:ColorPicker x:Name="FontColorPicker" Margin="2" Width="50" Loaded="FontColorPicker_Loaded"/>
+					<xctk:ColorPicker x:Name="FontColorPicker" Margin="2" Width="50" Loaded="FontColorPicker_Loaded" 
+						SelectedColor="{Binding Path=DataContext.SelectedColor, RelativeSource={RelativeSource AncestorType={x:Type Window}}}"/>
 				</StackPanel>
 				<StackPanel Orientation="Horizontal" Margin="2">
 					<StackPanel.Resources>

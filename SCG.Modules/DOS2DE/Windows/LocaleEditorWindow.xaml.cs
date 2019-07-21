@@ -340,11 +340,16 @@ namespace SCG.Modules.DOS2DE.Windows
 			if (sender is Xceed.Wpf.Toolkit.RichTextBox richTextBox)
 			{
 				ViewModel.ContentSelected = richTextBox.Selection?.Text != string.Empty;
+				if(richTextBox.Selection != null)
+				{
+					ViewModel.SelectedText = richTextBox.Selection.Text;
+				}
 			}
 
 			if (sender is TextBox textBox)
 			{
 				ViewModel.ContentSelected = textBox.SelectedText != string.Empty;
+				ViewModel.SelectedText = textBox.SelectedText;
 			}
 		}
 

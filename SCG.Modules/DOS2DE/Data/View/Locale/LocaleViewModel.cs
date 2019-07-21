@@ -822,6 +822,12 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 					if(lastSelected != null)
 					{
 						lastSelected.Content = lastText;
+
+						if(lastSelected == SelectedEntry)
+						{
+							this.RaisePropertyChanged("SelectedEntryContent");
+							this.RaisePropertyChanged("SelectedEntryHtmlContent");
+						}
 					}
 				}
 
@@ -837,11 +843,20 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 					text = text.Insert(start, fontStartText);
 
 					int end = start + fontStartText.Length + SelectedText.Length;
-					text = text.Insert(end, @"</font>");
+					if (end >= text.Length - 1)
+					{
+						text = text += @"</font>";
+					}
+					else
+					{
+						text = text.Insert(end, @"</font>");
+					}
 
 					SelectedEntry.Content = text;
+					this.RaisePropertyChanged("SelectedEntryContent");
+					this.RaisePropertyChanged("SelectedEntryHtmlContent");
 
-					//Log.Here().Activity($"Content box text set to: {text} | Start {start} End {end}");
+					//Log.Here().Activity($"Content box text set to: {text} | Start {start} End {end} Selected {SelectedText}");
 				}
 
 				CreateSnapshot(undo, redo);
