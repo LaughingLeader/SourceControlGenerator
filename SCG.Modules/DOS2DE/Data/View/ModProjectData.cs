@@ -267,16 +267,6 @@ namespace SCG.Modules.DOS2DE.Data.View
 			}
 		}
 
-
-		public ICommand OpenBackupFolder { get; private set; }
-		public ICommand OpenGitFolder { get; private set; }
-		public ICommand OpenModsFolder { get; private set; }
-		public ICommand OpenPublicFolder { get; private set; }
-		public ICommand OpenEditorFolder { get; private set; }
-		public ICommand OpenProjectFolder { get; private set; }
-		public ICommand EditProjectVersion { get; private set; }
-		public ICommand OpenInLocalizationEditorCommand { get; private set; }
-
 		private void openBackupFolder()
 		{
 			Log.Here().Activity("Opening backup folder!");
@@ -303,29 +293,6 @@ namespace SCG.Modules.DOS2DE.Data.View
 			this.ModuleInfo = new ModuleInfo();
 			this.ProjectInfo = new ProjectInfo();
 			this.Dependencies = new List<DependencyInfo>();
-
-			//OpenBackupFolder = new CallbackCommand();
-			//OpenModsFolder = new CallbackCommand();
-			//OpenPublicFolder = new CallbackCommand();
-			//OpenEditorFolder = new CallbackCommand();
-			//OpenProjectFolder = new CallbackCommand();
-
-			OpenBackupFolder = ReactiveCommand.Create<ModProjectData>(DOS2DECommands.OpenBackupFolder);
-			OpenGitFolder = ReactiveCommand.Create<ModProjectData>(DOS2DECommands.OpenGitFolder);
-			OpenModsFolder = ReactiveCommand.Create<ModProjectData>(DOS2DECommands.OpenModsFolder);
-			OpenPublicFolder = ReactiveCommand.Create<ModProjectData>(DOS2DECommands.OpenPublicFolder);
-			OpenEditorFolder = ReactiveCommand.Create<ModProjectData>(DOS2DECommands.OpenEditorFolder);
-			OpenProjectFolder = ReactiveCommand.Create<ModProjectData>(DOS2DECommands.OpenProjectFolder);
-
-			EditProjectVersion = ReactiveCommand.Create<ModProjectData>(DOS2DEProjectsView.EditProjectVersion);
-
-			OpenInLocalizationEditorCommand = ReactiveCommand.CreateFromTask<ModProjectData, Unit>(DOS2DEProjectsView.OpenLocalizationEditorForProject);
-
-			//RaisePropertyChanged("OpenBackupFolder");
-			//RaisePropertyChanged("OpenModsFolder");
-			//RaisePropertyChanged("OpenPublicFolder");
-			//RaisePropertyChanged("OpenEditorFolder");
-			//RaisePropertyChanged("OpenProjectFolder");
 		}
 
 		public ModProjectData()

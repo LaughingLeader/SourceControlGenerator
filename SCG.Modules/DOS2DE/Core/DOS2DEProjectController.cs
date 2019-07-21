@@ -817,7 +817,7 @@ namespace SCG.Core
 				}
 			}
 
-			Data.Notify("NewProjects");
+			Data.RaisePropertyChanged("NewProjects");
 
 			if (bSaveData)
 			{

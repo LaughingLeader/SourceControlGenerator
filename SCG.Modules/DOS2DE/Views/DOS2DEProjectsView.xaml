@@ -267,13 +267,18 @@
 													ToolTip="{x:Static core:DOS2DETooltips.Button_DataFolderParent}" 
 													Click="SetDataFolderContextMenuTarget"
 													Source="{x:Static vdata:IconPathData.Folder}"
-													>
+													Tag="{Binding Path=DataContext, RelativeSource={RelativeSource AncestorType={x:Type local:DOS2DEProjectsView}}}"
+												>
 													<c:ImageButton.ContextMenu>
 														<ContextMenu>
-															<MenuItem x:Name="Btn_EditorFolder" Header="{x:Static core:DOS2DETooltips.Button_DataFolderEditor}" Command="{Binding OpenEditorFolder}" CommandParameter="{Binding}" />
-															<MenuItem x:Name="Btn_ModsFolder" Header="{x:Static core:DOS2DETooltips.Button_DataFolderMods}" Command="{Binding OpenModsFolder}" CommandParameter="{Binding}" />
-															<MenuItem x:Name="Btn_ProjectFolder" Header="{x:Static core:DOS2DETooltips.Button_DataFolderProject}" Command="{Binding OpenProjectFolder}" CommandParameter="{Binding}" />
-															<MenuItem x:Name="Btn_PublicFolder" Header="{x:Static core:DOS2DETooltips.Button_DataFolderPublic}" Command="{Binding OpenPublicFolder}" CommandParameter="{Binding}" />
+															<MenuItem x:Name="Btn_EditorFolder" Header="{x:Static core:DOS2DETooltips.Button_DataFolderEditor}" 
+																Command="{Binding Path=PlacementTarget.Tag.OpenEditorFolder, RelativeSource={RelativeSource AncestorType=ContextMenu}}" CommandParameter="{Binding}" />
+															<MenuItem x:Name="Btn_ModsFolder" Header="{x:Static core:DOS2DETooltips.Button_DataFolderMods}" 
+																Command="{Binding Path=PlacementTarget.Tag.OpenModsFolder, RelativeSource={RelativeSource AncestorType=ContextMenu}}" CommandParameter="{Binding}" />
+															<MenuItem x:Name="Btn_ProjectFolder" Header="{x:Static core:DOS2DETooltips.Button_DataFolderProject}" 
+																Command="{Binding Path=PlacementTarget.Tag.OpenProjectFolder, RelativeSource={RelativeSource AncestorType=ContextMenu}}" CommandParameter="{Binding}" />
+															<MenuItem x:Name="Btn_PublicFolder" Header="{x:Static core:DOS2DETooltips.Button_DataFolderPublic}" 
+																Command="{Binding Path=PlacementTarget.Tag.OpenPublicFolder, RelativeSource={RelativeSource AncestorType=ContextMenu}}" CommandParameter="{Binding}" />
 														</ContextMenu>
 													</c:ImageButton.ContextMenu>
 													<c:ImageButton.Style>
@@ -296,11 +301,11 @@
 												</c:ImageButton>
 												<c:ImageButton x:Name="Btn_Backup" 
 													ToolTip="{x:Static core:DOS2DETooltips.Button_BackupFolder}" 
-													Command="{Binding OpenBackupFolder}" CommandParameter="{Binding}"
+													Command="{Binding Path=DataContext.OpenBackupFolderCommand, RelativeSource={RelativeSource AncestorType={x:Type local:DOS2DEProjectsView}}}" CommandParameter="{Binding}"
 													Source="{x:Static vdata:IconPathData.Archive}"
 												/>
 												<c:ImageButton x:Name="Btn_GenGit" IsEnabled="{Binding GitGenerated}" 
-													Command="{Binding OpenGitFolder}" CommandParameter="{Binding}"
+													Command="{Binding Path=DataContext.OpenGitFolderCommand, RelativeSource={RelativeSource AncestorType={x:Type local:DOS2DEProjectsView}}}" CommandParameter="{Binding}"
 													Source="{x:Static vdata:IconPathData.GitLogo}"
 													Source_Disabled="{x:Static vdata:IconPathData.GitLogo_Disabled}"
 													ToolTip_Enabled="{x:Static core:DOS2DETooltips.Button_GitFolder}"
@@ -310,7 +315,7 @@
 												/>
 												<c:ImageButton x:Name="Btn_OpenLocaleEditor" 
 													ToolTip="{x:Static core:DOS2DETooltips.Button_OpenLocaleEditor}" 
-													Command="{Binding OpenInLocalizationEditorCommand}"
+													Command="{Binding Path=DataContext.OpenInLocalizationEditorCommand, RelativeSource={RelativeSource AncestorType={x:Type local:DOS2DEProjectsView}}}"
 													CommandParameter="{Binding}" 
 													Source="{x:Static vdata:IconPathData.OpenLocalizationEditor}"
 												/>
@@ -461,7 +466,8 @@
 							<TextBlock Text="Backup Mode:" Margin="0,0,4,0" Foreground="Black" VerticalAlignment="Center" />
 							<ComboBox x:Name="BackupModeCombobox" ItemsSource="{Binding Source={scg:EnumBindingSource {x:Type scg:BackupMode}}}" SelectedValue="{Binding Settings.BackupMode, Mode=TwoWay}" Width="Auto" MaxHeight="{Binding ElementName=BackupButton, Path=ActualHeight}" >
 								<ComboBox.ToolTip>
-									<TextBlock Text="{Binding Settings.BackupMode, Converter={StaticResource EnumDescriptionConverter}, FallbackValue={x:Null}}" TextWrapping="Wrap" MaxWidth="200" Visibility="{Binding Path=Text, RelativeSource={RelativeSource Self}, Converter={StaticResource EmptyStringVisibilityConverter}}" />
+									<TextBlock Text="{Binding Settings.BackupMode, Converter={StaticResource EnumDescriptionConverter}, FallbackValue={x:Null}}" TextWrapping="Wrap" MaxWidth="200" 
+									Visibility="{Binding Path=Text, RelativeSource={RelativeSource Self}, Converter={StaticResource EmptyStringVisibilityConverter}}" />
 								</ComboBox.ToolTip>
 							</ComboBox>
 							<Button x:Name="BackupButton" Content="Backup" Click="BackupButton_Click" IsEnabled="{Binding ProjectSelected}" ToolTip="{x:Static core:DOS2DETooltips.Button_BackupSelected}" />

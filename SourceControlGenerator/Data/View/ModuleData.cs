@@ -13,10 +13,11 @@ using SCG.Interfaces;
 using Newtonsoft.Json;
 using SCG.Windows;
 using SCG.Core;
+using ReactiveUI;
 
 namespace SCG.Data.View
 {
-	public class ModuleData<T> : PropertyChangedBase, IModuleData where T : IModuleSettingsData
+	public class ModuleData<T> : ReactiveObject, IModuleData where T : IModuleSettingsData
 	{
 		public string AssemblyName { get; set; }
 
@@ -31,8 +32,8 @@ namespace SCG.Data.View
 			get { return settings; }
 			set
 			{
-				Update(ref settings, value);
-				Notify("ModuleSettings");
+				this.RaiseAndSetIfChanged(ref settings, value);
+				this.RaisePropertyChanged("ModuleSettings");
 			}
 		}
 
@@ -53,7 +54,7 @@ namespace SCG.Data.View
 			get { return gitGenerationSettings; }
 			set
 			{
-				Update(ref gitGenerationSettings, value);
+				this.RaiseAndSetIfChanged(ref gitGenerationSettings, value);
 			}
 		}
 
@@ -70,7 +71,7 @@ namespace SCG.Data.View
 			get { return userKeywordData; }
 			set
 			{
-				Update(ref userKeywordData, value);
+				this.RaiseAndSetIfChanged(ref userKeywordData, value);
 			}
 		}
 
@@ -81,7 +82,7 @@ namespace SCG.Data.View
 			get { return newTemplateData; }
 			set
 			{
-				Update(ref newTemplateData, value);
+				this.RaiseAndSetIfChanged(ref newTemplateData, value);
 			}
 		}
 
@@ -92,7 +93,7 @@ namespace SCG.Data.View
 			get { return projectSelected; }
 			set
 			{
-				Update(ref projectSelected, value);
+				this.RaiseAndSetIfChanged(ref projectSelected, value);
 				if (projectSelected)
 				{
 					OnProjectsSelected();
@@ -115,7 +116,7 @@ namespace SCG.Data.View
 			get { return canGenerateGit; }
 			set
 			{
-				Update(ref canGenerateGit, value);
+				this.RaiseAndSetIfChanged(ref canGenerateGit, value);
 			}
 		}
 
@@ -127,7 +128,7 @@ namespace SCG.Data.View
 			get { return loadKeywords; }
 			set
 			{
-				Update(ref loadKeywords, value);
+				this.RaiseAndSetIfChanged(ref loadKeywords, value);
 			}
 		}
 
@@ -160,7 +161,7 @@ namespace SCG.Data.View
 			get { return addTemplateControlVisible; }
 			set
 			{
-				Update(ref addTemplateControlVisible, value);
+				this.RaiseAndSetIfChanged(ref addTemplateControlVisible, value);
 			}
 		}
 
@@ -171,7 +172,7 @@ namespace SCG.Data.View
 			get { return saveSettingsCommand; }
 			set
 			{
-				Update(ref saveSettingsCommand, value);
+				this.RaiseAndSetIfChanged(ref saveSettingsCommand, value);
 			}
 		}
 
@@ -182,7 +183,7 @@ namespace SCG.Data.View
 			get { return defaultSettingsCommand; }
 			set
 			{
-				Update(ref defaultSettingsCommand, value);
+				this.RaiseAndSetIfChanged(ref defaultSettingsCommand, value);
 			}
 		}
 
@@ -202,7 +203,7 @@ namespace SCG.Data.View
 		public void CreateNewTemplateData()
 		{
 			newTemplateData = new TemplateEditorData();
-			Notify("NewTemplateData");
+			this.RaisePropertyChanged("NewTemplateData");
 		}
 
 		public virtual void InitializeSettings()

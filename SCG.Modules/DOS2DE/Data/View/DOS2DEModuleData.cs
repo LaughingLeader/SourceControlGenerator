@@ -2,17 +2,20 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Reactive;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Data;
 using System.Windows.Input;
+using ReactiveUI;
 using SCG.Collections;
 using SCG.Commands;
 using SCG.Data;
 using SCG.Data.View;
 using SCG.Modules.DOS2DE.Core;
 using SCG.Modules.DOS2DE.Data.App;
+using SCG.Modules.DOS2DE.Views;
 
 namespace SCG.Modules.DOS2DE.Data.View
 {
@@ -25,7 +28,7 @@ namespace SCG.Modules.DOS2DE.Data.View
 			get { return manageButtonsText; }
 			set
 			{
-				Update(ref manageButtonsText, value);
+				this.RaiseAndSetIfChanged(ref manageButtonsText, value);
 			}
 		}
 
@@ -36,7 +39,7 @@ namespace SCG.Modules.DOS2DE.Data.View
 			get { return canAddProject; }
 			set
 			{
-				Update(ref canAddProject, value);
+				this.RaiseAndSetIfChanged(ref canAddProject, value);
 			}
 		}
 
@@ -63,7 +66,7 @@ namespace SCG.Modules.DOS2DE.Data.View
 			get { return canCreatePackages; }
 			set
 			{
-				Update(ref canCreatePackages, value);
+				this.RaiseAndSetIfChanged(ref canCreatePackages, value);
 			}
 		}
 
@@ -74,7 +77,7 @@ namespace SCG.Modules.DOS2DE.Data.View
 			get { return availableProjectsToggleText; }
 			set
 			{
-				Update(ref availableProjectsToggleText, value);
+				this.RaiseAndSetIfChanged(ref availableProjectsToggleText, value);
 			}
 		}
 
@@ -85,7 +88,7 @@ namespace SCG.Modules.DOS2DE.Data.View
 			get { return availableProjectsVisible; }
 			set
 			{
-				Update(ref availableProjectsVisible, value);
+				this.RaiseAndSetIfChanged(ref availableProjectsVisible, value);
 			}
 		}
 
@@ -96,8 +99,8 @@ namespace SCG.Modules.DOS2DE.Data.View
 			get { return newProjectsAvailable; }
 			set
 			{
-				Update(ref newProjectsAvailable, value);
-				Notify("AvailableProjectsTooltip");
+				this.RaiseAndSetIfChanged(ref newProjectsAvailable, value);
+				this.RaisePropertyChanged("AvailableProjectsTooltip");
 
 				NoProjectsFoundVisibility = value ? Visibility.Collapsed : Visibility.Visible;
 			}
@@ -110,7 +113,7 @@ namespace SCG.Modules.DOS2DE.Data.View
 			get { return noProjectsFoundVisibility; }
 			set
 			{
-				Update(ref noProjectsFoundVisibility, value);
+				this.RaiseAndSetIfChanged(ref noProjectsFoundVisibility, value);
 			}
 		}
 
@@ -129,18 +132,22 @@ namespace SCG.Modules.DOS2DE.Data.View
 			get { return canClickRefresh; }
 			set
 			{
-				Update(ref canClickRefresh, value);
+				this.RaiseAndSetIfChanged(ref canClickRefresh, value);
 			}
 		}
+
+		private readonly ObservableAsPropertyHelper<bool> openingLocaleEditor;
+
+		public bool OpeningLocaleEditor { get { return openingLocaleEditor.Value; } }
 
 		private ManagedProjectsData managedProjectsData;
 
 		public ManagedProjectsData ManagedProjectsData
 		{
-			get { return managedProjectsData; }
+			get => managedProjectsData;
 			set
 			{
-				Update(ref managedProjectsData, value);
+				this.RaiseAndSetIfChanged(ref managedProjectsData, value);
 			}
 		}
 
@@ -182,6 +189,15 @@ namespace SCG.Modules.DOS2DE.Data.View
 		private static string DOS2DE_ModuleDisplayName => "Divinity: Original Sin 2 - Definitive Edition";
 		private static string DOS2DE_ModuleFolderName => "Divinity Original Sin 2 - Definitive Edition";
 
+		public ICommand OpenBackupFolderCommand { get; private set; }
+		public ICommand OpenGitFolderCommand { get; private set; }
+		public ICommand OpenModsFolderCommand { get; private set; }
+		public ICommand OpenPublicFolderCommand { get; private set; }
+		public ICommand OpenEditorFolderCommand { get; private set; }
+		public ICommand OpenProjectFolderCommand { get; private set; }
+		public ICommand EditProjectVersionCommand { get; private set; }
+		public ReactiveCommand<ModProjectData, Unit> OpenInLocalizationEditorCommand { get; private set; }
+
 		public DOS2DEModuleData() : base(DOS2DE_ModuleDisplayName, DOS2DE_ModuleFolderName)
 		{
 			ManageButtonsText = DOS2DETooltips.Button_ManageProjects_None;
@@ -194,6 +210,20 @@ namespace SCG.Modules.DOS2DE.Data.View
 			BindingOperations.EnableCollectionSynchronization(ModProjects, ModProjectsLock);
 			BindingOperations.EnableCollectionSynchronization(ManagedProjects, ManagedProjectsLock);
 			BindingOperations.EnableCollectionSynchronization(NewProjects, NewProjectsLock);
+
+			OpenBackupFolderCommand = ReactiveCommand.Create<ModProjectData>(DOS2DECommands.OpenBackupFolder);
+			OpenGitFolderCommand = ReactiveCommand.Create<ModProjectData>(DOS2DECommands.OpenGitFolder);
+			OpenModsFolderCommand = ReactiveCommand.Create<ModProjectData>(DOS2DECommands.OpenModsFolder);
+			OpenPublicFolderCommand = ReactiveCommand.Create<ModProjectData>(DOS2DECommands.OpenPublicFolder);
+			OpenEditorFolderCommand = ReactiveCommand.Create<ModProjectData>(DOS2DECommands.OpenEditorFolder);
+			OpenProjectFolderCommand = ReactiveCommand.Create<ModProjectData>(DOS2DECommands.OpenProjectFolder);
+
+			EditProjectVersionCommand = ReactiveCommand.Create<ModProjectData>(DOS2DEProjectsView.EditProjectVersion);
+
+			OpenInLocalizationEditorCommand = ReactiveCommand.CreateFromTask<ModProjectData, Unit>(DOS2DEProjectsView.OpenLocalizationEditorForProject);
+
+			OpenInLocalizationEditorCommand.IsExecuting.ToProperty(this, x => x.OpeningLocaleEditor, out openingLocaleEditor);
+			OpenInLocalizationEditorCommand.ThrownExceptions.Subscribe(ex => Log.Here().Error("Error opening Localization Editor: ", ex));
 		}
 	}
 }

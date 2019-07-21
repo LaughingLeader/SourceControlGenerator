@@ -88,7 +88,6 @@
 
 			<SolidColorBrush x:Key="TabItem.Selected.Background" Color="#FFFFFF"/>
 			<SolidColorBrush x:Key="TabItem.Selected.Border" Color="#ACACAC"/>
-
 			<Grid x:Key="KeyActionsGrid" Background="#FFD0FFD0" >
 				<Grid.ColumnDefinitions>
 					<ColumnDefinition Width="*" />
@@ -164,6 +163,14 @@
 					/>
 				</StackPanel>
 			</Grid>
+			<FlowDocumentScrollViewer x:Key="EntryContentPreview" Document="{Binding Path=DataContext.SelectedEntryContent, UpdateSourceTrigger=PropertyChanged,
+						RelativeSource={RelativeSource AncestorType={x:Type Window}}, Converter={StaticResource HtmlToFlowDocumentConverter}}" 
+						BorderThickness="0" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto"
+			>
+				<FlowDocumentScrollViewer.Resources>
+					<ResourceDictionary Source="pack://application:,,,/Neo.Markdig.Xaml;component/Themes/generic.xaml" />
+				</FlowDocumentScrollViewer.Resources>
+			</FlowDocumentScrollViewer>
 			<xctk:RichTextBox 
 					x:Name="EntryContentRichTextBox"
 					x:Key="EntryContentRichTextBox"
@@ -181,6 +188,7 @@
 					FontSize="{Binding Path=DataContext.ContentFontSize, RelativeSource={RelativeSource AncestorType={x:Type Window}}, FallbackValue=12, TargetNullValue=12}"
 					AcceptsReturn="True" AcceptsTab="True"
 					IsUndoEnabled="False"
+					IsReadOnly="{Binding Path=DataContext.CanEditContentPreview, RelativeSource={RelativeSource AncestorType={x:Type Window}}}"
 				>
 				<i:Interaction.Behaviors>
 					<cb:RichTextBoxSelectionBehavior SelectedText="{Binding Path=DataContext.SelectedText, Mode=OneWayToSource, RelativeSource={RelativeSource AncestorType={x:Type Window}}}" />
@@ -532,7 +540,37 @@
 						<GridSplitter Grid.Row="1" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Height="3" Background="{Binding ElementName=LocaleEntryDataGrid, Path=BorderBrush}" />
 						<Border Grid.Row="2" 
 							BorderThickness="1,0,1,1" BorderBrush="{Binding ElementName=LocaleEntryDataGrid, Path=BorderBrush}">
-							<ContentPresenter Grid.Row="1" Content="{StaticResource EntryContentRichTextBox}" />
+							<Grid>
+								<Grid.Resources>
+									<Style TargetType="{x:Type ContentPresenter}">
+										<Style.Triggers>
+											<DataTrigger Binding="{Binding Path=IsChecked, ElementName=PreviewToggleButton}" Value="True" >
+												<Setter Property="Content" Value="{StaticResource EntryContentPreview}" />
+											</DataTrigger>
+											<DataTrigger Binding="{Binding Path=IsChecked, ElementName=PreviewToggleButton}" Value="False" >
+												<Setter Property="Content" Value="{StaticResource EntryContentRichTextBox}" />
+											</DataTrigger>
+										</Style.Triggers>
+									</Style>
+								</Grid.Resources>
+								<Grid.ColumnDefinitions>
+									<ColumnDefinition Width="Auto" />
+									<ColumnDefinition Width="*" />
+								</Grid.ColumnDefinitions>
+								<ContentPresenter Grid.Column="1" Content="" />
+								<ToggleButton
+									x:Name="PreviewToggleButton"
+									IsChecked="{Binding Path=DataContext.ContentPreviewModeEnabled, RelativeSource={RelativeSource AncestorType={x:Type Window}}}"
+									VerticalAlignment="Stretch"
+									Content="Preview"
+									Margin="0" Padding="4,0,4,2"
+									BorderThickness="0,0,0,1"
+								>
+									<ToggleButton.LayoutTransform>
+										<RotateTransform Angle="-90" />
+									</ToggleButton.LayoutTransform>
+								</ToggleButton>
+							</Grid>
 						</Border>
 					</Grid>
 				</Grid>

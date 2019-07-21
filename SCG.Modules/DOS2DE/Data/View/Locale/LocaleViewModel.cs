@@ -261,6 +261,20 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			}
 		}
 
+		private bool contentPreviewModeEnabled = false;
+
+		public bool ContentPreviewModeEnabled
+		{
+			get => contentPreviewModeEnabled;
+			set
+			{
+				this.RaiseAndSetIfChanged(ref contentPreviewModeEnabled, value);
+				this.RaisePropertyChanged("CanEditContentPreview");
+			}
+		}
+
+		public bool CanEditContentPreview => !ContentPreviewModeEnabled;
+
 		private bool contentLightMode = true;
 
 		public bool ContentLightMode
