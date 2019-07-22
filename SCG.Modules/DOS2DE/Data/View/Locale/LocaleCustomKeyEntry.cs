@@ -72,11 +72,9 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			}
 		}
 
-		private string entryHandle;
-
 		public string EntryHandle
 		{
-			get => entryHandle;
+			get => handle;
 			set
 			{
 				if(this.UpdateWithHistory(ref handle, value))

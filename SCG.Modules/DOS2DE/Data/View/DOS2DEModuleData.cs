@@ -223,7 +223,7 @@ namespace SCG.Modules.DOS2DE.Data.View
 			OpenInLocalizationEditorCommand = ReactiveCommand.CreateFromTask<ModProjectData, Unit>(DOS2DEProjectsView.OpenLocalizationEditorForProject);
 
 			OpenInLocalizationEditorCommand.IsExecuting.ToProperty(this, x => x.OpeningLocaleEditor, out openingLocaleEditor);
-			OpenInLocalizationEditorCommand.ThrownExceptions.Subscribe(ex => Log.Here().Error("Error opening Localization Editor: ", ex));
+			OpenInLocalizationEditorCommand.ThrownExceptions.Subscribe(ex => Log.Here().Error("Error opening Localization Editor: ", ex.ToString()));
 		}
 	}
 }

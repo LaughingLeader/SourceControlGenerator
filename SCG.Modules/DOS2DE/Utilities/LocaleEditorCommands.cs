@@ -32,9 +32,11 @@ namespace SCG.Modules.DOS2DE.Utilities
 		#region Loading Localization Files
 		public static async Task<LocaleViewModel> LoadLocalizationDataAsync(DOS2DEModuleData vm, ModProjectData modProject, CancellationToken? token = null)
 		{
+			await new SynchronizationContextRemover();
+
 			LocaleViewModel localizationData = new LocaleViewModel();
 			localizationData.LinkedProjects.Add(modProject);
-			var success = await LoadProjectLocalizationDataAsync(localizationData, vm, modProject, token).ConfigureAwait(false);
+			var success = await LoadProjectLocalizationDataAsync(localizationData, vm, modProject, token);
 			foreach (var g in localizationData.Groups)
 			{
 				foreach (var f in g.DataFiles)
@@ -50,11 +52,13 @@ namespace SCG.Modules.DOS2DE.Utilities
 
 		public static async Task<LocaleViewModel> LoadLocalizationDataAsync(DOS2DEModuleData vm, IEnumerable<ModProjectData> modProjects, CancellationToken? token = null)
 		{
+			await new SynchronizationContextRemover();
+
 			LocaleViewModel localizationData = new LocaleViewModel();
 			localizationData.LinkedProjects.AddRange(modProjects);
 			foreach (var project in modProjects)
 			{
-				var success = await LoadProjectLocalizationDataAsync(localizationData, vm, project, token).ConfigureAwait(false);
+				var success = await LoadProjectLocalizationDataAsync(localizationData, vm, project, token);
 			}
 			foreach (var g in localizationData.Groups)
 			{
@@ -110,7 +114,7 @@ namespace SCG.Modules.DOS2DE.Utilities
 					if (Directory.Exists(modsLocalePath))
 					{
 						Log.Here().Activity($"Loading localization data from '{modsLocalePath}'.");
-						var modsLocaleData = await LoadFilesAsync(modsLocalePath, token, ".lsb").ConfigureAwait(false);
+						var modsLocaleData = await LoadFilesAsync(modsLocalePath, token, ".lsb");
 						localizationData.ModsGroup.SourceDirectories.Add(modsLocalePath);
 						localizationData.ModsGroup.DataFiles.AddRange(modsLocaleData);
 						localizationData.ModsGroup.UpdateCombinedData();
@@ -124,7 +128,7 @@ namespace SCG.Modules.DOS2DE.Utilities
 					if (Directory.Exists(dialogLocalePath))
 					{
 						Log.Here().Activity($"Loading dialog localization data from '{dialogLocalePath}'.");
-						var dialogLocaleData = await LoadFilesAsync(dialogLocalePath, token, ".lsj").ConfigureAwait(false);
+						var dialogLocaleData = await LoadFilesAsync(dialogLocalePath, token, ".lsj");
 						//Lock dialog files, as adding a new entry is more complicated than simply adding a key.
 						dialogLocaleData.ForEach(f => f.Locked = true);
 						localizationData.DialogGroup.SourceDirectories.Add(dialogLocalePath);
@@ -150,7 +154,7 @@ namespace SCG.Modules.DOS2DE.Utilities
 					if (Directory.Exists(publicLocalePath))
 					{
 						Log.Here().Activity($"Loading localization data from '{publicLocalePath}'.");
-						var publicLocaleData = await LoadFilesAsync(publicLocalePath, token, ".lsb").ConfigureAwait(false);
+						var publicLocaleData = await LoadFilesAsync(publicLocalePath, token, ".lsb");
 						localizationData.PublicGroup.SourceDirectories.Add(publicLocalePath);
 						localizationData.PublicGroup.DataFiles.AddRange(publicLocaleData);
 						localizationData.PublicGroup.UpdateCombinedData();
@@ -226,7 +230,7 @@ namespace SCG.Modules.DOS2DE.Utilities
 			var targetFiles = new ConcurrentBag<string>(lsbFiles);
 			foreach (var filePath in targetFiles)
 			{
-				var data = await LoadResourceAsync(filePath).ConfigureAwait(false);
+				var data = await LoadResourceAsync(filePath);
 				stringKeyData.Add(data);
 			}
 			stringKeyData = stringKeyData.OrderBy(f => f.Name).ToList();
@@ -263,7 +267,7 @@ namespace SCG.Modules.DOS2DE.Utilities
 			var targetFiles = new ConcurrentBag<string>(files);
 			foreach (var filePath in targetFiles)
 			{
-				var data = await LoadCustomFileAsync(filePath).ConfigureAwait(false);
+				var data = await LoadCustomFileAsync(filePath);
 				if (data != null)
 				{
 					customFiles.Add(data);
@@ -282,7 +286,7 @@ namespace SCG.Modules.DOS2DE.Utilities
 				var fileText = await reader.ReadToEndAsync();
 				try
 				{
-					LocaleCustomFileData fileData = await Task.Run(() => JsonConvert.DeserializeObject<LocaleCustomFileData>(fileText)).ConfigureAwait(false);
+					LocaleCustomFileData fileData = await Task.Run(() => JsonConvert.DeserializeObject<LocaleCustomFileData>(fileText));
 					fileData.CanClose = true;
 					return fileData;
 				}
@@ -315,7 +319,7 @@ namespace SCG.Modules.DOS2DE.Utilities
 				//}
 
 				return data;
-			}).ConfigureAwait(false);
+			});
 		}
 
 		public static bool LoadFromResource(LocaleNodeFileData stringKeyFileData, Resource resource, ResourceFormat resourceFormat, bool sort = true)
@@ -490,7 +494,7 @@ namespace SCG.Modules.DOS2DE.Utilities
 
 				if (sourceFiles.Count > 0)
 				{
-					var result = await BackupGenerator.CreateArchiveFromFiles(sourceFiles, archivePath, token).ConfigureAwait(false);
+					var result = await BackupGenerator.CreateArchiveFromFiles(sourceFiles, archivePath, token);
 					Log.Here().Activity($"Localization backup result to '{archivePath}': {result.ToString()}");
 					return result != BackupResult.Error;
 				}
@@ -512,14 +516,23 @@ namespace SCG.Modules.DOS2DE.Utilities
 			if (data.SelectedGroup == null) return -1;
 
 			int success = 0;
-			await Task.Run(() =>
+			if (data.SelectedGroup != data.CustomGroup)
 			{
-				foreach (var f in data.SelectedGroup.DataFiles.OfType<LocaleNodeFileData>())
+				foreach (LocaleNodeFileData f in data.SelectedGroup.DataFiles.Cast<LocaleNodeFileData>())
 				{
-					success += SaveDataFile(f, token);
+					success += await SaveDataFile(f, token);
 					f.ChangesUnsaved = false;
 				}
-			}).ConfigureAwait(false);
+			}
+			else
+			{
+				foreach (var f in data.CustomGroup.DataFiles.Cast<LocaleCustomFileData>())
+				{
+					string targetDirectory = DOS2DEDefaultPaths.CustomLocaleDirectory(data.ModuleData, f.Project);
+					success += await SaveDataFile(f, targetDirectory, token);
+					f.ChangesUnsaved = false;
+				}
+			}
 			Log.Here().Activity($"Files saved: '{success}'.");
 			return success;
 		}
@@ -527,18 +540,15 @@ namespace SCG.Modules.DOS2DE.Utilities
 		public static async Task<int> SaveDataFiles(List<LocaleNodeFileData> dataFiles, CancellationToken? token = null)
 		{
 			int success = 0;
-			await Task.Run(() =>
+			foreach (var f in dataFiles)
 			{
-				foreach (var f in dataFiles)
-				{
-					success += SaveDataFile(f, token);
-				}
-			}).ConfigureAwait(false);
+				success += await SaveDataFile(f, token);
+			}
 			Log.Here().Activity($"Files saved: '{success}'.");
 			return success;
 		}
 
-		public static int SaveDataFile(LocaleNodeFileData dataFile, CancellationToken? token = null)
+		public static async Task<int> SaveDataFile(LocaleNodeFileData dataFile, CancellationToken? token = null)
 		{
 			try
 			{
@@ -550,7 +560,28 @@ namespace SCG.Modules.DOS2DE.Utilities
 						saveFormat = ResourceFormat.LSB;
 					}
 					Log.Here().Activity($"Saving '{dataFile.Name}' to '{dataFile.SourcePath}'.");
-					LSLib.LS.ResourceUtils.SaveResource(dataFile.Source, dataFile.SourcePath, saveFormat);
+					await Task.Run(() => LSLib.LS.ResourceUtils.SaveResource(dataFile.Source, dataFile.SourcePath, saveFormat));
+					Log.Here().Important($"Saved '{dataFile.SourcePath}'.");
+					return 1;
+				}
+			}
+			catch (Exception ex)
+			{
+				Log.Here().Error($"Error saving localizaton resource: {ex.ToString()}");
+			}
+			return 0;
+		}
+
+		public static async Task<int> SaveDataFile(LocaleCustomFileData dataFile, string targetDirectory, CancellationToken? token = null)
+		{
+			try
+			{
+				Log.Here().Activity($"Saving '{dataFile.Name}' to '{dataFile.SourcePath}'.");
+
+				string outputFilename = Path.Combine(targetDirectory, dataFile.Name, ".json");
+				string json = JsonConvert.SerializeObject(dataFile, Newtonsoft.Json.Formatting.Indented);
+				if(await FileCommands.WriteToFileAsync(outputFilename, json))
+				{
 					Log.Here().Important($"Saved '{dataFile.SourcePath}'.");
 					return 1;
 				}

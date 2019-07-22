@@ -336,14 +336,14 @@ body {
 									ResizeDirection="Columns" />
 								<Grid Grid.Column="0" Grid.Row="0" x:Name="headerGrid">
 									<Grid.RowDefinitions>
-										<RowDefinition Height="*" />
 										<RowDefinition Height="Auto" />
+										<RowDefinition Height="*" />
 									</Grid.RowDefinitions>
-									<Button x:Name="AddFileToGroupButton" Content="Add" Grid.Row="1" 
+									<Button x:Name="AddFileToGroupButton" Content="Add Tab" Grid.Row="0" Background="Beige" BorderBrush="Bisque" BorderThickness="1,1,0,1"
 										Command="{Binding Path=DataContext.AddFileToGroupCommand, RelativeSource={RelativeSource AncestorType={x:Type Window}}}" 
 										CommandParameter="{Binding}"
 										Visibility="{Binding CanAddFiles, Converter={StaticResource BoolToVisibilityConverter}, FallbackValue=Visible}" />
-									<ScrollViewer Grid.Row="0"
+									<ScrollViewer Grid.Row="1"
 										ScrollViewer.CanContentScroll="True" VerticalAlignment="Top"
 										ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
 										<ScrollViewer.Resources>

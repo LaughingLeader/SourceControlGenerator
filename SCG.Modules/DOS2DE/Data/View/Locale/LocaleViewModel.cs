@@ -613,13 +613,13 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			OutputDate = DateTime.Now.ToShortTimeString();
 		}
 
-		public void SaveCurrent()
+		public async Task SaveCurrent()
 		{
 			if(SelectedGroup != null)
 			{
 				if (SelectedGroup.SelectedFile != null && SelectedGroup.SelectedFile is LocaleNodeFileData keyFileData)
 				{
-					var result = LocaleEditorCommands.SaveDataFile(keyFileData);
+					int result = await LocaleEditorCommands.SaveDataFile(keyFileData);
 					if(result > 0)
 					{
 						OutputText = $"Saved '{keyFileData.SourcePath}'";
@@ -1106,7 +1106,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			CancelRenamingFileTabCommand = ReactiveCommand.CreateFromTask<ILocaleFileData>(cancelRenamingFileTab);
 
 			SaveAllCommand = ReactiveCommand.Create(SaveAll, GlobalCommandEnabled);
-			SaveCurrentCommand = ReactiveCommand.Create(SaveCurrent, GlobalCommandEnabled);
+			SaveCurrentCommand = ReactiveCommand.CreateFromTask(SaveCurrent, GlobalCommandEnabled);
 			GenerateHandlesCommand = ReactiveCommand.Create(GenerateHandles, GlobalCommandEnabled);
 			AddNewKeyCommand = ReactiveCommand.Create(AddNewKey, GlobalCommandEnabled);
 			DeleteKeysCommand = new TaskCommand(DeleteSelectedKeys, LocaleEditorWindow.instance, "Delete Keys", 
