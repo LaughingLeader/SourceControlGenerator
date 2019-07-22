@@ -50,6 +50,8 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 
 		public DOS2DEModuleData ModuleData { get; set; }
 
+		public List<ModProjectData> LinkedProjects { get; set; } = new List<ModProjectData>();
+
 		private LocaleMenuData menuData;
 
 		public LocaleMenuData MenuData
@@ -127,6 +129,14 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 		{
 			get => newFileTabName;
 			set { this.RaiseAndSetIfChanged(ref newFileTabName, value); }
+		}
+
+		private int newFileTargetProjectIndex = 0;
+
+		public int NewFileTargetProjectIndex
+		{
+			get => newFileTargetProjectIndex;
+			set { this.RaiseAndSetIfChanged(ref newFileTargetProjectIndex, value); }
 		}
 
 		private LocaleTabGroup newFileTabTargetGroup;
@@ -763,8 +773,8 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 		public ICommand ConfirmFileAddToGroupCommand { get; private set; }
 		public ICommand CancelFileAddToGroupCommand { get; private set; }
 		public ICommand CloseFileCommand { get; private set; }
-		public ICommand ImportFileCommand { get; private set; }
-		public ICommand ImportKeysCommand { get; private set; }
+		public OpenFileBrowserCommand ImportFileCommand { get; private set; }
+		public OpenFileBrowserCommand ImportKeysCommand { get; private set; }
 		public ICommand ExportXMLCommand { get; private set; }
 
 		public ICommand SaveAllCommand { get; private set; }
@@ -772,7 +782,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 		public ICommand GenerateHandlesCommand { get; private set; }
 
 		public ICommand AddNewKeyCommand { get; private set; }
-		public ICommand DeleteKeysCommand { get; private set; }
+		public TaskCommand DeleteKeysCommand { get; private set; }
 
 		public ICommand OpenPreferencesCommand { get; private set; }
 
@@ -789,6 +799,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 		public ICommand CancelRenamingFileTabCommand { get; private set; }
 
 		public IObservable<bool> CanExecutePopoutContentCommand { get; private set; }
+		public IObservable<bool> GlobalCommandEnabled { get; private set; }
 
 		public void AddNewKey()
 		{
@@ -800,6 +811,19 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 					localeEntry.SetHistoryFromObject(this);
 					AddWithHistory(fileData.Entries, localeEntry);
 					SelectedGroup.UpdateCombinedData();
+				}
+				else if(SelectedGroup.SelectedFile is LocaleCustomFileData customFileData)
+				{
+					LocaleCustomKeyEntry localeEntry = new LocaleCustomKeyEntry
+					{
+						Handle = Guid.NewGuid().ToString().Replace('-', 'g').Insert(0, "h"),
+						Key = "NewKey" + customFileData.Entries.Count + 1,
+						Content = ""
+					};
+					localeEntry.SetHistoryFromObject(this);
+					AddWithHistory(customFileData.Entries, localeEntry);
+					SelectedGroup.UpdateCombinedData();
+					customFileData.Entries.Add(localeEntry);
 				}
 			}
 			else
@@ -870,7 +894,8 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 		{
 			if (IsAddingNewFileTab)
 			{
-				LocaleCustomFileData data = new LocaleCustomFileData(NewFileTabName);
+				ModProjectData targetProject = LinkedProjects[NewFileTargetProjectIndex];
+				LocaleCustomFileData data = new LocaleCustomFileData(NewFileTabName) { Project = targetProject };
 				newFileTabTargetGroup.DataFiles.Add(data);
 				newFileTabTargetGroup.UpdateCombinedData();
 				IsAddingNewFileTab = false;
@@ -1017,7 +1042,9 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 				g.SelectedFileChanged = SelectedFileChanged;
 			}
 
-			ExportXMLCommand = ReactiveCommand.Create(OpenExportWindow);
+			GlobalCommandEnabled = this.WhenAny(vm => vm.IsAddingNewFileTab, e => e.Value == false);
+
+			ExportXMLCommand = ReactiveCommand.Create(OpenExportWindow, GlobalCommandEnabled);
 
 			ImportFileCommand = new OpenFileBrowserCommand(ImportFileAsFileData)
 			{
@@ -1031,6 +1058,8 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 				}
 			};
 
+			GlobalCommandEnabled.BindTo(ImportFileCommand, c => c.Enabled);
+
 			ImportKeysCommand = new OpenFileBrowserCommand(ImportFileAsKeys)
 			{
 				DefaultParams = new OpenFileBrowserParams()
@@ -1042,6 +1071,8 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 					StartDirectory = CurrentEntryImportPath
 				}
 			};
+
+			GlobalCommandEnabled.BindTo(ImportKeysCommand, c => c.Enabled);
 
 			AddFileToGroupCommand = ReactiveCommand.Create<CustomLocaleTabGroup>(AddCustomFileToGroup);
 
@@ -1057,10 +1088,10 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 				}
 			});
 
-			CloseFileCommand = ReactiveCommand.Create<ILocaleFileData>(CloseFileInGroup);
+			CloseFileCommand = ReactiveCommand.Create<ILocaleFileData>(CloseFileInGroup, GlobalCommandEnabled);
 			ToggleRenameFileTabCommand = ReactiveCommand.Create<ILocaleFileData>((ILocaleFileData fileData) => {
 				fileData.IsRenaming = !fileData.IsRenaming;
-			});
+			}, GlobalCommandEnabled);
 
 			async Task<Unit> cancelRenamingFileTab(ILocaleFileData fileData)
 			{
@@ -1075,25 +1106,27 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 
 			CancelRenamingFileTabCommand = ReactiveCommand.CreateFromTask<ILocaleFileData>(cancelRenamingFileTab);
 
-			SaveAllCommand = ReactiveCommand.Create(SaveAll);
-			SaveCurrentCommand = ReactiveCommand.Create(SaveCurrent);
-			GenerateHandlesCommand = ReactiveCommand.Create(GenerateHandles);
-			AddNewKeyCommand = ReactiveCommand.Create(AddNewKey);
+			SaveAllCommand = ReactiveCommand.Create(SaveAll, GlobalCommandEnabled);
+			SaveCurrentCommand = ReactiveCommand.Create(SaveCurrent, GlobalCommandEnabled);
+			GenerateHandlesCommand = ReactiveCommand.Create(GenerateHandles, GlobalCommandEnabled);
+			AddNewKeyCommand = ReactiveCommand.Create(AddNewKey, GlobalCommandEnabled);
 			DeleteKeysCommand = new TaskCommand(DeleteSelectedKeys, LocaleEditorWindow.instance, "Delete Keys", 
 				"Delete selected keys?", "Changes will be lost.");
 
-			OpenPreferencesCommand = ReactiveCommand.Create(() => { LocaleEditorWindow.instance?.TogglePreferencesWindow(); });
+			GlobalCommandEnabled.BindTo(DeleteKeysCommand, c => c.Enabled);
 
-			AddFontTagCommand = ReactiveCommand.Create(AddFontTag);
+			OpenPreferencesCommand = ReactiveCommand.Create(() => { LocaleEditorWindow.instance?.TogglePreferencesWindow(); }, GlobalCommandEnabled);
 
-			ToggleContentLightModeCommand = ReactiveCommand.Create(() => ContentLightMode = !ContentLightMode);
+			AddFontTagCommand = ReactiveCommand.Create(AddFontTag, GlobalCommandEnabled);
+
+			ToggleContentLightModeCommand = ReactiveCommand.Create(() => ContentLightMode = !ContentLightMode, GlobalCommandEnabled);
 			ChangeContentFontSizeCommand = ReactiveCommand.Create<string>((fontSizeStr) => {
 				this.RaisePropertyChanging("ContentFontSize");
 				if (int.TryParse(fontSizeStr, out contentFontSize))
 				{
 					this.RaisePropertyChanged("ContentFontSize");
 				}
-			});
+			}, GlobalCommandEnabled);
 
 			CopyToClipboardCommand = ReactiveCommand.Create<string>((str) =>
 			{
@@ -1116,7 +1149,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 					CreateSnapshot(undo, redo);
 					redo();
 				}
-			});
+			}, GlobalCommandEnabled);
 
 			SaveCurrentMenuData = new MenuData("SaveCurrent", "Save", SaveCurrentCommand, Key.S, ModifierKeys.Control);
 

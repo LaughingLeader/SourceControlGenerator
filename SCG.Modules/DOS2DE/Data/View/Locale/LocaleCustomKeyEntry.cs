@@ -90,15 +90,5 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 		{
 			LocaleEditorWindow.instance?.KeyEntrySelected(this, isSelected);
 		}
-
-		private readonly ModProjectData project;
-		public ModProjectData Project => project;
-
-		public LocaleCustomKeyEntry(ModProjectData parentProject)
-		{
-			project = parentProject;
-		}
-
-		public LocaleCustomKeyEntry() { }
 	}
 }

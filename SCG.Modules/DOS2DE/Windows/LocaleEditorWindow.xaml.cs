@@ -64,8 +64,16 @@ namespace SCG.Modules.DOS2DE.Windows
 
 			this.WhenActivated((disposable) =>
 			{
-				
+				KeyDown += LocaleEditorWindow_KeyDown;
 			});
+		}
+
+		private void LocaleEditorWindow_KeyDown(object sender, KeyEventArgs e)
+		{
+			if(ViewModel.IsAddingNewFileTab)
+			{
+				
+			}
 		}
 
 		private void Init()

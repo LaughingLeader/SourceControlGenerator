@@ -33,6 +33,7 @@ namespace SCG.Modules.DOS2DE.Utilities
 		public static async Task<LocaleViewModel> LoadLocalizationDataAsync(DOS2DEModuleData vm, ModProjectData modProject, CancellationToken? token = null)
 		{
 			LocaleViewModel localizationData = new LocaleViewModel();
+			localizationData.LinkedProjects.Add(modProject);
 			var success = await LoadProjectLocalizationDataAsync(localizationData, vm, modProject, token).ConfigureAwait(false);
 			foreach (var g in localizationData.Groups)
 			{
@@ -50,6 +51,7 @@ namespace SCG.Modules.DOS2DE.Utilities
 		public static async Task<LocaleViewModel> LoadLocalizationDataAsync(DOS2DEModuleData vm, IEnumerable<ModProjectData> modProjects, CancellationToken? token = null)
 		{
 			LocaleViewModel localizationData = new LocaleViewModel();
+			localizationData.LinkedProjects.AddRange(modProjects);
 			foreach (var project in modProjects)
 			{
 				var success = await LoadProjectLocalizationDataAsync(localizationData, vm, project, token).ConfigureAwait(false);

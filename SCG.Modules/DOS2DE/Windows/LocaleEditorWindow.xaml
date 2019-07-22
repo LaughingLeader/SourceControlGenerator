@@ -22,7 +22,8 @@
 		xmlns:clr="clr-namespace:System;assembly=mscorlib"
 		d:DataContext="{d:DesignInstance data:LocaleEditorDesignData, IsDesignTimeCreatable=True}"
 		Closing="LocaleWindow_Closing"
-		Title="{Binding WindowTitle, FallbackValue='Localization Editor'}" Height="525" Width="960">
+		Title="{Binding WindowTitle, FallbackValue='Localization Editor'}" Height="525" Width="960"
+>
 	<Window.Resources>
 		<ResourceDictionary>
 			<ResourceDictionary.MergedDictionaries>
@@ -1002,7 +1003,9 @@ body {
 			<RowDefinition Height="Auto" />
 		</Grid.RowDefinitions>
 		<Grid x:Name="NameNewFileTabGrid" Grid.Row="0" Grid.RowSpan="4" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Panel.ZIndex="1" 
-			  Visibility="{Binding IsAddingNewFileTab, Converter={StaticResource BoolToVisibilityConverter}, FallbackValue=Collapsed}">
+			  
+			  >
+			<!--Visibility="{Binding IsAddingNewFileTab, Converter={StaticResource BoolToVisibilityConverter}, FallbackValue=Collapsed}"-->
 			<Grid.Resources>
 				<Style TargetType="TextBox">
 					<Setter Property="Effect">
@@ -1012,10 +1015,14 @@ body {
 					</Setter>
 				</Style>
 			</Grid.Resources>
-			<Rectangle Fill="LightGray" Opacity="0.75" />
-			<Border x:Name="NameTabBorder" Padding="32" Margin="4" HorizontalAlignment="Center" VerticalAlignment="Center" Background="#FFEAEAEA" BorderBrush="Gray" BorderThickness="1">
+			<Rectangle Fill="DarkGray" Opacity="0.75" />
+			<Border x:Name="NameTabBorder" Padding="32" Margin="4" HorizontalAlignment="Center" VerticalAlignment="Center" Background="#FFE5F4F5" BorderBrush="Gray" BorderThickness="1">
 				<StackPanel Width="300" VerticalAlignment="Stretch">
-					<TextBlock Text="Enter Tab Name:" />
+					<TextBlock Text="Target Project:" VerticalAlignment="Center" Margin="0,0,0,4" />
+					<ComboBox Margin="0" 
+							ItemsSource="{Binding LinkedProjects}" DisplayMemberPath="DisplayName" SelectedIndex="{Binding NewFileTargetProjectIndex, Mode=TwoWay, FallbackValue=0}" 
+					/>
+					<TextBlock Text="Tab Name:" Margin="0,4,0,0" />
 					<TextBox Text="{Binding NewFileTabName, Mode=TwoWay}" AcceptsReturn="False" AcceptsTab="False" Margin="0,4,0,0" MaxLines="1" />
 					<StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="4,8,4,4">
 						<StackPanel.Resources>

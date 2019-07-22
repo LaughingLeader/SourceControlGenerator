@@ -65,6 +65,9 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 
 			SelectedGroupIndex = Groups.IndexOf(CustomGroup);
 			SelectedEntry = CombinedGroup.Tabs.First().Entries.First();
+
+			LinkedProjects.Add(new ModProjectData() { DisplayName = "TestMod1" });
+			LinkedProjects.Add(new ModProjectData() { DisplayName = "TestMod2" });
 		}
 	}
 }
