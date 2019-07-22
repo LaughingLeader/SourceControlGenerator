@@ -11,7 +11,7 @@ using System.Windows.Input;
 namespace SCG.Data.View
 {
 
-	public class BaseProjectData : PropertyChangedBase, IProjectData
+	public class BaseProjectData : ReactiveObject, IProjectData
 	{
 		private SourceControlData gitData;
 

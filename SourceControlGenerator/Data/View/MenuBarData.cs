@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace SCG.Data.View
 {
-	public class MenuBarData : PropertyChangedBase
+	public class MenuBarData : ReactiveObject
 	{
 		private MenuData fileMenu;
 

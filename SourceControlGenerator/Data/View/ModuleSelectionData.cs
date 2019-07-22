@@ -7,7 +7,7 @@ using System.Windows;
 
 namespace SCG.Data.View
 {
-	public class ModuleSelectionData : PropertyChangedBase
+	public class ModuleSelectionData : ReactiveObject
 	{
 		private string moduleName;
 

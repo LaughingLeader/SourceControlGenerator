@@ -40,7 +40,7 @@ namespace SCG.Data.View
 	}
 
 	[DebuggerDisplay("{Header}, Children={MenuItems.Count}")]
-	public class MenuData : PropertyChangedBase, IMenuData
+	public class MenuData : ReactiveObject, IMenuData
 	{
 		public string ID { get; set; } = "";
 

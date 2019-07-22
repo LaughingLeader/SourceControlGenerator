@@ -8,7 +8,9 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Data;
 using System.Windows.Media;
+using DynamicData.Binding;
 using SCG.Data.View;
+using ReactiveUI;
 
 namespace SCG.Converters
 {
@@ -16,7 +18,7 @@ namespace SCG.Converters
 	{
 		public object Convert(object[] values, Type targetType, object parameter, System.Globalization.CultureInfo culture)
 		{
-			if(values[0] is ObservableCollection<LogData> logs)
+			if(values[0] is ObservableCollectionExtended<LogData> logs)
 			{
 				if(values[1] is string searchText && !String.IsNullOrWhiteSpace(searchText))
 				{

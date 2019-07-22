@@ -60,7 +60,7 @@ namespace SCG.Data.View
 	}
 
 	[DataContract]
-	public class MarkdownConverterViewData : PropertyChangedBase
+	public class MarkdownConverterViewData : ReactiveObject
 	{
 		private Window parentWindow;
 

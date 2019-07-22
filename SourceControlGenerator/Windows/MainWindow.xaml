@@ -253,7 +253,7 @@
 									<Border Grid.Row="0" Style="{StaticResource KeywordBorderStyle}" >
 										<TextBlock Text="Application Keywords (Auto-Assigned)" Margin="2" Padding="2" FontFamily="Neuton" />
 									</Border>
-									<ItemsControl Grid.Row="1" x:Name="AppKeywordsList" ItemsSource="{Binding Controller.Data.AppKeyList, ElementName=MainAppWindow}">
+									<ItemsControl Grid.Row="1" x:Name="AppKeywordsList" ItemsSource="{Binding ViewModel.AppKeyList, ElementName=MainAppWindow}">
 										<ItemsControl.ItemTemplate>
 											<DataTemplate DataType="c:TemplateKeywordControl">
 												<c:TemplateKeywordControl DataContext="{Binding}" KeywordName="{Binding KeywordName}" KeywordValue="{Binding KeywordValue}" KeywordNameReadOnly="True" KeywordValueReadOnly="True" />
@@ -268,7 +268,7 @@
 									<Border Grid.Row="2" Style="{StaticResource KeywordBorderStyleMouseOver}" >
 										<Expander x:Name="DateKeywordsExpander"  Header="Date Keywords" Style="{DynamicResource ExpanderRightButton}" Background="{x:Null}" FontFamily="Neuton" >
 											<ScrollViewer FlowDirection="LeftToRight" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" MaxHeight="125">
-												<ItemsControl DataContext="{Binding Controller.Data, ElementName=MainAppWindow}" ItemsSource="{Binding DateKeyList}" >
+												<ItemsControl DataContext="{Binding ViewModel, ElementName=MainAppWindow}" ItemsSource="{Binding DateKeyList}" >
 													<ItemsControl.ItemTemplate>
 														<DataTemplate DataType="c:TemplateKeywordControl">
 															<c:TemplateKeywordControl DataContext="{Binding}" KeywordName="{Binding KeywordName}" KeywordValue="{Binding KeywordValue}" KeywordNameReadOnly="True" KeywordValueReadOnly="True" />

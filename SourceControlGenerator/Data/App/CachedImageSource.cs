@@ -13,7 +13,7 @@ using System.Reactive.Concurrency;
 
 namespace SCG.Data.App
 {
-	public class CachedImageSource : PropertyChangedBase
+	public class CachedImageSource : ReactiveObject
 	{
 		private BitmapImage source;
 
@@ -39,7 +39,7 @@ namespace SCG.Data.App
 
 		public void Init(string imagePath)
 		{
-			RxApp.TaskpoolScheduler.Schedule(() =>
+			RxApp.MainThreadScheduler.Schedule(() =>
 			{
 				SourcePath = imagePath;
 

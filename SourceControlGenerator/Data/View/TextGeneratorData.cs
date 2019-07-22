@@ -30,7 +30,7 @@ namespace SCG.Data.View
 	}
 
 	[DataContract]
-	public class TextGeneratorData : PropertyChangedBase
+	public class TextGeneratorData : ReactiveObject
 	{
 		public string InputText
 		{
@@ -190,7 +190,7 @@ namespace SCG.Data.View
 	}
 
 	[DataContract]
-	public class TextGeneratorSaveFileData : PropertyChangedBase, ISaveCommandData
+	public class TextGeneratorSaveFileData : ReactiveObject, ISaveCommandData
 	{
 		private string defaultFileName;
 
@@ -345,7 +345,7 @@ namespace SCG.Data.View
 		string GetOutput(string input);
 	}
 
-	public class TextGeneratorInputTextData : PropertyChangedBase, ITextGeneratorInputData
+	public class TextGeneratorInputTextData : ReactiveObject, ITextGeneratorInputData
 	{
 		private TextGeneratorInputType inputType = TextGeneratorInputType.Text;
 
@@ -395,7 +395,7 @@ namespace SCG.Data.View
 		}
 	}
 
-	public class TextGeneratorInputNumberData : PropertyChangedBase, ITextGeneratorInputData
+	public class TextGeneratorInputNumberData : ReactiveObject, ITextGeneratorInputData
 	{
 		private TextGeneratorInputType inputType;
 

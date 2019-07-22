@@ -26,7 +26,7 @@ using System.Reactive.Concurrency;
 
 namespace SCG.Windows
 {
-	public class DebugWindowData : PropertyChangedBase
+	public class DebugWindowData : ReactiveObject
 	{
 		private string backupFolderPath;
 
@@ -35,7 +35,7 @@ namespace SCG.Windows
 			get { return backupFolderPath; }
 			set
 			{
-				Update(ref backupFolderPath, value);
+				this.RaiseAndSetIfChanged(ref backupFolderPath, value);
 				CanBackupFolder = FileCommands.IsValidDirectoryPath(backupFolderPath);
 			}
 		}
@@ -47,7 +47,7 @@ namespace SCG.Windows
 			get { return totalBackupTimeText; }
 			set
 			{
-				Update(ref totalBackupTimeText, value);
+				this.RaiseAndSetIfChanged(ref totalBackupTimeText, value);
 			}
 		}
 
@@ -58,7 +58,7 @@ namespace SCG.Windows
 			get { return canBackupFolder; }
 			set
 			{
-				Update(ref canBackupFolder, value);
+				this.RaiseAndSetIfChanged(ref canBackupFolder, value);
 			}
 		}
 
@@ -69,7 +69,7 @@ namespace SCG.Windows
 			get { return isBackingUp; }
 			set
 			{
-				Update(ref isBackingUp, value);
+				this.RaiseAndSetIfChanged(ref isBackingUp, value);
 
 				if (IsBackingUp)
 				{

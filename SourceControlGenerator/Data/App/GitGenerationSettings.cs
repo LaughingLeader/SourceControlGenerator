@@ -26,7 +26,7 @@ namespace SCG.Data
 		Custom
 	}
 
-	public class GitGenerationSettings : PropertyChangedBase
+	public class GitGenerationSettings : ReactiveObject
 	{
 		private LicenseType licenseType;
 
@@ -106,7 +106,7 @@ namespace SCG.Data
 		}
 	}
 
-	public class TemplateGenerationData : PropertyChangedBase
+	public class TemplateGenerationData : ReactiveObject
 	{
 		private string id;
 

@@ -10,7 +10,7 @@ using SCG.Util;
 
 namespace SCG.Data.Xml
 {
-	public class ProjectInfo : PropertyChangedBase
+	public class ProjectInfo : ReactiveObject
 	{
 		public string Name { get; set; }
 

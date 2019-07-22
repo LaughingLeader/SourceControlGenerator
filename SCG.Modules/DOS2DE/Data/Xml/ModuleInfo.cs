@@ -12,7 +12,7 @@ using SCG.Util;
 
 namespace SCG.Data.Xml
 {
-	public class ModuleInfo : PropertyChangedBase
+	public class ModuleInfo : ReactiveObject
 	{
 		public string Author { get; set; }
 		public string CharacterCreationLevelName { get; set; }

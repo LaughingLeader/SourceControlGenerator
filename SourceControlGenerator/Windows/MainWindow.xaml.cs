@@ -92,15 +92,7 @@ namespace SCG.Windows
 
 		private UserControl lastModuleView;
 
-		public AppController Controller
-		{
-			get { return (AppController)GetValue(ControllerProperty); }
-			set { SetValue(ControllerProperty, value); }
-		}
-
-		// Using a DependencyProperty as the backing store for Controller.  This enables animation, styling, binding, etc...
-		public static readonly DependencyProperty ControllerProperty =
-			DependencyProperty.Register("Controller", typeof(AppController), typeof(MainWindow), new PropertyMetadata(null));
+		public AppController Controller { get; private set; }
 
 		private IModuleData Data => Controller.Data.CurrentModuleData;
 
@@ -392,7 +384,7 @@ namespace SCG.Windows
 		{
 			if (sender is TabControl || sender is TabItem)
 			{
-				RxApp.TaskpoolScheduler.Schedule(() =>
+				RxApp.MainThreadScheduler.Schedule(() =>
 				{
 					IInputElement focusedControl = FocusManager.GetFocusedElement(this);
 					if (focusedControl is TextBox textBox)

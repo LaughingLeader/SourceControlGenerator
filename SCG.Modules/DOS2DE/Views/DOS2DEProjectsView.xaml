@@ -272,13 +272,13 @@
 													<c:ImageButton.ContextMenu>
 														<ContextMenu>
 															<MenuItem x:Name="Btn_EditorFolder" Header="{x:Static core:DOS2DETooltips.Button_DataFolderEditor}" 
-																Command="{Binding Path=PlacementTarget.Tag.OpenEditorFolder, RelativeSource={RelativeSource AncestorType=ContextMenu}}" CommandParameter="{Binding}" />
+																Command="{Binding Path=PlacementTarget.Tag.OpenEditorFolderCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}" CommandParameter="{Binding}" />
 															<MenuItem x:Name="Btn_ModsFolder" Header="{x:Static core:DOS2DETooltips.Button_DataFolderMods}" 
-																Command="{Binding Path=PlacementTarget.Tag.OpenModsFolder, RelativeSource={RelativeSource AncestorType=ContextMenu}}" CommandParameter="{Binding}" />
+																Command="{Binding Path=PlacementTarget.Tag.OpenModsFolderCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}" CommandParameter="{Binding}" />
 															<MenuItem x:Name="Btn_ProjectFolder" Header="{x:Static core:DOS2DETooltips.Button_DataFolderProject}" 
-																Command="{Binding Path=PlacementTarget.Tag.OpenProjectFolder, RelativeSource={RelativeSource AncestorType=ContextMenu}}" CommandParameter="{Binding}" />
+																Command="{Binding Path=PlacementTarget.Tag.OpenProjectFolderCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}" CommandParameter="{Binding}" />
 															<MenuItem x:Name="Btn_PublicFolder" Header="{x:Static core:DOS2DETooltips.Button_DataFolderPublic}" 
-																Command="{Binding Path=PlacementTarget.Tag.OpenPublicFolder, RelativeSource={RelativeSource AncestorType=ContextMenu}}" CommandParameter="{Binding}" />
+																Command="{Binding Path=PlacementTarget.Tag.OpenPublicFolderCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}" CommandParameter="{Binding}" />
 														</ContextMenu>
 													</c:ImageButton.ContextMenu>
 													<c:ImageButton.Style>

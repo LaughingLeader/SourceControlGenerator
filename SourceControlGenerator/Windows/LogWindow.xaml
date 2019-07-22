@@ -12,7 +12,7 @@
 		mc:Ignorable="d"
 		Title="Logs (Source Control Generator)" Height="400" Width="800"
 		WindowStartupLocation="CenterOwner"
-		
+		d:DataContext="{d:DesignInstance Type=local:LogWindowDebugViewData, IsDesignTimeCreatable=True}"
 		>
 	<local:HideWindowBase.Resources>
 		<Style TargetType="ItemsControl" x:Key="LogViewerStyle">
@@ -25,16 +25,7 @@
 					</ControlTemplate>
 				</Setter.Value>
 			</Setter>
-
-			<Setter Property="ItemsSource">
-				<Setter.Value>
-					<MultiBinding Converter="{StaticResource VisibleLogsConverter}">
-						<Binding Path="Logs" />
-						<Binding Path="SearchText" />
-					</MultiBinding>
-				</Setter.Value>
-			</Setter>
-
+			
 			<Setter Property="ItemsPanel">
 				<Setter.Value>
 					<ItemsPanelTemplate>
@@ -46,7 +37,10 @@
 
 		<DataTemplate DataType="{x:Type data:LogData}">
 			<Grid IsSharedSizeScope="True">
-				<TextBox Text="{Binding Output}" IsReadOnly="True"  Background="{Binding BackgroundColor}"/>
+				<StackPanel>
+					<TextBlock Text="{Binding Output}" Background="{Binding BackgroundColor}"/>
+					<TextBlock Text="Test" />
+				</StackPanel>
 			</Grid>
 		</DataTemplate>
 	</local:HideWindowBase.Resources>
@@ -80,7 +74,7 @@
 				
 			</StackPanel>
 		</Grid>
-		<ItemsControl Grid.Row="1" Style="{StaticResource LogViewerStyle}">
+		<ItemsControl Grid.Row="1" Style="{StaticResource LogViewerStyle}" x:Name="LogsItemsControl" ItemsSource="{Binding VisibleLogs, Mode=OneWay}">
 			<ItemsControl.Template>
 				<ControlTemplate>
 					<ScrollViewer CanContentScroll="True" HorizontalScrollBarVisibility="Auto">

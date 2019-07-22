@@ -10,7 +10,7 @@ using Newtonsoft.Json;
 
 namespace SCG.Data.View
 {
-	public class MarkdownFormatterData : PropertyChangedBase
+	public class MarkdownFormatterData : ReactiveObject
 	{
 		private IMarkdownFormatter formatter;
 

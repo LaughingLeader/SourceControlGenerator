@@ -499,8 +499,8 @@ namespace SCG.Data.View
 				Buffer(TimeSpan.FromMilliseconds(250)).FlattenBufferResult().Subscribe((pathChange) =>
 			{
 				string path = pathChange.First().Item.Current;
-				Log.Here().Activity($"Checking for git path at {path}");
-				GitDetected = !String.IsNullOrEmpty(path) && File.Exists(path);
+				//Log.Here().Activity($"Checking for git path at {path}");
+				GitDetected = !String.IsNullOrEmpty(path) && Directory.Exists(path);
 			});
 		}
 	}

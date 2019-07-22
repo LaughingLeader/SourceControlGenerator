@@ -53,7 +53,7 @@ namespace SCG.Controls.Behavior
 		{
 			if(sender is ComboBox cb)
 			{
-				RxApp.TaskpoolScheduler.Schedule(() => cb.SetWidthFromItems());
+				RxApp.MainThreadScheduler.Schedule(() => cb.SetWidthFromItems());
 			}
 		}
 	}

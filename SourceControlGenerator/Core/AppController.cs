@@ -354,7 +354,7 @@ namespace SCG.Core
 		{
 			Data.ProgressValue = Data.ProgressValueMax;
 			await Task.Delay(500).ConfigureAwait(false);
-			RxApp.TaskpoolScheduler.Schedule(() =>
+			RxApp.MainThreadScheduler.Schedule(() =>
 			{
 				Data.ProgressValue = Data.ProgressValueMax;
 				OnProgressComplete();
@@ -512,7 +512,7 @@ namespace SCG.Core
 		public void MenuAction_SaveLog()
 		{
 			string logContent = "";
-			foreach(var data in mainWindow.LogWindow.Data.Logs)
+			foreach(var data in mainWindow.LogWindow.ViewModel.Logs.Items)
 			{
 				logContent += data.Output + Environment.NewLine;
 			}
@@ -647,7 +647,7 @@ namespace SCG.Core
 
 		public void AddLogMessage(string LogMessage, LogType logType)
 		{
-			RxApp.TaskpoolScheduler.Schedule(() =>
+			RxApp.TaskpoolScheduler.Schedule((Action)(() =>
 			{
 				var log = new LogData()
 				{
@@ -658,8 +658,8 @@ namespace SCG.Core
 				};
 				log.FormatOutput();
 
-				mainWindow.LogWindow.Data.Add(log);
-			});
+				mainWindow.LogWindow.ViewModel.Add(log);
+			}));
 		}
 
 		public MenuData LogMenuData { get; set; }

@@ -26,8 +26,9 @@ namespace SCG.Converters
 						image.BeginInit();
 						image.CacheOption = BitmapCacheOption.OnLoad;
 						//image.CreateOptions = BitmapCreateOptions.IgnoreImageCache;
-						image.UriSource = new Uri(uri, UriKind.RelativeOrAbsolute);
+						image.UriSource = new Uri(uri, UriKind.Absolute);
 						image.EndInit();
+						Log.Here().Activity("Cached image: " + uri);
 						return image;
 					}
 					catch(Exception ex)

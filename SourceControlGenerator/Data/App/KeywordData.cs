@@ -9,7 +9,7 @@ using Newtonsoft.Json.Serialization;
 
 namespace SCG.Data
 {
-	public class KeywordData : PropertyChangedBase
+	public class KeywordData : ReactiveObject
 	{
 		private string keywordName = "";
 

@@ -19,7 +19,7 @@ using System.Windows;
 
 namespace SCG.Data.View
 {
-	public class TemplateEditorData : PropertyChangedBase, ISaveCommandData
+	public class TemplateEditorData : ReactiveObject, ISaveCommandData
 	{
 		private IModuleData parentData;
 

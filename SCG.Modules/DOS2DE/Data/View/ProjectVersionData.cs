@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace SCG.Modules.DOS2DE.Data.View
 {
-	public class ProjectVersionData : PropertyChangedBase
+	public class ProjectVersionData : ReactiveObject
 	{
 		private int major = 0;
 

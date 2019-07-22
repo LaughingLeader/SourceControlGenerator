@@ -22,7 +22,7 @@ using System.Reactive;
 
 namespace SCG.Modules.DOS2DE.Data.View
 {
-	public class ModProjectData : PropertyChangedBase, IProjectData
+	public class ModProjectData : ReactiveObject, IProjectData
 	{
 		private ProjectAppData projectAppData;
 
@@ -31,7 +31,7 @@ namespace SCG.Modules.DOS2DE.Data.View
 			get { return projectAppData; }
 			set
 			{
-				Update(ref projectAppData, value);
+				this.RaiseAndSetIfChanged(ref projectAppData, value);
 			}
 		}
 
@@ -42,7 +42,7 @@ namespace SCG.Modules.DOS2DE.Data.View
 			get { return projectInfo; }
 			set
 			{
-				Update(ref projectInfo, value);
+				this.RaiseAndSetIfChanged(ref projectInfo, value);
 			}
 		}
 
@@ -53,9 +53,9 @@ namespace SCG.Modules.DOS2DE.Data.View
 			get { return moduleInfo; }
 			set
 			{
-				Update(ref moduleInfo, value);
-				Notify("Dependencies");
-				Notify("Name");
+				this.RaiseAndSetIfChanged(ref moduleInfo, value);
+				this.RaisePropertyChanged("Dependencies");
+				this.RaisePropertyChanged("Name");
 			}
 		}
 
@@ -127,7 +127,7 @@ namespace SCG.Modules.DOS2DE.Data.View
 				if(shortDescription == null)
 				{
 					shortDescription = ModuleInfo.Description.Truncate(30, "...");
-					Notify("ShortDescription");
+					this.RaisePropertyChanged("ShortDescription");
 				}
 				return shortDescription;
 			}
@@ -141,7 +141,7 @@ namespace SCG.Modules.DOS2DE.Data.View
 			get { return tooltip; }
 			set
 			{
-				Update(ref tooltip, value);
+				this.RaiseAndSetIfChanged(ref tooltip, value);
 			}
 		}
 
@@ -152,7 +152,7 @@ namespace SCG.Modules.DOS2DE.Data.View
 			get { return gitGenerated; }
 			set
 			{
-				Update(ref gitGenerated, value);
+				this.RaiseAndSetIfChanged(ref gitGenerated, value);
 			}
 		}
 
@@ -163,8 +163,8 @@ namespace SCG.Modules.DOS2DE.Data.View
 			get { return projectVersionData; }
 			set
 			{
-				Update(ref projectVersionData, value);
-				Notify("Version");
+				this.RaiseAndSetIfChanged(ref projectVersionData, value);
+				this.RaisePropertyChanged("Version");
 			}
 		}
 
@@ -180,8 +180,8 @@ namespace SCG.Modules.DOS2DE.Data.View
 			}
 			set
 			{
-				Update(ref lastBackup, value);
-				Notify("LastBackupText");
+				this.RaiseAndSetIfChanged(ref lastBackup, value);
+				this.RaisePropertyChanged("LastBackupText");
 			}
 		}
 
@@ -204,7 +204,7 @@ namespace SCG.Modules.DOS2DE.Data.View
 			get { return selected; }
 			set
 			{
-				Update(ref selected, value);
+				this.RaiseAndSetIfChanged(ref selected, value);
 			}
 
 		}
@@ -216,7 +216,7 @@ namespace SCG.Modules.DOS2DE.Data.View
 			get { return thumbnailPath; }
 			set
 			{
-				Update(ref thumbnailPath, value);
+				this.RaiseAndSetIfChanged(ref thumbnailPath, value);
 			}
 		}
 
@@ -228,7 +228,7 @@ namespace SCG.Modules.DOS2DE.Data.View
 			get { return thumbnailExists; }
 			set
 			{
-				Update(ref thumbnailExists, value);
+				this.RaiseAndSetIfChanged(ref thumbnailExists, value);
 			}
 		}
 
@@ -240,7 +240,7 @@ namespace SCG.Modules.DOS2DE.Data.View
 			get { return cachedImageSource; }
 			set
 			{
-				Update(ref cachedImageSource, value);
+				this.RaiseAndSetIfChanged(ref cachedImageSource, value);
 			}
 		}
 		*/
@@ -252,7 +252,7 @@ namespace SCG.Modules.DOS2DE.Data.View
 			get { return modMetaFilePath; }
 			set
 			{
-				Update(ref modMetaFilePath, value);
+				this.RaiseAndSetIfChanged(ref modMetaFilePath, value);
 			}
 		}
 
@@ -263,7 +263,7 @@ namespace SCG.Modules.DOS2DE.Data.View
 			get { return projectMetaFilePath; }
 			set
 			{
-				Update(ref projectMetaFilePath, value);
+				this.RaiseAndSetIfChanged(ref projectMetaFilePath, value);
 			}
 		}
 
@@ -352,7 +352,7 @@ namespace SCG.Modules.DOS2DE.Data.View
 					{
 						this.ModuleInfo.LoadFromXml(modMetaXml);
 						LoadDependencies(modMetaXml);
-						ModuleInfo.Notify(String.Empty);
+						ModuleInfo.RaisePropertyChanged(String.Empty);
 					}
 				}
 			}
@@ -367,7 +367,7 @@ namespace SCG.Modules.DOS2DE.Data.View
 					{
 						this.ProjectInfo.LoadFromXml(projectMetaXml);
 						LoadThumbnail(Path.GetDirectoryName(ProjectMetaFilePath));
-						ProjectInfo.Notify(String.Empty);
+						ProjectInfo.RaisePropertyChanged(String.Empty);
 					}
 				}
 			}
@@ -417,6 +417,7 @@ namespace SCG.Modules.DOS2DE.Data.View
 				{
 					if(!foundThumbnail && f.FileName.IndexOf("thumbnail", StringComparison.OrdinalIgnoreCase) > -1 && FileCommands.IsValidImage(f.FullPath))
 					{
+						Log.Here().Activity($"Thumbnail! {f?.FullPath} | {f?.FileName}");
 						foundThumbnail = true;
 						return true;
 					}
@@ -427,7 +428,7 @@ namespace SCG.Modules.DOS2DE.Data.View
 			var thumbnail = Directory.EnumerateFiles(projectDirectory, DirectoryEnumerationOptions.Files, filter, PathFormat.FullPath).FirstOrDefault();
 			if (!String.IsNullOrWhiteSpace(thumbnail))
 			{
-				ThumbnailPath = thumbnail;
+				ThumbnailPath = Path.GetFullPath(thumbnail);
 			}
 		}
 
@@ -527,10 +528,10 @@ namespace SCG.Modules.DOS2DE.Data.View
 				{
 					var projectMetaXml = XDocument.Parse(projectMetaFileContents);
 					this.ProjectInfo.LoadFromXml(projectMetaXml);
-					LoadThumbnail(ProjectFolder);
-
 					ProjectInfo.CreationDate = File.GetCreationTime(projectMetaFilePath);
 				}
+
+				LoadThumbnail(projectDirectory);
 			}
 			catch (Exception ex)
 			{
@@ -541,7 +542,7 @@ namespace SCG.Modules.DOS2DE.Data.View
 		public async Task LoadAllDataAsync(string metaFilePath, string projectsFolderPath)
 		{
 			await LoadModMetaAsync(metaFilePath).ConfigureAwait(false);
-			await LoadModMetaAsync(projectsFolderPath).ConfigureAwait(false);
+			await LoadProjectMetaAsync(projectsFolderPath).ConfigureAwait(false);
 		}
 
 		public ModProjectData()

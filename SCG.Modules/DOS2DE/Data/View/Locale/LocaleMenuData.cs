@@ -11,7 +11,7 @@ using System.Windows.Input;
 
 namespace SCG.Modules.DOS2DE.Data.View.Locale
 {
-	public class LocaleMenuData : PropertyChangedBase
+	public class LocaleMenuData : ReactiveObject
 	{
 		private MenuData fileMenu;
 

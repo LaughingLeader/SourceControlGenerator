@@ -10,7 +10,7 @@ using Newtonsoft.Json;
 
 namespace SCG.Data
 {
-	public class UserKeywordData : PropertyChangedBase
+	public class UserKeywordData : ReactiveObject
 	{
 		private string dateCustom;
 

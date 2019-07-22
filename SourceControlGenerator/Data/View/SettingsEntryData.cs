@@ -9,7 +9,7 @@ using SCG.SCGEnum;
 
 namespace SCG.Data.View
 {
-	public class SettingsEntryData : PropertyChangedBase
+	public class SettingsEntryData : ReactiveObject
 	{
 		private string name;
 

@@ -6,11 +6,12 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media;
+using ReactiveUI;
 using SCG.Util;
 
 namespace SCG.Data.View
 {
-	public class LogData : PropertyChangedBase
+	public class LogData : ReactiveObject
 	{
 		public DateTime DateTime { get; set; }
 
@@ -31,7 +32,7 @@ namespace SCG.Data.View
 			get { return isVisible; }
 			set
 			{
-				Update(ref isVisible, value);
+				this.RaiseAndSetIfChanged(ref isVisible, value);
 			}
 		}
 

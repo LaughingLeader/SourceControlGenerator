@@ -2,19 +2,27 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Reactive.Concurrency;
+using System.Reactive.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Data;
+using DynamicData;
+using DynamicData.Binding;
+using ReactiveUI;
 using SCG.Util;
 using SCG.Windows;
 
 namespace SCG.Data.View
 {
-	public class LogWindowViewData : PropertyChangedBase
+	public class LogWindowViewData : ReactiveObject
 	{
-		public ObservableCollection<LogData> Logs { get; set; }
+		public SourceList<LogData> Logs { get; set; } = new SourceList<LogData>();
 
-		public ObservableCollection<LogData> LastLogs { get; set; }
+		private ReadOnlyObservableCollection<LogData> visibleLogs;
+		public ReadOnlyObservableCollection<LogData> VisibleLogs => visibleLogs;
+
+		public ObservableCollectionExtended<LogData> LastLogs { get; set; }
 
 		public bool CanRestore => LastLogs != null;
 
@@ -33,8 +41,8 @@ namespace SCG.Data.View
 			get { return isVisible; }
 			set
 			{
-				Update(ref isVisible, value);
-				Notify("LogVisibleText");
+				this.RaiseAndSetIfChanged(ref isVisible, value);
+				this.RaisePropertyChanged("LogVisibleText");
 			}
 		}
 
@@ -45,27 +53,33 @@ namespace SCG.Data.View
 
 		public void Add(LogData log)
 		{
-			Logs.Add(log);
-			Notify("Logs");
-			Notify("CanClear");
-
-			if (LastLogs != null)
+			RxApp.TaskpoolScheduler.Schedule(() =>
 			{
-				LastLogs = null;
-				Notify("CanRestore");
-			}
+				Logs.Add(log);
+				this.RaisePropertyChanged("Logs");
+				this.RaisePropertyChanged("CanClear");
+
+				if (LastLogs != null)
+				{
+					LastLogs = null;
+					this.RaisePropertyChanged("CanRestore");
+				}
+			});
 		}
 
 		public void Clear()
 		{
 			if (Logs.Count > 0)
 			{
-				LastLogs = new ObservableCollection<LogData>(Logs);
-				Logs.Clear();
+				RxApp.TaskpoolScheduler.Schedule(() =>
+				{
+					LastLogs = new ObservableCollectionExtended<LogData>(Logs.Items);
+					Logs.Clear();
 
-				Notify("Logs");
-				Notify("CanClear");
-				Notify("CanRestore");
+					this.RaisePropertyChanged("Logs");
+					this.RaisePropertyChanged("CanClear");
+					this.RaisePropertyChanged("CanRestore");
+				});
 			}
 		}
 
@@ -73,16 +87,19 @@ namespace SCG.Data.View
 		{
 			if (LastLogs != null)
 			{
-				foreach (var log in LastLogs)
+				RxApp.TaskpoolScheduler.Schedule(() =>
 				{
-					Logs.Add(log);
-				}
+					foreach (var log in LastLogs)
+					{
+						Logs.Add(log);
+					}
 
-				LastLogs = null;
+					LastLogs = null;
 
-				Notify("Logs");
-				Notify("CanClear");
-				Notify("CanRestore");
+					this.RaisePropertyChanged("Logs");
+					this.RaisePropertyChanged("CanClear");
+					this.RaisePropertyChanged("CanRestore");
+				});
 			}
 		}
 
@@ -94,11 +111,11 @@ namespace SCG.Data.View
 			set
 			{
 				var lastVal = searchText;
-				Update(ref searchText, value);
+				this.RaiseAndSetIfChanged(ref searchText, value);
 
 				if(searchText != lastVal)
 				{
-					Notify("Logs");
+					this.RaisePropertyChanged("Logs");
 				}
 			}
 		}
@@ -112,7 +129,7 @@ namespace SCG.Data.View
 			get { return filterActivity; }
 			set
 			{
-				Update(ref filterActivity, value);
+				this.RaiseAndSetIfChanged(ref filterActivity, value);
 				FilterChanged(LogType.Activity, filterActivity, autoRaiseLogsChanged);
 			}
 		}
@@ -124,7 +141,7 @@ namespace SCG.Data.View
 			get { return filterImportant; }
 			set
 			{
-				Update(ref filterImportant, value);
+				this.RaiseAndSetIfChanged(ref filterImportant, value);
 				FilterChanged(LogType.Important, filterImportant, autoRaiseLogsChanged);
 			}
 		}
@@ -136,7 +153,7 @@ namespace SCG.Data.View
 			get { return filterWarnings; }
 			set
 			{
-				Update(ref filterWarnings, value);
+				this.RaiseAndSetIfChanged(ref filterWarnings, value);
 				FilterChanged(LogType.Warning, filterWarnings, autoRaiseLogsChanged);
 			}
 		}
@@ -148,14 +165,14 @@ namespace SCG.Data.View
 			get { return filterErrors; }
 			set
 			{
-				Update(ref filterErrors, value);
+				this.RaiseAndSetIfChanged(ref filterErrors, value);
 				FilterChanged(LogType.Error, filterErrors, autoRaiseLogsChanged);
 			}
 		}
 
 		public void FilterChanged(LogType logType, bool showType, bool raiseLogsChanged = true)
 		{
-			var logs = Logs.Where(ld => ld.MessageType == logType);
+			var logs = Logs.Items.Where(ld => ld.MessageType == logType);
 			if(logs != null)
 			{
 				var change = false;
@@ -168,7 +185,7 @@ namespace SCG.Data.View
 					}
 				}
 
-				if(raiseLogsChanged && change) Notify("Logs");
+				if(raiseLogsChanged && change) this.RaisePropertyChanged("Logs");
 			}
 		}
 
@@ -212,40 +229,58 @@ namespace SCG.Data.View
 				filterActivity = filterImportant = filterWarnings = false;
 			}
 
-			foreach(var log in Logs)
+			foreach(var log in Logs.Items)
 			{
 				log.IsVisible = log.MessageType == logType;
 			}
 
-			Notify("FilterActivity");
-			Notify("FilterImportant");
-			Notify("FilterWarnings");
-			Notify("FilterErrors");
-			Notify("Logs");
+			this.RaisePropertyChanged("FilterActivity");
+			this.RaisePropertyChanged("FilterImportant");
+			this.RaisePropertyChanged("FilterWarnings");
+			this.RaisePropertyChanged("FilterErrors");
+			this.RaisePropertyChanged("Logs");
 		}
 
 		public void ToggleAllFilters(bool toValue)
 		{
 			filterActivity = filterImportant = filterWarnings = filterErrors = toValue;
 
-			foreach (var log in Logs)
+			foreach (var log in Logs.Items)
 			{
 				log.IsVisible = toValue;
 			}
 
-			Notify("FilterActivity");
-			Notify("FilterImportant");
-			Notify("FilterWarnings");
-			Notify("FilterErrors");
-			Notify("Logs");
+			this.RaisePropertyChanged("FilterActivity");
+			this.RaisePropertyChanged("FilterImportant");
+			this.RaisePropertyChanged("FilterWarnings");
+			this.RaisePropertyChanged("FilterErrors");
+			this.RaisePropertyChanged("Logs");
 		}
 
-		private object logsLock = new object();
+		private bool CanDisplayLog(LogData logData)
+		{
+			if(logData.IsVisible)
+			{
+				if(String.IsNullOrWhiteSpace(SearchText))
+				{
+					return true;
+				}
+				else
+				{
+					return logData.Message.CaseInsensitiveContains(searchText);
+				}
+			}
+			return false;
+		}
 
 		public LogWindowViewData()
 		{
-			Logs = new ObservableCollection<LogData>();
-			BindingOperations.EnableCollectionSynchronization(Logs, logsLock);
+			//Logs.ToObservableChangeSet().Filter(x => x.IsVisible || (!String.IsNullOrWhiteSpace(searchText) && x.Message.CaseInsensitiveContains(searchText))).AsObservableList();
+			Logs.Connect().ObserveOn(RxApp.TaskpoolScheduler).Filter(x => CanDisplayLog(x)).Bind(out visibleLogs).Subscribe((x) =>
+			{
+				//Console.WriteLine($"Log added: {x.First().Item.Current?.Message}");
+			});
+			//this.WhenAnyValue(x => x, x => x.Logs, x => x.FilterActivity, x => x.FilterErrors, x => x.FilterImportant, x => x.SearchText).
 		}
 	}
 }

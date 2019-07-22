@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SCG.Data
 {
-	public abstract class HistoryBaseData : PropertyChangedBase
+	public abstract class HistoryBaseData : ReactiveObject
 	{
 		private object _owner;
 
