@@ -823,7 +823,6 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 					localeEntry.SetHistoryFromObject(this);
 					AddWithHistory(customFileData.Entries, localeEntry);
 					SelectedGroup.UpdateCombinedData();
-					customFileData.Entries.Add(localeEntry);
 				}
 			}
 			else

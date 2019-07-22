@@ -1003,9 +1003,8 @@ body {
 			<RowDefinition Height="Auto" />
 		</Grid.RowDefinitions>
 		<Grid x:Name="NameNewFileTabGrid" Grid.Row="0" Grid.RowSpan="4" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Panel.ZIndex="1" 
-			  
+			  Visibility="{Binding IsAddingNewFileTab, Converter={StaticResource BoolToVisibilityConverter}, FallbackValue=Collapsed}"
 			  >
-			<!--Visibility="{Binding IsAddingNewFileTab, Converter={StaticResource BoolToVisibilityConverter}, FallbackValue=Collapsed}"-->
 			<Grid.Resources>
 				<Style TargetType="TextBox">
 					<Setter Property="Effect">
