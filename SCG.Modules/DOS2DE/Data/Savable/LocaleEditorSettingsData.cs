@@ -5,53 +5,60 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Alphaleonis.Win32.Filesystem;
+using System.Runtime.Serialization;
+using ReactiveUI;
 
-namespace SCG.Modules.DOS2DE.Data.App
+namespace SCG.Modules.DOS2DE.Data
 {
-	public class LocaleEditorSettingsData : PropertyChangedBase
+	[DataContract]
+	public class LocaleEditorSettingsData : ReactiveObject
 	{
 		private string lastFileImportPath = "";
 
+		[DataMember]
 		public string LastFileImportPath
 		{
 			get { return lastFileImportPath; }
 			set
 			{
-				Update(ref lastFileImportPath, value);
+				this.RaiseAndSetIfChanged(ref lastFileImportPath, value);
 			}
 		}
 
 		private string lastEntryimportPath = "";
 
+		[DataMember]
 		public string LastEntryImportPath
 		{
 			get { return lastEntryimportPath; }
 			set
 			{
-				Update(ref lastEntryimportPath, value);
+				this.RaiseAndSetIfChanged(ref lastEntryimportPath, value);
 			}
 		}
 
 		private bool exportKeys = true;
 
+		[DataMember]
 		public bool ExportKeys
 		{
 			get { return exportKeys; }
 			set
 			{
-				Update(ref exportKeys, value);
+				this.RaiseAndSetIfChanged(ref exportKeys, value);
 				Log.Here().Activity($"ExportKeys set to {exportKeys}");
 			}
 		}
 
 		private bool exportSource = false;
 
+		[DataMember]
 		public bool ExportSource
 		{
 			get { return exportSource; }
 			set
 			{
-				Update(ref exportSource, value);
+				this.RaiseAndSetIfChanged(ref exportSource, value);
 				Log.Here().Activity($"ExportSource set to {exportSource}");
 			}
 		}

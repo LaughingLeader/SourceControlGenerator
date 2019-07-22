@@ -66,6 +66,6 @@ namespace SCG.Interfaces
 		void Init(IModuleData Data);
 		void SetToDefault(IModuleData Data);
 
-		void Notify(string propertyName);
+		void Notify(string prop);
 	}
 }

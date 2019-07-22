@@ -1,4 +1,4 @@
-﻿using SCG.Modules.DOS2DE.Data.App;
+﻿using SCG.Modules.DOS2DE.Data;
 using SCG.Windows;
 using System;
 using System.Collections.Generic;

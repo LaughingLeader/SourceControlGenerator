@@ -9,7 +9,7 @@ using SCG.SCGEnum;
 using ReactiveUI;
 using System.Runtime.Serialization;
 
-namespace SCG.Data.App
+namespace SCG.Data
 {
 	[DataContract]
 	public class AppSettingsData : ReactiveObject

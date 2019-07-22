@@ -307,7 +307,7 @@
     <Compile Include="Converters\VisibleLogsConverter.cs" />
     <Compile Include="Core\CommonFileFilters.cs" />
     <Compile Include="Core\MenuID.cs" />
-    <Compile Include="Data\App\AppSettingsData.cs" />
+    <Compile Include="Data\Savable\AppSettingsData.cs" />
     <Compile Include="Data\App\JunctionData.cs" />
     <Compile Include="Data\App\ManagedProjectsData.cs" />
     <Compile Include="Data\HistoryBaseData.cs" />
@@ -367,7 +367,7 @@
     <Compile Include="FileGen\GitGenerator.cs" />
     <Compile Include="Core\DefaultPaths.cs" />
     <Compile Include="Data\View\MainAppData.cs" />
-    <Compile Include="Data\App\ModuleSettingsData.cs" />
+    <Compile Include="Data\Savable\ModuleSettingsData.cs" />
     <Compile Include="Interfaces\IProjectController.cs" />
     <Compile Include="Controls\ListViewLayoutManager\ConverterGridViewColumn.cs" />
     <Compile Include="Controls\ListViewLayoutManager\FixedColumn.cs" />

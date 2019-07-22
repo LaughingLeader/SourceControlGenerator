@@ -19,7 +19,7 @@ using System.Collections.ObjectModel;
 using System.Globalization;
 using SCG.FileGen;
 using Newtonsoft.Json;
-using SCG.Modules.DOS2DE.Data.App;
+using SCG.Modules.DOS2DE.Data;
 using SCG.Modules.DOS2DE.Core;
 using SCG.Modules.DOS2DE.Windows;
 using System.Windows.Media;

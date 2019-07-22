@@ -10,6 +10,8 @@ using SCG.Data.View;
 using SCG.Interfaces;
 using Newtonsoft.Json;
 using SCG.SCGEnum;
+using ReactiveUI;
+using System.Runtime.Serialization;
 
 namespace SCG.Data
 {
@@ -76,142 +78,160 @@ namespace SCG.Data
 		}
 	}
 
-	public class ModuleSettingsData : PropertyChangedBase, IModuleSettingsData
+	[DataContract]
+	public class ModuleSettingsData : ReactiveObject, IModuleSettingsData
 	{
+		public void Notify(string propertyName)
+		{
+			this.RaisePropertyChanged(propertyName);
+		}
+
 		private string defaultAuthor;
 
 		[VisibleToView("Default Git Author", SettingsViewPropertyType.Text)]
-		[Bindable(BindableSupport.Yes, BindingDirection.TwoWay)]
+		[Bindable(BindableSupport.Yes, System.ComponentModel.BindingDirection.TwoWay)]
+		[DataMember]
 		public string DefaultAuthor
 		{
 			get { return defaultAuthor; }
 			set
 			{
-				Update(ref defaultAuthor, value);
+				this.RaiseAndSetIfChanged(ref defaultAuthor, value);
 			}
 		}
 
 		private string defaultEmail;
 
 		[VisibleToView("Default Git Email", SettingsViewPropertyType.Text)]
-		[Bindable(BindableSupport.Yes, BindingDirection.TwoWay)]
+		[Bindable(BindableSupport.Yes, System.ComponentModel.BindingDirection.TwoWay)]
+		[DataMember]
 		public string DefaultEmail
 		{
 			get { return defaultEmail; }
 			set
 			{
-				Update(ref defaultEmail, value);
+				this.RaiseAndSetIfChanged(ref defaultEmail, value);
 			}
 		}
 
 		private string gitRootDirectory;
 
 		[VisibleToView("Git Projects Root Directory", FileBrowseType.Directory)]
-		[Bindable(BindableSupport.Yes, BindingDirection.TwoWay)]
+		[Bindable(BindableSupport.Yes, System.ComponentModel.BindingDirection.TwoWay)]
+		[DataMember]
 		public string GitRootDirectory
 		{
 			get { return gitRootDirectory; }
-			set { Update(ref gitRootDirectory, value);}
+			set { this.RaiseAndSetIfChanged(ref gitRootDirectory, value);}
 		}
 
 		private string backupRootDirectory;
 
 		[VisibleToView("Backup Root Directory", FileBrowseType.Directory)]
-		[Bindable(BindableSupport.Yes, BindingDirection.TwoWay)]
+		[Bindable(BindableSupport.Yes, System.ComponentModel.BindingDirection.TwoWay)]
+		[DataMember]
 		public string BackupRootDirectory
 		{
 			get { return backupRootDirectory; }
 			set
 			{
-				Update(ref backupRootDirectory, value);
+				this.RaiseAndSetIfChanged(ref backupRootDirectory, value);
 			}
 		}
 
 		private string templatesSettingsFile;
 
 		[VisibleToView("Template Settings", FileBrowseType.File)]
-		[Bindable(BindableSupport.Yes, BindingDirection.TwoWay)]
+		[Bindable(BindableSupport.Yes, System.ComponentModel.BindingDirection.TwoWay)]
+		[DataMember]
 		public string TemplateSettingsFile
 		{
 			get { return templatesSettingsFile; }
 			set
 			{
-				Update(ref templatesSettingsFile, value);
+				this.RaiseAndSetIfChanged(ref templatesSettingsFile, value);
 			}
 		}
 
 		private string userKeywordsFile;
 
 		[VisibleToView("User Keywords", FileBrowseType.File)]
-		[Bindable(BindableSupport.Yes, BindingDirection.TwoWay)]
+		[Bindable(BindableSupport.Yes, System.ComponentModel.BindingDirection.TwoWay)]
+		[DataMember]
 		public string UserKeywordsFile
 		{
 			get { return userKeywordsFile; }
 			set
 			{
-				Update(ref userKeywordsFile, value);
+				this.RaiseAndSetIfChanged(ref userKeywordsFile, value);
 			}
 		}
 
 		private string addedProjectsFile;
 
 		[VisibleToView("Added Projects", FileBrowseType.File)]
-		[Bindable(BindableSupport.Yes, BindingDirection.TwoWay)]
+		[Bindable(BindableSupport.Yes, System.ComponentModel.BindingDirection.TwoWay)]
+		[DataMember]
 		public string AddedProjectsFile
 		{
 			get { return addedProjectsFile; }
 			set
 			{
-				Update(ref addedProjectsFile, value);
+				this.RaiseAndSetIfChanged(ref addedProjectsFile, value);
 			}
 		}
 
 		private string gitGenerationSettings;
 
 		[VisibleToView("Git Generation Settings", FileBrowseType.File)]
-		[Bindable(BindableSupport.Yes, BindingDirection.TwoWay)]
+		[Bindable(BindableSupport.Yes, System.ComponentModel.BindingDirection.TwoWay)]
+		[DataMember]
 		public string GitGenSettingsFile
 		{
 			get { return gitGenerationSettings; }
 			set
 			{
-				Update(ref gitGenerationSettings, value);
+				this.RaiseAndSetIfChanged(ref gitGenerationSettings, value);
 			}
 		}
 
 
 		private string lastBackupPath = "";
 
+		[DataMember]
 		public string LastBackupPath
 		{
 			get { return lastBackupPath; }
 			set
 			{
-				Update(ref lastBackupPath, value);
+				this.RaiseAndSetIfChanged(ref lastBackupPath, value);
 			}
 		}
 
+		[DataMember]
 		public ObservableCollection<TemplateFileData> TemplateFiles { get; set; }
 
 		private bool firstTimeSetup = true;
 
+		[DataMember]
 		public bool FirstTimeSetup
 		{
 			get { return firstTimeSetup; }
 			set
 			{
-				Update(ref firstTimeSetup, value);
+				this.RaiseAndSetIfChanged(ref firstTimeSetup, value);
 			}
 		}
 
 		private BackupMode backupMode = BackupMode.Zip;
 
+		[DataMember]
 		public BackupMode BackupMode
 		{
 			get { return backupMode; }
 			set
 			{
-				Update(ref backupMode, value);
+				this.RaiseAndSetIfChanged(ref backupMode, value);
 			}
 		}
 

@@ -14,7 +14,7 @@ using SCG.Collections;
 using SCG.Controls;
 using SCG.Data;
 using SCG.Data.View;
-using SCG.Modules.DOS2DE.Data.App;
+using SCG.Modules.DOS2DE.Data;
 using SCG.Modules.DOS2DE.Data.View;
 using SCG.FileGen;
 using SCG.Windows;

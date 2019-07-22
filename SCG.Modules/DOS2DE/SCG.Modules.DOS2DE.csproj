@@ -110,6 +110,7 @@
     <Reference Include="System.Runtime.CompilerServices.Unsafe, Version=4.0.4.1, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\..\packages\System.Runtime.CompilerServices.Unsafe.4.5.2\lib\netstandard2.0\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
     </Reference>
+    <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Threading.Tasks.Extensions, Version=4.2.0.1, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\..\packages\System.Threading.Tasks.Extensions.4.5.3\lib\netstandard2.0\System.Threading.Tasks.Extensions.dll</HintPath>
     </Reference>
@@ -155,7 +156,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Core\DOS2DEFileFilters.cs" />
-    <Compile Include="Data\App\LocaleEditorSettingsData.cs" />
+    <Compile Include="Data\Savable\LocaleEditorSettingsData.cs" />
     <Compile Include="Data\View\DOS2DEDebugData.cs" />
     <Compile Include="Data\View\Locale\BaseLocaleFileData.cs" />
     <Compile Include="Data\View\Locale\BaseLocaleKeyEntry.cs" />
@@ -176,7 +177,7 @@
     <Compile Include="Core\DOS2DEDefaultPaths.cs" />
     <Compile Include="Core\DOS2DEProjectController.cs" />
     <Compile Include="Core\DOS2DETooltips.cs" />
-    <Compile Include="Data\App\DOS2DESettingsData.cs" />
+    <Compile Include="Data\Savable\DOS2DESettingsData.cs" />
     <Compile Include="Data\View\DOS2DEModuleData.cs" />
     <Compile Include="Data\View\ModProjectData.cs" />
     <Compile Include="Data\Xml\DependencyInfo.cs" />
@@ -292,6 +293,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Controls\" />
+    <Folder Include="Data\App\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

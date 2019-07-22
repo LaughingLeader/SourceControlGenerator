@@ -11,9 +11,12 @@ using SCG.SCGEnum;
 using SCG.Interfaces;
 using Newtonsoft.Json;
 using Alphaleonis.Win32.Filesystem;
+using System.Runtime.Serialization;
+using ReactiveUI;
 
-namespace SCG.Modules.DOS2DE.Data.App
+namespace SCG.Modules.DOS2DE.Data
 {
+	[DataContract]
 	public class DOS2DESettingsData : ModuleSettingsData
 	{
 		[JsonIgnore]
@@ -25,24 +28,26 @@ namespace SCG.Modules.DOS2DE.Data.App
 		private string dataDirectory;
 
 		[VisibleToView("DOS2DE Data Directory", FileBrowseType.Directory)]
+		[DataMember]
 		public string DOS2DEDataDirectory
 		{
 			get { return dataDirectory; }
 			set
 			{
-				Update(ref dataDirectory, value);
+				this.RaiseAndSetIfChanged(ref dataDirectory, value);
 			}
 		}
 
 		private string directoryLayoutFile;
 
 		[VisibleToView("Directory Layout", FileBrowseType.File)]
+		[DataMember]
 		public string DirectoryLayoutFile
 		{
 			get { return directoryLayoutFile; }
 			set
 			{
-				Update(ref directoryLayoutFile, value);
+				this.RaiseAndSetIfChanged(ref directoryLayoutFile, value);
 			}
 		}
 

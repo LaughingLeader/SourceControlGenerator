@@ -11,7 +11,7 @@ using SCG.Data.View;
 using LSLib.LS;
 using SCG.Modules.DOS2DE.Windows;
 using SCG.Modules.DOS2DE.Core;
-using SCG.Modules.DOS2DE.Data.App;
+using SCG.Modules.DOS2DE.Data;
 using Alphaleonis.Win32;
 using Alphaleonis.Win32.Filesystem;
 using SCG.Core;

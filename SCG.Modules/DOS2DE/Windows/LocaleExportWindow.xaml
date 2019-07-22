@@ -5,7 +5,7 @@
 		xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 		xmlns:local="clr-namespace:SCG.Modules.DOS2DE.Windows"
 		xmlns:win="clr-namespace:SCG.Windows;assembly=SourceControlGenerator"
-		xmlns:data="clr-namespace:SCG.Modules.DOS2DE.Data.App"
+		xmlns:data="clr-namespace:SCG.Modules.DOS2DE.Data"
 		xmlns:core="clr-namespace:SCG.Modules.DOS2DE.Core"
 		mc:Ignorable="d"
 		Title="Localization Export" Height="400" Width="600">
