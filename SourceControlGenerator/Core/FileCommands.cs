@@ -48,16 +48,45 @@ namespace SCG
 			return contents;
 		}
 
-		public static bool WriteToFile(string filePath, string Contents, bool supressLogMessage = true)
+		public static bool WriteToFile(string filePath, string contents, bool supressLogMessage = true)
 		{
 			try
 			{
 				Directory.CreateDirectory(Path.GetDirectoryName(filePath));
 
-				FileInfo file = new FileInfo(filePath);
-				File.WriteAllText(filePath, Contents);
+				using (System.IO.FileStream stream = new System.IO.FileStream(filePath, System.IO.FileMode.Create, System.IO.FileAccess.Write, System.IO.FileShare.None, 4096, false))
+				{
+					using (System.IO.StreamWriter sw = new System.IO.StreamWriter(stream))
+					{
+						sw.WriteLine(contents);
+						if (!supressLogMessage) Log.Here().Activity("Saved file: {0}", filePath);
+					}
+				}
 
-				if (!supressLogMessage) Log.Here().Activity("Saved file: {0}", filePath);
+				return true;
+			}
+			catch (Exception e)
+			{
+				Log.Here().Error("Error saving file at {0} - {1}", filePath, e.ToString());
+				return false;
+			}
+		}
+
+		public static async Task<bool> WriteToFileAsync(string filePath, string contents, bool supressLogMessage = true)
+		{
+			try
+			{
+				Directory.CreateDirectory(Path.GetDirectoryName(filePath));
+
+				using (System.IO.FileStream stream = new System.IO.FileStream(filePath, System.IO.FileMode.Create, System.IO.FileAccess.Write, System.IO.FileShare.None, 4096, true))
+				{
+					using (System.IO.StreamWriter sw = new System.IO.StreamWriter(stream))
+					{
+						await sw.WriteLineAsync(contents);
+						if (!supressLogMessage) Log.Here().Activity("Saved file: {0}", filePath);
+					}
+				}
+				
 				return true;
 			}
 			catch (Exception e)
