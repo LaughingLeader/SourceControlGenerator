@@ -551,6 +551,7 @@ body {
 												Tag="{Binding}"
 												x:Name="EntryContentTextBox"
 												Text="{Binding EntryContent, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+												IsReadOnly="False"
 												BorderThickness="0" BorderBrush="{x:Null}" FontSize="12"
 												GotFocus="EntryContent_GotFocus"
 												LostFocus="EntryContent_LostFocus"

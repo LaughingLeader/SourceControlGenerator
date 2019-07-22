@@ -48,6 +48,18 @@ namespace SCG
 			return contents;
 		}
 
+		public static async Task<string> ReadFileAsync(string filePath)
+		{
+			using (System.IO.FileStream stream = new System.IO.FileStream(filePath, System.IO.FileMode.Open, System.IO.FileAccess.Read, System.IO.FileShare.None, 4096, true))
+			{
+				using (System.IO.StreamReader sr = new System.IO.StreamReader(stream))
+				{
+					string contents = await sr.ReadToEndAsync();
+					return contents;
+				}
+			}
+		}
+
 		public static bool WriteToFile(string filePath, string contents, bool supressLogMessage = true)
 		{
 			try

@@ -18,10 +18,6 @@ using System.Xml.Linq;
 
 namespace SCG.Modules.DOS2DE.Windows
 {
-	public static class TestProjectData
-	{
-		public static ModProjectData Data => new ModProjectData(new Alphaleonis.Win32.Filesystem.FileInfo(@"G:\Divinity Original Sin 2\DefEd\Data\Mods\Nemesis_627c8d3a-7e6b-4fd2-8ce5-610d553fdbe9\meta.lsx"), @"G:\Divinity Original Sin 2\DefEd\Data\Projects");
-	}
 	/// <summary>
 	/// Interaction logic for EditVersionWindow.xaml
 	/// </summary>

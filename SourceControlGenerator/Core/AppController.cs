@@ -24,6 +24,7 @@ using System.Windows.Input;
 using SCG.Util;
 using System.Windows.Threading;
 using SCG.Controls;
+using ReactiveUI;
 
 namespace SCG.Core
 {
@@ -55,7 +56,7 @@ namespace SCG.Core
 		{
 			var totalLoaded = StartLoadingModules().GetAwaiter().GetResult();
 
-			Log.Here().Important($"Loaded {totalLoaded} project modules.");
+			Log.Here().Important($"Loaded {totalLoaded} project modules. Last Module: [{Data.AppSettings.LastModule}]");
 
 			if (!String.IsNullOrWhiteSpace(Data.AppSettings.LastModule) && SetModule(Data.AppSettings.LastModule))
 			{
@@ -388,7 +389,14 @@ namespace SCG.Core
 				try
 				{
 					Log.Here().Activity($"Loading main app settings from {DefaultPaths.MainAppSettingsFile}");
-					Data.AppSettings = JsonConvert.DeserializeObject<AppSettingsData>(File.ReadAllText(DefaultPaths.MainAppSettingsFile));
+					string json = FileCommands.ReadFile(DefaultPaths.MainAppSettingsFile);
+					JsonSerializerSettings jsonSettings = new JsonSerializerSettings
+					{
+						MissingMemberHandling = MissingMemberHandling.Ignore,
+						ObjectCreationHandling = ObjectCreationHandling.Auto
+					};
+					var settings = JsonConvert.DeserializeObject<AppSettingsData>(json, jsonSettings);
+					Data.AppSettings = settings;
 					Log.Enabled = !Data.AppSettings.LogDisabled;
 				}
 				catch(Exception ex)
@@ -401,8 +409,6 @@ namespace SCG.Core
 				Log.Here().Warning($"Main app settings file at {DefaultPaths.MainAppSettingsFile} not found. Creating new file.");
 				Data.AppSettings = new AppSettingsData();
 			}
-
-			Data.OnSettingsLoaded();
 		}
 
 		public void SaveAppSettings()
@@ -499,7 +505,7 @@ namespace SCG.Core
 				mainWindow.LogWindow.Show();
 			}
 
-			Data.Notify("LogVisibleText");
+			Data.RaisePropertyChanged("LogVisibleText");
 		}
 
 		public void MenuAction_SaveLog()
@@ -955,22 +961,7 @@ namespace SCG.Core
 				}
 			}
 
-			LoadAppSettings();
 			InitDefaultMenus();
-
-			if(String.IsNullOrWhiteSpace(Data.AppSettings.GitInstallPath))
-			{
-				var gitPath = Helpers.Registry.GetRegistryKeyValue("InstallPath", "GitForWindows", "SOFTWARE");
-				if(!String.IsNullOrEmpty(gitPath))
-				{
-					Data.AppSettings.GitInstallPath = gitPath;
-					Log.Here().Important($"Git install location found at {gitPath}.");
-				}
-				else
-				{
-					Log.Here().Error($"Git install location not found.");
-				}
-			}
 		}
 	}
 }

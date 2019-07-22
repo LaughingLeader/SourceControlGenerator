@@ -923,7 +923,7 @@ namespace SCG.Core
 			}
 		}
 
-		public async void RefreshAllProjects()
+		public async Task RefreshAllProjects()
 		{
 			if (MainAppData.ProgressActive) return;
 
@@ -931,11 +931,8 @@ namespace SCG.Core
 			{
 				Data.CanClickRefresh = false;
 
-				await Task.Run(() =>
-				{
-					DOS2DECommands.LoadAll(Data);
-					Data.CanClickRefresh = true;
-				}).ConfigureAwait(false);
+				await DOS2DECommands.LoadAll(Data);
+				Data.CanClickRefresh = true;
 			}
 			else
 			{
@@ -943,7 +940,7 @@ namespace SCG.Core
 			}
 		}
 
-		public async void RefreshAvailableProjects()
+		public async Task RefreshAvailableProjects()
 		{
 			if (MainAppData.ProgressActive) return;
 
@@ -951,15 +948,12 @@ namespace SCG.Core
 			{
 				Data.CanClickRefresh = false;
 
-				await Task.Run(() =>
-				{
-					DOS2DECommands.RefreshAvailableProjects(Data);
-					Data.CanClickRefresh = true;
-				}).ConfigureAwait(false);
+				await DOS2DECommands.RefreshAvailableProjects(Data);
+				Data.CanClickRefresh = true;
 			}
 		}
 
-		public async void RefreshModProjects()
+		public async Task RefreshModProjects()
 		{
 			if (MainAppData.ProgressActive) return;
 
@@ -967,11 +961,8 @@ namespace SCG.Core
 			{
 				Data.CanClickRefresh = false;
 
-				await Task.Run(() =>
-				{
-					DOS2DECommands.RefreshManagedProjects(Data);
-					Data.CanClickRefresh = true;
-				}).ConfigureAwait(false);
+				await DOS2DECommands.RefreshManagedProjects(Data);
+				Data.CanClickRefresh = true;
 			}
 		}
 
@@ -1059,9 +1050,14 @@ namespace SCG.Core
 			}
 		}
 
+		private IObservable<bool> canRefresh;
+
 		public DOS2DEProjectController()
 		{
 			Data = new DOS2DEModuleData();
+
+			canRefresh = this.WhenAnyValue(vm => vm.Data.CanClickRefresh);
+			Data.RefreshAllCommand = ReactiveCommand.CreateFromTask(RefreshAllProjects, canRefresh);
 
 			IgnoredExportFiles = new List<string>();
 			//IgnoredExportFiles.Add(".ailog");
@@ -1139,8 +1135,8 @@ namespace SCG.Core
 					Header = "Refresh Projects",
 					MenuItems = new ObservableCollectionExtended<IMenuData>()
 					{
-						new MenuData("DOS2.RefreshAll", "Refresh All", new ActionCommand(RefreshAllProjects), System.Windows.Input.Key.F5),
-						new MenuData("DOS2.RefreshManagedData", "Refresh Managed Data", new ActionCommand(RefreshModProjects)),
+						new MenuData("DOS2.RefreshAll", "Refresh All", Data.RefreshAllCommand, System.Windows.Input.Key.F5),
+						new MenuData("DOS2.RefreshManagedData", "Refresh Managed Data", ReactiveCommand.CreateFromTask(RefreshModProjects, canRefresh)),
 					}
 				},
 				new SeparatorData(),
@@ -1180,10 +1176,9 @@ namespace SCG.Core
 			LoadDirectoryLayout();
 			InitModuleKeywords();
 
-			DOS2DECommands.LoadAll(Data);
-
-			AppController.Main.MainWindow.Dispatcher.BeginInvoke(new Action(() =>
+			AppController.Main.MainWindow.Dispatcher.BeginInvoke(new Action(async () =>
 			{
+				await DOS2DECommands.LoadAll(Data);
 				Data.NewProjectsAvailable = Data.NewProjects != null && Data.NewProjects.Count > 0;
 				Data.UpdateManageButtonsText();
 			}), DispatcherPriority.Background);

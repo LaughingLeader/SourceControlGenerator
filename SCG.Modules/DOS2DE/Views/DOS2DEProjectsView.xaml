@@ -106,7 +106,7 @@
 					<StackPanel Orientation="Horizontal">
 						<Label Content="Available Projects" HorizontalAlignment="Center" VerticalAlignment="Center" Grid.Row="0" Margin="0" ToolTip="{Binding Source={x:Static core:DOS2DETooltips.AvailableProjects}, Converter={StaticResource NewlineStringConverter}}" />
 						<c:ImageButton x:Name="Btn_AvailableProjects_Refresh" ToolTip="{Binding Source={x:Static core:DOS2DETooltips.Button_RefreshAvailableProjects}, FallbackValue='Refresh Available Projects'}" 
-								Click="Btn_AvailableProjects_Refresh_Click" 
+								Command="{Binding RefreshAllCommand}"
 								IsEnabled="{Binding CanClickRefresh}" 
 								Source="{x:Static vdata:IconPathData.Refresh}" Style="{StaticResource RefreshButtonStyle}" />
 					</StackPanel>
@@ -163,7 +163,7 @@
 					</Grid.ColumnDefinitions>
 					<StackPanel Orientation="Horizontal">
 						<Label Content="Managed Projects" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Row="0" />
-						<c:ImageButton x:Name="Btn_ModProjects_Refresh" ToolTip="Refresh Project Data" Click="Btn_ModProjects_Refresh_Click" 
+						<c:ImageButton x:Name="Btn_ModProjects_Refresh" ToolTip="Refresh Project Data" Command="{Binding RefreshAllCommand}" 
 							IsEnabled="{Binding CanClickRefresh}" Source="{x:Static vdata:IconPathData.Refresh}" 
 							Style="{StaticResource RefreshButtonStyle}" />
 					</StackPanel>

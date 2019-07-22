@@ -20,10 +20,15 @@ using SCG.Interfaces;
 using System.Windows;
 using SCG.Collections;
 using System.Windows.Data;
+using ReactiveUI;
+using Reactive.Bindings.Extensions;
+using System.Reactive.Linq;
+using DynamicData;
+using DynamicData.Binding;
 
 namespace SCG.Data.View
 {
-	public class MainAppData : PropertyChangedBase
+	public class MainAppData : ReactiveObject
 	{
 		public ManagedProjectsData AppProjects { get; set; }
 
@@ -34,23 +39,7 @@ namespace SCG.Data.View
 			get { return appSettings; }
 			set
 			{
-				Update(ref appSettings, value);
-			}
-		}
-
-		public void OnSettingsLoaded()
-		{
-			if(AppSettings != null)
-			{
-				AppSettings.PropertyChanged += AppSettings_PropertyChanged;
-			}
-		}
-
-		private void AppSettings_PropertyChanged(object sender, PropertyChangedEventArgs e)
-		{
-			if(e.PropertyName == "GitInstallPath")
-			{
-				GitDetected = FileCommands.IsValidPath(AppSettings.GitInstallPath);
+				this.RaiseAndSetIfChanged(ref appSettings, value);
 			}
 		}
 
@@ -71,7 +60,7 @@ namespace SCG.Data.View
 			get { return portable; }
 			set
 			{
-				Update(ref portable, value);
+				this.RaiseAndSetIfChanged(ref portable, value);
 			}
 		}
 
@@ -82,7 +71,7 @@ namespace SCG.Data.View
 			get { return clipboardPopulated; }
 			set
 			{
-				Update(ref clipboardPopulated, value);
+				this.RaiseAndSetIfChanged(ref clipboardPopulated, value);
 			}
 		}
 
@@ -93,7 +82,7 @@ namespace SCG.Data.View
 			get { return windowTitle; }
 			set
 			{
-				Update(ref windowTitle, value);
+				this.RaiseAndSetIfChanged(ref windowTitle, value);
 			}
 		}
 
@@ -104,7 +93,7 @@ namespace SCG.Data.View
 			get { return menuBarData; }
 			set
 			{
-				Update(ref menuBarData, value);
+				this.RaiseAndSetIfChanged(ref menuBarData, value);
 			}
 		}
 
@@ -120,8 +109,8 @@ namespace SCG.Data.View
 			get { return selectedModuleData; }
 			set
 			{
-				Update(ref selectedModuleData, value);
-				Notify("CanLoadModule");
+				this.RaiseAndSetIfChanged(ref selectedModuleData, value);
+				this.RaisePropertyChanged("CanLoadModule");
 			}
 		}
 
@@ -140,8 +129,8 @@ namespace SCG.Data.View
 			get { return currentModuleData; }
 			set
 			{
-				Update(ref currentModuleData, value);
-				Notify("CurrentModuleName");
+				this.RaiseAndSetIfChanged(ref currentModuleData, value);
+				this.RaisePropertyChanged("CurrentModuleName");
 			}
 		}
 
@@ -160,7 +149,7 @@ namespace SCG.Data.View
 			get { return moduleIsLoaded; }
 			set
 			{
-				Update(ref moduleIsLoaded, value);
+				this.RaiseAndSetIfChanged(ref moduleIsLoaded, value);
 			}
 		}
 
@@ -169,7 +158,7 @@ namespace SCG.Data.View
 		public bool GitDetected
 		{
 			get { return gitDetected; }
-			set { Update(ref gitDetected, value); }
+			set { this.RaiseAndSetIfChanged(ref gitDetected, value); }
 		}
 
 		private ICommand saveKeywordsCommand;
@@ -179,7 +168,7 @@ namespace SCG.Data.View
 			get { return saveKeywordsCommand; }
 			set
 			{
-				Update(ref saveKeywordsCommand, value);
+				this.RaiseAndSetIfChanged(ref saveKeywordsCommand, value);
 			}
 		}
 
@@ -190,7 +179,7 @@ namespace SCG.Data.View
 			get { return saveKeywordsAsCommand; }
 			set
 			{
-				Update(ref saveKeywordsAsCommand, value);
+				this.RaiseAndSetIfChanged(ref saveKeywordsAsCommand, value);
 			}
 		}
 
@@ -203,7 +192,7 @@ namespace SCG.Data.View
 			get { return progressActive; }
 			set
 			{
-				Update(ref progressActive, value);
+				this.RaiseAndSetIfChanged(ref progressActive, value);
 			}
 		}
 
@@ -215,7 +204,7 @@ namespace SCG.Data.View
 			get { return progressTitle; }
 			set
 			{
-				Update(ref progressTitle, value);
+				this.RaiseAndSetIfChanged(ref progressTitle, value);
 			}
 		}
 
@@ -226,7 +215,7 @@ namespace SCG.Data.View
 			get { return progressMessage; }
 			set
 			{
-				Update(ref progressMessage, value);
+				this.RaiseAndSetIfChanged(ref progressMessage, value);
 			}
 		}
 
@@ -237,7 +226,7 @@ namespace SCG.Data.View
 			get { return progressLog; }
 			set
 			{
-				Update(ref progressLog, value);
+				this.RaiseAndSetIfChanged(ref progressLog, value);
 			}
 		}
 
@@ -249,7 +238,7 @@ namespace SCG.Data.View
 			get { return progressValue; }
 			set
 			{
-				Update(ref progressValue, value);
+				this.RaiseAndSetIfChanged(ref progressValue, value);
 			}
 		}
 
@@ -260,7 +249,7 @@ namespace SCG.Data.View
 			get { return progressValueMax; }
 			set
 			{
-				Update(ref progressValueMax, value);
+				this.RaiseAndSetIfChanged(ref progressValueMax, value);
 			}
 		}
 
@@ -272,7 +261,7 @@ namespace SCG.Data.View
 			get { return progressVisiblity; }
 			set
 			{
-				Update(ref progressVisiblity, value);
+				this.RaiseAndSetIfChanged(ref progressVisiblity, value);
 			}
 		}
 
@@ -283,7 +272,7 @@ namespace SCG.Data.View
 			get { return progressCancelButtonVisibility; }
 			set
 			{
-				Update(ref progressCancelButtonVisibility, value);
+				this.RaiseAndSetIfChanged(ref progressCancelButtonVisibility, value);
 			}
 		}
 
@@ -294,7 +283,7 @@ namespace SCG.Data.View
 			get { return isIndeterminate; }
 			set
 			{
-				Update(ref isIndeterminate, value);
+				this.RaiseAndSetIfChanged(ref isIndeterminate, value);
 			}
 		}
 
@@ -306,7 +295,7 @@ namespace SCG.Data.View
 			get { return progressCancelCommand; }
 			set
 			{
-				Update(ref progressCancelCommand, value);
+				this.RaiseAndSetIfChanged(ref progressCancelCommand, value);
 			}
 		}
 
@@ -319,7 +308,7 @@ namespace SCG.Data.View
 			get { return moduleSelectionVisibility; }
 			set
 			{
-				Update(ref moduleSelectionVisibility, value);
+				this.RaiseAndSetIfChanged(ref moduleSelectionVisibility, value);
 			}
 		}
 
@@ -330,7 +319,7 @@ namespace SCG.Data.View
 			get { return lockScreenVisibility; }
 			set
 			{
-				Update(ref lockScreenVisibility, value);
+				this.RaiseAndSetIfChanged(ref lockScreenVisibility, value);
 			}
 		}
 
@@ -342,7 +331,7 @@ namespace SCG.Data.View
 			get { return footerOutputDate; }
 			set
 			{
-				Update(ref footerOutputDate, value);
+				this.RaiseAndSetIfChanged(ref footerOutputDate, value);
 			}
 		}
 
@@ -354,7 +343,7 @@ namespace SCG.Data.View
 			get { return footerOutputText; }
 			set
 			{
-				Update(ref footerOutputText, value);
+				this.RaiseAndSetIfChanged(ref footerOutputText, value);
 			}
 		}
 
@@ -365,7 +354,7 @@ namespace SCG.Data.View
 			get { return footerOutputType; }
 			set
 			{
-				Update(ref footerOutputType, value);
+				this.RaiseAndSetIfChanged(ref footerOutputType, value);
 			}
 		}
 
@@ -504,6 +493,14 @@ namespace SCG.Data.View
 				KeywordName = "$DateUniversal",
 				KeywordValue = DateTime.Now.ToString("U"),
 				Replace = (o) => { return DateTime.Now.ToString("U"); }
+			});
+
+			this.WhenAnyValue(d => d.AppSettings.GitInstallPath).ToObservableChangeSet().
+				Buffer(TimeSpan.FromMilliseconds(250)).FlattenBufferResult().Subscribe((pathChange) =>
+			{
+				string path = pathChange.First().Item.Current;
+				Log.Here().Activity($"Checking for git path at {path}");
+				GitDetected = !String.IsNullOrEmpty(path) && File.Exists(path);
 			});
 		}
 	}

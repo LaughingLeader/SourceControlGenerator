@@ -12,9 +12,7 @@
 		xmlns:vdata="clr-namespace:SCG.Data.View;assembly=SourceControlGenerator"
 		xmlns:convert="clr-namespace:SCG.Converters;assembly=SourceControlGenerator"
 		mc:Ignorable="d"
-		Title="Edit Project Version" Height="150" Width="600"
-		d:DataContext="{x:Static local:TestProjectData.Data}"
-					   
+		Title="Edit Project Version" Height="150" Width="600"	   
 		WindowStartupLocation="CenterOwner"
 		SizeToContent="Height"
 		ResizeMode="NoResize"

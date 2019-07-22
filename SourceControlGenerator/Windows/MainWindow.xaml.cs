@@ -26,6 +26,8 @@ using SCG.Modules;
 using SCG.FileGen;
 using SCG.Controls;
 using System.Windows.Threading;
+using ReactiveUI;
+using System.Reactive.Disposables;
 
 namespace SCG.Windows
 {
@@ -36,8 +38,13 @@ namespace SCG.Windows
 	/// <summary>
 	/// Interaction logic for MainWindow.xaml
 	/// </summary>
-	public partial class MainWindow : ClipboardMonitorWindow
+	public partial class MainWindow : ClipboardMonitorWindow, IViewFor<MainAppData>
 	{
+		public MainAppData ViewModel { get; set; }
+		object IViewFor.ViewModel { get; set; }
+
+		private static MainWindow _instance;
+
 		private LogWindow logWindow;
 
 		public LogWindow LogWindow
@@ -125,17 +132,75 @@ namespace SCG.Windows
 			}
 
 			Controller = new AppController(this);
-			DataContext = Controller.Data;
+			this.WhenAnyValue(v => v.Controller.Data).Subscribe((vm) =>
+			{
+				ViewModel = vm;
+				DataContext = ViewModel;
+			});
 
-			Controller.OnModuleSet += LoadProjectModuleView;
-
+			Controller.LoadAppSettings();
 			Controller.InitModules();
+
+			if (String.IsNullOrWhiteSpace(ViewModel.AppSettings.GitInstallPath))
+			{
+				var gitPath = Helpers.Registry.GetRegistryKeyValue("InstallPath", "GitForWindows", "SOFTWARE");
+				if (!String.IsNullOrEmpty(gitPath))
+				{
+					ViewModel.AppSettings.GitInstallPath = gitPath;
+					Log.Here().Important($"Git install location found at {gitPath}.");
+				}
+				else
+				{
+					Log.Here().Error($"Git install location not found.");
+				}
+			}
+
+			this.WhenActivated((disposables) =>
+			{
+				this.WhenAnyValue(v => v.Controller.CurrentModule).Subscribe((m) =>
+				{
+					if(m != null)
+					{
+						var view = m.GetProjectView(this);
+						var viewGrid = (Grid)FindName("ProjectsViewGrid");
+
+						if (view != null && viewGrid != null)
+						{
+							if (lastModuleView != null)
+							{
+								viewGrid.Children.Remove(lastModuleView);
+								lastModuleView = null;
+							}
+
+							viewGrid.Children.Add(view);
+							lastModuleView = view;
+
+							Log.Here().Activity("Loaded project view for module.");
+
+							DataContext = null;
+							DataContext = Controller.Data;
+
+							Controller.Data.ModuleSelectionVisibility = Visibility.Collapsed;
+						}
+					}
+					else
+					{
+						var viewGrid = (Grid)FindName("ProjectsViewGrid");
+						if (viewGrid != null && lastModuleView != null)
+						{
+							viewGrid.Children.Remove(lastModuleView);
+							lastModuleView = null;
+						}
+
+						Controller.Data.ModuleSelectionVisibility = Visibility.Visible;
+					}
+				}).DisposeWith(disposables);
+			});
 		}
 
 		protected override void OnClipboardUpdate()
 		{
 			base.OnClipboardUpdate();
-
 			Controller.Data.ClipboardPopulated = Clipboard.ContainsText();
 		}
 
@@ -157,31 +222,6 @@ namespace SCG.Windows
 			}
 		}
 
-		public void LoadProjectModuleView(object sender, EventArgs e)
-		{
-			var view = Controller.CurrentModule.GetProjectView(this);
-			var viewGrid = (Grid)FindName("ProjectsViewGrid");
-
-			if (view != null && viewGrid != null)
-			{
-				if (lastModuleView != null)
-				{
-					viewGrid.Children.Remove(lastModuleView);
-					lastModuleView = null;
-				}
-
-				viewGrid.Children.Add(view);
-				lastModuleView = view;
-
-				Log.Here().Activity("Loaded project view for module.");
-
-				DataContext = null;
-				DataContext = Controller.Data;
-
-				Controller.Data.ModuleSelectionVisibility = Visibility.Collapsed;
-			}
-		}
-
 		public bool LogWindowShown
 		{
 			get
@@ -190,8 +230,6 @@ namespace SCG.Windows
 				return false;
 			}
 		}
-
-		private static MainWindow _instance;
 
 		public static void FooterLog(string Message, params object[] Vars)
 		{

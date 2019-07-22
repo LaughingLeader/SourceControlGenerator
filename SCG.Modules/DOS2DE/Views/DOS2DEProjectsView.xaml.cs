@@ -39,15 +39,21 @@ namespace SCG.Modules.DOS2DE.Views
 	{
 		public DOS2DEProjectsViewTestData()
 		{
-			ModProjects = createTestProjects();
+			var loadCommand = ReactiveCommand.CreateFromTask(InitTestProjects);
+			loadCommand.Execute();
+		}
+
+		private async Task InitTestProjects()
+		{
+			var mods = await CreateTestProjects();
+			ModProjects = mods;
 
 			foreach (var project in ModProjects)
 			{
 				ManagedProjects.Add(project);
 			}
 		}
-
-		private ObservableImmutableList<ModProjectData> createTestProjects()
+		private async Task<ObservableImmutableList<ModProjectData>> CreateTestProjects()
 		{
 			ObservableImmutableList<ModProjectData> projects = new ObservableImmutableList<ModProjectData>();
 
@@ -73,7 +79,8 @@ namespace SCG.Modules.DOS2DE.Views
 							var metaFile = modFolderInfo.GetFiles("meta.lsx").FirstOrDefault();
 							if (metaFile != null)
 							{
-								ModProjectData modProjectData = new ModProjectData(metaFile, projectsPath);
+								ModProjectData modProjectData = new ModProjectData();
+								await modProjectData.LoadAllDataAsync(metaFile.FullName, projectsPath);
 								projects.DoOperation(data => data.Add(modProjectData));
 							}
 						}
@@ -302,6 +309,7 @@ namespace SCG.Modules.DOS2DE.Views
 							{
 								canGitGenerate = true;
 							}
+							Log.Here().Activity($"Project GitGenerated: {data.GitGenerated} | Git Detected: {AppController.Main.Data.GitDetected}");
 
 							projectSelected = true;
 						}
@@ -476,17 +484,6 @@ namespace SCG.Modules.DOS2DE.Views
 			{
 				ShiftKeyDown -= 1;
 			}
-		}
-
-		private void Btn_ModProjects_Refresh_Click(object sender, RoutedEventArgs e)
-		{
-			//Controller.RefreshModProjects();
-			Controller.RefreshAllProjects();
-		}
-
-		private void Btn_AvailableProjects_Refresh_Click(object sender, RoutedEventArgs e)
-		{
-			Controller.RefreshAllProjects();
 		}
 	}
 }

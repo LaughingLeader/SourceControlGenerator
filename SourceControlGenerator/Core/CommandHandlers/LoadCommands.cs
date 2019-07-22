@@ -390,6 +390,24 @@ namespace SCG.Commands
 			}
 			return null;
 		}
+		public async Task<SourceControlData> LoadSourceControlDataAsync(string filePath)
+		{
+			if (!String.IsNullOrEmpty(filePath) && File.Exists(filePath))
+			{
+				try
+				{
+					var contents = await FileCommands.ReadFileAsync(filePath);
+					SourceControlData data = JsonConvert.DeserializeObject<SourceControlData>(contents);
+					data.RepositoryPath = Directory.GetDirectoryRoot(filePath);
+					return data;
+				}
+				catch (Exception ex)
+				{
+					Log.Here().Error("Error deserializing {0}: {1}", filePath, ex.ToString());
+				}
+			}
+			return null;
+		}
 
 		public void LoadAll(IModuleData Data)
 		{

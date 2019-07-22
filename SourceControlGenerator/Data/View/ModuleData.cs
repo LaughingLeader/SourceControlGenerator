@@ -109,7 +109,7 @@ namespace SCG.Data.View
 
 		public virtual void OnProjectsDeselected() { }
 
-		private bool canGenerateGit;
+		private bool canGenerateGit = false;
 
 		public bool CanGenerateGit
 		{

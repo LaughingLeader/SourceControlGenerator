@@ -6,42 +6,48 @@ using System.Text;
 using System.Threading.Tasks;
 using SCG.Core;
 using SCG.SCGEnum;
+using ReactiveUI;
+using System.Runtime.Serialization;
 
 namespace SCG.Data.App
 {
-	public class AppSettingsData : PropertyChangedBase
+	[DataContract]
+	public class AppSettingsData : ReactiveObject
 	{
 		private string lastModule;
 
+		[DataMember]
 		public string LastModule
 		{
 			get { return lastModule; }
 			set
 			{
-				Update(ref lastModule, value);
+				this.RaiseAndSetIfChanged(ref lastModule, value);
 			}
 		}
 
 		private string lastLogPath;
 
+		[DataMember]
 		public string LastLogPath
 		{
 			get { return lastLogPath; }
 			set
 			{
-				Update(ref lastLogPath, value);
+				this.RaiseAndSetIfChanged(ref lastLogPath, value);
 			}
 		}
 
 		private string gitInstallPath;
 
 		[VisibleToView("Git Install Directory", FileBrowseType.Directory)]
+		[DataMember]
 		public string GitInstallPath
 		{
 			get { return gitInstallPath; }
 			set
 			{
-				Update(ref gitInstallPath, value);
+				this.RaiseAndSetIfChanged(ref gitInstallPath, value);
 			}
 		}
 #if Debug
@@ -51,12 +57,13 @@ namespace SCG.Data.App
 #endif
 
 		[VisibleToView("Log Enabled")]
+		[DataMember]
 		public bool LogDisabled
 		{
 			get => logDisabled;
 			set
 			{
-				Update(ref logDisabled, value);
+				this.RaiseAndSetIfChanged(ref logDisabled, value);
 				Log.Enabled = !LogDisabled;
 			}
 		}

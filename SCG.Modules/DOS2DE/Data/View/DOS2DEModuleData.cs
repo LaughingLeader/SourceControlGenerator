@@ -11,6 +11,7 @@ using System.Windows.Input;
 using ReactiveUI;
 using SCG.Collections;
 using SCG.Commands;
+using SCG.Core;
 using SCG.Data;
 using SCG.Data.View;
 using SCG.Modules.DOS2DE.Core;
@@ -196,6 +197,7 @@ namespace SCG.Modules.DOS2DE.Data.View
 		public ICommand OpenEditorFolderCommand { get; private set; }
 		public ICommand OpenProjectFolderCommand { get; private set; }
 		public ICommand EditProjectVersionCommand { get; private set; }
+		public ICommand RefreshAllCommand { get; internal set; }
 		public ReactiveCommand<ModProjectData, Unit> OpenInLocalizationEditorCommand { get; private set; }
 
 		public DOS2DEModuleData() : base(DOS2DE_ModuleDisplayName, DOS2DE_ModuleFolderName)
@@ -224,6 +226,8 @@ namespace SCG.Modules.DOS2DE.Data.View
 
 			OpenInLocalizationEditorCommand.IsExecuting.ToProperty(this, x => x.OpeningLocaleEditor, out openingLocaleEditor);
 			OpenInLocalizationEditorCommand.ThrownExceptions.Subscribe(ex => Log.Here().Error("Error opening Localization Editor: ", ex.ToString()));
+
+			//this.WhenAnyValue(x => x.CanClickRefresh).ToProperty(this, x => x.CanExecuteRefresh, out canExecuteRefresh);
 		}
 	}
 }
