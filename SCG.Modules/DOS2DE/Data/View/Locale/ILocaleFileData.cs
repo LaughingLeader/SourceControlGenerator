@@ -14,11 +14,14 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 
 		string SourcePath { get; set; }
 		string Name { get; set; }
+		string RenameText { get; set; }
 		bool Active { get; set; }
 		bool AllSelected { get; set; }
 		bool Locked { get; set; }
 		bool ChangesUnsaved { get; set; }
 		bool CanClose { get; set; }
+		bool CanRename { get; set; }
+		bool IsRenaming { get; set; }
 
 		void SelectAll();
 		void SelectNone();

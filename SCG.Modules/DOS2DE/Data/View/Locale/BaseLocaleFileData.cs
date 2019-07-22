@@ -29,6 +29,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			{
 				this.RaiseAndSetIfChanged(ref name, value);
 				UpdateDisplayName();
+				renamingName = name;
 			}
 		}
 
@@ -91,6 +92,32 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			get => canClose;
 			set { this.RaiseAndSetIfChanged(ref canClose, value); }
 		}
+
+		private bool canRename = false;
+
+		public bool CanRename
+		{
+			get => canRename;
+			set { this.RaiseAndSetIfChanged(ref canRename, value); }
+		}
+
+
+		private bool isRenaming;
+
+		public bool IsRenaming
+		{
+			get => isRenaming;
+			set { this.RaiseAndSetIfChanged(ref isRenaming, value); }
+		}
+
+		private string renamingName;
+
+		public string RenameText
+		{
+			get => renamingName;
+			set { this.RaiseAndSetIfChanged(ref renamingName, value); }
+		}
+
 
 		public void SelectAll()
 		{

@@ -894,6 +894,22 @@ namespace SCG.Modules.DOS2DE.Utilities
 			}
 		}
 
+		public static void Debug_CreateCustomEntries(ObservableCollectionExtended<ILocaleKeyEntry> Entries)
+		{
+			Random rnd = new Random();
+
+			for (int i = 0; i < 4; i++)
+			{
+				LocaleCustomKeyEntry data = new LocaleCustomKeyEntry
+				{
+					Handle = Guid.NewGuid().ToString().Replace('-', 'g').Insert(0, "h"),
+					Key = "Test" + rnd.Next(99),
+					Content = "Flabbababba"
+				};
+				Entries.Add(data);
+			}
+		}
+
 		public static void Debug_TraceRegion(KeyValuePair<string, LSLib.LS.Region> keyValuePair, int indent = 0)
 		{
 			Log.Here().Activity($"{String.Concat(Enumerable.Repeat("\t", indent))}Key[{keyValuePair.Key}]|Value[{keyValuePair.Value}]");

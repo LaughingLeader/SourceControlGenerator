@@ -35,7 +35,12 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			PublicGroup.DataFiles.Add(new BaseLocaleFileData("Statuses"));
 			PublicGroup.DataFiles.Add(new BaseLocaleFileData("Potions"));
 
-			foreach(var d in ModsGroup.DataFiles)
+			for (var i = 1; i < 5; i++)
+			{
+				CustomGroup.DataFiles.Add(new BaseLocaleFileData("Custom" + i));
+			}
+
+			foreach (var d in ModsGroup.DataFiles)
 			{
 				LocaleEditorCommands.Debug_CreateEntries(d.Entries);
 			}
@@ -45,6 +50,12 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 				LocaleEditorCommands.Debug_CreateEntries(d.Entries);
 			}
 
+			foreach (var d in CustomGroup.DataFiles)
+			{
+				d.CanClose = d.CanRename = true;
+				LocaleEditorCommands.Debug_CreateCustomEntries(d.Entries);
+			}
+
 			UpdateCombinedGroup(true);
 
 			//SelectedGroupIndex = 1;
@@ -52,6 +63,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 
 			System.Diagnostics.Trace.WriteLine("Design data test");
 
+			SelectedGroupIndex = Groups.IndexOf(CustomGroup);
 			SelectedEntry = CombinedGroup.Tabs.First().Entries.First();
 		}
 	}

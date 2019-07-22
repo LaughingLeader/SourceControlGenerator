@@ -370,5 +370,24 @@ namespace SCG.Modules.DOS2DE.Windows
 				}
 			}
 		}
+
+		private void TextBox_KeyDown_MoveFocus(object sender, KeyEventArgs e)
+		{
+			if(e.Key == Key.Enter || e.Key == Key.Return)
+			{
+				if(sender is TextBox tb)
+				{
+					if (tb.DataContext is ILocaleFileData fileData)
+					{
+						fileData.Name = fileData.RenameText;
+						fileData.IsRenaming = false;
+					}
+					else
+					{
+						tb.MoveFocus(new TraversalRequest(FocusNavigationDirection.Next));
+					}
+				}
+			}
+		}
 	}
 }

@@ -10,6 +10,9 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 	[JsonObject(MemberSerialization.OptIn)]
 	public class LocaleCustomFileData : BaseLocaleFileData
 	{
-
+		public LocaleCustomFileData(string name = "") : base(name)
+		{
+			CanRename = CanClose = true;
+		}
 	}
 }

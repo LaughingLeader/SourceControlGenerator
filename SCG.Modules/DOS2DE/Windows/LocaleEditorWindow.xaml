@@ -847,45 +847,140 @@ body {
 									<Setter.Value>
 										<DataTemplate>
 											<Grid>
+												<Grid.Resources>
+													<Style TargetType="TextBlock" x:Key="TabTextBlockStyle">
+														<Setter Property="Text" Value="{Binding DisplayName}" />
+														<Setter Property="ToolTip" Value="{Binding SourcePath}" />
+														<Setter Property="TextAlignment" Value="Left" />
+														<Setter Property="Margin" Value="4,0,0,0" />
+														<Setter Property="HorizontalAlignment" Value="Left" />
+														<Setter Property="Tag" Value="{Binding Path=DataContext, RelativeSource={RelativeSource AncestorType={x:Type Window}}}" />
+														<Setter Property="ContextMenu">
+															<Setter.Value>
+																<ContextMenu>
+																	<MenuItem Header="Copy Name" Command="{Binding Path=PlacementTarget.Tag.CopyToClipboardCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}" CommandParameter="{Binding Name}" />
+																	<MenuItem Header="Copy Full Path" Command="{Binding Path=PlacementTarget.Tag.CopyToClipboardCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}" CommandParameter="{Binding SourcePath}" />
+																</ContextMenu>
+															</Setter.Value>
+														</Setter>
+													</Style>
+													<DataTemplate x:Key="DefaultTabText">
+														<TextBlock
+															x:Name="headerText"
+															Style="{StaticResource TabTextBlockStyle}">
+															<TextBlock.Resources>
+																<Style TargetType="ToolTip">
+																	<Setter Property="Visibility" Value="{Binding SourcePath, Converter={StaticResource EmptyStringVisibilityConverter}}" />
+																</Style>
+															</TextBlock.Resources>
+														</TextBlock>
+														<DataTemplate.Triggers>
+															<DataTrigger Binding="{Binding ChangesUnsaved}" Value="True">
+																<Setter TargetName="headerText" Property="Foreground" Value="#FF459727"/>
+																<Setter TargetName="headerText" Property="FontWeight" Value="Bold"/>
+																<Setter TargetName="headerText" Property="FontStyle" Value="Italic"/>
+															</DataTrigger>
+														</DataTemplate.Triggers>
+													</DataTemplate>
+													<DataTemplate x:Key="CustomTabText">
+														<TextBlock
+															x:Name="headerText"
+															Style="{StaticResource TabTextBlockStyle}">
+																<TextBlock.Resources>
+																	<Style TargetType="ToolTip">
+																		<Setter Property="Visibility" Value="{Binding SourcePath, Converter={StaticResource EmptyStringVisibilityConverter}}" />
+																	</Style>
+																</TextBlock.Resources>
+																<TextBlock.ContextMenu>
+																	<ContextMenu>
+																		<MenuItem Header="Copy Name" Command="{Binding Path=PlacementTarget.Tag.CopyToClipboardCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}" CommandParameter="{Binding Name}" />
+																		<MenuItem Header="Copy Full Path" Command="{Binding Path=PlacementTarget.Tag.CopyToClipboardCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}" CommandParameter="{Binding SourcePath}" />
+																		<MenuItem Header="Rename" Command="{Binding Path=PlacementTarget.Tag.ToggleRenameFileTabCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}" CommandParameter="{Binding}" />
+																	</ContextMenu>
+																</TextBlock.ContextMenu
+															></TextBlock>
+														<DataTemplate.Triggers>
+															<DataTrigger Binding="{Binding ChangesUnsaved}" Value="True">
+																<Setter TargetName="headerText" Property="Foreground" Value="#FF459727"/>
+																<Setter TargetName="headerText" Property="FontWeight" Value="Bold"/>
+																<Setter TargetName="headerText" Property="FontStyle" Value="Italic"/>
+															</DataTrigger>
+														</DataTemplate.Triggers>
+													</DataTemplate>
+													<DataTemplate x:Key="EditingTabText">
+														<TextBox Text="{Binding RenameText, Mode=TwoWay}"
+																DataContext="{Binding}"
+																ToolTip="Renaming this Tab"
+																TextAlignment="Left"
+																Margin="4,0,0,0"
+																HorizontalAlignment="Left"
+																Tag="{Binding Path=DataContext, RelativeSource={RelativeSource AncestorType={x:Type Window}}}"
+																KeyDown="TextBox_KeyDown_MoveFocus"
+															>
+															<TextBox.ContextMenu>
+																<ContextMenu>
+																	<MenuItem Command="ApplicationCommands.Cut" />
+																	<MenuItem Command="ApplicationCommands.Copy" />
+																	<MenuItem Command="ApplicationCommands.Paste" />
+																	<MenuItem Command="ApplicationCommands.SelectAll" />
+																	<MenuItem Header="Stop Renaming"
+																			  Command="{Binding Path=PlacementTarget.Tag.ToggleRenameFileTabCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
+																			  CommandParameter="{Binding}" />
+																</ContextMenu>
+															</TextBox.ContextMenu>
+															<i:Interaction.Triggers>
+																<i:EventTrigger EventName="LostFocus">
+																	<i:InvokeCommandAction 
+																		Command="{Binding Path=DataContext.CancelRenamingFileTabCommand, RelativeSource={RelativeSource AncestorType={x:Type Window}}}"
+																		CommandParameter="{Binding}"
+																	/>
+																</i:EventTrigger>
+															</i:Interaction.Triggers>
+														</TextBox>
+													</DataTemplate>
+													<Style x:Key="FileTabContentStyle" TargetType="ContentPresenter">
+														<Setter Property="ContentTemplate" Value="{StaticResource DefaultTabText}"/>
+														<Style.Triggers>
+															<MultiDataTrigger>
+																<MultiDataTrigger.Conditions>
+																	<Condition Binding="{Binding CanRename}" Value="True" />
+																	<Condition Binding="{Binding IsRenaming}" Value="False" />
+																</MultiDataTrigger.Conditions>
+																<MultiDataTrigger.Setters>
+																	<Setter Property="ContentTemplate" Value="{StaticResource CustomTabText}" />
+																</MultiDataTrigger.Setters>
+															</MultiDataTrigger>
+															<MultiDataTrigger>
+																<MultiDataTrigger.Conditions>
+																	<Condition Binding="{Binding CanRename}" Value="True" />
+																	<Condition Binding="{Binding IsRenaming}" Value="True" />
+																</MultiDataTrigger.Conditions>
+																<MultiDataTrigger.Setters>
+																	<Setter Property="ContentTemplate" Value="{StaticResource EditingTabText}"/>
+																</MultiDataTrigger.Setters>
+															</MultiDataTrigger>
+														</Style.Triggers>
+													</Style>
+												</Grid.Resources>
 												<Grid.ColumnDefinitions>
 													<ColumnDefinition Width="*" SharedSizeGroup="FileTabText" />
 													<ColumnDefinition Width="Auto" />
 												</Grid.ColumnDefinitions>
-												<!--<Rectangle Grid.Column="0" Fill="Red" />
-												<Rectangle Grid.Column="1" Fill="Lime" />-->
 												<c:ImageButton
 													x:Name="CloseFileTabButton"
 													ToolTip="{x:Static core:DOS2DETooltips.Button_Locale_CloseFileTab}"
 													Source="{x:Static vdata:IconPathData.Close1}"
 													Visibility="{Binding CanClose, Converter={StaticResource BoolToVisibilityConverter}, FallbackValue=Collapsed}"
-													Command="{Binding Path=CloseFileCommand, RelativeSource={RelativeSource AncestorType={x:Type Window}}}"
+													Command="{Binding Path=DataContext.CloseFileCommand, RelativeSource={RelativeSource AncestorType={x:Type Window}}}"
 													CommandParameter="{Binding}"
 													HorizontalAlignment="Right"
-													Margin="0,0,-4,0"
+													Margin="4,0,-4,0"
 													Grid.Column="1" 
+													Panel.ZIndex="2"
+													MaxSize="10"
 												/>
-												<TextBlock
-													Text="{Binding DisplayName}"
-													ToolTip="{Binding SourcePath}"
-													TextAlignment="Left"
-													Margin="4,0,0,0"
-													x:Name="headerText"
-													HorizontalAlignment="Left"
-												>
-													<TextBlock.Resources>
-														<Style TargetType="ToolTip">
-															<Setter Property="Visibility" Value="{Binding SourcePath, Converter={StaticResource EmptyStringVisibilityConverter}}" />
-														</Style>
-													</TextBlock.Resources>
-												</TextBlock>
+												<ContentPresenter Grid.Column="0" Style="{StaticResource FileTabContentStyle}" Content="{Binding}" />
 											</Grid>
-											<DataTemplate.Triggers>
-												<DataTrigger Binding="{Binding ChangesUnsaved}" Value="True">
-													<Setter TargetName="headerText" Property="Foreground" Value="#FF459727"/>
-													<Setter TargetName="headerText" Property="FontWeight" Value="Bold"/>
-													<Setter TargetName="headerText" Property="FontStyle" Value="Italic"/>
-												</DataTrigger>
-											</DataTemplate.Triggers>
 										</DataTemplate>
 									</Setter.Value>
 								</Setter>
@@ -906,6 +1001,43 @@ body {
 			<RowDefinition Height="*" />
 			<RowDefinition Height="Auto" />
 		</Grid.RowDefinitions>
+		<Grid x:Name="NameNewFileTabGrid" Grid.Row="0" Grid.RowSpan="4" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Panel.ZIndex="1" 
+			  Visibility="{Binding IsAddingNewFileTab, Converter={StaticResource BoolToVisibilityConverter}, FallbackValue=Collapsed}">
+			<Grid.Resources>
+				<Style TargetType="TextBox">
+					<Setter Property="Effect">
+						<Setter.Value>
+							<DropShadowEffect BlurRadius="8" Direction="-20" RenderingBias="Quality" ShadowDepth="4"/>
+						</Setter.Value>
+					</Setter>
+				</Style>
+			</Grid.Resources>
+			<Rectangle Fill="LightGray" Opacity="0.75" />
+			<Border x:Name="NameTabBorder" Padding="32" Margin="4" HorizontalAlignment="Center" VerticalAlignment="Center" Background="#FFEAEAEA" BorderBrush="Gray" BorderThickness="1">
+				<StackPanel Width="300" VerticalAlignment="Stretch">
+					<TextBlock Text="Enter Tab Name:" />
+					<TextBox Text="{Binding NewFileTabName, Mode=TwoWay}" AcceptsReturn="False" AcceptsTab="False" Margin="0,4,0,0" MaxLines="1" />
+					<StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="4,8,4,4">
+						<StackPanel.Resources>
+							<Style TargetType="{x:Type Button}">
+								<Setter Property="Margin" Value="6,2,6,2" />
+								<Setter Property="Width" Value="48" />
+								<Setter Property="Effect">
+									<Setter.Value>
+										<DropShadowEffect BlurRadius="10" Direction="-20" RenderingBias="Quality" ShadowDepth="6" Opacity="0.8"/>
+									</Setter.Value>
+								</Setter>
+							</Style>
+						</StackPanel.Resources>
+						<Button Content="OK" Command="{Binding ConfirmFileAddToGroupCommand}" Background="#FFC7FBC7" />
+						<Button Content="Cancel" Command="{Binding CancelFileAddToGroupCommand}" Background="#FFF7BEBE" />
+					</StackPanel>
+				</StackPanel>
+				<Border.Effect>
+					<DropShadowEffect BlurRadius="15" Direction="-20" RenderingBias="Quality" ShadowDepth="4"/>
+				</Border.Effect>
+			</Border>
+		</Grid>
 		<DockPanel Grid.Row="0" Background="Transparent">
 			<Menu DockPanel.Dock="Top" ItemsSource="{Binding MenuData.Menus}" Background="Transparent" Margin="0" MinHeight="10" Padding="0"
 				  UsesItemContainerTemplate="True" ItemContainerTemplateSelector="{StaticResource MenuItemContainerTemplateSelector}" />

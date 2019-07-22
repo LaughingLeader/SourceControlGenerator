@@ -17,7 +17,11 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 		public string Key
 		{
 			get => key;
-			set { this.RaiseAndSetIfChanged(ref key, value); }
+			set
+			{
+				this.RaiseAndSetIfChanged(ref key, value);
+				this.RaisePropertyChanged("EntryKey");
+			}
 		}
 
 		private string content;
@@ -25,7 +29,11 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 		public string Content
 		{
 			get => content;
-			set { this.RaiseAndSetIfChanged(ref content, value); }
+			set
+			{
+				this.RaiseAndSetIfChanged(ref content, value);
+				this.RaisePropertyChanged("EntryContent");
+			}
 		}
 
 		private string handle;
@@ -33,23 +41,35 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 		public string Handle
 		{
 			get => handle;
-			set { this.RaiseAndSetIfChanged(ref handle, value); }
+			set
+			{
+				this.RaiseAndSetIfChanged(ref handle, value);
+				this.RaisePropertyChanged("EntryHandle");
+			}
 		}
-
-		private string entryKey;
 
 		public string EntryKey
 		{
-			get => entryKey;
-			set { this.UpdateWithHistory(ref entryKey, value); }
+			get => key;
+			set
+			{
+				if(this.UpdateWithHistory(ref key, value))
+				{
+					this.RaisePropertyChanged("Key");
+				}
+			}
 		}
-
-		private string entryContent;
 
 		public string EntryContent
 		{
-			get => entryContent;
-			set { this.UpdateWithHistory(ref entryContent, value); }
+			get => content;
+			set
+			{
+				if(this.UpdateWithHistory(ref content, value))
+				{
+					this.RaisePropertyChanged("Content");
+				}
+			}
 		}
 
 		private string entryHandle;
@@ -57,7 +77,13 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 		public string EntryHandle
 		{
 			get => entryHandle;
-			set { this.UpdateWithHistory(ref entryHandle, value); }
+			set
+			{
+				if(this.UpdateWithHistory(ref handle, value))
+				{
+					this.RaisePropertyChanged("Handle");
+				}
+			}
 		}
 
 		public override void OnSelected(bool isSelected)
@@ -72,5 +98,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 		{
 			project = parentProject;
 		}
+
+		public LocaleCustomKeyEntry() { }
 	}
 }
