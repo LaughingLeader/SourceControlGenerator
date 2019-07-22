@@ -5,6 +5,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using ReactiveUI;
 using SCG.Collections;
 using SCG.Data;
 using SCG.Data.App;
@@ -43,7 +44,7 @@ namespace SCG.Interfaces
 		event EventHandler OnSettingsReverted;
 	}
 
-	public interface IModuleSettingsData : INotifyPropertyChanged
+	public interface IModuleSettingsData : IReactiveObject
 	{
 		ObservableCollection<TemplateFileData> TemplateFiles { get; set; }
 
@@ -65,7 +66,5 @@ namespace SCG.Interfaces
 
 		void Init(IModuleData Data);
 		void SetToDefault(IModuleData Data);
-
-		void Notify(string prop);
 	}
 }

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ReactiveUI;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -16,7 +17,7 @@ namespace SCG.Data.View
 			get { return fileMenu; }
 			set
 			{
-				Update(ref fileMenu, value);
+				this.RaiseAndSetIfChanged(ref fileMenu, value);
 			}
 		}
 
@@ -27,7 +28,7 @@ namespace SCG.Data.View
 			get { return optionsMenu; }
 			set
 			{
-				Update(ref optionsMenu, value);
+				this.RaiseAndSetIfChanged(ref optionsMenu, value);
 			}
 		}
 
@@ -38,7 +39,7 @@ namespace SCG.Data.View
 			get { return toolsMenu; }
 			set
 			{
-				Update(ref toolsMenu, value);
+				this.RaiseAndSetIfChanged(ref toolsMenu, value);
 			}
 		}
 
@@ -50,7 +51,7 @@ namespace SCG.Data.View
 			get { return helpMenu; }
 			set
 			{
-				Update(ref helpMenu, value);
+				this.RaiseAndSetIfChanged(ref helpMenu, value);
 			}
 		}
 

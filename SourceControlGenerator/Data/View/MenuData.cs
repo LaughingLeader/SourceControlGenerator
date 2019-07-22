@@ -1,4 +1,5 @@
 ﻿using DynamicData.Binding;
+using ReactiveUI;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -54,7 +55,7 @@ namespace SCG.Data.View
 			}
 			set
 			{
-				Update(ref header, value);
+				this.RaiseAndSetIfChanged(ref header, value);
 			}
 		}
 
@@ -73,7 +74,7 @@ namespace SCG.Data.View
 				{
 					ClickCommand.CanExecute(value);
 				}
-				Update(ref isEnabled, value);
+				this.RaiseAndSetIfChanged(ref isEnabled, value);
 			}
 		}
 
@@ -111,7 +112,7 @@ namespace SCG.Data.View
 			}
 			set
 			{
-				Update(ref shortcutText, value);
+				this.RaiseAndSetIfChanged(ref shortcutText, value);
 			}
 		}
 
@@ -150,7 +151,7 @@ namespace SCG.Data.View
 			get { return headerBinding; }
 			set
 			{
-				Update(ref headerBinding, value);
+				this.RaiseAndSetIfChanged(ref headerBinding, value);
 			}
 		}
 
@@ -161,7 +162,7 @@ namespace SCG.Data.View
 			get { return clickCommand; }
 			set
 			{
-				Update(ref clickCommand, value);
+				this.RaiseAndSetIfChanged(ref clickCommand, value);
 			}
 		}
 
@@ -172,7 +173,7 @@ namespace SCG.Data.View
 			get { return module; }
 			set
 			{
-				Update(ref module, value);
+				this.RaiseAndSetIfChanged(ref module, value);
 			}
 		}
 

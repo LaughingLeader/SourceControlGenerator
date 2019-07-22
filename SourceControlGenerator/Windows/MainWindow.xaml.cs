@@ -226,7 +226,7 @@ namespace SCG.Windows
 
 		public static void FooterLog(string Message, params object[] Vars)
 		{
-			RxApp.TaskpoolScheduler.Schedule(() => {
+			RxApp.MainThreadScheduler.Schedule(() => {
 				Message = String.Format(Message, Vars);
 				_instance.Controller.SetFooter(Message, LogType.Important);
 				Log.AllCallback?.Invoke(Message, LogType.Important);
@@ -237,7 +237,7 @@ namespace SCG.Windows
 		{
 			if (_instance != null)
 			{
-				RxApp.TaskpoolScheduler.Schedule(() => {
+				RxApp.MainThreadScheduler.Schedule(() => {
 					Message = String.Format(Message, Vars);
 					_instance.Controller.SetFooter(Message, LogType.Error);
 					Log.AllCallback?.Invoke(Message, LogType.Error);

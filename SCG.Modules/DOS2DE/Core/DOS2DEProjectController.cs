@@ -1177,7 +1177,7 @@ namespace SCG.Core
 			LoadDirectoryLayout();
 			InitModuleKeywords();
 
-			RxApp.TaskpoolScheduler.Schedule(async () =>
+			RxApp.MainThreadScheduler.Schedule(async () =>
 			{
 				await DOS2DECommands.LoadAll(Data);
 				Data.NewProjectsAvailable = Data.NewProjects != null && Data.NewProjects.Count > 0;

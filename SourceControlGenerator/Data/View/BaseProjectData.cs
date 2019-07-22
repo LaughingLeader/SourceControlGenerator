@@ -1,4 +1,5 @@
-﻿using SCG.Commands;
+﻿using ReactiveUI;
+using SCG.Commands;
 using SCG.Data;
 using SCG.Interfaces;
 using System;
@@ -20,7 +21,7 @@ namespace SCG.Data.View
 			get { return gitData; }
 			set
 			{
-				Update(ref gitData, value);
+				this.RaiseAndSetIfChanged(ref gitData, value);
 			}
 		}
 
@@ -39,7 +40,7 @@ namespace SCG.Data.View
 			get { return projectName; }
 			set
 			{
-				Update(ref projectName, value);
+				this.RaiseAndSetIfChanged(ref projectName, value);
 			}
 		}
 
@@ -50,7 +51,7 @@ namespace SCG.Data.View
 			get { return displayName; }
 			set
 			{
-				Update(ref displayName, value);
+				this.RaiseAndSetIfChanged(ref displayName, value);
 			}
 		}
 
@@ -61,7 +62,7 @@ namespace SCG.Data.View
 			get { return uuid; }
 			set
 			{
-				Update(ref uuid, value);
+				this.RaiseAndSetIfChanged(ref uuid, value);
 			}
 		}
 
@@ -72,7 +73,7 @@ namespace SCG.Data.View
 			get { return tooltip; }
 			set
 			{
-				Update(ref tooltip, value);
+				this.RaiseAndSetIfChanged(ref tooltip, value);
 			}
 		}
 
@@ -86,8 +87,8 @@ namespace SCG.Data.View
 			}
 			set
 			{
-				Update(ref lastBackup, value);
-				Notify("LastBackupText");
+				this.RaiseAndSetIfChanged(ref lastBackup, value);
+				this.RaisePropertyChanged("LastBackupText");
 			}
 		}
 
@@ -110,7 +111,7 @@ namespace SCG.Data.View
 			get { return selected; }
 			set
 			{
-				Update(ref selected, value);
+				this.RaiseAndSetIfChanged(ref selected, value);
 			}
 
 		}

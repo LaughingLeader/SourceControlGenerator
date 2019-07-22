@@ -7,6 +7,7 @@ using System.Windows.Input;
 using SCG.Commands;
 using SCG.Markdown;
 using Newtonsoft.Json;
+using ReactiveUI;
 
 namespace SCG.Data.View
 {
@@ -20,11 +21,11 @@ namespace SCG.Data.View
 			get { return formatter; }
 			set
 			{
-				Update(ref formatter, value);
+				this.RaiseAndSetIfChanged(ref formatter, value);
 				Name = formatter.Name;
 				DefaultFileExtension = formatter.DefaultFileExtension;
-				Notify("Name");
-				Notify("OpenFileText");
+				this.RaisePropertyChanged("Name");
+				this.RaisePropertyChanged("OpenFileText");
 			}
 		}
 
@@ -35,8 +36,8 @@ namespace SCG.Data.View
 			get { return enabled; }
 			set
 			{
-				Update(ref enabled, value);
-				parentViewData?.Notify("CanBatchExport");
+				this.RaiseAndSetIfChanged(ref enabled, value);
+				parentViewData?.RaisePropertyChanged("CanBatchExport");
 			}
 		}
 
@@ -47,7 +48,7 @@ namespace SCG.Data.View
 			get { return filePath; }
 			set
 			{
-				Update(ref filePath, value);
+				this.RaiseAndSetIfChanged(ref filePath, value);
 			}
 		}
 
@@ -74,7 +75,7 @@ namespace SCG.Data.View
 			get { return lastPath; }
 			set
 			{
-				Update(ref lastPath, value);
+				this.RaiseAndSetIfChanged(ref lastPath, value);
 			}
 		}
 
@@ -86,7 +87,7 @@ namespace SCG.Data.View
 			get { return defaultFileName; }
 			set
 			{
-				Update(ref defaultFileName, value);
+				this.RaiseAndSetIfChanged(ref defaultFileName, value);
 			}
 		}
 
@@ -98,7 +99,7 @@ namespace SCG.Data.View
 			get { return defaultFileExtension; }
 			set
 			{
-				Update(ref defaultFileExtension, value);
+				this.RaiseAndSetIfChanged(ref defaultFileExtension, value);
 			}
 		}
 

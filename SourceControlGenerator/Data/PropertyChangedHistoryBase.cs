@@ -28,7 +28,7 @@ namespace SCG.Data
 			History = obj.History;
 		}
 
-		//public void Notify([CallerMemberName] string propertyName = null)
+		//public void this.RaisePropertyChanged([CallerMemberName] string propertyName = null)
 		//{
 		//	this.RaisePropertyChanged(propertyName);
 		//}

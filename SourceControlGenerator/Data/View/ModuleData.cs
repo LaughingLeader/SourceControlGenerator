@@ -230,7 +230,7 @@ namespace SCG.Data.View
 			if (confirmed)
 			{
 				Settings.SetToDefault(this);
-				Settings.Notify(String.Empty);
+				Settings.RaisePropertyChanged(String.Empty);
 
 				OnSettingsReverted?.Invoke(this, EventArgs.Empty);
 			}

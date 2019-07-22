@@ -1,4 +1,5 @@
-﻿using SCG.Modules.DOS2DE.Data.View;
+﻿using ReactiveUI;
+using SCG.Modules.DOS2DE.Data.View;
 using SCG.Windows;
 using System;
 using System.Collections.Generic;
@@ -67,7 +68,7 @@ namespace SCG.Modules.DOS2DE.Windows
 						}
 					}
 
-					SelectedProject.Notify("Version");
+					SelectedProject.RaisePropertyChanged("Version");
 				}
 			}
 			catch(Exception ex)

@@ -502,7 +502,6 @@ namespace SCG.Core
 			}
 			else
 			{
-				//mainWindow.LogWindow.Owner = mainWindow;
 				mainWindow.LogWindow.Show();
 			}
 
@@ -647,19 +646,16 @@ namespace SCG.Core
 
 		public void AddLogMessage(string LogMessage, LogType logType)
 		{
-			RxApp.TaskpoolScheduler.Schedule((Action)(() =>
+			var log = new LogData()
 			{
-				var log = new LogData()
-				{
-					Index = logIndex++,
-					DateTime = DateTime.Now,
-					Message = LogMessage,
-					MessageType = logType
-				};
-				log.FormatOutput();
+				Index = logIndex++,
+				DateTime = DateTime.Now,
+				Message = LogMessage,
+				MessageType = logType
+			};
+			log.FormatOutput();
 
-				mainWindow.LogWindow.ViewModel.Add(log);
-			}));
+			mainWindow.LogWindow.ViewModel.Add(log);
 		}
 
 		public MenuData LogMenuData { get; set; }
@@ -915,7 +911,7 @@ namespace SCG.Core
 				new MenuData(MenuID.About, "About Source Control Generator", new ActionCommand(MenuAction_OpenAbout), Key.F1)
 			);
 
-			//Data.MenuBarData.Notify(String.Empty);
+			//Data.MenuBarData.this.RaisePropertyChanged(String.Empty);
 
 			RegisterMenuShortcuts();
 		}

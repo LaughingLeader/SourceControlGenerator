@@ -358,7 +358,6 @@
     <Compile Include="Core\FileCommands.cs" />
     <Compile Include="Data\App\KeywordData.cs" />
     <Compile Include="Data\App\UserKeywordData.cs" />
-    <Compile Include="Data\PropertyChangedBase.cs" />
     <Compile Include="Data\View\TemplateEditorData.cs" />
     <Compile Include="SCGEnum\EditorTextPropertyType.cs" />
     <Compile Include="SCGEnum\FileBrowseType.cs" />

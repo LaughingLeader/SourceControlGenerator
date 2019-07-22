@@ -16,6 +16,7 @@ using SCG.Converters;
 using SCG.SCGEnum;
 using SCG.Interfaces;
 using System.Windows;
+using ReactiveUI;
 
 namespace SCG.Data.View
 {
@@ -32,7 +33,7 @@ namespace SCG.Data.View
 			get { return name; }
 			set
 			{
-				Update(ref name, value);
+				this.RaiseAndSetIfChanged(ref name, value);
 			}
 		}
 
@@ -43,7 +44,7 @@ namespace SCG.Data.View
 			get { return defaultEditorText; }
 			set
 			{
-				Update(ref defaultEditorText, value);
+				this.RaiseAndSetIfChanged(ref defaultEditorText, value);
 			}
 		}
 
@@ -54,7 +55,7 @@ namespace SCG.Data.View
 			get { return editorText; }
 			set
 			{
-				Update(ref editorText, value);
+				this.RaiseAndSetIfChanged(ref editorText, value);
 			}
 		}
 
@@ -65,7 +66,7 @@ namespace SCG.Data.View
 			get { return editorTextProperty; }
 			set
 			{
-				Update(ref editorTextProperty, value);
+				this.RaiseAndSetIfChanged(ref editorTextProperty, value);
 			}
 		}
 
@@ -77,7 +78,7 @@ namespace SCG.Data.View
 			get { return openFileText; }
 			set
 			{
-				Update(ref openFileText, value);
+				this.RaiseAndSetIfChanged(ref openFileText, value);
 			}
 		}
 
@@ -88,7 +89,7 @@ namespace SCG.Data.View
 			get { return saveAsText; }
 			set
 			{
-				Update(ref saveAsText, value);
+				this.RaiseAndSetIfChanged(ref saveAsText, value);
 			}
 		}
 
@@ -99,7 +100,7 @@ namespace SCG.Data.View
 			get { return labelText; }
 			set
 			{
-				Update(ref labelText, value);
+				this.RaiseAndSetIfChanged(ref labelText, value);
 			}
 		}
 
@@ -110,7 +111,7 @@ namespace SCG.Data.View
 			get { return tooltipText; }
 			set
 			{
-				Update(ref tooltipText, value);
+				this.RaiseAndSetIfChanged(ref tooltipText, value);
 			}
 		}
 
@@ -124,7 +125,7 @@ namespace SCG.Data.View
 			set
 			{
 				SetFilePath?.Invoke(value);
-				Notify("FilePath");
+				this.RaisePropertyChanged("FilePath");
 			}
 		}
 		*/
@@ -136,7 +137,7 @@ namespace SCG.Data.View
 			get { return filePath; }
 			set
 			{
-				Update(ref filePath, value);
+				this.RaiseAndSetIfChanged(ref filePath, value);
 			}
 		}
 
@@ -148,7 +149,7 @@ namespace SCG.Data.View
 			get { return filename; }
 			set
 			{
-				Update(ref filename, value);
+				this.RaiseAndSetIfChanged(ref filename, value);
 			}
 		}
 
@@ -159,7 +160,7 @@ namespace SCG.Data.View
 			get { return exportPath; }
 			set
 			{
-				Update(ref exportPath, value);
+				this.RaiseAndSetIfChanged(ref exportPath, value);
 			}
 		}
 
@@ -172,7 +173,7 @@ namespace SCG.Data.View
 			get { return saveCommand; }
 			set
 			{
-				Update(ref saveCommand, value);
+				this.RaiseAndSetIfChanged(ref saveCommand, value);
 			}
 		}
 
@@ -183,7 +184,7 @@ namespace SCG.Data.View
 			get { return saveAsCommand; }
 			set
 			{
-				Update(ref saveAsCommand, value);
+				this.RaiseAndSetIfChanged(ref saveAsCommand, value);
 			}
 		}
 
@@ -194,7 +195,7 @@ namespace SCG.Data.View
 			get { return openCommand; }
 			set
 			{
-				Update(ref openCommand, value);
+				this.RaiseAndSetIfChanged(ref openCommand, value);
 			}
 		}
 
@@ -205,7 +206,7 @@ namespace SCG.Data.View
 			get { return defaultFilePath; }
 			set
 			{
-				Update(ref defaultFilePath, value);
+				this.RaiseAndSetIfChanged(ref defaultFilePath, value);
 			}
 		}
 
@@ -231,7 +232,7 @@ namespace SCG.Data.View
 		public void SetToDefault()
 		{
 			EditorText = DefaultEditorText;
-			Notify("EditorText");
+			this.RaisePropertyChanged("EditorText");
 		}
 
 		private void OnSave(bool success)

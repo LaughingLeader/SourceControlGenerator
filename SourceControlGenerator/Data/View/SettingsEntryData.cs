@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using ReactiveUI;
 using SCG.Commands;
 using SCG.SCGEnum;
 
@@ -18,7 +19,7 @@ namespace SCG.Data.View
 			get { return name; }
 			set
 			{
-				Update(ref name, value);
+				this.RaiseAndSetIfChanged(ref name, value);
 			}
 		}
 
@@ -29,7 +30,7 @@ namespace SCG.Data.View
 			get { return fileBrowseType; }
 			set
 			{
-				Update(ref fileBrowseType, value);
+				this.RaiseAndSetIfChanged(ref fileBrowseType, value);
 			}
 		}
 
@@ -40,7 +41,7 @@ namespace SCG.Data.View
 			get { return viewPropertyType; }
 			set
 			{
-				Update(ref viewPropertyType, value);
+				this.RaiseAndSetIfChanged(ref viewPropertyType, value);
 			}
 		}
 
@@ -51,7 +52,7 @@ namespace SCG.Data.View
 			get { return source; }
 			set
 			{
-				Update(ref source, value);
+				this.RaiseAndSetIfChanged(ref source, value);
 			}
 		}
 
@@ -62,7 +63,7 @@ namespace SCG.Data.View
 			get { return sourcePropertyInfo; }
 			set
 			{
-				Update(ref sourcePropertyInfo, value);
+				this.RaiseAndSetIfChanged(ref sourcePropertyInfo, value);
 			}
 		}
 
@@ -93,7 +94,7 @@ namespace SCG.Data.View
 			get { return onOpenedCommand; }
 			set
 			{
-				Update(ref onOpenedCommand, value);
+				this.RaiseAndSetIfChanged(ref onOpenedCommand, value);
 			}
 		}
 

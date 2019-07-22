@@ -53,33 +53,27 @@ namespace SCG.Data.View
 
 		public void Add(LogData log)
 		{
-			RxApp.TaskpoolScheduler.Schedule(() =>
-			{
-				Logs.Add(log);
-				this.RaisePropertyChanged("Logs");
-				this.RaisePropertyChanged("CanClear");
+			Logs.Add(log);
+			this.RaisePropertyChanged("Logs");
+			this.RaisePropertyChanged("CanClear");
 
-				if (LastLogs != null)
-				{
-					LastLogs = null;
-					this.RaisePropertyChanged("CanRestore");
-				}
-			});
+			if (LastLogs != null)
+			{
+				LastLogs = null;
+				this.RaisePropertyChanged("CanRestore");
+			}
 		}
 
 		public void Clear()
 		{
 			if (Logs.Count > 0)
 			{
-				RxApp.TaskpoolScheduler.Schedule(() =>
-				{
-					LastLogs = new ObservableCollectionExtended<LogData>(Logs.Items);
-					Logs.Clear();
+				LastLogs = new ObservableCollectionExtended<LogData>(Logs.Items);
+				Logs.Clear();
 
-					this.RaisePropertyChanged("Logs");
-					this.RaisePropertyChanged("CanClear");
-					this.RaisePropertyChanged("CanRestore");
-				});
+				this.RaisePropertyChanged("Logs");
+				this.RaisePropertyChanged("CanClear");
+				this.RaisePropertyChanged("CanRestore");
 			}
 		}
 
@@ -87,19 +81,16 @@ namespace SCG.Data.View
 		{
 			if (LastLogs != null)
 			{
-				RxApp.TaskpoolScheduler.Schedule(() =>
+				foreach (var log in LastLogs)
 				{
-					foreach (var log in LastLogs)
-					{
-						Logs.Add(log);
-					}
+					Logs.Add(log);
+				}
 
-					LastLogs = null;
+				LastLogs = null;
 
-					this.RaisePropertyChanged("Logs");
-					this.RaisePropertyChanged("CanClear");
-					this.RaisePropertyChanged("CanRestore");
-				});
+				this.RaisePropertyChanged("Logs");
+				this.RaisePropertyChanged("CanClear");
+				this.RaisePropertyChanged("CanRestore");
 			}
 		}
 
@@ -276,7 +267,7 @@ namespace SCG.Data.View
 		public LogWindowViewData()
 		{
 			//Logs.ToObservableChangeSet().Filter(x => x.IsVisible || (!String.IsNullOrWhiteSpace(searchText) && x.Message.CaseInsensitiveContains(searchText))).AsObservableList();
-			Logs.Connect().ObserveOn(RxApp.TaskpoolScheduler).Filter(x => CanDisplayLog(x)).Bind(out visibleLogs).Subscribe((x) =>
+			Logs.Connect().Filter(x => CanDisplayLog(x)).Bind(out visibleLogs).Subscribe((x) =>
 			{
 				//Console.WriteLine($"Log added: {x.First().Item.Current?.Message}");
 			});

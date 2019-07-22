@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using SCG.Interfaces;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
+using ReactiveUI;
 
 namespace SCG.Data
 {
@@ -18,7 +19,7 @@ namespace SCG.Data
 			get { return keywordName; }
 			set
 			{
-				Update(ref keywordName, value);
+				this.RaiseAndSetIfChanged(ref keywordName, value);
 			}
 		}
 
@@ -29,7 +30,7 @@ namespace SCG.Data
 			get { return keywordValue; }
 			set
 			{
-				Update(ref keywordValue, value);
+				this.RaiseAndSetIfChanged(ref keywordValue, value);
 			}
 		}
 
@@ -43,7 +44,7 @@ namespace SCG.Data
 			get { return replaceAction; }
 			set
 			{
-				Update(ref replaceAction, value);
+				this.RaiseAndSetIfChanged(ref replaceAction, value);
 			}
 		}
 

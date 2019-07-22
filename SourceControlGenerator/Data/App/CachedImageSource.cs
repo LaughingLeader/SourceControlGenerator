@@ -22,7 +22,7 @@ namespace SCG.Data.App
 			get { return source; }
 			set
 			{
-				Update(ref source, value);
+				this.RaiseAndSetIfChanged(ref source, value);
 			}
 		}
 
@@ -33,7 +33,7 @@ namespace SCG.Data.App
 			get { return sourcePath; }
 			set
 			{
-				Update(ref sourcePath, value);
+				this.RaiseAndSetIfChanged(ref sourcePath, value);
 			}
 		}
 

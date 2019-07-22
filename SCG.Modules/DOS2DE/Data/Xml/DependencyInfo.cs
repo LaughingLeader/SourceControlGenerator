@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ReactiveUI;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,7 +9,7 @@ using System.Xml.Serialization;
 
 namespace SCG.Data.Xml
 {
-	public class DependencyInfo
+	public class DependencyInfo : ReactiveObject
 	{
 		public string Folder { get; set; }
 		public string MD5 { get; set; }

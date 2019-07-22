@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using System.Windows.Data;
 using SCG.Collections;
 using Newtonsoft.Json;
+using ReactiveUI;
 
 namespace SCG.Data
 {
@@ -19,7 +20,7 @@ namespace SCG.Data
 			get { return dateCustom; }
 			set
 			{
-				Update(ref dateCustom, value);
+				this.RaiseAndSetIfChanged(ref dateCustom, value);
 			}
 		}
 

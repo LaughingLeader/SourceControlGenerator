@@ -14,10 +14,11 @@ using SCG.Commands;
 using SCG.Data.Xml;
 using SCG.Modules.DOS2.Core;
 using SCG.Interfaces;
+using ReactiveUI;
 
 namespace SCG.Data
 {
-	public class ModProjectData : PropertyChangedBase, IProjectData
+	public class ModProjectData : ReactiveObject, IProjectData
 	{
 		private ProjectAppData projectAppData;
 
@@ -26,7 +27,7 @@ namespace SCG.Data
 			get { return projectAppData; }
 			set
 			{
-				Update(ref projectAppData, value);
+				this.RaiseAndSetIfChanged(ref projectAppData, value);
 			}
 		}
 
@@ -37,7 +38,7 @@ namespace SCG.Data
 			get { return projectInfo; }
 			set
 			{
-				Update(ref projectInfo, value);
+				this.RaiseAndSetIfChanged(ref projectInfo, value);
 			}
 		}
 
@@ -48,9 +49,9 @@ namespace SCG.Data
 			get { return moduleInfo; }
 			set
 			{
-				Update(ref moduleInfo, value);
-				Notify("Dependencies");
-				Notify("Name");
+				this.RaiseAndSetIfChanged(ref moduleInfo, value);
+				this.RaisePropertyChanged("Dependencies");
+				this.RaisePropertyChanged("Name");
 			}
 		}
 
@@ -61,7 +62,7 @@ namespace SCG.Data
 			get { return gitData; }
 			set
 			{
-				Update(ref gitData, value);
+				this.RaiseAndSetIfChanged(ref gitData, value);
 			}
 		}
 
@@ -111,7 +112,7 @@ namespace SCG.Data
 				if(shortDescription == null)
 				{
 					shortDescription = ModuleInfo.Description.Truncate(30, "...");
-					Notify("ShortDescription");
+					this.RaisePropertyChanged("ShortDescription");
 				}
 				return shortDescription;
 			}
@@ -125,7 +126,7 @@ namespace SCG.Data
 			get { return tooltip; }
 			set
 			{
-				Update(ref tooltip, value);
+				this.RaiseAndSetIfChanged(ref tooltip, value);
 			}
 		}
 
@@ -144,7 +145,7 @@ namespace SCG.Data
 			get { return version; }
 			set
 			{
-				Update(ref version, value);
+				this.RaiseAndSetIfChanged(ref version, value);
 			}
 		}
 
@@ -158,8 +159,8 @@ namespace SCG.Data
 			}
 			set
 			{
-				Update(ref lastBackup, value);
-				Notify("LastBackupText");
+				this.RaiseAndSetIfChanged(ref lastBackup, value);
+				this.RaisePropertyChanged("LastBackupText");
 			}
 		}
 
@@ -182,7 +183,7 @@ namespace SCG.Data
 			get { return selected; }
 			set
 			{
-				Update(ref selected, value);
+				this.RaiseAndSetIfChanged(ref selected, value);
 			}
 
 		}
@@ -194,7 +195,7 @@ namespace SCG.Data
 			get { return thumbnailPath; }
 			set
 			{
-				Update(ref thumbnailPath, value);
+				this.RaiseAndSetIfChanged(ref thumbnailPath, value);
 			}
 		}
 
@@ -206,7 +207,7 @@ namespace SCG.Data
 			get { return thumbnailExists; }
 			set
 			{
-				Update(ref thumbnailExists, value);
+				this.RaiseAndSetIfChanged(ref thumbnailExists, value);
 			}
 		}
 
@@ -217,7 +218,7 @@ namespace SCG.Data
 			get { return modMetaFilePath; }
 			set
 			{
-				Update(ref modMetaFilePath, value);
+				this.RaiseAndSetIfChanged(ref modMetaFilePath, value);
 			}
 		}
 
@@ -228,7 +229,7 @@ namespace SCG.Data
 			get { return projectMetaFilePath; }
 			set
 			{
-				Update(ref projectMetaFilePath, value);
+				this.RaiseAndSetIfChanged(ref projectMetaFilePath, value);
 			}
 		}
 
@@ -347,7 +348,7 @@ namespace SCG.Data
 				var modMetaXml = XDocument.Load(ModMetaFilePath);
 				this.ModuleInfo.LoadFromXml(modMetaXml);
 				LoadDependencies(modMetaXml);
-				ModuleInfo.Notify(String.Empty);
+				ModuleInfo.RaisePropertyChanged(String.Empty);
 			}
 
 			if (File.Exists(ProjectMetaFilePath))
@@ -360,7 +361,7 @@ namespace SCG.Data
 				this.ProjectInfo.LoadFromXml(projectMetaXml);
 
 				LoadThumbnail(projectMetaFile.Directory.FullName);
-				ProjectInfo.Notify(String.Empty);
+				ProjectInfo.RaisePropertyChanged(String.Empty);
 			}
 		}
 

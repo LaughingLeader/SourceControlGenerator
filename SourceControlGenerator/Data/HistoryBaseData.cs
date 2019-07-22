@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ReactiveUI;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -13,7 +14,7 @@ namespace SCG.Data
 		public object Owner
 		{
 			get { return _owner; }
-			set { Update(ref _owner, value); }
+			set { this.RaiseAndSetIfChanged(ref _owner, value); }
 		}
 
 		private string _name;
@@ -21,7 +22,7 @@ namespace SCG.Data
 		public string Name
 		{
 			get { return _name; }
-			set { Update(ref _name, value); }
+			set { this.RaiseAndSetIfChanged(ref _name, value); }
 		}
 
 		public HistoryBaseData(object owner = null, string name = null)

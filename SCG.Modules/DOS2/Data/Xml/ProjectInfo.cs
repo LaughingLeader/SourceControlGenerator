@@ -6,11 +6,12 @@ using System.Threading.Tasks;
 using System.Xml.Linq;
 using System.Xml.Serialization;
 using System.Xml.XPath;
+using ReactiveUI;
 using SCG.Util;
 
 namespace SCG.Data.Xml
 {
-	public class ProjectInfo : PropertyChangedBase
+	public class ProjectInfo : ReactiveObject
 	{
 		public string Name { get; set; }
 

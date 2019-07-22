@@ -1,4 +1,5 @@
-﻿using SCG.Data;
+﻿using ReactiveUI;
+using SCG.Data;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,7 +17,7 @@ namespace SCG.Modules.DOS2DE.Data.View
 			get { return major; }
 			set
 			{
-				Update(ref major, value);
+				this.RaiseAndSetIfChanged(ref major, value);
 				UpdateVersion();
 			}
 		}
@@ -28,7 +29,7 @@ namespace SCG.Modules.DOS2DE.Data.View
 			get { return minor; }
 			set
 			{
-				Update(ref minor, value);
+				this.RaiseAndSetIfChanged(ref minor, value);
 				UpdateVersion();
 			}
 		}
@@ -40,7 +41,7 @@ namespace SCG.Modules.DOS2DE.Data.View
 			get { return revision; }
 			set
 			{
-				Update(ref revision, value);
+				this.RaiseAndSetIfChanged(ref revision, value);
 				UpdateVersion();
 			}
 		}
@@ -52,7 +53,7 @@ namespace SCG.Modules.DOS2DE.Data.View
 			get { return build; }
 			set
 			{
-				Update(ref build, value);
+				this.RaiseAndSetIfChanged(ref build, value);
 				UpdateVersion();
 			}
 		}
@@ -64,7 +65,7 @@ namespace SCG.Modules.DOS2DE.Data.View
 			get { return version; }
 			set
 			{
-				Update(ref version, value);
+				this.RaiseAndSetIfChanged(ref version, value);
 			}
 		}
 
@@ -75,7 +76,7 @@ namespace SCG.Modules.DOS2DE.Data.View
 			get { return versionInt; }
 			set
 			{
-				Update(ref versionInt, value);
+				this.RaiseAndSetIfChanged(ref versionInt, value);
 			}
 		}
 

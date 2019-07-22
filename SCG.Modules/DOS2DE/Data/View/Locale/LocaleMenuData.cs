@@ -1,4 +1,5 @@
-﻿using SCG.Data;
+﻿using ReactiveUI;
+using SCG.Data;
 using SCG.Data.View;
 using System;
 using System.Collections.Generic;
@@ -20,7 +21,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			get { return fileMenu; }
 			set
 			{
-				Update(ref fileMenu, value);
+				this.RaiseAndSetIfChanged(ref fileMenu, value);
 			}
 		}
 
@@ -31,7 +32,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			get { return editMenu; }
 			set
 			{
-				Update(ref editMenu, value);
+				this.RaiseAndSetIfChanged(ref editMenu, value);
 			}
 		}
 
@@ -42,7 +43,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			get { return settingsMenu; }
 			set
 			{
-				Update(ref settingsMenu, value);
+				this.RaiseAndSetIfChanged(ref settingsMenu, value);
 			}
 		}
 
@@ -53,7 +54,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			get { return helpMenu; }
 			set
 			{
-				Update(ref helpMenu, value);
+				this.RaiseAndSetIfChanged(ref helpMenu, value);
 			}
 		}
 

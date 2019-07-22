@@ -15,6 +15,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using ReactiveUI;
 
 namespace SCG.Data.View
 {
@@ -40,7 +41,7 @@ namespace SCG.Data.View
 				if(!Equals(inputData.Content, value))
 				{
 					inputData.Content = value;
-					Notify("InputText");
+					this.RaisePropertyChanged("InputText");
 				}
 			}
 		}
@@ -53,7 +54,7 @@ namespace SCG.Data.View
 				if (!Equals(outputData.Content, value))
 				{
 					outputData.Content = value;
-					Notify("OutputText");
+					this.RaisePropertyChanged("OutputText");
 				}
 			}
 		}
@@ -67,7 +68,7 @@ namespace SCG.Data.View
 			set
 			{
 				bool bSaveData = generationAmount != value;
-				Update(ref generationAmount, value);
+				this.RaiseAndSetIfChanged(ref generationAmount, value);
 
 				if (bSaveData) SaveDataEvent?.Invoke(this, new EventArgs());
 			}
@@ -82,7 +83,7 @@ namespace SCG.Data.View
 			set
 			{
 				bool bSaveData = nextKeywordType != value;
-				Update(ref nextKeywordType, value);
+				this.RaiseAndSetIfChanged(ref nextKeywordType, value);
 
 				if(bSaveData) SaveDataEvent?.Invoke(this, new EventArgs());
 			}
@@ -96,7 +97,7 @@ namespace SCG.Data.View
 			get { return inputData; }
 			set
 			{
-				Update(ref inputData, value);
+				this.RaiseAndSetIfChanged(ref inputData, value);
 			}
 		}
 
@@ -108,7 +109,7 @@ namespace SCG.Data.View
 			get { return outputData; }
 			set
 			{
-				Update(ref outputData, value);
+				this.RaiseAndSetIfChanged(ref outputData, value);
 			}
 		}
 
@@ -127,12 +128,12 @@ namespace SCG.Data.View
 
 		private void OnInputTextChanged()
 		{
-			Notify("InputText");
+			this.RaisePropertyChanged("InputText");
 		}
 
 		private void OnOutputTextChanged()
 		{
-			Notify("OutputText");
+			this.RaisePropertyChanged("OutputText");
 		}
 
 		private void OnDataFileLoaded()
@@ -199,7 +200,7 @@ namespace SCG.Data.View
 			get { return defaultFileName; }
 			set
 			{
-				Update(ref defaultFileName, value);
+				this.RaiseAndSetIfChanged(ref defaultFileName, value);
 			}
 		}
 
@@ -211,7 +212,7 @@ namespace SCG.Data.View
 			get { return filepath; }
 			set
 			{
-				Update(ref filepath, value);
+				this.RaiseAndSetIfChanged(ref filepath, value);
 			}
 		}
 
@@ -222,7 +223,7 @@ namespace SCG.Data.View
 			get { return defaultFilePath; }
 			set
 			{
-				Update(ref defaultFilePath, value);
+				this.RaiseAndSetIfChanged(ref defaultFilePath, value);
 			}
 		}
 
@@ -233,7 +234,7 @@ namespace SCG.Data.View
 			get { return content; }
 			set
 			{
-				Update(ref content, value);
+				this.RaiseAndSetIfChanged(ref content, value);
 				OnContentChanged?.Invoke();
 			}
 		}
@@ -245,7 +246,7 @@ namespace SCG.Data.View
 			get { return saveAsText; }
 			set
 			{
-				Update(ref saveAsText, value);
+				this.RaiseAndSetIfChanged(ref saveAsText, value);
 			}
 		}
 
@@ -256,7 +257,7 @@ namespace SCG.Data.View
 			get { return openText; }
 			set
 			{
-				Update(ref openText, value);
+				this.RaiseAndSetIfChanged(ref openText, value);
 			}
 		}
 
@@ -354,7 +355,7 @@ namespace SCG.Data.View
 			get { return inputType; }
 			set
 			{
-				Update(ref inputType, value);
+				this.RaiseAndSetIfChanged(ref inputType, value);
 			}
 		}
 
@@ -365,7 +366,7 @@ namespace SCG.Data.View
 			get { return keyword; }
 			set
 			{
-				Update(ref keyword, value);
+				this.RaiseAndSetIfChanged(ref keyword, value);
 			}
 		}
 
@@ -376,7 +377,7 @@ namespace SCG.Data.View
 			get { return inputValue; }
 			set
 			{
-				Update(ref inputValue, value);
+				this.RaiseAndSetIfChanged(ref inputValue, value);
 			}
 		}
 
@@ -404,7 +405,7 @@ namespace SCG.Data.View
 			get { return inputType; }
 			set
 			{
-				Update(ref inputType, value);
+				this.RaiseAndSetIfChanged(ref inputType, value);
 			}
 		}
 
@@ -415,7 +416,7 @@ namespace SCG.Data.View
 			get { return keyword; }
 			set
 			{
-				Update(ref keyword, value);
+				this.RaiseAndSetIfChanged(ref keyword, value);
 			}
 		}
 
@@ -426,7 +427,7 @@ namespace SCG.Data.View
 			get { return startValue; }
 			set
 			{
-				Update(ref startValue, value);
+				this.RaiseAndSetIfChanged(ref startValue, value);
 			}
 		}
 
@@ -437,7 +438,7 @@ namespace SCG.Data.View
 			get { return incrementBy; }
 			set
 			{
-				Update(ref incrementBy, value);
+				this.RaiseAndSetIfChanged(ref incrementBy, value);
 			}
 		}
 

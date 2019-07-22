@@ -124,7 +124,7 @@ namespace SCG.Windows
 
 				if (Token == null || (Token != null && Token.IsCancellationRequested)) Token = new CancellationTokenSource();
 
-				RxApp.TaskpoolScheduler.Schedule(() => {
+				RxApp.MainThreadScheduler.Schedule(() => {
 					StartBackup();
 				});
 			}

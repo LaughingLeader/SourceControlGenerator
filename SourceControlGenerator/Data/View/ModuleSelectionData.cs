@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ReactiveUI;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -16,7 +17,7 @@ namespace SCG.Data.View
 			get { return moduleName; }
 			set
 			{
-				Update(ref moduleName, value);
+				this.RaiseAndSetIfChanged(ref moduleName, value);
 			}
 		}
 
@@ -27,7 +28,7 @@ namespace SCG.Data.View
 			get { return displayName; }
 			set
 			{
-				Update(ref displayName, value);
+				this.RaiseAndSetIfChanged(ref displayName, value);
 			}
 		}
 
@@ -38,7 +39,7 @@ namespace SCG.Data.View
 			get { return logo; }
 			set
 			{
-				Update(ref logo, value);
+				this.RaiseAndSetIfChanged(ref logo, value);
 			}
 		}
 
@@ -49,7 +50,7 @@ namespace SCG.Data.View
 			get { return logoExists; }
 			set
 			{
-				Update(ref logoExists, value);
+				this.RaiseAndSetIfChanged(ref logoExists, value);
 			}
 		}
 

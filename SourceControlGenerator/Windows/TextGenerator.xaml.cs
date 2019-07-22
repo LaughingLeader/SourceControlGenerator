@@ -182,7 +182,7 @@ namespace SCG.Windows
 
 		private void SaveData()
 		{
-			RxApp.TaskpoolScheduler.Schedule(() => {
+			RxApp.MainThreadScheduler.Schedule(() => {
 				AppController.Main.SaveTextGeneratorData();
 			});
 

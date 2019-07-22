@@ -10,6 +10,7 @@ using SCG.Modules.DOS2.Core;
 using SCG.SCGEnum;
 using SCG.Interfaces;
 using Newtonsoft.Json;
+using ReactiveUI;
 
 namespace SCG.Modules.DOS2.Data.App
 {
@@ -29,7 +30,7 @@ namespace SCG.Modules.DOS2.Data.App
 			get { return dataDirectory; }
 			set
 			{
-				Update(ref dataDirectory, value);
+				this.RaiseAndSetIfChanged(ref dataDirectory, value);
 			}
 		}
 
@@ -41,7 +42,7 @@ namespace SCG.Modules.DOS2.Data.App
 			get { return directoryLayoutFile; }
 			set
 			{
-				Update(ref directoryLayoutFile, value);
+				this.RaiseAndSetIfChanged(ref directoryLayoutFile, value);
 			}
 		}
 

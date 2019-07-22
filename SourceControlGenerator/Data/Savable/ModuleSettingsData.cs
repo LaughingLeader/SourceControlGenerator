@@ -81,11 +81,6 @@ namespace SCG.Data
 	[DataContract]
 	public class ModuleSettingsData : ReactiveObject, IModuleSettingsData
 	{
-		public void Notify(string propertyName)
-		{
-			this.RaisePropertyChanged(propertyName);
-		}
-
 		private string defaultAuthor;
 
 		[VisibleToView("Default Git Author", SettingsViewPropertyType.Text)]

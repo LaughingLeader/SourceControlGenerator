@@ -9,10 +9,11 @@ using System.Xml.Linq;
 using System.Xml.Serialization;
 using System.Xml.XPath;
 using SCG.Util;
+using ReactiveUI;
 
 namespace SCG.Data.Xml
 {
-	public class ModuleInfo : PropertyChangedBase
+	public class ModuleInfo : ReactiveObject
 	{
 		public string Author { get; set; }
 		public string CharacterCreationLevelName { get; set; }

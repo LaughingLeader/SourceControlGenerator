@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Xml.Linq;
 using System.Xml.Serialization;
 using System.Xml.XPath;
+using ReactiveUI;
 using SCG.Util;
 
 namespace SCG.Data.Xml

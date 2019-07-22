@@ -9,6 +9,7 @@ using System.Windows.Data;
 using SCG.Collections;
 using SCG.Interfaces;
 using Newtonsoft.Json;
+using ReactiveUI;
 
 namespace SCG.Data
 {
@@ -35,7 +36,7 @@ namespace SCG.Data
 			get { return licenseType; }
 			set
 			{
-				Update(ref licenseType, value);
+				this.RaiseAndSetIfChanged(ref licenseType, value);
 			}
 		}
 
@@ -51,7 +52,7 @@ namespace SCG.Data
 			get { return createJunctions; }
 			set
 			{
-				Update(ref createJunctions, value);
+				this.RaiseAndSetIfChanged(ref createJunctions, value);
 			}
 		}
 
@@ -62,7 +63,7 @@ namespace SCG.Data
 			get { return initGit; }
 			set
 			{
-				Update(ref initGit, value);
+				this.RaiseAndSetIfChanged(ref initGit, value);
 			}
 		}
 
@@ -73,7 +74,7 @@ namespace SCG.Data
 			get { return initialGitCommit; }
 			set
 			{
-				Update(ref initialGitCommit, value);
+				this.RaiseAndSetIfChanged(ref initialGitCommit, value);
 			}
 		}
 
@@ -115,7 +116,7 @@ namespace SCG.Data
 			get { return id; }
 			set
 			{
-				Update(ref id, value);
+				this.RaiseAndSetIfChanged(ref id, value);
 			}
 		}
 
@@ -126,7 +127,7 @@ namespace SCG.Data
 			get { return templateName; }
 			set
 			{
-				Update(ref templateName, value);
+				this.RaiseAndSetIfChanged(ref templateName, value);
 			}
 		}
 
@@ -137,7 +138,7 @@ namespace SCG.Data
 			get { return enabled; }
 			set
 			{
-				Update(ref enabled, value);
+				this.RaiseAndSetIfChanged(ref enabled, value);
 			}
 		}
 
@@ -149,7 +150,7 @@ namespace SCG.Data
 			get { return tooltip; }
 			set
 			{
-				Update(ref tooltip, value);
+				this.RaiseAndSetIfChanged(ref tooltip, value);
 			}
 		}
 
