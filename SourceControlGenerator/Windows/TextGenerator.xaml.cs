@@ -1,4 +1,5 @@
-﻿using SCG.Commands;
+﻿using ReactiveUI;
+using SCG.Commands;
 using SCG.Core;
 using SCG.Data;
 using SCG.Data.View;
@@ -7,6 +8,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
+using System.Reactive.Concurrency;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -178,11 +180,11 @@ namespace SCG.Windows
 			}
 		}
 
-		private async void SaveData()
+		private void SaveData()
 		{
-			await AppController.Main.MainWindow.Dispatcher.BeginInvoke((Action)(() => {
+			RxApp.TaskpoolScheduler.Schedule(() => {
 				AppController.Main.SaveTextGeneratorData();
-			}), DispatcherPriority.Background);
+			});
 
 			//Activate();
 		}

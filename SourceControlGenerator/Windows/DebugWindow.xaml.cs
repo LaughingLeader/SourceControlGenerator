@@ -21,6 +21,8 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using System.Windows.Threading;
+using ReactiveUI;
+using System.Reactive.Concurrency;
 
 namespace SCG.Windows
 {
@@ -122,9 +124,9 @@ namespace SCG.Windows
 
 				if (Token == null || (Token != null && Token.IsCancellationRequested)) Token = new CancellationTokenSource();
 
-				Dispatcher.BeginInvoke((Action)(() => {
+				RxApp.TaskpoolScheduler.Schedule(() => {
 					StartBackup();
-				}), DispatcherPriority.Background);
+				});
 			}
 		}
 

@@ -25,6 +25,7 @@ using SCG.Util;
 using System.Windows.Threading;
 using SCG.Controls;
 using ReactiveUI;
+using System.Reactive.Concurrency;
 
 namespace SCG.Core
 {
@@ -353,11 +354,11 @@ namespace SCG.Core
 		{
 			Data.ProgressValue = Data.ProgressValueMax;
 			await Task.Delay(500).ConfigureAwait(false);
-			await mainWindow.Dispatcher.BeginInvoke(new Action(() =>
+			RxApp.TaskpoolScheduler.Schedule(() =>
 			{
 				Data.ProgressValue = Data.ProgressValueMax;
 				OnProgressComplete();
-			}), DispatcherPriority.Background);
+			});
 		}
 
 		public void CancelProgress()
@@ -472,11 +473,11 @@ namespace SCG.Core
 
 					data.CreateNewTemplateData();
 
-					mainWindow.Dispatcher.BeginInvoke((Action)(() =>
+					RxApp.MainThreadScheduler.Schedule(() =>
 					{
 						data.AddTemplateControlVisible = true;
 						if (mainTabs != null) mainTabs.SelectedIndex = 1;
-					}));
+					});
 				}
 			}
 		}
@@ -646,13 +647,7 @@ namespace SCG.Core
 
 		public void AddLogMessage(string LogMessage, LogType logType)
 		{
-			AddLogMessageAsync(LogMessage, logType);
-
-		}
-
-		public async void AddLogMessageAsync(string LogMessage, LogType logType)
-		{
-			await mainWindow.Dispatcher.BeginInvoke(DispatcherPriority.Background, (Action)(() =>
+			RxApp.TaskpoolScheduler.Schedule(() =>
 			{
 				var log = new LogData()
 				{
@@ -664,7 +659,7 @@ namespace SCG.Core
 				log.FormatOutput();
 
 				mainWindow.LogWindow.Data.Add(log);
-			}));
+			});
 		}
 
 		public MenuData LogMenuData { get; set; }

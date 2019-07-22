@@ -8,6 +8,8 @@ using System.Threading.Tasks;
 using System.Windows.Controls;
 using System.Windows.Media.Imaging;
 using System.Windows.Threading;
+using ReactiveUI;
+using System.Reactive.Concurrency;
 
 namespace SCG.Data.App
 {
@@ -37,7 +39,7 @@ namespace SCG.Data.App
 
 		public void Init(string imagePath)
 		{
-			AppController.Main.MainWindow.Dispatcher.BeginInvoke(new Action(() =>
+			RxApp.TaskpoolScheduler.Schedule(() =>
 			{
 				SourcePath = imagePath;
 
@@ -48,7 +50,7 @@ namespace SCG.Data.App
 				Source.UriSource = new Uri(SourcePath, UriKind.Absolute);
 				Source.EndInit();
 
-			}), DispatcherPriority.Background);
+			});
 		}
 	}
 }

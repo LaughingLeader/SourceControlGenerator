@@ -28,6 +28,7 @@ using SCG.Controls;
 using System.Windows.Threading;
 using ReactiveUI;
 using System.Reactive.Disposables;
+using System.Reactive.Concurrency;
 
 namespace SCG.Windows
 {
@@ -233,27 +234,22 @@ namespace SCG.Windows
 
 		public static void FooterLog(string Message, params object[] Vars)
 		{
-			if (_instance != null)
-			{
-				_instance.Dispatcher.BeginInvoke((Action)(() => {
-					Message = String.Format(Message, Vars);
-					_instance.Controller.SetFooter(Message, LogType.Important);
-					Log.AllCallback?.Invoke(Message, LogType.Important);
-				}),
-				DispatcherPriority.Background);
-			}
+			RxApp.TaskpoolScheduler.Schedule(() => {
+				Message = String.Format(Message, Vars);
+				_instance.Controller.SetFooter(Message, LogType.Important);
+				Log.AllCallback?.Invoke(Message, LogType.Important);
+			});
 		}
 
 		public static void FooterError(string Message, params object[] Vars)
 		{
 			if (_instance != null)
 			{
-				_instance.Dispatcher.BeginInvoke((Action)(() => {
+				RxApp.TaskpoolScheduler.Schedule(() => {
 					Message = String.Format(Message, Vars);
 					_instance.Controller.SetFooter(Message, LogType.Error);
 					Log.AllCallback?.Invoke(Message, LogType.Error);
-				}),
-				DispatcherPriority.Background);
+				});
 			}
 		}
 		
@@ -396,7 +392,7 @@ namespace SCG.Windows
 		{
 			if (sender is TabControl || sender is TabItem)
 			{
-				Dispatcher.BeginInvoke((Action)(() =>
+				RxApp.TaskpoolScheduler.Schedule(() =>
 				{
 					IInputElement focusedControl = FocusManager.GetFocusedElement(this);
 					if (focusedControl is TextBox textBox)
@@ -411,7 +407,7 @@ namespace SCG.Windows
 						DependencyObject scope = FocusManager.GetFocusScope(textBox);
 						FocusManager.SetFocusedElement(scope, parent as IInputElement);
 					}
-				}), DispatcherPriority.Background);
+				});
 			}
 		}
 	}

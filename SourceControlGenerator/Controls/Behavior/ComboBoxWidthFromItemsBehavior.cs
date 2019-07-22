@@ -1,6 +1,8 @@
-﻿using System;
+﻿using ReactiveUI;
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reactive.Concurrency;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -49,9 +51,10 @@ namespace SCG.Controls.Behavior
 		}
 		private static void OnComboBoxLoaded(object sender, RoutedEventArgs e)
 		{
-			ComboBox comboBox = sender as ComboBox;
-			Action action = () => { comboBox.SetWidthFromItems(); };
-			comboBox.Dispatcher.BeginInvoke(action, DispatcherPriority.ContextIdle);
+			if(sender is ComboBox cb)
+			{
+				RxApp.TaskpoolScheduler.Schedule(() => cb.SetWidthFromItems());
+			}
 		}
 	}
 }

@@ -28,6 +28,7 @@ using System.Windows.Threading;
 using SCG.Modules.DOS2DE.Data.View.Locale;
 using DynamicData.Binding;
 using ReactiveUI;
+using System.Reactive.Concurrency;
 
 namespace SCG.Core
 {
@@ -1176,12 +1177,12 @@ namespace SCG.Core
 			LoadDirectoryLayout();
 			InitModuleKeywords();
 
-			AppController.Main.MainWindow.Dispatcher.BeginInvoke(new Action(async () =>
+			RxApp.TaskpoolScheduler.Schedule(async () =>
 			{
 				await DOS2DECommands.LoadAll(Data);
 				Data.NewProjectsAvailable = Data.NewProjects != null && Data.NewProjects.Count > 0;
 				Data.UpdateManageButtonsText();
-			}), DispatcherPriority.Background);
+			});
 
 			if (saveModuleSettings)
 			{
