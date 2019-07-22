@@ -30,7 +30,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 
 	public class BaseLocaleKeyEntry : PropertyChangedHistoryBase
 	{
-		private bool keyIsEditable = false;
+		private bool keyIsEditable = true;
 
 		public bool KeyIsEditable
 		{
