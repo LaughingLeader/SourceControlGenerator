@@ -1016,7 +1016,7 @@ body {
 				</Style>
 			</Grid.Resources>
 			<Rectangle Fill="DarkGray" Opacity="0.75" />
-			<Border x:Name="NameTabBorder" Padding="32" Margin="4" HorizontalAlignment="Center" VerticalAlignment="Center" Background="#FFE5F4F5" BorderBrush="Gray" BorderThickness="1">
+			<Border x:Name="NameTabBorder" Padding="32" Margin="4" HorizontalAlignment="Center" VerticalAlignment="Center" Background="#FFD6D9DE" BorderBrush="Gray" BorderThickness="1">
 				<StackPanel Width="300" VerticalAlignment="Stretch">
 					<TextBlock Text="Target Project:" VerticalAlignment="Center" Margin="0,0,0,4" />
 					<ComboBox Margin="0" 
