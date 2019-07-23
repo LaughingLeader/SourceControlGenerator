@@ -16,6 +16,8 @@ using SCG.Data.View;
 using SCG.Modules;
 using SCG.ThemeSystem;
 using SCG.Util;
+using SCG.Utilities;
+using ReactiveUI;
 
 namespace SCG
 {
@@ -37,6 +39,8 @@ namespace SCG
 			ThemeController.Init(this);
 			SCG.Helpers.Init();
 			FileCommands.Init();
+
+			RxApp.DefaultExceptionHandler = new ReactionObservableExceptionHandler();
 		}
 
 		private void Application_Startup(object sender, StartupEventArgs e)

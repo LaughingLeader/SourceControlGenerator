@@ -275,7 +275,7 @@ namespace SCG.Modules.DOS2DE.Views
 				else
 				{
 					ToggleAvailableProjectsView(false);
-					Controller.Data.NewProjectsAvailable = false;
+					//Controller.Data.NewProjectsAvailable = false;
 				}
 			}
 		}

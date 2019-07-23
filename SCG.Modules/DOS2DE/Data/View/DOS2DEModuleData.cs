@@ -96,19 +96,9 @@ namespace SCG.Modules.DOS2DE.Data.View
 			}
 		}
 
-		private bool newProjectsAvailable = false;
+		private readonly ObservableAsPropertyHelper<bool> _newProjectsAvailable;
 
-		public bool NewProjectsAvailable
-		{
-			get => newProjectsAvailable;
-			set
-			{
-				this.RaiseAndSetIfChanged(ref newProjectsAvailable, value);
-				this.RaisePropertyChanged("AvailableProjectsTooltip");
-
-				NoProjectsFoundVisibility = value ? Visibility.Collapsed : Visibility.Visible;
-			}
-		}
+		public bool NewProjectsAvailable => _newProjectsAvailable.Value;
 
 		private Visibility noProjectsFoundVisibility = Visibility.Collapsed;
 
@@ -142,7 +132,7 @@ namespace SCG.Modules.DOS2DE.Data.View
 
 		private readonly ObservableAsPropertyHelper<bool> openingLocaleEditor;
 
-		public bool OpeningLocaleEditor { get { return openingLocaleEditor.Value; } }
+		public bool OpeningLocaleEditor => openingLocaleEditor.Value;
 
 		private ManagedProjectsData managedProjectsData;
 
@@ -155,10 +145,12 @@ namespace SCG.Modules.DOS2DE.Data.View
 			}
 		}
 
+		private readonly object _modProjectsLock = new object();
+		internal readonly SourceList<ModProjectData> ModProjectsSource = new SourceList<ModProjectData>();
+
 		private readonly ReadOnlyObservableCollection<ModProjectData> _managedProjects;
 		public ReadOnlyObservableCollection<ModProjectData> ManagedProjects => _managedProjects;
 
-		internal readonly SourceList<ModProjectData> ModProjectsSource = new SourceList<ModProjectData>();
 
 		private readonly ReadOnlyObservableCollection<ModProjectData> _modProjects;
 		public ReadOnlyObservableCollection<ModProjectData> ModProjects => _modProjects;
@@ -207,32 +199,28 @@ namespace SCG.Modules.DOS2DE.Data.View
 			ManageButtonsText = DOS2DETooltips.Button_ManageProjects_None;
 			AvailableProjectsToggleText = DOS2DETooltips.Button_ToggleAvailableProjects;
 
+			//BindingOperations.EnableCollectionSynchronization(ModProjectsSource.Items, _modProjectsLock);
+
 			var sortOrder = SortExpressionComparer<ModProjectData>.Ascending(m => m.DisplayName);
 
-			/*
-			var modlistConnection = ModProjectsSource.Connect().Sort(sortOrder).
-					ObserveOnDispatcher().Bind(out _modProjects).DisposeMany().
-				Publish().
-					Filter(m => m.IsManaged == true).Bind(out _managedProjects).DisposeMany().
-				Publish().
-					Filter(m => !m.IsManaged).Sort(sortOrder).
-					ObserveOnDispatcher().Transform(m => new AvailableProjectViewData() { Name = m.ProjectName, Tooltip = m.Tooltip }).
-					Bind(out _newProjects).DisposeMany().Subscribe();
-			*/
-
-
 			ModProjectsSource.Connect().AutoRefreshOnObservable(x => x.WhenPropertyChanged(p => p.IsManaged)).Sort(sortOrder).
-				ObserveOnDispatcher().Bind(out _modProjects).DisposeMany().Subscribe();
+				ObserveOnDispatcher().Bind(out _modProjects).Subscribe();
 
 			ModProjectsSource.Connect().AutoRefreshOnObservable(x => x.WhenPropertyChanged(p => p.IsManaged)).Filter(m => m.IsManaged).Sort(sortOrder).
-				ObserveOnDispatcher().Bind(out _managedProjects).DisposeMany().Subscribe();
+				ObserveOnDispatcher().Bind(out _managedProjects).Subscribe();
 
 			ModProjectsSource.Connect().AutoRefreshOnObservable(x => x.WhenPropertyChanged(p => p.IsManaged)).Filter(m => !m.IsManaged).Sort(sortOrder).
 				ObserveOnDispatcher().Transform(m => new AvailableProjectViewData() { Name = m.ProjectName, Tooltip = m.Tooltip }).
-				Bind(out _newProjects).DisposeMany().Subscribe();
-			
+				Bind(out _newProjects).Subscribe();
 
-			this.WhenAnyValue(vm => vm.NewProjects.Count, (count) => count > 0).BindTo(this, x => x.NewProjectsAvailable);
+
+			var conn = this.WhenAnyValue(vm => vm.NewProjects.Count, (count) => count > 0).ObserveOnDispatcher();
+			conn.Subscribe((b) =>
+			{
+				this.RaisePropertyChanged("AvailableProjectsTooltip");
+				NoProjectsFoundVisibility = b ? Visibility.Collapsed : Visibility.Visible;
+			});
+			conn.ToProperty(this, x => x.NewProjectsAvailable, out _newProjectsAvailable);
 
 			OpenBackupFolderCommand = ReactiveCommand.Create<ModProjectData>(DOS2DECommands.OpenBackupFolder);
 			OpenGitFolderCommand = ReactiveCommand.Create<ModProjectData>(DOS2DECommands.OpenGitFolder);
@@ -249,6 +237,18 @@ namespace SCG.Modules.DOS2DE.Data.View
 			OpenInLocalizationEditorCommand.ThrownExceptions.Subscribe(ex => Log.Here().Error("Error opening Localization Editor: ", ex.ToString()));
 
 			//this.WhenAnyValue(x => x.CanClickRefresh).ToProperty(this, x => x.CanExecuteRefresh, out canExecuteRefresh);
+
+			/*
+			var modlistConnection = ModProjectsSource.Connect().Sort(sortOrder).
+					ObserveOnDispatcher().Bind(out _modProjects).DisposeMany().
+				Publish().
+					Filter(m => m.IsManaged == true).Bind(out _managedProjects).DisposeMany().
+				Publish().
+					Filter(m => !m.IsManaged).Sort(sortOrder).
+					ObserveOnDispatcher().Transform(m => new AvailableProjectViewData() { Name = m.ProjectName, Tooltip = m.Tooltip }).
+					Bind(out _newProjects).DisposeMany().Subscribe();
+			*/
+
 		}
 	}
 }

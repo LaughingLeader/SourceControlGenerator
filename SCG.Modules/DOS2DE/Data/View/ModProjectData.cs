@@ -19,10 +19,11 @@ using SCG.Data.App;
 using SCG.Modules.DOS2DE.Views;
 using ReactiveUI;
 using System.Reactive;
+using System.Reactive.Concurrency;
 
 namespace SCG.Modules.DOS2DE.Data.View
 {
-	public class ModProjectData : ReactiveObject, IProjectData
+	public class ModProjectData : ReactiveObject, IProjectData, IDisposable
 	{
 		private ProjectAppData projectAppData;
 
@@ -351,6 +352,8 @@ namespace SCG.Modules.DOS2DE.Data.View
 
 		public async Task ReloadDataAsync()
 		{
+			Log.Here().Activity("Reloading mod data.");
+
 			if(File.Exists(ModMetaFilePath))
 			{
 				string contents = await FileCommands.ReadFileAsync(ModMetaFilePath);
@@ -464,7 +467,7 @@ namespace SCG.Modules.DOS2DE.Data.View
 
 					if (modMetaXml != null)
 					{
-						this.ModuleInfo.LoadFromXml(modMetaXml);
+						this.ModuleInfo.LoadFromXml(modMetaXml, true);
 
 						LoadDependencies(modMetaXml);
 
@@ -654,7 +657,11 @@ namespace SCG.Modules.DOS2DE.Data.View
 					ProjectInfo.CreationDate = File.GetCreationTime(projectMetaFilePath);
 				}
 
-				LoadThumbnail(projectDirectory);
+				RxApp.MainThreadScheduler.Schedule(() =>
+				{
+					LoadThumbnail(projectDirectory);
+				});
+				
 			}
 			catch (Exception ex)
 			{
@@ -673,5 +680,37 @@ namespace SCG.Modules.DOS2DE.Data.View
 		{
 			Init();
 		}
+
+		#region IDisposable Support
+		private bool disposedValue = false; // To detect redundant calls
+
+		protected virtual void Dispose(bool disposing)
+		{
+			if (!disposedValue)
+			{
+				if (disposing)
+				{
+					Log.Here().Activity("Disposing");
+				}
+
+				// TODO: free unmanaged resources (unmanaged objects) and override a finalizer below.
+				// TODO: set large fields to null.
+				this.ModuleInfo = null;
+				this.ProjectInfo = null;
+				this.ThumbnailExists = Visibility.Collapsed;
+				this.ThumbnailPath = "";
+
+				disposedValue = true;
+			}
+		}
+
+		public void Dispose()
+		{
+			// Do not change this code. Put cleanup code in Dispose(bool disposing) above.
+			Dispose(true);
+			// TODO: uncomment the following line if the finalizer is overridden above.
+			// GC.SuppressFinalize(this);
+		}
+		#endregion
 	}
 }

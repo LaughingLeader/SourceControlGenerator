@@ -926,8 +926,14 @@ namespace SCG.Core
 			{
 				Data.CanClickRefresh = false;
 
-				await DOS2DECommands.LoadAll(Data);
-				Data.CanClickRefresh = true;
+				this.projectViewControl.Dispatcher.Invoke(new Action(() => {
+					Data.ModProjectsSource.Clear();
+				}));
+
+				await this.projectViewControl.Dispatcher.BeginInvoke(DispatcherPriority.Background, new Action(async () => {
+					await DOS2DECommands.LoadAll(projectViewControl.Dispatcher, Data);
+					Data.CanClickRefresh = true;
+				}));
 			}
 			else
 			{
@@ -943,7 +949,7 @@ namespace SCG.Core
 			{
 				Data.CanClickRefresh = false;
 
-				await DOS2DECommands.RefreshAvailableProjects(Data);
+				await DOS2DECommands.RefreshAvailableProjects(projectViewControl.Dispatcher, Data);
 				Data.CanClickRefresh = true;
 			}
 		}
@@ -1173,15 +1179,17 @@ namespace SCG.Core
 			LoadDirectoryLayout();
 			InitModuleKeywords();
 
-			DOS2DECommands.LoadAll(Data).Wait();
-			Data.NewProjectsAvailable = Data.NewProjects != null && Data.NewProjects.Count > 0;
-			Data.UpdateManageButtonsText();
-
-			if (saveModuleSettings)
+			Dispatcher.CurrentDispatcher.BeginInvoke(DispatcherPriority.Background, new Action(async () =>
 			{
-				FileCommands.Save.SaveModuleSettings(Data);
-				saveModuleSettings = false;
-			}
+				await DOS2DECommands.LoadAll(projectViewControl.Dispatcher, Data);
+				Data.UpdateManageButtonsText();
+
+				if (saveModuleSettings)
+				{
+					FileCommands.Save.SaveModuleSettings(Data);
+					saveModuleSettings = false;
+				}
+			}));
 #if DEBUG
 			//TestView();
 #endif

@@ -10,6 +10,7 @@ using System.Xml.Serialization;
 using System.Xml.XPath;
 using SCG.Util;
 using ReactiveUI;
+using System.Reactive.Concurrency;
 
 namespace SCG.Data.Xml
 {
@@ -128,14 +129,14 @@ namespace SCG.Data.Xml
 		}
 
 
-		public List<String> TargetModes { get; set; }
+		public List<String> TargetModes { get; set; } = new List<string>();
 
 		private long timestamp;
 
 		public long Timestamp
 		{
-			get { return timestamp; }
-			set { timestamp = value; }
+			get => timestamp;
+			set { this.RaiseAndSetIfChanged(ref timestamp, value); }
 		}
 
 		private DateTime modifiedDate;
@@ -152,52 +153,56 @@ namespace SCG.Data.Xml
 			PropertyCopier<ModuleInfo, ModuleInfo>.Copy(moduleInfo, this);
 		}
 
-		public void LoadFromXml(XDocument modMetaXml)
+		public void LoadFromXml(XDocument modMetaXml, bool isAsync = false)
 		{
 			bool moduleInfoLoaded = false;
 			//try
 			//{
-				var moduleInfoXml = modMetaXml.XPathSelectElement("save/region/node/children/node[@id='ModuleInfo']");
+			var moduleInfoXml = modMetaXml.XPathSelectElement("save/region/node/children/node[@id='ModuleInfo']");
 
-				if (moduleInfoXml != null)
+			if (moduleInfoXml != null)
+			{
+				PropertyInfo[] propInfo = typeof(ModuleInfo).GetProperties();
+				foreach (PropertyInfo property in propInfo)
 				{
-					PropertyInfo[] propInfo = typeof(ModuleInfo).GetProperties();
-					foreach (PropertyInfo property in propInfo)
+					if (property.Name == "TargetModes") continue;
+					if (property.Name == "Timestamp") continue;
+					if (property.Name == "ModifiedDate") continue;
+
+					var value = XmlDataHelper.GetDOS2AttributeValue(moduleInfoXml, property.Name);
+
+					if(property.Name == "Version")
 					{
-						if (property.Name == "TargetModes") continue;
-						if (property.Name == "Timestamp") continue;
-						if (property.Name == "ModifiedDate") continue;
-
-						var value = XmlDataHelper.GetDOS2AttributeValue(moduleInfoXml, property.Name);
-
-						if(property.Name == "Version")
+						Int32 version = 0;
+						if(!Int32.TryParse(value, out version))
 						{
-							Int32 version = 0;
-							if(!Int32.TryParse(value, out version))
-							{
-								Log.Here().Error("Error parsing ModuleInfo version string {0} to int.", value);
-							}
-							else
-							{
-								property.SetValue(this, version);
-							}
+							Log.Here().Error("Error parsing ModuleInfo version string {0} to int.", value);
 						}
-						else if(property.PropertyType == typeof(string))
+						else
 						{
-							property.SetValue(this, value);
+							property.SetValue(this, version);
 						}
-						//Log.Here().Activity("Set {0} to {1}", property.Name, value);
 					}
-
-					Log.Here().Activity("[{0}] Module info parsing complete. Checking target modes.", this.Name);
-
-					this.TargetModes = new List<string>();
-					moduleInfoLoaded = true;
+					else if(property.PropertyType == typeof(string))
+					{
+						property.SetValue(this, value);
+					}
+					//Log.Here().Activity("Set {0} to {1}", property.Name, value);
 				}
-				else
+
+				Log.Here().Activity("[{0}] Module info parsing complete. Checking target modes.", this.Name);
+
+				if (!isAsync)
 				{
-					Log.Here().Error("Error selecting path (\"{0}\") from mod meta.lsx file.", @"save / region / node / children / node[@id = 'ModuleInfo']");
+					TargetModes.Clear();
 				}
+
+				moduleInfoLoaded = true;
+			}
+			else
+			{
+				Log.Here().Error("Error selecting path (\"{0}\") from mod meta.lsx file.", @"save / region / node / children / node[@id = 'ModuleInfo']");
+			}
 			//}
 			//catch (Exception ex)
 			//{
@@ -236,10 +241,16 @@ namespace SCG.Data.Xml
 
 					if (modTargets != null)
 					{
-						foreach (var target in modTargets)
+						if (!isAsync)
 						{
-							var targetVal = target.Attribute("value");
-							if (targetVal != null && !String.IsNullOrEmpty(targetVal.Value)) this.TargetModes.Add(targetVal.Value);
+							TargetModes.AddRange(modTargets.Select(t => t.Attribute("value")).Where(v => !String.IsNullOrEmpty(v?.Value)).Select(x => x.Value));
+						}
+						else
+						{
+							RxApp.MainThreadScheduler.Schedule(() =>
+							{
+								TargetModes.AddRange(modTargets.Select(t => t.Attribute("value")).Where(v => !String.IsNullOrEmpty(v?.Value)).Select(x => x.Value));
+							});
 						}
 					}
 
