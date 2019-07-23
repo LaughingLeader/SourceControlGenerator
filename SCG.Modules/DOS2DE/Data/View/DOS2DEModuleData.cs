@@ -3,12 +3,15 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reactive;
+using System.Reactive.Linq;
+using DynamicData;
+using DynamicData.Binding;
+using ReactiveUI;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Data;
 using System.Windows.Input;
-using ReactiveUI;
 using SCG.Collections;
 using SCG.Commands;
 using SCG.Core;
@@ -97,7 +100,7 @@ namespace SCG.Modules.DOS2DE.Data.View
 
 		public bool NewProjectsAvailable
 		{
-			get { return newProjectsAvailable; }
+			get => newProjectsAvailable;
 			set
 			{
 				this.RaiseAndSetIfChanged(ref newProjectsAvailable, value);
@@ -152,17 +155,16 @@ namespace SCG.Modules.DOS2DE.Data.View
 			}
 		}
 
-		public ObservableImmutableList<ModProjectData> ManagedProjects { get; set; }
+		private readonly ReadOnlyObservableCollection<ModProjectData> _managedProjects;
+		public ReadOnlyObservableCollection<ModProjectData> ManagedProjects => _managedProjects;
 
-		public ObservableImmutableList<ModProjectData> ModProjects { get; set; }
+		internal readonly SourceList<ModProjectData> ModProjectsSource = new SourceList<ModProjectData>();
 
-		public ObservableImmutableList<AvailableProjectViewData> NewProjects { get; set; }
+		private readonly ReadOnlyObservableCollection<ModProjectData> _modProjects;
+		public ReadOnlyObservableCollection<ModProjectData> ModProjects => _modProjects;
 
-		public object ModProjectsLock { get; private set; } = new object();
-
-		public object ManagedProjectsLock { get; private set; } = new object();
-
-		public object NewProjectsLock { get; private set; } = new object();
+		private readonly ReadOnlyObservableCollection<AvailableProjectViewData> _newProjects;
+		public ReadOnlyObservableCollection<AvailableProjectViewData> NewProjects => _newProjects;
 
 		override public string LoadStringResource(string Name)
 		{
@@ -205,13 +207,32 @@ namespace SCG.Modules.DOS2DE.Data.View
 			ManageButtonsText = DOS2DETooltips.Button_ManageProjects_None;
 			AvailableProjectsToggleText = DOS2DETooltips.Button_ToggleAvailableProjects;
 
-			ModProjects = new ObservableImmutableList<ModProjectData>();
-			ManagedProjects = new ObservableImmutableList<ModProjectData>();
-			NewProjects = new ObservableImmutableList<AvailableProjectViewData>();
+			var sortOrder = SortExpressionComparer<ModProjectData>.Ascending(m => m.DisplayName);
 
-			BindingOperations.EnableCollectionSynchronization(ModProjects, ModProjectsLock);
-			BindingOperations.EnableCollectionSynchronization(ManagedProjects, ManagedProjectsLock);
-			BindingOperations.EnableCollectionSynchronization(NewProjects, NewProjectsLock);
+			/*
+			var modlistConnection = ModProjectsSource.Connect().Sort(sortOrder).
+					ObserveOnDispatcher().Bind(out _modProjects).DisposeMany().
+				Publish().
+					Filter(m => m.IsManaged == true).Bind(out _managedProjects).DisposeMany().
+				Publish().
+					Filter(m => !m.IsManaged).Sort(sortOrder).
+					ObserveOnDispatcher().Transform(m => new AvailableProjectViewData() { Name = m.ProjectName, Tooltip = m.Tooltip }).
+					Bind(out _newProjects).DisposeMany().Subscribe();
+			*/
+
+
+			ModProjectsSource.Connect().AutoRefreshOnObservable(x => x.WhenPropertyChanged(p => p.IsManaged)).Sort(sortOrder).
+				ObserveOnDispatcher().Bind(out _modProjects).DisposeMany().Subscribe();
+
+			ModProjectsSource.Connect().AutoRefreshOnObservable(x => x.WhenPropertyChanged(p => p.IsManaged)).Filter(m => m.IsManaged).Sort(sortOrder).
+				ObserveOnDispatcher().Bind(out _managedProjects).DisposeMany().Subscribe();
+
+			ModProjectsSource.Connect().AutoRefreshOnObservable(x => x.WhenPropertyChanged(p => p.IsManaged)).Filter(m => !m.IsManaged).Sort(sortOrder).
+				ObserveOnDispatcher().Transform(m => new AvailableProjectViewData() { Name = m.ProjectName, Tooltip = m.Tooltip }).
+				Bind(out _newProjects).DisposeMany().Subscribe();
+			
+
+			this.WhenAnyValue(vm => vm.NewProjects.Count, (count) => count > 0).BindTo(this, x => x.NewProjectsAvailable);
 
 			OpenBackupFolderCommand = ReactiveCommand.Create<ModProjectData>(DOS2DECommands.OpenBackupFolder);
 			OpenGitFolderCommand = ReactiveCommand.Create<ModProjectData>(DOS2DECommands.OpenGitFolder);

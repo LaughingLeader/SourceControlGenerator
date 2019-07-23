@@ -68,17 +68,21 @@ namespace SCG.Windows
 		{
 			if (msg == WM_CLIPBOARDUPDATE)
 			{
-				// fire event
-				this.ClipboardUpdate?.Invoke(this, new EventArgs());
-				// execute command
-				if (this.ClipboardUpdateCommand?.CanExecute(null) ?? false)
+				Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Normal, new Action(() =>
 				{
-					this.ClipboardUpdateCommand?.Execute(null);
-				}
-				// call virtual method
-				OnClipboardUpdate();
+					// fire event
+					this.ClipboardUpdate?.Invoke(this, new EventArgs());
+					// execute command
+					if (this.ClipboardUpdateCommand?.CanExecute(null) ?? false)
+					{
+						this.ClipboardUpdateCommand?.Execute(null);
+					}
+					// call virtual method
+					OnClipboardUpdate();
+				}));
+
+				handled = false;
 			}
-			handled = false;
 			return IntPtr.Zero;
 		}
 	}

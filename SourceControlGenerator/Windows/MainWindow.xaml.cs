@@ -194,6 +194,7 @@ namespace SCG.Windows
 		protected override void OnClipboardUpdate()
 		{
 			base.OnClipboardUpdate();
+
 			Controller.Data.ClipboardPopulated = Clipboard.ContainsText();
 		}
 

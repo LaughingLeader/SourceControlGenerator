@@ -29,6 +29,8 @@ using SCG.Modules.DOS2DE.Data.View.Locale;
 using DynamicData.Binding;
 using ReactiveUI;
 using System.Reactive.Concurrency;
+using System.Reactive.Linq;
+using DynamicData;
 
 namespace SCG.Core
 {
@@ -771,23 +773,19 @@ namespace SCG.Core
 			foreach (AvailableProjectViewData project in selectedItems)
 			{
 				Log.Here().Activity($"Adding project {project.Name} data to managed projects.");
-				var modData = Data.ModProjects.Where(p => p.ProjectName == project.Name).FirstOrDefault();
+				var modData = Data.ModProjects.FirstOrDefault(p => p.ProjectName == project.Name);
 				if (modData != null)
 				{
-					//ManagedProjects.Add(new ProjectEntryData(modData.ProjectInfo, modData.ModInfo));
-					Data.ManagedProjects.Add(modData);
-					var availableProject = Data.NewProjects.Where(p => p.Name == project.Name).FirstOrDefault();
-					if (availableProject != null) Data.NewProjects.Remove(availableProject);
+					modData.IsManaged = true;
 
 					if (Data.ManagedProjectsData.Projects.Any(p => p.Name == modData.ProjectName))
 					{
 						if (modData.ProjectAppData == null)
 						{
-							ProjectAppData data = Data.ManagedProjectsData.Projects.Where(p => p.Name == modData.ProjectName && p.UUID == modData.ModuleInfo.UUID).FirstOrDefault();
+							ProjectAppData data = Data.ManagedProjectsData.Projects.FirstOrDefault(p => p.Name == modData.ProjectName && p.UUID == modData.ModuleInfo.UUID);
 							if (data != null)
 							{
 								modData.ProjectAppData = data;
-
 								Log.Here().Activity($"Linked project {modData.ProjectName} data to managed project data.");
 							}
 						}
@@ -810,11 +808,7 @@ namespace SCG.Core
 				}
 				else
 				{
-#if DEBUG
-					Data.ManagedProjects.Add(ModProjectData.Test(project.Name));
-#else
 					MainWindow.FooterError($"Error adding project {project.Name} to managed projects: Mod data doesn't exist.");
-#endif
 				}
 			}
 
@@ -1072,6 +1066,8 @@ namespace SCG.Core
 			IgnoredExportFiles.Add("personallog.txt");
 			IgnoredExportFiles.Add("story.debugInfo");
 			IgnoredExportFiles.Add("story_orphanqueries_found.txt");
+
+			Log.Here().Activity("DOS2DEProjectController created");
 		}
 
 		public void SelectionChanged()
@@ -1177,12 +1173,9 @@ namespace SCG.Core
 			LoadDirectoryLayout();
 			InitModuleKeywords();
 
-			RxApp.MainThreadScheduler.Schedule(async () =>
-			{
-				await DOS2DECommands.LoadAll(Data);
-				Data.NewProjectsAvailable = Data.NewProjects != null && Data.NewProjects.Count > 0;
-				Data.UpdateManageButtonsText();
-			});
+			DOS2DECommands.LoadAll(Data).Wait();
+			Data.NewProjectsAvailable = Data.NewProjects != null && Data.NewProjects.Count > 0;
+			Data.UpdateManageButtonsText();
 
 			if (saveModuleSettings)
 			{

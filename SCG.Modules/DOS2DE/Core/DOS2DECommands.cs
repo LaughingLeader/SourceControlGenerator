@@ -19,6 +19,10 @@ using SCG.Modules.DOS2DE.Data.View;
 using SCG.FileGen;
 using SCG.Windows;
 using Microsoft.Win32;
+using ReactiveUI;
+using System.Reactive.Concurrency;
+using DynamicData;
+using Newtonsoft.Json;
 
 namespace SCG.Modules.DOS2DE.Core
 {
@@ -26,26 +30,20 @@ namespace SCG.Modules.DOS2DE.Core
 	{
 		public static async Task LoadAll(DOS2DEModuleData Data)
 		{
+
 			await new SynchronizationContextRemover();
-			await LoadModProjectsAsync(Data);
-			await LoadManagedProjectsAsync(Data);
+			var newMods = await LoadModProjectsAsync(Data);
+			await LoadManagedProjectsAsync(Data, newMods, true);
 			await LoadSourceControlDataAsync(Data);
-			await Task.Run(() => LoadAvailableProjects(Data));
 		}
 
-		public static async Task LoadManagedProjectsAsync(DOS2DEModuleData Data, bool ClearExisting = true)
+		public static async Task LoadManagedProjectsAsync(DOS2DEModuleData Data, List<ModProjectData> modProjects, bool ClearExisting = true)
 		{
-			if (Data.ManagedProjects == null)
+			if (ClearExisting)
 			{
-				Data.ManagedProjects = new ObservableImmutableList<ModProjectData>();
-				BindingOperations.EnableCollectionSynchronization(Data.ManagedProjects, Data.ManagedProjectsLock);
-			}
-			else
-			{
-				if(ClearExisting)
+				foreach(var mod in Data.ModProjectsSource.Items)
 				{
-					Data.ManagedProjects.DoOperation(data => data.Clear());
-					BindingOperations.EnableCollectionSynchronization(Data.ManagedProjects, Data.ManagedProjectsLock);
+					mod.IsManaged = false;
 				}
 			}
 
@@ -58,11 +56,16 @@ namespace SCG.Modules.DOS2DE.Core
 
 			if (!String.IsNullOrEmpty(projectsAppDataPath) && File.Exists(projectsAppDataPath))
 			{
-				//projectsAppDataPath = Path.GetFullPath(projectsAppDataPath);
 				try
 				{
-					Data.ManagedProjectsData = JsonInterface.DeserializeObject<ManagedProjectsData>(projectsAppDataPath);
-					Data.ManagedProjectsData.Projects = Data.ManagedProjectsData.Projects.OrderBy(p => p.Name).ToList();
+					string contents = await FileCommands.ReadFileAsync(projectsAppDataPath);
+					var settings = new JsonSerializerSettings
+					{
+						NullValueHandling = NullValueHandling.Ignore,
+						MissingMemberHandling = MissingMemberHandling.Error
+					};
+
+					Data.ManagedProjectsData = JsonConvert.DeserializeObject<ManagedProjectsData>(contents, settings);
 				}
 				catch (Exception ex)
 				{
@@ -76,116 +79,48 @@ namespace SCG.Modules.DOS2DE.Core
 			}
 			else
 			{
-				foreach (var project in Data.ManagedProjectsData.Projects)
+				foreach (var m in Data.ManagedProjectsData.SortedProjects)
 				{
-					//var modProject = Data.ModProjects.Where(x => x.Name == project.Name && x.ModuleInfo.UUID == project.GUID).FirstOrDefault();
-					var modProject = Data.ModProjects.Where(x => x.ProjectName == project.Name && x.UUID == project.UUID).FirstOrDefault();
-					if (modProject != null)
+					Log.Here().Activity($"Mod {m.Name} is managed");
+					var modData = modProjects.FirstOrDefault(p => p.UUID == m.UUID);
+					if (modData != null)
 					{
-						ModProjectData existingData = null;
-
-						if(!ClearExisting)
+						modData.IsManaged = true;
+						if (ClearExisting)
 						{
-							existingData = Data.ManagedProjects.Where(p => p.ProjectName == project.Name && p.UUID == project.UUID).FirstOrDefault();
-						}
+							await modData.ReloadDataAsync();
 
-						if (ClearExisting || existingData == null)
-						{
-							Data.ManagedProjects.Add(modProject);
-
-							if (!String.IsNullOrWhiteSpace(project.LastBackupUTC))
+							if (!String.IsNullOrWhiteSpace(m.LastBackupUTC))
 							{
 								DateTime lastBackup;
 
-								var success = DateTime.TryParse(project.LastBackupUTC, out lastBackup);
+								var success = DateTime.TryParse(m.LastBackupUTC, out lastBackup);
 								if (success)
 								{
 									//Log.Here().Activity($"Successully parsed {modProject.LastBackup} to DateTime.");
-									modProject.LastBackup = lastBackup.ToLocalTime();
+									modData.LastBackup = lastBackup.ToLocalTime();
 								}
 								else
 								{
-									Log.Here().Error($"Could not convert {project.LastBackupUTC} to DateTime.");
+									Log.Here().Error($"Could not convert {m.LastBackupUTC} to DateTime.");
 								}
 							}
 						}
-						else if(existingData != null)
-						{
-							await existingData.ReloadDataAsync();
-						}
 					}
-				}
+				};
 			}
-		}
-
-		public static void LoadAvailableProjects(DOS2DEModuleData Data, bool ClearExisting = false)
-		{
-			if (Data.NewProjects == null)
-			{
-				Data.NewProjects = new ObservableImmutableList<AvailableProjectViewData>();
-				BindingOperations.EnableCollectionSynchronization(Data.NewProjects, Data.NewProjectsLock);
-			}
-			else
-			{
-				if (ClearExisting)
-				{
-					Data.NewProjects.DoOperation(data => data.Clear());
-					BindingOperations.EnableCollectionSynchronization(Data.NewProjects, Data.NewProjectsLock);
-				}
-			}
-
-			if (Data.ModProjects != null)
-			{
-				foreach (var project in Data.ModProjects)
-				{
-					if (!string.IsNullOrEmpty(project.ProjectName))
-					{
-						bool projectIsUnmanaged = true;
-
-						if (Data.ManagedProjects != null)
-						{
-							if (Data.ManagedProjects.Any(p => p.ProjectName == project.ProjectName))
-							{
-								projectIsUnmanaged = false;
-							}
-						}
-
-						if (projectIsUnmanaged)
-						{
-							if(ClearExisting || Data.NewProjects.Where(p => p.Name == project.ProjectName).FirstOrDefault() == null)
-							{
-								AvailableProjectViewData availableProject = new AvailableProjectViewData()
-								{
-									Name = project.ProjectName,
-									Tooltip = project.Tooltip
-								};
-								Data.NewProjects.DoOperation(data => data.Add(availableProject));
-							}
-						}
-					}
-				}
-			}
-
-			Data.NewProjectsAvailable = Data.NewProjects != null && Data.NewProjects.Count > 0;
 		}
 
 		public static string[] IgnoredFolders { get; private set; } = new string[7] { "Origins", "DivinityOrigins_1301db3d-1f54-4e98-9be5-5094030916e4", "Shared", "Arena", "DOS2_Arena", "Game_Master", "GameMaster" };
 
-		public static async Task LoadModProjectsAsync(DOS2DEModuleData Data, bool ClearPrevious = true)
+		public static async Task<List<ModProjectData>> LoadModProjectsAsync(DOS2DEModuleData Data, bool ClearExisting = true)
 		{
-			if (Data.ModProjects == null)
+			if (ClearExisting)
 			{
-				Data.ModProjects = new ObservableImmutableList<ModProjectData>();
-				BindingOperations.EnableCollectionSynchronization(Data.ModProjects, Data.ModProjectsLock);
+				Data.ModProjectsSource.Clear();
 			}
-			else
-			{
-				if (ClearPrevious)
-				{
-					Data.ModProjects.DoOperation(data => data.Clear());
-					BindingOperations.EnableCollectionSynchronization(Data.ModProjects, Data.ModProjectsLock);
-				}
-			}
+
+			List<ModProjectData> newItems = new List<ModProjectData>();
 
 			if (Data.Settings != null && !String.IsNullOrEmpty(Data.Settings.DOS2DEDataDirectory))
 			{
@@ -228,28 +163,39 @@ namespace SCG.Modules.DOS2DE.Core
 
 									Log.Here().Activity("Finished reading meta files for mod: {0}", modProjectData.ModuleInfo.Name);
 
-									if(!ClearPrevious)
+									if(!ClearExisting)
 									{
-										var previous = Data.ModProjects.Where(p => p.FolderName == modProjectData.FolderName).FirstOrDefault();
+										var previous = Data.ModProjects.FirstOrDefault(p => p.FolderName == modProjectData.FolderName);
 										if(previous != null)
 										{
 											if(previous.DataIsNewer(modProjectData))
 											{
-												previous.UpdateData(modProjectData);
+												RxApp.MainThreadScheduler.Schedule(() =>
+												{
+													previous.UpdateData(modProjectData);
+												});
 											}
 										}
 										else
 										{
-											Data.ModProjects.DoOperation(data => data.Add(modProjectData));
+											newItems.Add(modProjectData);
 										}
 									}
 									else
 									{
-										Data.ModProjects.DoOperation(data => data.Add(modProjectData));
+										newItems.Add(modProjectData);
 									}
 								}
 							}
 						}
+
+						RxApp.MainThreadScheduler.Schedule(() =>
+						{
+							foreach (var data in newItems)
+							{
+								Data.ModProjectsSource.Add(data);
+							}
+						});
 					}
 				}
 				else
@@ -257,6 +203,8 @@ namespace SCG.Modules.DOS2DE.Core
 					Log.Here().Error("Loading available projects failed. DOS2 data directory not found at {0}", Data.Settings.DOS2DEDataDirectory);
 				}
 			}
+
+			return newItems;
 		}
 
 		public static async Task<bool> LoadSourceControlDataAsync(DOS2DEModuleData Data)
@@ -292,9 +240,8 @@ namespace SCG.Modules.DOS2DE.Core
 		public static async Task RefreshAvailableProjects(DOS2DEModuleData Data)
 		{
 			await new SynchronizationContextRemover();
-			await LoadModProjectsAsync(Data, true);
-			await Task.Run(() => LoadAvailableProjects(Data, true));
-			await LoadManagedProjectsAsync(Data);
+			var newMods = await LoadModProjectsAsync(Data, true);
+			await LoadManagedProjectsAsync(Data, newMods, true);
 		}
 
 		public static async Task RefreshManagedProjects(DOS2DEModuleData Data)
@@ -344,7 +291,6 @@ namespace SCG.Modules.DOS2DE.Core
 			if (Data.ManagedProjectsData != null && Data.ManagedProjectsData.Projects.Count > 0 && Data.Settings != null && FileCommands.IsValidPath(Data.Settings.AddedProjectsFile))
 			{
 				Data.ManagedProjectsData.Projects.RemoveAll(p => Data.ModProjects.Where(mp => mp.ProjectName == p.Name).FirstOrDefault() == null);
-				Data.ManagedProjectsData.Projects = Data.ManagedProjectsData.Projects.OrderBy(p => p.Name).ToList();
 				string json = JsonInterface.SerializeObject(Data.ManagedProjectsData);
 				return FileCommands.WriteToFile(Data.Settings.AddedProjectsFile, json);
 			}

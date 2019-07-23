@@ -15,22 +15,118 @@ namespace SCG.Data.Xml
 {
 	public class ModuleInfo : ReactiveObject
 	{
-		public string Author { get; set; }
-		public string CharacterCreationLevelName { get; set; }
-		public string Description { get; set; }
-		public string Folder { get; set; }
-		public string GMTemplate { get; set; }
-		public string LobbyLevelName { get; set; }
-		public string MD5 { get; set; }
-		public string MenuLevelName { get; set; }
-		public string Name { get; set; }
-		public string NumPlayers { get; set; }
-		public string PhotoBooth { get; set; }
-		public string StartupLevelName { get; set; }
-		public string Tags { get; set; }
-		public string Type { get; set; }
-		public string UUID { get; set; }
-		public Int32 Version { get; set; }
+		private string author;
+		public string Author
+		{
+			get => author;
+			set { this.RaiseAndSetIfChanged(ref author, value); }
+		}
+
+		private string charactercreationlevelname;
+		public string CharacterCreationLevelName
+		{
+			get => charactercreationlevelname;
+			set { this.RaiseAndSetIfChanged(ref charactercreationlevelname, value); }
+		}
+
+		private string description;
+		public string Description
+		{
+			get => description;
+			set { this.RaiseAndSetIfChanged(ref description, value); }
+		}
+
+		private string folder;
+		public string Folder
+		{
+			get => folder;
+			set { this.RaiseAndSetIfChanged(ref folder, value); }
+		}
+
+		private string gmtemplate;
+		public string GMTemplate
+		{
+			get => gmtemplate;
+			set { this.RaiseAndSetIfChanged(ref gmtemplate, value); }
+		}
+
+		private string lobbylevelname;
+		public string LobbyLevelName
+		{
+			get => lobbylevelname;
+			set { this.RaiseAndSetIfChanged(ref lobbylevelname, value); }
+		}
+
+		private string md5;
+		public string MD5
+		{
+			get => md5;
+			set { this.RaiseAndSetIfChanged(ref md5, value); }
+		}
+
+		private string menulevelname;
+		public string MenuLevelName
+		{
+			get => menulevelname;
+			set { this.RaiseAndSetIfChanged(ref menulevelname, value); }
+		}
+
+		private string name;
+		public string Name
+		{
+			get => name;
+			set { this.RaiseAndSetIfChanged(ref name, value); }
+		}
+
+		private string numplayers;
+		public string NumPlayers
+		{
+			get => numplayers;
+			set { this.RaiseAndSetIfChanged(ref numplayers, value); }
+		}
+
+		private string photobooth;
+		public string PhotoBooth
+		{
+			get => photobooth;
+			set { this.RaiseAndSetIfChanged(ref photobooth, value); }
+		}
+
+		private string startuplevelname;
+		public string StartupLevelName
+		{
+			get => startuplevelname;
+			set { this.RaiseAndSetIfChanged(ref startuplevelname, value); }
+		}
+
+		private string tags;
+		public string Tags
+		{
+			get => tags;
+			set { this.RaiseAndSetIfChanged(ref tags, value); }
+		}
+
+		private string type;
+		public string Type
+		{
+			get => type;
+			set { this.RaiseAndSetIfChanged(ref type, value); }
+		}
+
+		private string uuid;
+		public string UUID
+		{
+			get => uuid;
+			set { this.RaiseAndSetIfChanged(ref uuid, value); }
+		}
+
+		private Int32 version;
+		public Int32 Version
+		{
+			get => version;
+			set { this.RaiseAndSetIfChanged(ref version, value); }
+		}
+
 
 		public List<String> TargetModes { get; set; }
 
@@ -42,7 +138,14 @@ namespace SCG.Data.Xml
 			set { timestamp = value; }
 		}
 
-		public DateTime ModifiedDate { get; set; }
+		private DateTime modifiedDate;
+
+		public DateTime ModifiedDate
+		{
+			get => modifiedDate;
+			set { this.RaiseAndSetIfChanged(ref modifiedDate, value); }
+		}
+
 
 		public void Set(ModuleInfo moduleInfo)
 		{

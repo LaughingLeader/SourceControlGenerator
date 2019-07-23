@@ -1,25 +1,65 @@
-﻿using System;
+﻿using DynamicData.Binding;
+using ReactiveUI;
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
+using DynamicData;
+using System.Collections.ObjectModel;
+using Reactive.Bindings.Extensions;
+using System.Reactive;
+using System.Reactive.Linq;
 
 namespace SCG.Data
 {
-	public class ManagedProjectsData
+	[DataContract]
+	public class ManagedProjectsData : ReactiveObject
 	{
-		public List<ProjectAppData> Projects { get; set; }
+		[DataMember]
+		public ObservableCollectionExtended<ProjectAppData> Projects { get; set; } = new ObservableCollectionExtended<ProjectAppData>();
+
+		private readonly ReadOnlyObservableCollection<ProjectAppData> _sortedProjects;
+		public ReadOnlyObservableCollection<ProjectAppData> SortedProjects => _sortedProjects;
 
 		public ManagedProjectsData()
 		{
-			Projects = new List<ProjectAppData>();
+			Projects.ToObservableChangeSet().Sort(SortExpressionComparer<ProjectAppData>.Descending(p => p.Name)).Bind(out _sortedProjects).Subscribe();
 		}
 	}
 
-	public class ProjectAppData
+	[DataContract]
+	public class ProjectAppData : ReactiveObject
 	{
-		public string Name { get; set; }
-		public string UUID { get; set; }
-		public string LastBackupUTC { get; set; }
+		private string name;
+
+		[DataMember]
+		public string Name
+		{
+			get => name;
+			set { this.RaiseAndSetIfChanged(ref name, value); }
+		}
+
+
+		private string uuid;
+
+		[DataMember]
+		public string UUID
+		{
+			get => uuid;
+			set { this.RaiseAndSetIfChanged(ref uuid, value); }
+		}
+
+
+		private string lastBackupUTC;
+
+		[DataMember]
+		public string LastBackupUTC
+		{
+			get => lastBackupUTC;
+			set { this.RaiseAndSetIfChanged(ref lastBackupUTC, value); }
+		}
+
 	}
 }

@@ -32,30 +32,55 @@ using SCG.Modules.DOS2DE.Data.View.Locale;
 using SCG.Modules.DOS2DE.Utilities;
 using System.Reactive;
 using System.Reactive.Linq;
+using DynamicData;
 
 namespace SCG.Modules.DOS2DE.Views
 {
 	public class DOS2DEProjectsViewTestData : DOS2DEModuleData
 	{
-		public DOS2DEProjectsViewTestData()
+		public DOS2DEProjectsViewTestData() : base()
 		{
-			var loadCommand = ReactiveCommand.CreateFromTask(InitTestProjects);
-			loadCommand.Execute();
-		}
-
-		private async Task InitTestProjects()
-		{
-			var mods = await CreateTestProjects();
-			ModProjects = mods;
-
-			foreach (var project in ModProjects)
+			for(var i = 0; i < 4; i++)
 			{
-				ManagedProjects.Add(project);
+				var mod = new ModProjectData();
+				mod.ModuleInfo = new SCG.Data.Xml.ModuleInfo()
+				{
+					Name = "Test" + i,
+					Author = "LaughingLeader"
+				};
+				mod.ProjectInfo = new SCG.Data.Xml.ProjectInfo();
+
+				ModProjectsSource.Add(mod);
+
+				mod.IsManaged = true;
 			}
+
+			for (var i = 0; i < 4; i++)
+			{
+				var mod = new ModProjectData();
+				mod.ModuleInfo = new SCG.Data.Xml.ModuleInfo()
+				{
+					Name = "TestNew" + i,
+					Author = "Test",
+				};
+				mod.IsManaged = false;
+				ModProjectsSource.Add(mod);
+			}
+
+			var mods = CreateTestProjects();
+
+			foreach (var m in mods)
+			{
+				ModProjectsSource.Add(m);
+				m.IsManaged = true;
+			}
+
+			AvailableProjectsVisible = true;
 		}
-		private async Task<ObservableImmutableList<ModProjectData>> CreateTestProjects()
+
+		private List<ModProjectData> CreateTestProjects()
 		{
-			ObservableImmutableList<ModProjectData> projects = new ObservableImmutableList<ModProjectData>();
+			List<ModProjectData> projects = new List<ModProjectData>();
 
 			var dataDirectory = @"G:\Divinity Original Sin 2\DefEd\Data";
 
@@ -80,8 +105,8 @@ namespace SCG.Modules.DOS2DE.Views
 							if (metaFile != null)
 							{
 								ModProjectData modProjectData = new ModProjectData();
-								await modProjectData.LoadAllDataAsync(metaFile.FullName, projectsPath);
-								projects.DoOperation(data => data.Add(modProjectData));
+								modProjectData.LoadAllData(metaFile.FullName, projectsPath);
+								projects.Add(modProjectData);
 							}
 						}
 					}
@@ -113,6 +138,10 @@ namespace SCG.Modules.DOS2DE.Views
 		public DOS2DEProjectsView()
 		{
 			InitializeComponent();
+
+			_instance = this;
+
+			Init();
 		}
 
 		public DOS2DEProjectsView(MainWindow mainAppWindow, DOS2DEProjectController controller)
@@ -121,25 +150,21 @@ namespace SCG.Modules.DOS2DE.Views
 
 			_instance = this;
 
+			Init();
+
 			Controller = controller;
 			MainWindow = mainAppWindow;
-
-			EditVersionWindow = new EditVersionWindow();
-			EditVersionWindow.Hide();
 
 			this.ViewModel = Controller.Data;
 			DataContext = this.ViewModel;
 
 			ToggleAvailableProjectsView(Controller.Data.NewProjectsAvailable);
+		}
 
-			/*
-			var gridSplitter = (GridSplitter)this.FindName("ProjectsDataGridSplitter");
-			if (gridSplitter != null)
-			{
-				gridSplitter.DragStarted += (s, e) => { gridSplitterMoving = true; };
-				gridSplitter.DragCompleted += (s, e) => { gridSplitterMoving = false; };
-			}
-			*/
+		public void Init()
+		{
+			EditVersionWindow = new EditVersionWindow();
+			EditVersionWindow.Hide();
 		}
 
 
