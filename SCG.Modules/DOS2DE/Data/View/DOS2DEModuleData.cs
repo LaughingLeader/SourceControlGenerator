@@ -214,14 +214,14 @@ namespace SCG.Modules.DOS2DE.Data.View
 			var sortOrder = SortExpressionComparer<ModProjectData>.Ascending(m => m.DisplayName);
 			
 			var connection = ModProjects.Connect().AutoRefreshOnObservable(x => x.WhenPropertyChanged(p => p.IsManaged)).
-				Buffer(TimeSpan.FromMilliseconds(25)).FlattenBufferResult().
+				Buffer(TimeSpan.FromMilliseconds(100)).FlattenBufferResult().ObserveOn(RxApp.MainThreadScheduler).
 				Sort(sortOrder);
 
 			connection.Filter(m => m.IsManaged).Bind(out _managedProjects).Subscribe();
 			connection.Filter(m => !m.IsManaged).Bind(out _unmanagedProjects).Subscribe();
-			
-
-			var conn = this.WhenAnyValue(vm => vm.UnmanagedProjects.Count, (count) => count > 0).ObserveOnDispatcher(DispatcherPriority.Background);
+	
+			var conn = this.WhenAnyValue(vm => vm.UnmanagedProjects.Count, (count) => count > 0).
+				ObserveOnDispatcher(DispatcherPriority.Background);
 			conn.Subscribe((b) =>
 			{
 				this.RaisePropertyChanged("AvailableProjectsTooltip");
