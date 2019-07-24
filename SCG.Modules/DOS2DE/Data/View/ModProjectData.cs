@@ -231,9 +231,9 @@ namespace SCG.Modules.DOS2DE.Data.View
 		}
 
 
-		private Visibility thumbnailExists = Visibility.Collapsed;
+		private bool thumbnailExists = false;
 
-		public Visibility ThumbnailExists
+		public bool ThumbnailExists
 		{
 			get { return thumbnailExists; }
 			set
@@ -350,41 +350,6 @@ namespace SCG.Modules.DOS2DE.Data.View
 			VersionData.ParseInt(ModuleInfo.Version);
 		}
 
-		public async Task ReloadDataAsync()
-		{
-			Log.Here().Activity("Reloading mod data.");
-
-			if(File.Exists(ModMetaFilePath))
-			{
-				string contents = await FileCommands.ReadFileAsync(ModMetaFilePath);
-				if (!String.IsNullOrWhiteSpace(contents))
-				{
-					var modMetaXml = XDocument.Parse(contents);
-					if (modMetaXml != null)
-					{
-						this.ModuleInfo.LoadFromXml(modMetaXml);
-						LoadDependencies(modMetaXml);
-						ModuleInfo.RaisePropertyChanged(String.Empty);
-					}
-				}
-			}
-
-			if (File.Exists(ProjectMetaFilePath))
-			{
-				string contents = await FileCommands.ReadFileAsync(ProjectMetaFilePath);
-				if(!String.IsNullOrWhiteSpace(contents))
-				{
-					var projectMetaXml = XDocument.Parse(contents);
-					if(projectMetaXml != null)
-					{
-						this.ProjectInfo.LoadFromXml(projectMetaXml);
-						LoadThumbnail(Path.GetDirectoryName(ProjectMetaFilePath));
-						ProjectInfo.RaisePropertyChanged(String.Empty);
-					}
-				}
-			}
-		}
-
 		private void LoadDependencies(XDocument modMetaXml)
 		{
 			try
@@ -419,8 +384,7 @@ namespace SCG.Modules.DOS2DE.Data.View
 
 		private void LoadThumbnail(string projectDirectory)
 		{
-			Log.Here().Activity($"Checking {projectDirectory} for a thumbnails.");
-
+			//Log.Here().Activity($"Checking {projectDirectory} for a thumbnails.");
 			bool foundThumbnail = false;
 
 			DirectoryEnumerationFilters filter = new DirectoryEnumerationFilters
@@ -429,7 +393,7 @@ namespace SCG.Modules.DOS2DE.Data.View
 				{
 					if(!foundThumbnail && f.FileName.IndexOf("thumbnail", StringComparison.OrdinalIgnoreCase) > -1 && FileCommands.IsValidImage(f.FullPath))
 					{
-						Log.Here().Activity($"Thumbnail! {f?.FullPath} | {f?.FileName}");
+						//Log.Here().Activity($"Thumbnail! {f?.FullPath} | {f?.FileName}");
 						foundThumbnail = true;
 						return true;
 					}
@@ -441,9 +405,11 @@ namespace SCG.Modules.DOS2DE.Data.View
 			if (!String.IsNullOrWhiteSpace(thumbnail))
 			{
 				ThumbnailPath = Path.GetFullPath(thumbnail);
+				ThumbnailExists = true;
 			}
 		}
 
+		#region Async
 		public async Task LoadModMetaAsync(string metaFilePath)
 		{
 			if (File.Exists(metaFilePath))
@@ -556,6 +522,42 @@ namespace SCG.Modules.DOS2DE.Data.View
 			await LoadModMetaAsync(metaFilePath).ConfigureAwait(false);
 			await LoadProjectMetaAsync(projectsFolderPath).ConfigureAwait(false);
 		}
+
+		public async Task ReloadDataAsync()
+		{
+			Log.Here().Activity("Reloading mod data.");
+
+			if (File.Exists(ModMetaFilePath))
+			{
+				string contents = await FileCommands.ReadFileAsync(ModMetaFilePath);
+				if (!String.IsNullOrWhiteSpace(contents))
+				{
+					var modMetaXml = XDocument.Parse(contents);
+					if (modMetaXml != null)
+					{
+						this.ModuleInfo.LoadFromXml(modMetaXml);
+						LoadDependencies(modMetaXml);
+						ModuleInfo.RaisePropertyChanged(String.Empty);
+					}
+				}
+			}
+
+			if (File.Exists(ProjectMetaFilePath))
+			{
+				string contents = await FileCommands.ReadFileAsync(ProjectMetaFilePath);
+				if (!String.IsNullOrWhiteSpace(contents))
+				{
+					var projectMetaXml = XDocument.Parse(contents);
+					if (projectMetaXml != null)
+					{
+						this.ProjectInfo.LoadFromXml(projectMetaXml);
+						LoadThumbnail(Path.GetDirectoryName(ProjectMetaFilePath));
+						ProjectInfo.RaisePropertyChanged(String.Empty);
+					}
+				}
+			}
+		}
+		#endregion
 
 		#region Synchronous
 		public void LoadModMeta(string metaFilePath)
@@ -674,6 +676,41 @@ namespace SCG.Modules.DOS2DE.Data.View
 			LoadModMeta(metaFilePath);
 			LoadProjectMeta(projectsFolderPath);
 		}
+
+		public void ReloadData()
+		{
+			Log.Here().Activity("Reloading mod data.");
+
+			if (File.Exists(ModMetaFilePath))
+			{
+				string contents = FileCommands.ReadFile(ModMetaFilePath);
+				if (!String.IsNullOrWhiteSpace(contents))
+				{
+					var modMetaXml = XDocument.Parse(contents);
+					if (modMetaXml != null)
+					{
+						this.ModuleInfo.LoadFromXml(modMetaXml);
+						LoadDependencies(modMetaXml);
+						ModuleInfo.RaisePropertyChanged(String.Empty);
+					}
+				}
+			}
+
+			if (File.Exists(ProjectMetaFilePath))
+			{
+				string contents = FileCommands.ReadFile(ProjectMetaFilePath);
+				if (!String.IsNullOrWhiteSpace(contents))
+				{
+					var projectMetaXml = XDocument.Parse(contents);
+					if (projectMetaXml != null)
+					{
+						this.ProjectInfo.LoadFromXml(projectMetaXml);
+						LoadThumbnail(Path.GetDirectoryName(ProjectMetaFilePath));
+						ProjectInfo.RaisePropertyChanged(String.Empty);
+					}
+				}
+			}
+		}
 		#endregion
 
 		public ModProjectData()
@@ -697,7 +734,7 @@ namespace SCG.Modules.DOS2DE.Data.View
 				// TODO: set large fields to null.
 				this.ModuleInfo = null;
 				this.ProjectInfo = null;
-				this.ThumbnailExists = Visibility.Collapsed;
+				this.ThumbnailExists = false;
 				this.ThumbnailPath = "";
 
 				disposedValue = true;

@@ -22,7 +22,7 @@ namespace SCG.Data.View
 		private ReadOnlyObservableCollection<LogData> visibleLogs;
 		public ReadOnlyObservableCollection<LogData> VisibleLogs => visibleLogs;
 
-		public ObservableCollectionExtended<LogData> LastLogs { get; set; }
+		public List<LogData> LastLogs { get; set; }
 
 		public bool CanRestore => LastLogs != null;
 
@@ -68,7 +68,7 @@ namespace SCG.Data.View
 		{
 			if (Logs.Count > 0)
 			{
-				LastLogs = new ObservableCollectionExtended<LogData>(Logs.Items);
+				LastLogs = new List<LogData>(Logs.Items);
 				Logs.Clear();
 
 				this.RaisePropertyChanged("Logs");

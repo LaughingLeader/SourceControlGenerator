@@ -931,7 +931,8 @@ namespace SCG.Core
 				}));
 
 				await this.projectViewControl.Dispatcher.BeginInvoke(DispatcherPriority.Background, new Action(async () => {
-					await DOS2DECommands.LoadAll(projectViewControl.Dispatcher, Data);
+					var newMods = await DOS2DECommands.LoadAllAsync(projectViewControl.Dispatcher, Data);
+					Data.ModProjectsSource.AddRange(newMods);
 					Data.CanClickRefresh = true;
 				}));
 			}
@@ -962,7 +963,7 @@ namespace SCG.Core
 			{
 				Data.CanClickRefresh = false;
 
-				await DOS2DECommands.RefreshManagedProjects(Data);
+				await DOS2DECommands.RefreshManagedProjects(projectViewControl.Dispatcher, Data);
 				Data.CanClickRefresh = true;
 			}
 		}
@@ -1179,17 +1180,15 @@ namespace SCG.Core
 			LoadDirectoryLayout();
 			InitModuleKeywords();
 
-			Dispatcher.CurrentDispatcher.BeginInvoke(DispatcherPriority.Background, new Action(async () =>
-			{
-				await DOS2DECommands.LoadAll(projectViewControl.Dispatcher, Data);
-				Data.UpdateManageButtonsText();
+			var newMods = DOS2DECommands.LoadAll(Data);
+			Data.ModProjectsSource.AddRange(newMods);
+			Data.UpdateManageButtonsText();
 
-				if (saveModuleSettings)
-				{
-					FileCommands.Save.SaveModuleSettings(Data);
-					saveModuleSettings = false;
-				}
-			}));
+			if (saveModuleSettings)
+			{
+				FileCommands.Save.SaveModuleSettings(Data);
+				saveModuleSettings = false;
+			}
 #if DEBUG
 			//TestView();
 #endif

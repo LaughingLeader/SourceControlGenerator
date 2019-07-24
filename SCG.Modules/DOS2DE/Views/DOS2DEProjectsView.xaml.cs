@@ -40,6 +40,7 @@ namespace SCG.Modules.DOS2DE.Views
 	{
 		public DOS2DEProjectsViewTestData() : base()
 		{
+			var newMods = new List<ModProjectData>();
 			for(var i = 0; i < 4; i++)
 			{
 				var mod = new ModProjectData();
@@ -49,10 +50,11 @@ namespace SCG.Modules.DOS2DE.Views
 					Author = "LaughingLeader"
 				};
 				mod.ProjectInfo = new SCG.Data.Xml.ProjectInfo();
-
-				ModProjectsSource.Add(mod);
-
 				mod.IsManaged = true;
+				mod.ThumbnailPath = @"G:\Divinity Original Sin 2\DefEd\Data\Projects\LeaderLib\thumbnail.png";
+				mod.ThumbnailExists = true;
+
+				newMods.Add(mod);
 			}
 
 			for (var i = 0; i < 4; i++)
@@ -63,17 +65,21 @@ namespace SCG.Modules.DOS2DE.Views
 					Name = "TestNew" + i,
 					Author = "Test",
 				};
+				mod.ProjectInfo = new SCG.Data.Xml.ProjectInfo();
 				mod.IsManaged = false;
-				ModProjectsSource.Add(mod);
+
+				newMods.Add(mod);
 			}
 
-			var mods = CreateTestProjects();
+			ModProjectsSource.AddRange(newMods);
 
-			foreach (var m in mods)
-			{
-				ModProjectsSource.Add(m);
-				m.IsManaged = true;
-			}
+			//var mods = CreateTestProjects();
+
+			//foreach (var m in mods)
+			//{
+			//	ModProjectsSource.Add(m);
+			//	m.IsManaged = true;
+			//}
 
 			AvailableProjectsVisible = true;
 		}

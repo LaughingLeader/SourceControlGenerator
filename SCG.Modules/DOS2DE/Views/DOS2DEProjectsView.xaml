@@ -378,16 +378,23 @@
 								<DataGridTemplateColumn Header="Icon"  HeaderStyle="{StaticResource ProjectsHeaderStyle}" >
 									<DataGridTemplateColumn.CellStyle>
 										<Style TargetType="DataGridCell" BasedOn="{StaticResource DataGrid_NoHighlight}">
-											<Setter Property="ToolTip">
-												<Setter.Value>
-													<Image MaxWidth="256" MaxHeight="256" Stretch="Uniform" Source="{Binding ThumbnailPath, Converter={StaticResource StringToCachedImageConverter}}" Visibility="{Binding ThumbnailExists, FallbackValue=Collapsed}" />
-												</Setter.Value>
-											</Setter>
+											<Setter Property="ToolTip" Value="{x:Null}" />
+											<Style.Triggers>
+												<DataTrigger Binding="{Binding ThumbnailExists}" Value="True">
+													<Setter Property="ToolTip">
+														<Setter.Value>
+															<Image MaxWidth="256" MaxHeight="256" Stretch="Uniform" Source="{Binding ThumbnailPath, Converter={StaticResource StringToCachedImageConverter}}"/>
+														</Setter.Value>
+													</Setter>
+												</DataTrigger>
+											</Style.Triggers>
 										</Style>
 									</DataGridTemplateColumn.CellStyle>
 									<DataGridTemplateColumn.CellTemplate>
 										<DataTemplate>
-											<Image MaxWidth="16" MaxHeight="16" Stretch="Uniform" Source="{Binding ThumbnailPath, Converter={StaticResource StringToCachedImageConverter}}" Visibility="{Binding ThumbnailExists, FallbackValue=Collapsed}" />
+											<Image MaxWidth="16" MaxHeight="16" Stretch="Uniform" Source="{Binding ThumbnailPath, Converter={StaticResource StringToCachedImageConverter}}" 
+												   Visibility="{Binding ThumbnailExists, Converter={StaticResource BoolToVisibilityConverter}, FallbackValue=Collapsed}" 
+												   ToolTipService.InitialShowDelay="0" />
 										</DataTemplate>
 									</DataGridTemplateColumn.CellTemplate>
 								</DataGridTemplateColumn>
