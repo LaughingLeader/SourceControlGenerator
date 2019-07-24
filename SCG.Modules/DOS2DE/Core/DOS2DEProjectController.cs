@@ -1186,6 +1186,9 @@ namespace SCG.Core
 			LoadDirectoryLayout();
 			InitModuleKeywords();
 
+			var watch = new System.Diagnostics.Stopwatch();
+			watch.Start();
+
 			//LoadInitialData();
 
 			/*
@@ -1208,6 +1211,14 @@ namespace SCG.Core
 
 			var newMods = DOS2DECommands.LoadAll(Data);
 			Data.ModProjects.AddRange(newMods);
+
+			/*
+			Data.ManagedProjects.Clear();
+			Data.ManagedProjects.AddRange(newMods.Where(m => m.IsManaged));
+			Data.UnmanagedProjects.Clear();
+			Data.UnmanagedProjects.AddRange(newMods.Where(m => !m.IsManaged));
+			*/
+
 			Data.UpdateManageButtonsText();
 
 			if (saveModuleSettings)
@@ -1216,6 +1227,8 @@ namespace SCG.Core
 				saveModuleSettings = false;
 			}
 
+			watch.Stop();
+			Log.Here().Important($"Loading time: {watch.ElapsedMilliseconds} ms");
 			//HideLoadingPanel();
 		}
 

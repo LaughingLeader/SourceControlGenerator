@@ -151,11 +151,16 @@ namespace SCG.Modules.DOS2DE.Data.View
 		//private readonly ReadOnlyObservableCollection<ModProjectData> _modProjects;
 		//public ReadOnlyObservableCollection<ModProjectData> ModProjects => _modProjects;
 
+		
 		private readonly ReadOnlyObservableCollection<ModProjectData> _managedProjects;
 		public ReadOnlyObservableCollection<ModProjectData> ManagedProjects => _managedProjects;
 
 		private readonly ReadOnlyObservableCollection<ModProjectData> _unmanagedProjects;
 		public ReadOnlyObservableCollection<ModProjectData> UnmanagedProjects => _unmanagedProjects;
+		
+
+		//public ObservableCollectionExtended<ModProjectData> ManagedProjects { get; set; } = new ObservableCollectionExtended<ModProjectData>();
+		//public ObservableCollectionExtended<ModProjectData> UnmanagedProjects { get; set; } = new ObservableCollectionExtended<ModProjectData>();
 
 		override public string LoadStringResource(string Name)
 		{
@@ -206,17 +211,15 @@ namespace SCG.Modules.DOS2DE.Data.View
 			ManageButtonsText = DOS2DETooltips.Button_ManageProjects_None;
 			AvailableProjectsToggleText = DOS2DETooltips.Button_ToggleAvailableProjects;
 
-			//BindingOperations.EnableCollectionSynchronization(ModProjectsSource.Items, _modProjectsLock);
-
 			var sortOrder = SortExpressionComparer<ModProjectData>.Ascending(m => m.DisplayName);
-
-			//ModProjectsSource.Connect().ObserveOnDispatcher(DispatcherPriority.Normal).Bind(out _modProjects).Subscribe();
-
+			
 			var connection = ModProjects.Connect().AutoRefreshOnObservable(x => x.WhenPropertyChanged(p => p.IsManaged)).
-				Sort(sortOrder).ObserveOnDispatcher(DispatcherPriority.Send);
+				Buffer(TimeSpan.FromMilliseconds(25)).FlattenBufferResult().
+				Sort(sortOrder);
 
 			connection.Filter(m => m.IsManaged).Bind(out _managedProjects).Subscribe();
 			connection.Filter(m => !m.IsManaged).Bind(out _unmanagedProjects).Subscribe();
+			
 
 			var conn = this.WhenAnyValue(vm => vm.UnmanagedProjects.Count, (count) => count > 0).ObserveOnDispatcher(DispatcherPriority.Background);
 			conn.Subscribe((b) =>
