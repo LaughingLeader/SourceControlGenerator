@@ -180,6 +180,14 @@ namespace SCG.Modules.DOS2DE.Data.View
 			}
 		}
 
+		private Visibility loadPanelVisibility = Visibility.Collapsed;
+
+		public Visibility LoadPanelVisibility
+		{
+			get => loadPanelVisibility;
+			set { this.RaiseAndSetIfChanged(ref loadPanelVisibility, value); }
+		}
+
 		private static string DOS2DE_ModuleDisplayName => "Divinity: Original Sin 2 - Definitive Edition";
 		private static string DOS2DE_ModuleFolderName => "Divinity Original Sin 2 - Definitive Edition";
 
@@ -204,10 +212,10 @@ namespace SCG.Modules.DOS2DE.Data.View
 
 			//ModProjectsSource.Connect().ObserveOnDispatcher(DispatcherPriority.Normal).Bind(out _modProjects).Subscribe();
 
-			var connection = ModProjects.Connect().AutoRefreshOnObservable(x => x.WhenPropertyChanged(p => p.IsManaged)).Sort(sortOrder).ObserveOnDispatcher(DispatcherPriority.Normal);
+			var connection = ModProjects.Connect().AutoRefreshOnObservable(x => x.WhenPropertyChanged(p => p.IsManaged)).
+				Sort(sortOrder).ObserveOnDispatcher(DispatcherPriority.Send);
 
 			connection.Filter(m => m.IsManaged).Bind(out _managedProjects).Subscribe();
-
 			connection.Filter(m => !m.IsManaged).Bind(out _unmanagedProjects).Subscribe();
 
 			var conn = this.WhenAnyValue(vm => vm.UnmanagedProjects.Count, (count) => count > 0).ObserveOnDispatcher(DispatcherPriority.Background);

@@ -914,6 +914,8 @@ namespace SCG.Core
 			{
 				Data.CanClickRefresh = false;
 
+				this.projectViewControl.FadeLoadingPanel(false);
+
 				this.projectViewControl.Dispatcher.Invoke(new Action(() => {
 					Data.ModProjects.Clear();
 				}));
@@ -922,24 +924,13 @@ namespace SCG.Core
 					var newMods = await DOS2DECommands.LoadAllAsync(projectViewControl.Dispatcher, Data);
 					Data.ModProjects.AddRange(newMods);
 					Data.CanClickRefresh = true;
+
+					HideLoadingPanel();
 				}));
 			}
 			else
 			{
 				//Log.Here().Activity("Currently refreshing.");
-			}
-		}
-
-		public async Task RefreshAvailableProjects()
-		{
-			if (MainAppData.ProgressActive) return;
-
-			if (Data.CanClickRefresh)
-			{
-				Data.CanClickRefresh = false;
-
-				await DOS2DECommands.RefreshAvailableProjects(projectViewControl.Dispatcher, Data);
-				Data.CanClickRefresh = true;
 			}
 		}
 
@@ -950,9 +941,11 @@ namespace SCG.Core
 			if (Data.CanClickRefresh)
 			{
 				Data.CanClickRefresh = false;
-
+				//projectViewControl.LoadingProjectsPanel.Opacity = 1d;
+				//projectViewControl.LoadingProjectsPanel.Visibility = System.Windows.Visibility.Visible;
 				await DOS2DECommands.RefreshManagedProjects(projectViewControl.Dispatcher, Data);
 				Data.CanClickRefresh = true;
+				//HideLoadingPanel();
 			}
 		}
 
@@ -1160,6 +1153,31 @@ namespace SCG.Core
 			);
 		}
 
+		private async void HideLoadingPanel()
+		{
+			await Task.Delay(500);
+			//Data.LoadPanelVisibility = System.Windows.Visibility.Collapsed;
+			if(projectViewControl != null)
+			{
+				projectViewControl.FadeLoadingPanel(true);
+			}
+		}
+
+		private async void LoadInitialData()
+		{
+			var newMods = await DOS2DECommands.LoadAllAsync(Dispatcher.CurrentDispatcher, Data);
+			Data.ModProjects.AddRange(newMods);
+			Data.UpdateManageButtonsText();
+
+			if (saveModuleSettings)
+			{
+				FileCommands.Save.SaveModuleSettings(Data);
+				saveModuleSettings = false;
+			}
+
+			HideLoadingPanel();
+		}
+
 		public void Start()
 		{
 			DOS2DECommands.SetData(Data);
@@ -1167,6 +1185,26 @@ namespace SCG.Core
 			LoadDataDirectory();
 			LoadDirectoryLayout();
 			InitModuleKeywords();
+
+			//LoadInitialData();
+
+			/*
+			Dispatcher.CurrentDispatcher.Invoke(() =>
+			{
+				var newMods = DOS2DECommands.LoadAll(Data);
+				Data.ModProjects.AddRange(newMods);
+				Data.UpdateManageButtonsText();
+
+				if (saveModuleSettings)
+				{
+					FileCommands.Save.SaveModuleSettings(Data);
+					saveModuleSettings = false;
+				}
+
+				HideLoadingPanel();
+
+			}, DispatcherPriority.Background);
+			*/
 
 			var newMods = DOS2DECommands.LoadAll(Data);
 			Data.ModProjects.AddRange(newMods);
@@ -1177,9 +1215,8 @@ namespace SCG.Core
 				FileCommands.Save.SaveModuleSettings(Data);
 				saveModuleSettings = false;
 			}
-#if DEBUG
-			//TestView();
-#endif
+
+			//HideLoadingPanel();
 		}
 
 		public void Unload()

@@ -393,7 +393,6 @@ namespace SCG.Modules.DOS2DE.Core
 
 				foreach (var m in Data.ManagedProjectsData.SavedProjects.Items)
 				{
-					Log.Here().Activity($"Mod {m.Name} is managed");
 					var modData = modProjects.FirstOrDefault(p => p.UUID == m.UUID);
 					if (modData != null)
 					{
@@ -458,7 +457,7 @@ namespace SCG.Modules.DOS2DE.Core
 
 		#region Refresh
 
-		public static async Task RefreshAvailableProjects(Dispatcher dispatcher, DOS2DEModuleData Data)
+		public static async Task<bool> RefreshAvailableProjects(Dispatcher dispatcher, DOS2DEModuleData Data)
 		{
 			//await new SynchronizationContextRemover();
 			var newMods = await LoadModProjectsAsync(dispatcher, Data, true);
@@ -467,9 +466,10 @@ namespace SCG.Modules.DOS2DE.Core
 				Data.ModProjects.AddRange(newMods);
 			}));
 			await LoadManagedProjectsAsync(dispatcher, Data, newMods, true);
+			return true;
 		}
 
-		public static async Task RefreshManagedProjects(Dispatcher dispatcher, DOS2DEModuleData Data)
+		public static async Task<bool> RefreshManagedProjects(Dispatcher dispatcher, DOS2DEModuleData Data)
 		{
 			if (Data.ManagedProjects != null && Data.ManagedProjects.Count > 0)
 			{
@@ -507,6 +507,8 @@ namespace SCG.Modules.DOS2DE.Core
 				//Reload settings like if a git project actually exists
 				await LoadSourceControlDataAsync(Data, Data.ModProjects.Items);
 			}
+
+			return true;
 		}
 
 		#endregion

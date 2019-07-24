@@ -43,7 +43,6 @@
 					</Trigger>
 				</Style.Triggers>
 			</Style>
-
 			<Style TargetType="Image" x:Key="ButtonImageStyle">
 				<Setter Property="MinWidth" Value="16" />
 				<Setter Property="MinHeight" Value="16" />
@@ -80,8 +79,8 @@
 	</UserControl.Resources>
 	<Grid x:Name="Projects_ParentGrid" Width="Auto" Height="Auto">
 		<Grid.ColumnDefinitions>
-			<ColumnDefinition Width="*" Name="ManagedProjectsRow" />
-			<ColumnDefinition Width="Auto" />
+			<ColumnDefinition Width="*" Name="ManagedProjectsRow" SharedSizeGroup="ManagedProjectsRow" />
+			<ColumnDefinition Width="Auto" Name="AvailableProjectsColumn" SharedSizeGroup="AvailableProjectsColumn" />
 		</Grid.ColumnDefinitions>
 		<Grid.RowDefinitions>
 			<RowDefinition />
@@ -222,6 +221,23 @@
 							<RowDefinition Height="*" />
 							<RowDefinition Height="2" />
 						</Grid.RowDefinitions>
+						<Grid x:Name="LoadingProjectsPanel" Grid.ColumnSpan="2" Grid.RowSpan="2" Background="#CC5B5B5B" Panel.ZIndex="9"  
+							Visibility="{Binding LoadPanelVisibility, FallbackValue=Collapsed}"
+						>
+							<StackPanel VerticalAlignment="Center" Grid.Column="0">
+								<TextBlock Text="Loading Projects..." FontSize="24" FontFamily="Arial"
+							   Foreground="WhiteSmoke" TextAlignment="Center" Margin="0,0,0,30" 
+								>
+									<TextBlock.Effect>
+										<DropShadowEffect />
+									</TextBlock.Effect></TextBlock>
+								<c:LoadingSpinner Width="50" Height="50" BallSize="8" BallBrush="#FF5DB3FF">
+									<c:LoadingSpinner.Effect>
+										<DropShadowEffect ShadowDepth="4" />
+									</c:LoadingSpinner.Effect>
+								</c:LoadingSpinner>
+							</StackPanel>
+						</Grid>
 						<DataGrid x:Name="ManagedProjectsDataGrid" ItemsSource="{Binding ManagedProjects}" AutoGenerateColumns="False" IsReadOnly="True" SelectionChanged="ManagedProjectsDataGrid_SelectionChanged" BorderBrush="{x:Null}" BorderThickness="0"  
 								  CanUserAddRows="False" EnableRowVirtualization="False" FrameworkElement.Loaded="ManagedProjectsDataGrid_Loaded" ColumnWidth="Auto" CellStyle="{StaticResource DataGrid_NoHighlight}"
 								  

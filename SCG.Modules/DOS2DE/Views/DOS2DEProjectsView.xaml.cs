@@ -33,6 +33,7 @@ using SCG.Modules.DOS2DE.Utilities;
 using System.Reactive;
 using System.Reactive.Linq;
 using DynamicData;
+using System.Windows.Media.Animation;
 
 namespace SCG.Modules.DOS2DE.Views
 {
@@ -164,6 +165,7 @@ namespace SCG.Modules.DOS2DE.Views
 			this.ViewModel = Controller.Data;
 			DataContext = this.ViewModel;
 
+			//ViewModel.LoadPanelVisibility = Visibility.Visible;
 			ToggleAvailableProjectsView(Controller.Data.NewProjectsAvailable);
 		}
 
@@ -171,6 +173,14 @@ namespace SCG.Modules.DOS2DE.Views
 		{
 			EditVersionWindow = new EditVersionWindow();
 			EditVersionWindow.Hide();
+
+			LoadingProjectsPanel.Opacity = 1d;
+
+			this.WhenActivated((d) =>
+			{
+				
+			});
+			
 		}
 
 
@@ -280,7 +290,7 @@ namespace SCG.Modules.DOS2DE.Views
 				}
 				else
 				{
-					ToggleAvailableProjectsView(false);
+					ToggleAvailableProjectsView(true);
 					//Controller.Data.NewProjectsAvailable = false;
 				}
 			}
@@ -289,6 +299,44 @@ namespace SCG.Modules.DOS2DE.Views
 		private void Btn_AvailableProjects_Click(object sender, RoutedEventArgs e)
 		{
 			ToggleAvailableProjectsView();
+		}
+
+		public void FadeLoadingPanel(bool fadeOut = true)
+		{
+			ViewModel.LoadPanelVisibility = Visibility.Visible;
+
+			Storyboard storyboard = new Storyboard();
+			TimeSpan duration = TimeSpan.FromMilliseconds(500);
+			DoubleAnimation animation = new DoubleAnimation();
+
+			if (fadeOut)
+			{
+				LoadingProjectsPanel.Opacity = 1d;
+				animation.From = 1.0;
+				animation.To = 0.0;
+				animation.Completed += (s, e) => ViewModel.LoadPanelVisibility = Visibility.Collapsed;
+			}
+			else
+			{
+				LoadingProjectsPanel.Opacity = 0d;
+				animation.From = 0.0;
+				animation.To = 1.0;
+				animation.Completed += (s, e) => ViewModel.LoadPanelVisibility = Visibility.Visible;
+			}
+			animation.Duration = new Duration(duration);
+
+			Storyboard.SetTargetName(animation, LoadingProjectsPanel.Name);
+			Storyboard.SetTargetProperty(animation, new PropertyPath(OpacityProperty));
+			// Add the animation to the storyboard
+			storyboard.Children.Add(animation);
+
+			// Begin the storyboard
+			storyboard.Begin(this);
+
+			Dispatcher.Invoke(() =>
+			{
+				
+			}, DispatcherPriority.ApplicationIdle);
 		}
 
 		public void ToggleAvailableProjectsView(bool? NextValue = null)
