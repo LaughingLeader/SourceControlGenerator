@@ -20,6 +20,7 @@ using SCG.Data.View;
 using SCG.Modules.DOS2DE.Core;
 using SCG.Modules.DOS2DE.Data;
 using SCG.Modules.DOS2DE.Views;
+using System.Windows.Threading;
 
 namespace SCG.Modules.DOS2DE.Data.View
 {
@@ -145,18 +146,16 @@ namespace SCG.Modules.DOS2DE.Data.View
 			}
 		}
 
-		private readonly object _modProjectsLock = new object();
-		internal readonly SourceList<ModProjectData> ModProjectsSource = new SourceList<ModProjectData>();
+		public readonly SourceList<ModProjectData> ModProjects = new SourceList<ModProjectData>();
+
+		//private readonly ReadOnlyObservableCollection<ModProjectData> _modProjects;
+		//public ReadOnlyObservableCollection<ModProjectData> ModProjects => _modProjects;
 
 		private readonly ReadOnlyObservableCollection<ModProjectData> _managedProjects;
 		public ReadOnlyObservableCollection<ModProjectData> ManagedProjects => _managedProjects;
 
-
-		private readonly ReadOnlyObservableCollection<ModProjectData> _modProjects;
-		public ReadOnlyObservableCollection<ModProjectData> ModProjects => _modProjects;
-
-		private readonly ReadOnlyObservableCollection<AvailableProjectViewData> _newProjects;
-		public ReadOnlyObservableCollection<AvailableProjectViewData> NewProjects => _newProjects;
+		private readonly ReadOnlyObservableCollection<ModProjectData> _unmanagedProjects;
+		public ReadOnlyObservableCollection<ModProjectData> UnmanagedProjects => _unmanagedProjects;
 
 		override public string LoadStringResource(string Name)
 		{
@@ -203,18 +202,15 @@ namespace SCG.Modules.DOS2DE.Data.View
 
 			var sortOrder = SortExpressionComparer<ModProjectData>.Ascending(m => m.DisplayName);
 
-			ModProjectsSource.Connect().AutoRefreshOnObservable(x => x.WhenPropertyChanged(p => p.IsManaged)).Sort(sortOrder).
-				ObserveOnDispatcher().Bind(out _modProjects).Subscribe();
+			//ModProjectsSource.Connect().ObserveOnDispatcher(DispatcherPriority.Normal).Bind(out _modProjects).Subscribe();
 
-			ModProjectsSource.Connect().AutoRefreshOnObservable(x => x.WhenPropertyChanged(p => p.IsManaged)).Filter(m => m.IsManaged).Sort(sortOrder).
-				ObserveOnDispatcher().Bind(out _managedProjects).Subscribe();
+			var connection = ModProjects.Connect().AutoRefreshOnObservable(x => x.WhenPropertyChanged(p => p.IsManaged)).Sort(sortOrder).ObserveOnDispatcher(DispatcherPriority.Normal);
 
-			ModProjectsSource.Connect().AutoRefreshOnObservable(x => x.WhenPropertyChanged(p => p.IsManaged)).Filter(m => !m.IsManaged).Sort(sortOrder).
-				ObserveOnDispatcher().Transform(m => new AvailableProjectViewData() { Name = m.ProjectName, Tooltip = m.Tooltip }).
-				Bind(out _newProjects).Subscribe();
+			connection.Filter(m => m.IsManaged).Bind(out _managedProjects).Subscribe();
 
+			connection.Filter(m => !m.IsManaged).Bind(out _unmanagedProjects).Subscribe();
 
-			var conn = this.WhenAnyValue(vm => vm.NewProjects.Count, (count) => count > 0).ObserveOnDispatcher();
+			var conn = this.WhenAnyValue(vm => vm.UnmanagedProjects.Count, (count) => count > 0).ObserveOnDispatcher(DispatcherPriority.Background);
 			conn.Subscribe((b) =>
 			{
 				this.RaisePropertyChanged("AvailableProjectsTooltip");

@@ -15,7 +15,7 @@ namespace SCG.Interfaces
 	{
 		MainAppData MainAppData { get; set; }
 
-		void AddProjects(List<AvailableProjectViewData> selectedItems);
+		//void AddProjects(List<AvailableProjectViewData> selectedItems);
 
 		void OpenSetup(Action OnSetupFinished);
 

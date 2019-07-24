@@ -11,55 +11,32 @@ using System.Collections.ObjectModel;
 using Reactive.Bindings.Extensions;
 using System.Reactive;
 using System.Reactive.Linq;
+using Newtonsoft.Json;
 
 namespace SCG.Data
 {
 	[DataContract]
 	public class ManagedProjectsData : ReactiveObject
 	{
+		public SourceCache<ProjectAppData, string> SavedProjects { get; set; } = new SourceCache<ProjectAppData, string>(x => x.UUID);
+
 		[DataMember]
-		public ObservableCollectionExtended<ProjectAppData> Projects { get; set; } = new ObservableCollectionExtended<ProjectAppData>();
+		[JsonProperty("Projects")]
+		public List<ProjectAppData> SortedProjects { get; set; }
 
-		private readonly ReadOnlyObservableCollection<ProjectAppData> _sortedProjects;
-		public ReadOnlyObservableCollection<ProjectAppData> SortedProjects => _sortedProjects;
-
-		public ManagedProjectsData()
+		public void Sort()
 		{
-			Projects.ToObservableChangeSet().Sort(SortExpressionComparer<ProjectAppData>.Descending(p => p.Name)).Bind(out _sortedProjects).Subscribe();
+			SortedProjects = SavedProjects.Items.OrderBy(m => m.Name).ToList();
 		}
 	}
 
-	[DataContract]
-	public class ProjectAppData : ReactiveObject
+	public struct ProjectAppData
 	{
-		private string name;
+		public string Name { get; set; }
 
-		[DataMember]
-		public string Name
-		{
-			get => name;
-			set { this.RaiseAndSetIfChanged(ref name, value); }
-		}
+		public string UUID { get; set; }
 
-
-		private string uuid;
-
-		[DataMember]
-		public string UUID
-		{
-			get => uuid;
-			set { this.RaiseAndSetIfChanged(ref uuid, value); }
-		}
-
-
-		private string lastBackupUTC;
-
-		[DataMember]
-		public string LastBackupUTC
-		{
-			get => lastBackupUTC;
-			set { this.RaiseAndSetIfChanged(ref lastBackupUTC, value); }
-		}
+		public string LastBackupUTC { get; set; }
 
 	}
 }

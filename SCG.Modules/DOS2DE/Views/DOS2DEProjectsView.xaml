@@ -29,10 +29,17 @@
 			</ResourceDictionary.MergedDictionaries>
 			<Style x:Key="DataGrid_NoHighlight" TargetType="DataGridCell" BasedOn="{StaticResource {x:Type DataGridCell}}">
 				<Style.Triggers>
-					<Trigger  Property="IsSelected" Value="true">
-						<Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}"/>
-						<Setter Property="Background" Value="{x:Null}" />
+					<Trigger Property="IsSelected" Value="True">
+						<Setter Property="Background">
+							<Setter.Value>
+								<SolidColorBrush Color="Lime" Opacity="0.35" />
+							</Setter.Value>
+						</Setter>
+						<Setter Property="Foreground" Value="Black" />
 						<Setter Property="BorderBrush" Value="{x:Null}" />
+					</Trigger>
+					<Trigger Property="IsSelected" Value="False">
+						<Setter Property="Background" Value="{x:Null}" />
 					</Trigger>
 				</Style.Triggers>
 			</Style>
@@ -97,10 +104,10 @@
 				</StackPanel.Resources>
 			</StackPanel>
 			<Grid Grid.Column="1" Margin="10,0" Visibility="{Binding AvailableProjectsVisible, Converter={StaticResource BoolToVisibilityConverter}, FallbackValue=Visible}">
-				<Grid x:Name="NewProjects" >
+				<Grid x:Name="NewProjectsGrid" >
 					<Grid.RowDefinitions>
 						<RowDefinition Height="Auto"/>
-						<RowDefinition Name="AvailableProjectRow" Height="{Binding NewProjects.Count, Converter={StaticResource IntToGridLengthConverter}, FallbackValue=*}"/>
+						<RowDefinition Name="AvailableProjectRow" Height="{Binding UnmanagedProjects.Count, Converter={StaticResource IntToGridLengthConverter}, FallbackValue=*}"/>
 						<RowDefinition Height="Auto"/>
 					</Grid.RowDefinitions>
 					<StackPanel Orientation="Horizontal">
@@ -112,8 +119,7 @@
 					</StackPanel>
 					<Grid Grid.Row="1" Width="200" MaxWidth="200">
 						<Grid>
-
-							<ListBox x:Name="AvailableProjectsList" ItemsSource="{Binding NewProjects, NotifyOnTargetUpdated=True}" HorizontalContentAlignment="Left" SelectionMode="Extended" SelectionChanged="AvailableProjectsList_SelectionChanged"
+							<ListBox x:Name="AvailableProjectsList" ItemsSource="{Binding UnmanagedProjects}" HorizontalContentAlignment="Left" SelectionMode="Extended" SelectionChanged="AvailableProjectsList_SelectionChanged"
 									 ScrollViewer.HorizontalScrollBarVisibility="Auto" ScrollViewer.VerticalScrollBarVisibility="Auto" cb:ListBoxSelectionBehavior.ClickSelection="True" TargetUpdated="AvailableProjectsList_TargetUpdated" MaxHeight="192"
 									 >
 								<ListBox.ItemContainerStyle>
@@ -132,7 +138,7 @@
 								</ListBox.ItemContainerStyle>
 								<ListBox.ItemTemplate>
 									<DataTemplate>
-										<TextBlock HorizontalAlignment="Center" TextAlignment="Center" Text="{Binding Name}" ToolTip="{Binding Tooltip}" ToolTipService.InitialShowDelay="0" ToolTipService.BetweenShowDelay="0"/>
+										<TextBlock HorizontalAlignment="Center" TextAlignment="Center" Text="{Binding DisplayName}" ToolTip="{Binding Tooltip}" ToolTipService.InitialShowDelay="0" ToolTipService.BetweenShowDelay="0"/>
 									</DataTemplate>
 								</ListBox.ItemTemplate>
 							</ListBox>
@@ -345,7 +351,7 @@
 								<DataGridTextColumn Header="Author" Binding="{Binding ModuleInfo.Author}" ElementStyle="{StaticResource ColumnElementStyle}" MinWidth="50" HeaderStyle="{StaticResource ProjectsHeaderStyle}" />
 								<DataGridTextColumn Header="Version" Binding="{Binding Version}" ElementStyle="{StaticResource ColumnElementStyle}"  MinWidth="50" HeaderStyle="{StaticResource ProjectsHeaderStyle}">
 									<DataGridTextColumn.CellStyle>
-										<Style TargetType="DataGridCell">
+										<Style TargetType="DataGridCell" BasedOn="{StaticResource DataGrid_NoHighlight}">
 											<Setter Property="ContextMenu">
 												<Setter.Value>
 													<ContextMenu>

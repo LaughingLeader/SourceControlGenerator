@@ -71,7 +71,7 @@ namespace SCG.Modules.DOS2DE.Views
 				newMods.Add(mod);
 			}
 
-			ModProjectsSource.AddRange(newMods);
+			ModProjects.AddRange(newMods);
 
 			//var mods = CreateTestProjects();
 
@@ -254,10 +254,10 @@ namespace SCG.Modules.DOS2DE.Views
 			ListBox list = (ListBox)this.FindName("AvailableProjectsList");
 			if (list != null && list.SelectedItems.Count > 0)
 			{
-				List<AvailableProjectViewData> selectedItems = list.SelectedItems.Cast<AvailableProjectViewData>().ToList();
+				var selectedItems = list.SelectedItems.Cast<ModProjectData>();
 				if (selectedItems != null)
 				{
-					Controller.AddProjects(selectedItems);
+					Controller.AddProjects(selectedItems.Select(m => m.UUID));
 				}
 				else
 				{
@@ -340,7 +340,7 @@ namespace SCG.Modules.DOS2DE.Views
 							{
 								canGitGenerate = true;
 							}
-							Log.Here().Activity($"Project GitGenerated: {data.GitGenerated} | Git Detected: {AppController.Main.Data.GitDetected}");
+							//Log.Here().Activity($"Project GitGenerated: {data.GitGenerated} | Git Detected: {AppController.Main.Data.GitDetected}");
 
 							projectSelected = true;
 						}

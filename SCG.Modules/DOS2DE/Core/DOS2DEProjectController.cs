@@ -469,8 +469,12 @@ namespace SCG.Core
 						totalSuccess += 1;
 						Log.Here().Activity("Successfully created archive for {0}.", project.ProjectName);
 						project.LastBackup = DateTime.Now;
-						var d = Data.ManagedProjectsData.Projects.Where(p => p.Name == project.ProjectName && p.UUID == project.UUID).FirstOrDefault();
-						if (d != null) d.LastBackupUTC = project.LastBackup?.ToUniversalTime().ToString();
+						Data.ManagedProjectsData.SavedProjects.AddOrUpdate(new ProjectAppData
+						{
+							Name = project.ProjectName,
+							UUID = project.UUID,
+							LastBackupUTC = DateTime.Now.ToUniversalTime().ToString()
+						});
 
 						AppController.Main.UpdateProgressLog("Archive created.");
 					}
@@ -653,8 +657,12 @@ namespace SCG.Core
 						totalSuccess += 1;
 						Log.Here().Activity("Successfully created package for {0}.", project.ProjectName);
 						project.LastBackup = DateTime.Now;
-						var d = Data.ManagedProjectsData.Projects.Where(p => p.Name == project.ProjectName && p.UUID == project.UUID).FirstOrDefault();
-						if (d != null) d.LastBackupUTC = project.LastBackup?.ToUniversalTime().ToString();
+						Data.ManagedProjectsData.SavedProjects.AddOrUpdate(new ProjectAppData
+						{
+							Name = project.ProjectName,
+							UUID = project.UUID,
+							LastBackupUTC = DateTime.Now.ToUniversalTime().ToString()
+						});
 
 						AppController.Main.UpdateProgressLog("Package created.");
 					}
@@ -766,56 +774,36 @@ namespace SCG.Core
 		}
 		#endregion
 
-		public void AddProjects(List<AvailableProjectViewData> selectedItems)
+		public void AddProjects(IEnumerable<string> selectedItems)
 		{
 			bool bSaveData = false;
 
-			foreach (AvailableProjectViewData project in selectedItems)
+			foreach (string uuid in selectedItems)
 			{
-				Log.Here().Activity($"Adding project {project.Name} data to managed projects.");
-				var modData = Data.ModProjects.FirstOrDefault(p => p.ProjectName == project.Name);
-				if (modData != null)
+				ModProjectData modData = Data.ModProjects.Items.FirstOrDefault(m => m.UUID == uuid);
+				if(modData != null)
 				{
+					Log.Here().Activity($"Adding project {modData.DisplayName} data to managed projects.");
 					modData.IsManaged = true;
 
-					if (Data.ManagedProjectsData.Projects.Any(p => p.Name == modData.ProjectName))
+					modData.ProjectAppData = new ProjectAppData()
 					{
-						if (modData.ProjectAppData == null)
-						{
-							ProjectAppData data = Data.ManagedProjectsData.Projects.FirstOrDefault(p => p.Name == modData.ProjectName && p.UUID == modData.ModuleInfo.UUID);
-							if (data != null)
-							{
-								modData.ProjectAppData = data;
-								Log.Here().Activity($"Linked project {modData.ProjectName} data to managed project data.");
-							}
-						}
-					}
-					else
-					{
-						ProjectAppData data = new ProjectAppData()
-						{
-							Name = modData.ProjectName,
-							UUID = modData.ModuleInfo.UUID,
-							LastBackupUTC = null
-						};
-						Data.ManagedProjectsData.Projects.Add(data);
-						modData.ProjectAppData = data;
+						Name = modData.ProjectName,
+						UUID = modData.ModuleInfo.UUID,
+						LastBackupUTC = null
+					};
+					Data.ManagedProjectsData.SavedProjects.AddOrUpdate(modData.ProjectAppData);
 
-						Log.Here().Activity($"Added project {modData.DisplayName} to managed projects.");
+					Log.Here().Activity($"Added project {modData.DisplayName} to managed projects.");
 
-						bSaveData = true;
-					}
-				}
-				else
-				{
-					MainWindow.FooterError($"Error adding project {project.Name} to managed projects: Mod data doesn't exist.");
+					bSaveData = true;
 				}
 			}
 
-			Data.RaisePropertyChanged("NewProjects");
-
 			if (bSaveData)
 			{
+				Data.ManagedProjectsData.Sort();
+				Log.Here().Activity($"Projects: {String.Join(";", Data.ManagedProjectsData.SortedProjects.Select(m => m.Name))}");
 				if (DOS2DECommands.SaveManagedProjects(Data))
 				{
 					MainWindow.FooterLog("Saved Managed Projects data to {0}.", Data.Settings.AddedProjectsFile);
@@ -927,12 +915,12 @@ namespace SCG.Core
 				Data.CanClickRefresh = false;
 
 				this.projectViewControl.Dispatcher.Invoke(new Action(() => {
-					Data.ModProjectsSource.Clear();
+					Data.ModProjects.Clear();
 				}));
 
 				await this.projectViewControl.Dispatcher.BeginInvoke(DispatcherPriority.Background, new Action(async () => {
 					var newMods = await DOS2DECommands.LoadAllAsync(projectViewControl.Dispatcher, Data);
-					Data.ModProjectsSource.AddRange(newMods);
+					Data.ModProjects.AddRange(newMods);
 					Data.CanClickRefresh = true;
 				}));
 			}
@@ -1181,7 +1169,7 @@ namespace SCG.Core
 			InitModuleKeywords();
 
 			var newMods = DOS2DECommands.LoadAll(Data);
-			Data.ModProjectsSource.AddRange(newMods);
+			Data.ModProjects.AddRange(newMods);
 			Data.UpdateManageButtonsText();
 
 			if (saveModuleSettings)

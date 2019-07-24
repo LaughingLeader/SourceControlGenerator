@@ -43,8 +43,8 @@ namespace SCG.Modules.DOS2DE.Core
 		{
 			if (clearExisting)
 			{
-				Data.ModProjectsSource.Clear();
-				Log.Here().Important("Clearing mod project data.");
+				Data.ModProjects.Clear();
+				Log.Here().Important("Cleared mod project data.");
 			}
 
 			List<ModProjectData> newItems = new List<ModProjectData>();
@@ -89,7 +89,7 @@ namespace SCG.Modules.DOS2DE.Core
 
 									if (!clearExisting)
 									{
-										var previous = Data.ModProjects.FirstOrDefault(p => p.FolderName == modProjectData.FolderName);
+										var previous = Data.ModProjects.Items.FirstOrDefault(p => p.FolderName == modProjectData.FolderName);
 										if (previous != null)
 										{
 											if (previous.DataIsNewer(modProjectData))
@@ -124,7 +124,7 @@ namespace SCG.Modules.DOS2DE.Core
 		{
 			if (clearExisting)
 			{
-				foreach (var mod in Data.ModProjectsSource.Items)
+				foreach (var mod in Data.ModProjects.Items)
 				{
 					mod.IsManaged = false;
 				}
@@ -162,7 +162,15 @@ namespace SCG.Modules.DOS2DE.Core
 			}
 			else
 			{
-				foreach (var m in Data.ManagedProjectsData.SortedProjects)
+				if (Data.ManagedProjectsData.SortedProjects != null)
+				{
+					foreach (var p in Data.ManagedProjectsData.SortedProjects)
+					{
+						Data.ManagedProjectsData.SavedProjects.AddOrUpdate(p);
+					}
+				}
+
+				foreach (var m in Data.ManagedProjectsData.SavedProjects.Items)
 				{
 					var modData = modProjects.FirstOrDefault(p => p.UUID == m.UUID);
 					if (modData != null)
@@ -241,7 +249,7 @@ namespace SCG.Modules.DOS2DE.Core
 				await dispatcher.BeginInvoke(DispatcherPriority.Normal, new Action(() =>
 				{
 					Log.Here().Important("Clearing mod projects");
-					Data.ModProjectsSource.Clear();
+					Data.ModProjects.Clear();
 				}));
 			}
 
@@ -290,7 +298,7 @@ namespace SCG.Modules.DOS2DE.Core
 
 									if(!clearExisting)
 									{
-										var previous = Data.ModProjects.FirstOrDefault(p => p.FolderName == modProjectData.FolderName);
+										var previous = Data.ModProjects.Items.FirstOrDefault(p => p.FolderName == modProjectData.FolderName);
 										if(previous != null)
 										{
 											if(previous.DataIsNewer(modProjectData))
@@ -328,7 +336,7 @@ namespace SCG.Modules.DOS2DE.Core
 		{
 			if (clearExisting)
 			{
-				foreach (var mod in Data.ModProjectsSource.Items)
+				foreach (var mod in Data.ModProjects.Items)
 				{
 					mod.IsManaged = false;
 				}
@@ -372,7 +380,18 @@ namespace SCG.Modules.DOS2DE.Core
 			}
 			else
 			{
-				foreach (var m in Data.ManagedProjectsData.SortedProjects)
+				await dispatcher.BeginInvoke(DispatcherPriority.Normal, new Action(() =>
+				{
+					if(Data.ManagedProjectsData.SortedProjects != null)
+					{
+						foreach(var p in Data.ManagedProjectsData.SortedProjects)
+						{
+							Data.ManagedProjectsData.SavedProjects.AddOrUpdate(p);
+						}
+					}
+				}));
+
+				foreach (var m in Data.ManagedProjectsData.SavedProjects.Items)
 				{
 					Log.Here().Activity($"Mod {m.Name} is managed");
 					var modData = modProjects.FirstOrDefault(p => p.UUID == m.UUID);
@@ -445,7 +464,7 @@ namespace SCG.Modules.DOS2DE.Core
 			var newMods = await LoadModProjectsAsync(dispatcher, Data, true);
 			await dispatcher.BeginInvoke(DispatcherPriority.Background, new Action(() =>
 			{
-				Data.ModProjectsSource.AddRange(newMods);
+				Data.ModProjects.AddRange(newMods);
 			}));
 			await LoadManagedProjectsAsync(dispatcher, Data, newMods, true);
 		}
@@ -467,7 +486,7 @@ namespace SCG.Modules.DOS2DE.Core
 
 							foreach (var project in Data.ManagedProjects)
 							{
-								var modData = Data.ModProjects.FirstOrDefault(p => p.ProjectName == project.ProjectName && p.UUID == project.UUID);
+								var modData = Data.ModProjects.Items.FirstOrDefault(p => p.ProjectName == project.ProjectName && p.UUID == project.UUID);
 								if (modData != null)
 								{
 									Log.Here().Activity($"Reloading data for project {project.ProjectName}.");
@@ -486,7 +505,7 @@ namespace SCG.Modules.DOS2DE.Core
 				}
 
 				//Reload settings like if a git project actually exists
-				await LoadSourceControlDataAsync(Data, Data.ModProjects);
+				await LoadSourceControlDataAsync(Data, Data.ModProjects.Items);
 			}
 		}
 
@@ -497,9 +516,10 @@ namespace SCG.Modules.DOS2DE.Core
 		{
 			Log.Here().Important("Saving Managed Projects data to {0}", Data.Settings.AddedProjectsFile);
 
-			if (Data.ManagedProjectsData != null && Data.ManagedProjectsData.Projects.Count > 0 && Data.Settings != null && FileCommands.IsValidPath(Data.Settings.AddedProjectsFile))
+			if (Data.ManagedProjectsData != null && Data.ManagedProjectsData.SavedProjects.Count > 0 && Data.Settings != null && FileCommands.IsValidPath(Data.Settings.AddedProjectsFile))
 			{
-				Data.ManagedProjectsData.Projects.RemoveAll(p => Data.ModProjects.Where(mp => mp.ProjectName == p.Name).FirstOrDefault() == null);
+				//Data.ManagedProjectsData.Projects.Clear();
+				//Data.ManagedProjectsData.Projects.AddRange(Data.ManagedProjects.Select(m => m.ProjectAppData).ToList());
 				string json = JsonInterface.SerializeObject(Data.ManagedProjectsData);
 				return FileCommands.WriteToFile(Data.Settings.AddedProjectsFile, json);
 			}

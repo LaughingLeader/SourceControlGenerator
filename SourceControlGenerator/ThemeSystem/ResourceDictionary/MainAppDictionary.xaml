@@ -81,7 +81,8 @@
 					<SolidColorBrush Color="Transparent" />
 				</Rectangle.Fill>
 				<Rectangle.OpacityMask>
-					<ImageBrush ImageSource="{Binding Source, ElementName=ButtonImageControl}"/>
+					<ImageBrush ImageSource="{Binding Path=Source, RelativeSource={RelativeSource TemplatedParent}, 
+						Converter={StaticResource StringToCachedImageConverter}, TargetNullValue={x:Null}, FallbackValue={x:Null}}"/>
 				</Rectangle.OpacityMask>
 			</Rectangle>
 		</Grid>
