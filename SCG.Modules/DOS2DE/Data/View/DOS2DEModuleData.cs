@@ -21,6 +21,7 @@ using SCG.Modules.DOS2DE.Core;
 using SCG.Modules.DOS2DE.Data;
 using SCG.Modules.DOS2DE.Views;
 using System.Windows.Threading;
+using System.ComponentModel;
 
 namespace SCG.Modules.DOS2DE.Data.View
 {
@@ -255,7 +256,6 @@ namespace SCG.Modules.DOS2DE.Data.View
 					ObserveOnDispatcher().Transform(m => new AvailableProjectViewData() { Name = m.ProjectName, Tooltip = m.Tooltip }).
 					Bind(out _newProjects).DisposeMany().Subscribe();
 			*/
-
 		}
 	}
 }

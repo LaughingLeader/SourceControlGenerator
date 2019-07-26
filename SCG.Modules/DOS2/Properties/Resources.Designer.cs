@@ -82,34 +82,31 @@ namespace SCG.Modules.DOS2.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to #SourceControlGenerator
-        ///######################
+        ///   Looks up a localized string similar to # SourceControlGenerator #
+        ///##########################
         ///SourceControlGenerator.json
         ///
-        ///#Levels
+        ///# Levels
         ///######################
         ///Mods/$ModFolderName/Levels/*
         ///Mods/$ModFolderName/Globals/*
         ///Editor/Mods/$ModFolderName/Levels/*
         ///
-        ///#Compiled Story files
+        ///# Story files        #
         ///######################
         ///*.div
         ///*.raw
+        ///story_orphanqueries_ignore.txt
         ///
-        ///#Assets
-        ///######################*
+        ///# Asset Folders      #
+        ///######################
         ///Public/$ModFolderName/Assets/*
         ///#Public/$ModFolderName/GUI/*
         ///
-        ///#Editor files
+        ///# Editor files       #
         ///######################
-        ///StatsEditorConfig.xml
-        ///EffectEditorConfig.xml
-        ///DockPanel.config
-        ///EditorBrowserMetadata.*
-        ///
-        ///#Assets [rest of string was truncated]&quot;;.
+        ///RootTemplateSelectorConfig_*
+        ///Resou [rest of string was truncated]&quot;;.
         /// </summary>
         public static string DefaultGitIgnore {
             get {
@@ -138,7 +135,7 @@ namespace SCG.Modules.DOS2.Properties {
         
         /// <summary>
         ///   Looks up a localized string similar to #Keywords
-        ///# ProjectName = The name of the project, without the GUID.
+        ///# ProjectName = The folder name of the project, without the GUID.
         ///# ProjectGUID = The GUID(UUID) of the project.
         ///
         ///#Directories to scan

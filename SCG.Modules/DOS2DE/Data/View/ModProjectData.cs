@@ -716,6 +716,29 @@ namespace SCG.Modules.DOS2DE.Data.View
 		public ModProjectData()
 		{
 			Init();
+
+			if(DebugMode)
+			{
+				ModuleInfo = new ModuleInfo()
+				{
+					Name = "Test",
+					Author = "LaughingLeader",
+					ModifiedDate = DateTime.Now,
+					Description = "Hello!",
+					Version = 268435456
+				};
+				SetVersion();
+				ProjectInfo = new ProjectInfo()
+				{
+					CreationDate = DateTime.Now,
+					Name = "Test"
+				};
+
+				IsManaged = true;
+				//ThumbnailPath = @"G:\Divinity Original Sin 2\DefEd\Data\Projects\LeaderLib\thumbnail.png";
+				ThumbnailExists = false;
+			}
+			
 		}
 
 		#region IDisposable Support
@@ -749,5 +772,10 @@ namespace SCG.Modules.DOS2DE.Data.View
 			// GC.SuppressFinalize(this);
 		}
 		#endregion
+
+		/// <summary>
+		/// Used to made design-time test data.
+		/// </summary>
+		public bool DebugMode { get; set; }
 	}
 }

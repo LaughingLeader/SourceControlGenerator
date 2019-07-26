@@ -19,7 +19,6 @@
 			xmlns:proxy="clr-namespace:SCG.Data.Proxy;assembly=SourceControlGenerator"
 			mc:Ignorable="d" 
 			d:DesignHeight="500" d:DesignWidth="900"
-			d:DataContext="{d:DesignInstance local:DOS2DEProjectsViewTestData, IsDesignTimeCreatable=True}"
 			KeyDown="ProjectView_KeyDown" KeyUp="ProjectView_KeyUp" Foreground="{x:Null}"
 >
 	<UserControl.Resources>
@@ -118,9 +117,22 @@
 					</StackPanel>
 					<Grid Grid.Row="1" Width="200" MaxWidth="200">
 						<Grid>
-							<ListBox x:Name="AvailableProjectsList" ItemsSource="{Binding UnmanagedProjects}" HorizontalContentAlignment="Left" SelectionMode="Extended" SelectionChanged="AvailableProjectsList_SelectionChanged"
+							<ListBox x:Name="AvailableProjectsList" HorizontalContentAlignment="Left" SelectionMode="Extended" SelectionChanged="AvailableProjectsList_SelectionChanged"
 									 ScrollViewer.HorizontalScrollBarVisibility="Auto" ScrollViewer.VerticalScrollBarVisibility="Auto" cb:ListBoxSelectionBehavior.ClickSelection="True" TargetUpdated="AvailableProjectsList_TargetUpdated" MaxHeight="192"
 									 >
+								<ListBox.ItemsSource>
+									<x:Array Type="data:ModProjectData">
+										<data:ModProjectData DebugMode="True" />
+										<data:ModProjectData DebugMode="True" />
+										<data:ModProjectData DebugMode="True" />
+										<data:ModProjectData DebugMode="True" />
+										<data:ModProjectData DebugMode="True" />
+										<data:ModProjectData DebugMode="True" />
+										<data:ModProjectData DebugMode="True" />
+										<data:ModProjectData DebugMode="True" />
+										<data:ModProjectData DebugMode="True" />
+									</x:Array>
+								</ListBox.ItemsSource>
 								<ListBox.ItemContainerStyle>
 									<Style TargetType="ListBoxItem" BasedOn="{StaticResource {x:Type ListBoxItem}}">
 										<Setter Property="Padding" Value="5" />
@@ -222,7 +234,7 @@
 							<RowDefinition Height="2" />
 						</Grid.RowDefinitions>
 						<Grid x:Name="LoadingProjectsPanel" Grid.ColumnSpan="2" Grid.RowSpan="2" Background="#CC5B5B5B" Panel.ZIndex="9"  
-							Visibility="{Binding LoadPanelVisibility, FallbackValue=Collapsed}"
+							Visibility="{Binding LoadPanelVisibility, FallbackValue=Collapsed, TargetNullValue=Collapsed}"
 						>
 							<StackPanel VerticalAlignment="Center" Grid.Column="0">
 								<TextBlock Text="Loading Projects..." FontSize="24" FontFamily="Arial"
@@ -238,10 +250,15 @@
 								</c:LoadingSpinner>
 							</StackPanel>
 						</Grid>
-						<DataGrid x:Name="ManagedProjectsDataGrid" ItemsSource="{Binding ManagedProjects}" AutoGenerateColumns="False" IsReadOnly="True" SelectionChanged="ManagedProjectsDataGrid_SelectionChanged" BorderBrush="{x:Null}" BorderThickness="0"  
-								  CanUserAddRows="False" EnableRowVirtualization="False" FrameworkElement.Loaded="ManagedProjectsDataGrid_Loaded" ColumnWidth="Auto" CellStyle="{StaticResource DataGrid_NoHighlight}"
-								  
+						<DataGrid x:Name="ManagedProjectsDataGrid" AutoGenerateColumns="False" IsReadOnly="True" SelectionChanged="ManagedProjectsDataGrid_SelectionChanged" BorderBrush="{x:Null}" BorderThickness="0"  
+								  CanUserAddRows="False" FrameworkElement.Loaded="ManagedProjectsDataGrid_Loaded" ColumnWidth="Auto" CellStyle="{StaticResource DataGrid_NoHighlight}"
 								  >
+							<DataGrid.ItemsSource>
+								<x:Array Type="data:ModProjectData">
+									<data:ModProjectData DebugMode="True" />
+									<data:ModProjectData DebugMode="True" />
+								</x:Array>
+							</DataGrid.ItemsSource>
 							<DataGrid.Resources>
 								<Style x:Key="ColumnElementStyle" TargetType="TextBlock" BasedOn="{StaticResource {x:Type TextBlock}}">
 									<Setter Property="Margin" Value="5,0,10,0" />

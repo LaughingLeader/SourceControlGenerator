@@ -1163,21 +1163,6 @@ namespace SCG.Core
 			}
 		}
 
-		private async void LoadInitialData()
-		{
-			var newMods = await DOS2DECommands.LoadAllAsync(Dispatcher.CurrentDispatcher, Data);
-			Data.ModProjects.AddRange(newMods);
-			Data.UpdateManageButtonsText();
-
-			if (saveModuleSettings)
-			{
-				FileCommands.Save.SaveModuleSettings(Data);
-				saveModuleSettings = false;
-			}
-
-			HideLoadingPanel();
-		}
-
 		public void Start()
 		{
 			DOS2DECommands.SetData(Data);
@@ -1186,38 +1171,23 @@ namespace SCG.Core
 			LoadDirectoryLayout();
 			InitModuleKeywords();
 
+#if Debug
 			var watch = new System.Diagnostics.Stopwatch();
 			watch.Start();
-
-			//LoadInitialData();
-
+#endif
 			/*
-			Dispatcher.CurrentDispatcher.Invoke(() =>
+			RxApp.MainThreadScheduler.ScheduleAsync(Data, async (scheduler, data, cancelationToken) =>
 			{
-				var newMods = DOS2DECommands.LoadAll(Data);
-				Data.ModProjects.AddRange(newMods);
-				Data.UpdateManageButtonsText();
-
-				if (saveModuleSettings)
+				var newMods = await DOS2DECommands.LoadAllAsync(Dispatcher.CurrentDispatcher, data);
+				RxApp.MainThreadScheduler.Schedule(newMods, (scheduler2, mods) =>
 				{
-					FileCommands.Save.SaveModuleSettings(Data);
-					saveModuleSettings = false;
-				}
-
-				HideLoadingPanel();
-
-			}, DispatcherPriority.Background);
+					Data.ModProjects.AddRange(newMods);
+				});
+			});
 			*/
 
 			var newMods = DOS2DECommands.LoadAll(Data);
 			Data.ModProjects.AddRange(newMods);
-
-			/*
-			Data.ManagedProjects.Clear();
-			Data.ManagedProjects.AddRange(newMods.Where(m => m.IsManaged));
-			Data.UnmanagedProjects.Clear();
-			Data.UnmanagedProjects.AddRange(newMods.Where(m => !m.IsManaged));
-			*/
 
 			Data.UpdateManageButtonsText();
 
@@ -1226,10 +1196,10 @@ namespace SCG.Core
 				FileCommands.Save.SaveModuleSettings(Data);
 				saveModuleSettings = false;
 			}
-
+#if Debug
 			watch.Stop();
 			Log.Here().Important($"Loading time: {watch.ElapsedMilliseconds} ms");
-			//HideLoadingPanel();
+#endif
 		}
 
 		public void Unload()

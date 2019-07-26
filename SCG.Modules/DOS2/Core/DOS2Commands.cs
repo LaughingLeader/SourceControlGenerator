@@ -75,7 +75,7 @@ namespace SCG.Modules.DOS2.Core
 			}
 			else
 			{
-				foreach (var project in Data.ManagedProjectsData.Projects)
+				foreach (var project in Data.ManagedProjectsData.SavedProjects)
 				{
 					//var modProject = Data.ModProjects.Where(x => x.Name == project.Name && x.ModuleInfo.UUID == project.GUID).FirstOrDefault();
 					var modProject = Data.ModProjects.Where(x => x.ProjectName == project.Name && x.UUID == project.UUID).FirstOrDefault();

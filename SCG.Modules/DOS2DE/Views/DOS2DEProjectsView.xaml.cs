@@ -34,100 +34,17 @@ using System.Reactive;
 using System.Reactive.Linq;
 using DynamicData;
 using System.Windows.Media.Animation;
+using System.Reactive.Disposables;
 
 namespace SCG.Modules.DOS2DE.Views
 {
-	public class DOS2DEProjectsViewTestData : DOS2DEModuleData
-	{
-		public DOS2DEProjectsViewTestData() : base()
-		{
-			var newMods = new List<ModProjectData>();
-			for(var i = 0; i < 4; i++)
-			{
-				var mod = new ModProjectData();
-				mod.ModuleInfo = new SCG.Data.Xml.ModuleInfo()
-				{
-					Name = "Test" + i,
-					Author = "LaughingLeader"
-				};
-				mod.ProjectInfo = new SCG.Data.Xml.ProjectInfo();
-				mod.IsManaged = true;
-				mod.ThumbnailPath = @"G:\Divinity Original Sin 2\DefEd\Data\Projects\LeaderLib\thumbnail.png";
-				mod.ThumbnailExists = true;
-
-				newMods.Add(mod);
-			}
-
-			for (var i = 0; i < 4; i++)
-			{
-				var mod = new ModProjectData();
-				mod.ModuleInfo = new SCG.Data.Xml.ModuleInfo()
-				{
-					Name = "TestNew" + i,
-					Author = "Test",
-				};
-				mod.ProjectInfo = new SCG.Data.Xml.ProjectInfo();
-				mod.IsManaged = false;
-
-				newMods.Add(mod);
-			}
-
-			ModProjects.AddRange(newMods);
-
-			//var mods = CreateTestProjects();
-
-			//foreach (var m in mods)
-			//{
-			//	ModProjectsSource.Add(m);
-			//	m.IsManaged = true;
-			//}
-
-			AvailableProjectsVisible = true;
-		}
-
-		private List<ModProjectData> CreateTestProjects()
-		{
-			List<ModProjectData> projects = new List<ModProjectData>();
-
-			var dataDirectory = @"G:\Divinity Original Sin 2\DefEd\Data";
-
-			if (Directory.Exists(dataDirectory))
-			{
-				string projectsPath = Path.Combine(dataDirectory, "Projects");
-				string modsPath = Path.Combine(dataDirectory, "Mods");
-
-				if (Directory.Exists(modsPath))
-				{
-					DirectoryInfo modsRoot = new DirectoryInfo(modsPath);
-					var modFolders = modsRoot.GetDirectories().Where(s => !DOS2DECommands.IgnoredFolders.Contains(s.Name));
-
-					if (modFolders != null)
-					{
-						foreach (DirectoryInfo modFolderInfo in modFolders)
-						{
-							var modFolderName = modFolderInfo.Name;
-							Log.Here().Activity("Checking project mod folder: {0}", modFolderName);
-
-							var metaFile = modFolderInfo.GetFiles("meta.lsx").FirstOrDefault();
-							if (metaFile != null)
-							{
-								ModProjectData modProjectData = new ModProjectData();
-								modProjectData.LoadAllData(metaFile.FullName, projectsPath);
-								projects.Add(modProjectData);
-							}
-						}
-					}
-				}
-			}
-
-			return projects;
-		}
-	}
-
 	/// <summary>
 	/// Needed so the XAML designer can render ReactiveUserControl.
 	/// </summary>
-	public class DOS2DEProjectsViewBase : ReactiveUserControl<DOS2DEModuleData> { }
+	public class DOS2DEProjectsViewBase : ReactiveUserControl<DOS2DEModuleData>
+	{
+		
+	}
 
 	/// <summary>
 	/// Interaction logic for ProjectViewControl.xaml
@@ -147,6 +64,13 @@ namespace SCG.Modules.DOS2DE.Views
 			InitializeComponent();
 
 			_instance = this;
+
+			if (DesignerProperties.GetIsInDesignMode(this))
+			{
+				ViewModel = new DOS2DEModuleData();
+				ViewModel.AvailableProjectsVisible = true;
+				ViewModel.LoadPanelVisibility = Visibility.Collapsed;
+			}
 
 			Init();
 		}
@@ -178,7 +102,8 @@ namespace SCG.Modules.DOS2DE.Views
 
 			this.WhenActivated((d) =>
 			{
-				
+				this.OneWayBind(ViewModel, vm => vm.ManagedProjects, v => v.ManagedProjectsDataGrid.ItemsSource).DisposeWith(d);
+				this.OneWayBind(ViewModel, vm => vm.UnmanagedProjects, v => v.AvailableProjectsList.ItemsSource).DisposeWith(d);
 			});
 			
 		}
@@ -564,5 +489,91 @@ namespace SCG.Modules.DOS2DE.Views
 				ShiftKeyDown -= 1;
 			}
 		}
+
+		#region Design Data
+
+		private void CreateTestData()
+		{
+			var newMods = new List<ModProjectData>();
+			for (var i = 0; i < 4; i++)
+			{
+				var mod = new ModProjectData();
+				mod.ModuleInfo = new SCG.Data.Xml.ModuleInfo()
+				{
+					Name = "Test" + i,
+					Author = "LaughingLeader"
+				};
+				mod.ProjectInfo = new SCG.Data.Xml.ProjectInfo();
+				mod.IsManaged = true;
+				//mod.ThumbnailPath = @"G:\Divinity Original Sin 2\DefEd\Data\Projects\LeaderLib\thumbnail.png";
+				mod.ThumbnailExists = false;
+
+				newMods.Add(mod);
+			}
+
+			for (var i = 0; i < 4; i++)
+			{
+				var mod = new ModProjectData();
+				mod.ModuleInfo = new SCG.Data.Xml.ModuleInfo()
+				{
+					Name = "TestNew" + i,
+					Author = "Test",
+				};
+				mod.ProjectInfo = new SCG.Data.Xml.ProjectInfo();
+				mod.IsManaged = false;
+
+				newMods.Add(mod);
+			}
+
+			ViewModel.ModProjects.AddRange(newMods);
+
+			//var mods = CreateTestProjects();
+
+			//foreach (var m in mods)
+			//{
+			//	ModProjectsSource.Add(m);
+			//	m.IsManaged = true;
+			//}
+
+		}
+
+		private List<ModProjectData> CreateTestProjects()
+		{
+			List<ModProjectData> projects = new List<ModProjectData>();
+
+			var dataDirectory = @"G:\Divinity Original Sin 2\DefEd\Data";
+
+			if (Directory.Exists(dataDirectory))
+			{
+				string projectsPath = Path.Combine(dataDirectory, "Projects");
+				string modsPath = Path.Combine(dataDirectory, "Mods");
+
+				if (Directory.Exists(modsPath))
+				{
+					DirectoryInfo modsRoot = new DirectoryInfo(modsPath);
+					var modFolders = modsRoot.GetDirectories().Where(s => !DOS2DECommands.IgnoredFolders.Contains(s.Name));
+
+					if (modFolders != null)
+					{
+						foreach (DirectoryInfo modFolderInfo in modFolders)
+						{
+							var modFolderName = modFolderInfo.Name;
+							Log.Here().Activity("Checking project mod folder: {0}", modFolderName);
+
+							var metaFile = modFolderInfo.GetFiles("meta.lsx").FirstOrDefault();
+							if (metaFile != null)
+							{
+								ModProjectData modProjectData = new ModProjectData();
+								modProjectData.LoadAllData(metaFile.FullName, projectsPath);
+								projects.Add(modProjectData);
+							}
+						}
+					}
+				}
+			}
+
+			return projects;
+		}
+		#endregion
 	}
 }
