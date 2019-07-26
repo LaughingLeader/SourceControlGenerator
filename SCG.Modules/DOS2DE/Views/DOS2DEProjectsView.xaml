@@ -21,6 +21,11 @@
 			d:DesignHeight="500" d:DesignWidth="900"
 			KeyDown="ProjectView_KeyDown" KeyUp="ProjectView_KeyUp" Foreground="{x:Null}"
 >
+	<d:DesignerProperties.DesignStyle>
+		<Style TargetType="UserControl">
+			<Setter Property="Background" Value="DarkGray" />
+		</Style>
+	</d:DesignerProperties.DesignStyle>
 	<UserControl.Resources>
 		<ResourceDictionary>
 			<ResourceDictionary.MergedDictionaries>
@@ -49,7 +54,7 @@
 				<Setter Property="MaxHeight" Value="16" />
 				<Setter Property="Stretch" Value="UniformToFill" />
 			</Style>
-			<Style x:Key="RefreshButtonStyle" TargetType="{x:Type c:ImageButton}">
+			<Style x:Key="RefreshButtonStyle" TargetType="{x:Type c:ImageButton}" BasedOn="{StaticResource DefaultImageButtonStyle}">
 				<Setter Property="Margin" Value="10,4,0,4" />
 				<!--<Setter Property="Template">
 					<Setter.Value>
@@ -157,7 +162,7 @@
 						</Grid>
 					</Grid>
 					<Grid Grid.Row="2">
-						<Button x:Name="AddSelectedProjectsButton" Click="AddSelectedProjectsButton_Click" Content="{Binding ManageButtonsText}" IsEnabled="{Binding CanAddProject}" HorizontalAlignment="Center" Margin="0,5" FontFamily="Roboto" MinWidth="150" MinHeight="20" />
+						<Button x:Name="AddSelectedProjectsButton" Click="AddSelectedProjectsButton_Click" Content="Select a Project" IsEnabled="{Binding CanAddProject}" HorizontalAlignment="Center" Margin="0,5" FontFamily="Roboto" MinWidth="150" MinHeight="20" />
 					</Grid>
 				</Grid>
 			</Grid>
@@ -252,7 +257,8 @@
 						</Grid>
 						<DataGrid x:Name="ManagedProjectsDataGrid" AutoGenerateColumns="False" IsReadOnly="True" SelectionChanged="ManagedProjectsDataGrid_SelectionChanged" BorderBrush="{x:Null}" BorderThickness="0"  
 								  CanUserAddRows="False" FrameworkElement.Loaded="ManagedProjectsDataGrid_Loaded" ColumnWidth="Auto" CellStyle="{StaticResource DataGrid_NoHighlight}"
-								  >
+								  EnableRowVirtualization="False"
+						>
 							<DataGrid.ItemsSource>
 								<x:Array Type="data:ModProjectData">
 									<data:ModProjectData DebugMode="True" />

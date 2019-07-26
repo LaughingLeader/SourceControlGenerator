@@ -35,6 +35,7 @@ using System.Reactive.Linq;
 using DynamicData;
 using System.Windows.Media.Animation;
 using System.Reactive.Disposables;
+using System.Reactive.Concurrency;
 
 namespace SCG.Modules.DOS2DE.Views
 {
@@ -104,6 +105,26 @@ namespace SCG.Modules.DOS2DE.Views
 			{
 				this.OneWayBind(ViewModel, vm => vm.ManagedProjects, v => v.ManagedProjectsDataGrid.ItemsSource).DisposeWith(d);
 				this.OneWayBind(ViewModel, vm => vm.UnmanagedProjects, v => v.AvailableProjectsList.ItemsSource).DisposeWith(d);
+				this.OneWayBind(ViewModel, vm => vm.ManageButtonsText, v => v.AddSelectedProjectsButton.Content).DisposeWith(d);
+
+				this.WhenAnyValue(x => x.ViewModel.NoProjectsFoundVisibility).
+				DelaySubscription(TimeSpan.FromMilliseconds(250), RxApp.MainThreadScheduler).Subscribe((visibllity) =>
+				{
+					if (visibllity == Visibility.Visible)
+					{
+						if (!ManagedProjectsDataGrid.EnableRowVirtualization)
+						{
+							ManagedProjectsDataGrid.EnableRowVirtualization = true;
+						}
+					}
+					else
+					{
+						if (ManagedProjectsDataGrid.EnableRowVirtualization)
+						{
+							ManagedProjectsDataGrid.EnableRowVirtualization = false;
+						}
+					}
+				}).DisposeWith(d);
 			});
 			
 		}

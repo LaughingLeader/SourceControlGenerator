@@ -143,17 +143,7 @@ namespace SCG.Controls
 
 		public ImageButton()
 		{
-			/*
-			Template = Application.Current.TryFindResource("ImageButtonTemplate") as ControlTemplate;
-
-			if(MaxSize > 0)
-			{
-				MinWidth = MaxSize;
-				MaxWidth = MaxSize;
-				MinHeight = MaxSize;
-				MaxHeight = MaxSize;
-			}
-			*/
+			this.DefaultStyleKey = typeof(ImageButton);
 
 			IsMouseDirectlyOverChanged += ImageButton_IsMouseDirectlyOverChanged;
 		}
