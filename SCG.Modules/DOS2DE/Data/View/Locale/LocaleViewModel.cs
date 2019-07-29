@@ -797,6 +797,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 		public ICommand CopyToClipboardCommand { get; private set; }
 		public ICommand ToggleRenameFileTabCommand { get; private set; }
 		public ICommand CancelRenamingFileTabCommand { get; private set; }
+		public ICommand SelectNoneCommand { get; private set; }
 
 		public IObservable<bool> CanExecutePopoutContentCommand { get; private set; }
 		public IObservable<bool> GlobalCommandEnabled { get; private set; }
@@ -1126,6 +1127,19 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 					this.RaisePropertyChanged("ContentFontSize");
 				}
 			}, GlobalCommandEnabled);
+
+			IObservable<bool> canSelectNone = this.WhenAnyValue(vm => vm.SelectedText, (text) => text != String.Empty);
+			SelectNoneCommand = ReactiveCommand.Create<object>((targetObject) =>
+			{
+				if(targetObject is Xceed.Wpf.Toolkit.RichTextBox rtb)
+				{
+					rtb.Selection.Select(rtb.CaretPosition.DocumentStart, rtb.CaretPosition.DocumentStart);
+				}
+				else if (targetObject is System.Windows.Controls.TextBox tb)
+				{
+					tb.Select(tb.CaretIndex, 0);
+				}
+			}, canSelectNone);
 
 			CopyToClipboardCommand = ReactiveCommand.Create<string>((str) =>
 			{

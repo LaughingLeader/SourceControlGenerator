@@ -233,10 +233,10 @@ body {
 						<MenuItem Command="ApplicationCommands.Copy" />
 						<MenuItem Command="ApplicationCommands.Paste" />
 						<MenuItem Command="ApplicationCommands.SelectAll" />
-						<MenuItem Header="Display Content in Separate Window" Command="{Binding Path=PlacementTarget.Tag.PopoutContentCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
-						<MenuItem Header="Toggle Light/Dark Mode"
-											Command="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, 
-													Path=PlacementTarget.Tag.ToggleContentLightModeCommand}" />
+						<MenuItem Header="Select None" Command="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.Tag.SelectNoneCommand}" 
+								  CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget}" />
+						<!--<MenuItem Header="Display Content in Separate Window" Command="{Binding Path=PlacementTarget.Tag.PopoutContentCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>-->
+						<MenuItem Header="Toggle Light/Dark Mode" Command="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.Tag.ToggleContentLightModeCommand}" />
 						<MenuItem Header="Font Size">
 							<MenuItem Header="12" CommandParameter="12" Command="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.Tag.ChangeContentFontSizeCommand}" />
 							<MenuItem Header="16" CommandParameter="16" Command="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.Tag.ChangeContentFontSizeCommand}" />
@@ -556,7 +556,20 @@ body {
 												GotFocus="EntryContent_GotFocus"
 												LostFocus="EntryContent_LostFocus"
 												SelectionChanged="EntryContent_SelectionChanged"
-											/>
+											>
+												<TextBox.ContextMenu>
+													<ContextMenu>
+														<MenuItem Command="ApplicationCommands.Cut" />
+														<MenuItem Command="ApplicationCommands.Copy" />
+														<MenuItem Command="ApplicationCommands.Paste" />
+														<MenuItem Command="ApplicationCommands.SelectAll" />
+														<MenuItem Header="Select None" Command="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.Tag.SelectNoneCommand}" 
+															CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget}" />
+														<MenuItem Command="ApplicationCommands.Undo" />
+														<MenuItem Command="ApplicationCommands.Redo" />
+													</ContextMenu>
+												</TextBox.ContextMenu>
+											</TextBox>
 											<!--<Grid>
 												<Grid.ColumnDefinitions>
 													<ColumnDefinition Width="*" />
@@ -925,6 +938,8 @@ body {
 																	<MenuItem Command="ApplicationCommands.Copy" />
 																	<MenuItem Command="ApplicationCommands.Paste" />
 																	<MenuItem Command="ApplicationCommands.SelectAll" />
+																	<MenuItem Header="Select None" Command="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.Tag.SelectNoneCommand}" 
+																				CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget}" />
 																	<MenuItem Header="Stop Renaming"
 																			  Command="{Binding Path=PlacementTarget.Tag.ToggleRenameFileTabCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
 																			  CommandParameter="{Binding}" />
