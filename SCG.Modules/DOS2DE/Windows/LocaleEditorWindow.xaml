@@ -519,6 +519,7 @@ body {
 								CanUserAddRows="False" CanUserDeleteRows="False"
 								CanUserResizeRows="True"
 								VirtualizingPanel.IsVirtualizingWhenGrouping="True"
+								EnableRowVirtualization="True"
 								Style="{StaticResource LocaleDataGridStyle}"
 						>
 							<DataGrid.Resources>
@@ -548,7 +549,6 @@ body {
 									<DataGridTemplateColumn.CellTemplate>
 										<DataTemplate>
 											<TextBox
-												Tag="{Binding}"
 												x:Name="EntryContentTextBox"
 												Text="{Binding EntryContent, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
 												IsReadOnly="False"
@@ -556,7 +556,9 @@ body {
 												GotFocus="EntryContent_GotFocus"
 												LostFocus="EntryContent_LostFocus"
 												SelectionChanged="EntryContent_SelectionChanged"
-											>
+												Tag="{Binding Path=DataContext, RelativeSource={RelativeSource AncestorType={x:Type Window}}}"
+												IsUndoEnabled="False"
+												>
 												<TextBox.ContextMenu>
 													<ContextMenu>
 														<MenuItem Command="ApplicationCommands.Cut" />
@@ -565,8 +567,6 @@ body {
 														<MenuItem Command="ApplicationCommands.SelectAll" />
 														<MenuItem Header="Select None" Command="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.Tag.SelectNoneCommand}" 
 															CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget}" />
-														<MenuItem Command="ApplicationCommands.Undo" />
-														<MenuItem Command="ApplicationCommands.Redo" />
 													</ContextMenu>
 												</TextBox.ContextMenu>
 											</TextBox>

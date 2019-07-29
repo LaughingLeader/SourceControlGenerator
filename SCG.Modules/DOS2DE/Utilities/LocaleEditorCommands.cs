@@ -24,6 +24,8 @@ using SCG.Modules.DOS2DE.Core;
 using SCG.Modules.DOS2DE.Windows;
 using System.Windows.Media;
 using DynamicData.Binding;
+using ReactiveUI;
+using System.Reactive.Concurrency;
 
 namespace SCG.Modules.DOS2DE.Utilities
 {
@@ -32,7 +34,7 @@ namespace SCG.Modules.DOS2DE.Utilities
 		#region Loading Localization Files
 		public static async Task<LocaleViewModel> LoadLocalizationDataAsync(DOS2DEModuleData vm, ModProjectData modProject, CancellationToken? token = null)
 		{
-			await new SynchronizationContextRemover();
+			//await new SynchronizationContextRemover();
 
 			LocaleViewModel localizationData = new LocaleViewModel();
 			localizationData.LinkedProjects.Add(modProject);
@@ -117,7 +119,6 @@ namespace SCG.Modules.DOS2DE.Utilities
 						var modsLocaleData = await LoadFilesAsync(modsLocalePath, token, ".lsb");
 						localizationData.ModsGroup.SourceDirectories.Add(modsLocalePath);
 						localizationData.ModsGroup.DataFiles.AddRange(modsLocaleData);
-						localizationData.ModsGroup.UpdateCombinedData();
 					}
 					else
 					{
@@ -133,7 +134,6 @@ namespace SCG.Modules.DOS2DE.Utilities
 						dialogLocaleData.ForEach(f => f.Locked = true);
 						localizationData.DialogGroup.SourceDirectories.Add(dialogLocalePath);
 						localizationData.DialogGroup.DataFiles.AddRange(dialogLocaleData);
-						localizationData.DialogGroup.UpdateCombinedData();
 					}
 					else
 					{
@@ -157,7 +157,6 @@ namespace SCG.Modules.DOS2DE.Utilities
 						var publicLocaleData = await LoadFilesAsync(publicLocalePath, token, ".lsb");
 						localizationData.PublicGroup.SourceDirectories.Add(publicLocalePath);
 						localizationData.PublicGroup.DataFiles.AddRange(publicLocaleData);
-						localizationData.PublicGroup.UpdateCombinedData();
 					}
 					else
 					{
@@ -175,10 +174,20 @@ namespace SCG.Modules.DOS2DE.Utilities
 				{
 					var customFiles = await LoadCustomFilesAsync(customLocaleDir, modProjectData);
 					localizationData.CustomGroup.DataFiles.AddRange(customFiles);
-					localizationData.CustomGroup.UpdateCombinedData();
 				}
 
-				localizationData.CombinedGroup.UpdateCombinedData();
+				/*
+				RxApp.MainThreadScheduler.Schedule(() =>
+				{
+					localizationData.ModsGroup.UpdateCombinedData();
+					localizationData.DialogGroup.UpdateCombinedData();
+					localizationData.PublicGroup.UpdateCombinedData();
+					localizationData.CustomGroup.UpdateCombinedData();
+					localizationData.CombinedGroup.UpdateCombinedData();
+					Log.Here().Activity($"Updated all combined data.");
+				});
+				*/
+
 				//localizationData.UpdateCombinedGroup();
 
 				Log.Here().Activity($"Localization loaded.");

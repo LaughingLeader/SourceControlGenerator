@@ -46,7 +46,6 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			set
 			{
 				dataFiles = value;
-				UpdateCombinedData();
 			}
 		}
 
