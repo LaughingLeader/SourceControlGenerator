@@ -1034,12 +1034,14 @@ namespace SCG.Core
 		}
 
 		private IObservable<bool> canRefresh;
+		private IObservable<bool> anySelected;
 
 		public DOS2DEProjectController()
 		{
 			Data = new DOS2DEModuleData();
 
 			canRefresh = this.WhenAnyValue(vm => vm.Data.CanClickRefresh);
+			anySelected = this.WhenAnyValue(vm => vm.Data.ProjectSelected);
 			Data.RefreshAllCommand = ReactiveCommand.CreateFromTask(RefreshAllProjects, canRefresh);
 
 			IgnoredExportFiles = new List<string>();
@@ -1073,6 +1075,22 @@ namespace SCG.Core
 			}
 		}
 
+		private void RebuildJunctions()
+		{
+			List<ModProjectData> selectedProjects = Data.ManagedProjects.Where(x => x.Selected).ToList();
+
+			foreach(var modProject in selectedProjects)
+			{
+				Log.Here().Important($"Rebuilding junctions for project '{modProject.ProjectName}'.");
+				var sourceFolders = PrepareDirectories(modProject, Data.Settings.DirectoryLayouts);
+				var result = GitGenerator.CreateJunctions(modProject.ProjectName, sourceFolders, Data, true);
+				if(result)
+				{
+					Log.Here().Activity($"Rebuilt junction for '{modProject.ProjectName}'.");
+				}
+			}
+		}
+
 		private MenuData BackupSelectedMenuData { get; set; }
 		private MenuData BackupSelectedToMenuData { get; set; }
 		private MenuData StartGitGenerationMenuData { get; set; }
@@ -1083,28 +1101,28 @@ namespace SCG.Core
 		{
 			MainAppData = mainAppData;
 
-			BackupSelectedMenuData = new MenuData("DOS2.BackupSelected")
+			BackupSelectedMenuData = new MenuData("DOS2DE.BackupSelected")
 			{
 				Header = "Backup Selected Projects",
 				ClickCommand = new ActionCommand(() => { BackupSelectedProjects(); }),
 				IsEnabled = false
 			};
 
-			BackupSelectedToMenuData = new MenuData("DOS2.BackupSelectedTo")
+			BackupSelectedToMenuData = new MenuData("DOS2DE.BackupSelectedTo")
 			{
 				Header = "Backup Selected Projects To...",
 				ClickCommand = new ActionCommand(BackupSelectedProjectsTo),
 				IsEnabled = false
 			};
 
-			StartGitGenerationMenuData = new MenuData("DOS2.StartGitGenerator")
+			StartGitGenerationMenuData = new MenuData("DOS2DE.StartGitGenerator")
 			{
 				Header = "Start Git Generator...",
 				ClickCommand = new ActionCommand(OpenGitGeneratorWindow),
 				IsEnabled = false
 			};
 
-			OpenLocalModsFolderMenuData = new MenuData("DOS2.OpenLocalModsFolder")
+			OpenLocalModsFolderMenuData = new MenuData("DOS2DE.OpenLocalModsFolder")
 			{
 				Header = "Open Local Mods Folder...",
 				ClickCommand = new ActionCommand(() => {
@@ -1115,13 +1133,13 @@ namespace SCG.Core
 
 			MainAppData.MenuBarData.File.Register(Data.ModuleName,
 				new SeparatorData(),
-				new MenuData("DOS2.RefreshProjects")
+				new MenuData("DOS2DE.RefreshProjects")
 				{
 					Header = "Refresh Projects",
 					MenuItems = new ObservableCollectionExtended<IMenuData>()
 					{
-						new MenuData("DOS2.RefreshAll", "Refresh All", Data.RefreshAllCommand, System.Windows.Input.Key.F5),
-						new MenuData("DOS2.RefreshManagedData", "Refresh Managed Data", ReactiveCommand.CreateFromTask(RefreshModProjects, canRefresh)),
+						new MenuData("DOS2DE.RefreshAll", "Refresh All", Data.RefreshAllCommand, System.Windows.Input.Key.F5),
+						new MenuData("DOS2DE.RefreshManagedData", "Refresh Managed Data", ReactiveCommand.CreateFromTask(RefreshModProjects, canRefresh)),
 					}
 				},
 				new SeparatorData(),
@@ -1129,11 +1147,13 @@ namespace SCG.Core
 				BackupSelectedToMenuData,
 				StartGitGenerationMenuData,
 				new SeparatorData(),
-				OpenLocalModsFolderMenuData
+				OpenLocalModsFolderMenuData,
+				new SeparatorData(),
+				new MenuData("DOS2DE.RebuildJunctions", "Rebuild Junctions for Selected...", ReactiveCommand.Create(RebuildJunctions, anySelected))
 #if DEBUG
 				,
 				new SeparatorData(),
-				new MenuData("DOS2.ParseLocalizationLSB")
+				new MenuData("DOS2DE.ParseLocalizationLSB")
 				{
 					Header = "[Debug] Parse Localization",
 					ClickCommand = new ActionCommand(() => { var f = LocaleEditorCommands.LoadResourceAsync(@"G:\Divinity Original Sin 2\DefEd\Data\Mods\Nemesis_627c8d3a-7e6b-4fd2-8ce5-610d553fdbe9\Localization\LLMIME_MiscText.lsb"); }),
@@ -1141,9 +1161,7 @@ namespace SCG.Core
 				}
 #endif
 			);
-
-
-			OpenLocalizationEditorMenuData = new MenuData("DOS2.LocalizationEditor", 
+			OpenLocalizationEditorMenuData = new MenuData("DOS2DE.LocalizationEditor", 
 				"Localization Editor", ReactiveCommand.Create(DOS2DEProjectsView.ToggleDOS2DELocalizationEditor), System.Windows.Input.Key.F7);
 			OpenLocalizationEditorMenuData.IsEnabled = false;
 
@@ -1170,7 +1188,6 @@ namespace SCG.Core
 			LoadDataDirectory();
 			LoadDirectoryLayout();
 			InitModuleKeywords();
-
 #if Debug
 			var watch = new System.Diagnostics.Stopwatch();
 			watch.Start();

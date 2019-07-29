@@ -197,14 +197,14 @@ namespace SCG.Util
 		/// <param name="overwrite">If true overwrites an existing reparse point or empty directory</param>
 		/// <exception cref="System.IO.IOException">Thrown when the junction point could not be created or when
 		/// an existing directory was found and <paramref name="overwrite" /> if false</exception>
-		public static void Create(string sourceDir, string targetDir, bool overwrite)
+		public static void Create(string sourceDir, string targetDir, bool overwrite = false)
 		{
 			sourceDir = Path.GetFullPath(sourceDir);
 
 			if (!Directory.Exists(sourceDir))
 				throw new System.IO.IOException($"Source path does not exist or is not a directory.");
 
-			if (Directory.Exists(targetDir))
+			if (Directory.Exists(targetDir) && !overwrite)
 				throw new System.IO.IOException($"Directory '{targetDir}' already exists.");
 
 			Directory.CreateDirectory(targetDir);
