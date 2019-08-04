@@ -23,6 +23,7 @@ using System.Reactive;
 using System.Windows.Media;
 using SCG.Windows;
 using System.Threading.Tasks;
+using System.Reactive.Disposables;
 
 namespace SCG.Modules.DOS2DE.Data.View.Locale
 {
@@ -696,6 +697,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 		{
 			var currentGroup = Groups.Where(g => g == SelectedGroup).First();
 			var newFileDataList = LocaleEditorCommands.ImportFilesAsData(files, SelectedGroup);
+			view.SaveSettings();
 
 			CreateSnapshot(() => {
 				var list = currentGroup.DataFiles.ToList();
@@ -720,7 +722,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 				this.RaisePropertyChanged("CurrentImportPath");
 				this.RaisePropertyChanged("CurrentFileImportPath");
 			}
-			LocaleEditorWindow.instance.SaveSettings();
+			view.SaveSettings();
 
 			ChangesUnsaved = true;
 		}
@@ -731,6 +733,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 
 			var currentItem = SelectedItem;
 			var newKeys = LocaleEditorCommands.ImportFilesAsEntries(files, SelectedItem as LocaleNodeFileData);
+			view.SaveSettings();
 
 			CreateSnapshot(() => {
 				foreach(var k in newKeys)
@@ -758,7 +761,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 				this.RaisePropertyChanged("CurrentImportPath");
 				this.RaisePropertyChanged("CurrentEntryImportPath");
 			}
-			LocaleEditorWindow.instance.SaveSettings();
+			view.SaveSettings();
 
 			ChangesUnsaved = true;
 		}
@@ -773,8 +776,8 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 		public ICommand ConfirmFileAddToGroupCommand { get; private set; }
 		public ICommand CancelFileAddToGroupCommand { get; private set; }
 		public ICommand CloseFileCommand { get; private set; }
-		public OpenFileBrowserCommand ImportFileCommand { get; private set; }
-		public OpenFileBrowserCommand ImportKeysCommand { get; private set; }
+		public OpenFileBrowserCommand ImportFileCommand { get; internal set; }
+		public OpenFileBrowserCommand ImportKeysCommand { get; internal set; }
 		public ICommand ExportXMLCommand { get; private set; }
 
 		public ICommand SaveAllCommand { get; private set; }
@@ -867,12 +870,12 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 		{
 			ExportText = LocaleEditorCommands.ExportDataAsXML(this, Settings.ExportSource, Settings.ExportKeys);
 
-			if (LocaleEditorWindow.instance != null && LocaleEditorWindow.instance.ExportWindow != null)
+			if (view != null && view.ExportWindow != null)
 			{
-				if (!LocaleEditorWindow.instance.ExportWindow.IsVisible)
+				if (!view.ExportWindow.IsVisible)
 				{
-					LocaleEditorWindow.instance.ExportWindow.Show();
-					LocaleEditorWindow.instance.ExportWindow.Owner = LocaleEditorWindow.instance;
+					view.ExportWindow.Show();
+					view.ExportWindow.Owner = view;
 				}
 			}
 		}
@@ -908,7 +911,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 
 			if (target != null)
 			{
-				FileCommands.OpenConfirmationDialog(LocaleEditorWindow.instance, "Confirm Tab Removal", $"Remove {fileData.Name}?", "Unsaved changes will be lost.", new Action<bool>((b) =>
+				FileCommands.OpenConfirmationDialog(view, "Confirm Tab Removal", $"Remove {fileData.Name}?", "Unsaved changes will be lost.", new Action<bool>((b) =>
 				{
 					if (b)
 					{
@@ -974,6 +977,12 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			}
 		}
 
+		public void KeyEntrySelected(ILocaleKeyEntry keyEntry, bool selected)
+		{
+			UpdateAnySelected(selected);
+			if (selected) SelectedEntry = keyEntry;
+		}
+
 		/// <summary>
 		/// Creates a new MenuData whose IsEnabled property is linked to a property in this view data.
 		/// When the property in this class changes, the linked menudata's IsEnabled will update accordingly.
@@ -1003,11 +1012,62 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			return mdata;
 		}
 
-		public void OnViewLoaded(LocaleEditorWindow v, DOS2DEModuleData moduleData)
+		public void OnViewLoaded(LocaleEditorWindow v, DOS2DEModuleData moduleData, CompositeDisposable disposables)
 		{
 			view = v;
-
 			ModuleData = moduleData;
+
+			ImportFileCommand = new OpenFileBrowserCommand(ImportFileAsFileData)
+			{
+				DefaultParams = new OpenFileBrowserParams()
+				{
+					Title = DOS2DETooltips.Button_Locale_ImportFile,
+					ParentWindow = view,
+					UseFolderBrowser = false,
+					Filters = DOS2DEFileFilters.AllLocaleFilesList.ToArray(),
+					StartDirectory = CurrentFileImportPath
+				}
+			};
+
+			GlobalCommandEnabled.BindTo(ImportFileCommand, c => c.Enabled).DisposeWith(disposables);
+
+			ImportKeysCommand = new OpenFileBrowserCommand(ImportFileAsKeys)
+			{
+				DefaultParams = new OpenFileBrowserParams()
+				{
+					Title = DOS2DETooltips.Button_Locale_ImportKeys,
+					ParentWindow = view,
+					UseFolderBrowser = false,
+					Filters = DOS2DEFileFilters.AllLocaleFilesList.ToArray(),
+					StartDirectory = CurrentEntryImportPath
+				}
+			};
+
+			GlobalCommandEnabled.BindTo(ImportKeysCommand, c => c.Enabled).DisposeWith(disposables);
+
+			OpenPreferencesCommand = ReactiveCommand.Create(() => { view.TogglePreferencesWindow(); }, GlobalCommandEnabled);
+
+			this.WhenAny(vm => vm.SelectedGroup.SelectedFile, x => x.Value).ToProperty(this, vm => vm.SelectedItem, _selectedItem).DisposeWith(disposables);
+
+			this.WhenAny(vm => vm.SelectedEntry.EntryContent, vm => vm.Value).Subscribe((o) => {
+				this.RaisePropertyChanged("SelectedEntryContent");
+				this.RaisePropertyChanged("SelectedEntryHtmlContent");
+			}).DisposeWith(disposables);
+
+			void clearSelectedEntry()
+			{
+				if (SelectedEntry != null)
+				{
+					ContentSelected = false;
+					ContentFocused = false;
+					SelectedEntry = null;
+				}
+			}
+
+			this.WhenAnyValue(vm => vm.SelectedItem, vm => vm.SelectedGroup).Subscribe((o) => clearSelectedEntry()).DisposeWith(disposables);
+
+			CanExecutePopoutContentCommand = this.WhenAny(vm => vm.SelectedEntry, e => e.Value != null);
+
 			LocaleEditorCommands.LoadSettings(ModuleData, this);
 			MenuData.RegisterShortcuts(view.InputBindings);
 
@@ -1042,37 +1102,11 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 				g.SelectedFileChanged = SelectedFileChanged;
 			}
 
+			this.WhenAnyObservable(x => x.Groups, (g) => g.Groups.WhenAnyValue(e => e.)
+
 			GlobalCommandEnabled = this.WhenAny(vm => vm.IsAddingNewFileTab, e => e.Value == false);
 
 			ExportXMLCommand = ReactiveCommand.Create(OpenExportWindow, GlobalCommandEnabled);
-
-			ImportFileCommand = new OpenFileBrowserCommand(ImportFileAsFileData)
-			{
-				DefaultParams = new OpenFileBrowserParams()
-				{
-					Title = DOS2DETooltips.Button_Locale_ImportFile,
-					ParentWindow = LocaleEditorWindow.instance,
-					UseFolderBrowser = false,
-					Filters = DOS2DEFileFilters.AllLocaleFilesList.ToArray(),
-					StartDirectory = CurrentFileImportPath
-				}
-			};
-
-			GlobalCommandEnabled.BindTo(ImportFileCommand, c => c.Enabled);
-
-			ImportKeysCommand = new OpenFileBrowserCommand(ImportFileAsKeys)
-			{
-				DefaultParams = new OpenFileBrowserParams()
-				{
-					Title = DOS2DETooltips.Button_Locale_ImportKeys,
-					ParentWindow = LocaleEditorWindow.instance,
-					UseFolderBrowser = false,
-					Filters = DOS2DEFileFilters.AllLocaleFilesList.ToArray(),
-					StartDirectory = CurrentEntryImportPath
-				}
-			};
-
-			GlobalCommandEnabled.BindTo(ImportKeysCommand, c => c.Enabled);
 
 			AddFileToGroupCommand = ReactiveCommand.Create<CustomLocaleTabGroup>(AddCustomFileToGroup);
 
@@ -1110,12 +1144,10 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			SaveCurrentCommand = ReactiveCommand.CreateFromTask(SaveCurrent, GlobalCommandEnabled);
 			GenerateHandlesCommand = ReactiveCommand.Create(GenerateHandles, GlobalCommandEnabled);
 			AddNewKeyCommand = ReactiveCommand.Create(AddNewKey, GlobalCommandEnabled);
-			DeleteKeysCommand = new TaskCommand(DeleteSelectedKeys, LocaleEditorWindow.instance, "Delete Keys", 
+			DeleteKeysCommand = new TaskCommand(DeleteSelectedKeys, view, "Delete Keys", 
 				"Delete selected keys?", "Changes will be lost.");
 
 			GlobalCommandEnabled.BindTo(DeleteKeysCommand, c => c.Enabled);
-
-			OpenPreferencesCommand = ReactiveCommand.Create(() => { LocaleEditorWindow.instance?.TogglePreferencesWindow(); }, GlobalCommandEnabled);
 
 			AddFontTagCommand = ReactiveCommand.Create(AddFontTag, GlobalCommandEnabled);
 
@@ -1215,27 +1247,6 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			AnySelected = false;
 			CanAddFile = false;
 			CanAddKeys = false;
-
-			this.WhenAny(vm => vm.SelectedGroup.SelectedFile, x => x.Value).ToProperty(this, vm => vm.SelectedItem, _selectedItem);
-
-			this.WhenAny(vm => vm.SelectedEntry.EntryContent, vm => vm.Value).Subscribe((o) => {
-				this.RaisePropertyChanged("SelectedEntryContent");
-				this.RaisePropertyChanged("SelectedEntryHtmlContent");
-			});
-
-			void clearSelectedEntry()
-			{
-				if(SelectedEntry != null)
-				{
-					ContentSelected = false;
-					ContentFocused = false;
-					SelectedEntry = null;
-				}
-			}
-
-			this.WhenAnyValue(vm => vm.SelectedItem, vm => vm.SelectedGroup).Subscribe((o) => clearSelectedEntry());
-
-			CanExecutePopoutContentCommand = this.WhenAny(vm => vm.SelectedEntry, e => e.Value != null);
 		}
 	}
 

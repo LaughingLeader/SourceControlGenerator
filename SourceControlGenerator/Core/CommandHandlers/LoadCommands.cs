@@ -85,6 +85,7 @@ namespace SCG.Commands
 
 		public void OpenMultiFileDialog(Window parentWindow, string Title, string startingDirectory, Action<IEnumerable<string>> OnFileSelected, string defaultFilename = "", Action<string, CommonFileDialogResult> OnCancel = null, params FileBrowserFilter[] filters)
 		{
+			if (parentWindow == null) parentWindow = AppController.Main.MainWindow;
 			var fileDialog = CreateOpenDialog(Title, startingDirectory, defaultFilename, true, filters);
 
 			var result = fileDialog.ShowDialog(parentWindow);

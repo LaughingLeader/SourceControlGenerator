@@ -26,6 +26,7 @@ using System.Windows.Media;
 using DynamicData.Binding;
 using ReactiveUI;
 using System.Reactive.Concurrency;
+using System.Text.RegularExpressions;
 
 namespace SCG.Modules.DOS2DE.Utilities
 {
@@ -744,6 +745,12 @@ namespace SCG.Modules.DOS2DE.Utilities
 			return null;
 		}
 
+		private static bool delimitStepSkipLine(string line)
+		{
+			Regex r = new Regex("Key\\s+Content", RegexOptions.IgnoreCase);
+			return r.Match(line)?.Success == true;
+		}
+
 		private static LocaleNodeFileData CreateNodeFileDataFromTextual(System.IO.StreamReader stream, string sourceDirectory, string filePath, char delimiter)
 		{
 			//For exporting to lsb later
@@ -755,22 +762,25 @@ namespace SCG.Modules.DOS2DE.Utilities
 			int lineNum = 0;
 			string line = String.Empty;
 
+			Regex r = new Regex($"(.*){delimiter}+?(.*)");
+
 			while ((line = stream.ReadLine()) != null)
 			{
 				lineNum += 1;
 				// Skip top line, as it typically describes the columns
+
+
 				Log.Here().Activity(line);
-				if (lineNum == 1 && line.Contains("Key\tContent")) continue;
-				var parts = line.Split(delimiter);
-
-				var key = parts.ElementAtOrDefault(0);
-				var content = parts.ElementAtOrDefault(1);
-
-				if (key == null) key = "NewKey";
-				if (content == null) content = "";
-
-				var entry = CreateNewLocaleEntry(fileData, key, content);
-				fileData.Entries.Add(entry);
+				if (lineNum == 1 && delimitStepSkipLine(line)) continue;
+				
+				var match = r.Match(line);
+				if(match.Success)
+				{
+					string key = match.Groups.Count >= 1 ? match.Groups[1].Value : "NewKey";
+					string content = match.Groups.Count >= 2 ? match.Groups[2].Value : "";
+					var entry = CreateNewLocaleEntry(fileData, key, content);
+					fileData.Entries.Add(entry);
+				}
 			}
 
 			//Remove the empty default new key
@@ -818,7 +828,6 @@ namespace SCG.Modules.DOS2DE.Utilities
 			{
 				Log.Here().Error("Error importing files to the localization editor: " + ex.ToString());
 			}
-			LocaleEditorWindow.instance.SaveSettings();
 			return newFileDataList;
 		}
 
@@ -877,7 +886,6 @@ namespace SCG.Modules.DOS2DE.Utilities
 			{
 				Log.Here().Error("Error importing files as entries to the localization editor: " + ex.ToString());
 			}
-			LocaleEditorWindow.instance.SaveSettings();
 			return newEntryList;
 		}
 		#endregion

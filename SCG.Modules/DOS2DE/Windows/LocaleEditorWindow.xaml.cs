@@ -23,6 +23,7 @@ using ReactiveUI;
 using SCG.Extensions;
 using System.Reactive.Disposables;
 using SCG.Controls;
+using SCG.Modules.DOS2DE.Core;
 
 namespace SCG.Modules.DOS2DE.Windows
 {
@@ -31,7 +32,6 @@ namespace SCG.Modules.DOS2DE.Windows
 	/// </summary>
 	public partial class LocaleEditorWindow : ReactiveWindow<LocaleViewModel>
 	{
-		public static LocaleEditorWindow instance { get; private set; }
 		/*
 		public LocaleViewData ViewModel
 		{
@@ -56,15 +56,19 @@ namespace SCG.Modules.DOS2DE.Windows
 			Init();
 		}
 
+		private CompositeDisposable disposables;
+
 		public LocaleEditorWindow(DOS2DEModuleData data)
 		{
 			ModuleData = data;
 
 			Init();
 
-			this.WhenActivated((disposable) =>
+			this.WhenActivated((d) =>
 			{
 				KeyDown += LocaleEditorWindow_KeyDown;
+
+				disposables = d;
 			});
 		}
 
@@ -88,8 +92,6 @@ namespace SCG.Modules.DOS2DE.Windows
 
 			ContentWindow = new LocaleContentWindow();
 			ContentWindow.Hide();
-
-			instance = this;
 		}
 
 		public void PopoutContentWindow(ILocaleKeyEntry entry)
@@ -153,7 +155,7 @@ namespace SCG.Modules.DOS2DE.Windows
 		{
 			ViewModel = data;
 
-			ViewModel.OnViewLoaded(this, ModuleData);
+			ViewModel.OnViewLoaded(this, ModuleData, disposables);
 
 			ViewModel.PopoutContentCommand = ReactiveCommand.Create(() => PopoutContentWindow(ViewModel.SelectedEntry), ViewModel.CanExecutePopoutContentCommand);
 
@@ -171,7 +173,6 @@ namespace SCG.Modules.DOS2DE.Windows
 			{
 				this.OneWayBind(this.ViewModel, vm => vm.SaveCurrentCommand, view => view.importFileButton.Command);
 			}
-
 
 			DataContext = ViewModel;
 			ExportWindow.LocaleData = ViewModel;
@@ -287,12 +288,6 @@ namespace SCG.Modules.DOS2DE.Windows
 					e.Handled = true;
 				}
 			}
-		}
-
-		public void KeyEntrySelected(ILocaleKeyEntry keyEntry, bool selected)
-		{
-			ViewModel.UpdateAnySelected(selected);
-			if (selected) ViewModel.SelectedEntry = keyEntry;
 		}
 
 		private void EntryDataGrid_RowFocused(object sender, RoutedEventArgs e)
