@@ -37,7 +37,7 @@ namespace SCG.Modules.DOS2DE.Data
 			}
 		}
 
-		private bool exportKeys = true;
+		private bool exportKeys = false;
 
 		[DataMember]
 		public bool ExportKeys

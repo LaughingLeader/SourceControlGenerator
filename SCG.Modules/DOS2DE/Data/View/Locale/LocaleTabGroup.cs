@@ -138,8 +138,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 
 		public void OnSelectedKeyChanged(ILocaleKeyEntry keyEntry, bool selected)
 		{
-			Parent?.UpdateAnySelected(selected);
-			if (selected && Parent != null) Parent.SelectedEntry = keyEntry;
+			Parent.KeyEntrySelected(keyEntry, selected);
 		}
 
 		public LocaleTabGroup(LocaleViewModel parent, string name = "")

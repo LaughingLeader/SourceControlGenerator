@@ -14,17 +14,26 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using ReactiveUI;
 
 namespace SCG.Modules.DOS2DE.Windows
 {
 	/// <summary>
 	/// Interaction logic for LocaleExportWindow.xaml
 	/// </summary>
-	public partial class LocaleExportWindow : HideWindowBase
+	public partial class LocaleExportWindow : HideWindowBase, IViewFor<LocaleViewModel>
 	{
 		public LocaleExportWindow()
 		{
 			InitializeComponent();
+
+			DataContextChanged += LocaleExportWindow_DataContextChanged;
+		}
+
+		private void LocaleExportWindow_DataContextChanged(object sender, DependencyPropertyChangedEventArgs e)
+		{
+			this.Bind(this.ViewModel, vm => vm.Settings.ExportKeys, view => view.ExportKeysCheckBox.IsChecked);
+			this.Bind(this.ViewModel, vm => vm.Settings.ExportSource, view => view.ExportSourceCheckBox.IsChecked);
 		}
 
 		private void CloseButton_Click(object sender, RoutedEventArgs e)
@@ -45,7 +54,7 @@ namespace SCG.Modules.DOS2DE.Windows
 
 		private LocaleViewModel localeViewData;
 
-		public LocaleViewModel LocaleData
+		public LocaleViewModel ViewModel
 		{
 			get { return localeViewData; }
 			set
@@ -54,15 +63,22 @@ namespace SCG.Modules.DOS2DE.Windows
 				DataContext = localeViewData;
 			}
 		}
-
+		object IViewFor.ViewModel
+		{
+			get => ViewModel;
+			set
+			{
+				ViewModel = (LocaleViewModel)value;
+			}
+		}
 
 		private void ExportButton_Click(object sender, RoutedEventArgs e)
 		{
-			if (LocaleData != null && FindName("OutputTextbox") is TextBox outputTextbox)
+			if (ViewModel != null && FindName("OutputTextbox") is TextBox outputTextbox)
 			{
 				Log.Here().Activity("Exporting data to xml format.");
 				outputTextbox.Text = "";
-				outputTextbox.Text = LocaleEditorCommands.ExportDataAsXML(LocaleData, LocaleData.Settings.ExportSource, LocaleData.Settings.ExportKeys);
+				outputTextbox.Text = LocaleEditorCommands.ExportDataAsXML(ViewModel);
 			}
 		}
 	}

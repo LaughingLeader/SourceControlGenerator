@@ -33,9 +33,9 @@
 				</Style>
 			</StackPanel.Resources>
 			<Button Content="Export Again" Padding="4,2" x:Name="ExportButton" Click="ExportButton_Click"/>
-			<CheckBox Content="Export Keys" IsChecked="{Binding Settings.ExportKeys, Mode=TwoWay}"
+			<CheckBox x:Name="ExportKeysCheckBox" Content="Export Keys" IsChecked="{Binding Settings.ExportKeys, Mode=TwoWay}"
 					ToolTip="{x:Static core:DOS2DETooltips.Checkbox_Locale_ExportXML_Keys}" />
-			<CheckBox Content="Export Source" IsChecked="{Binding Settings.ExportSource, Mode=TwoWay}"
+			<CheckBox x:Name="ExportSourceCheckBox" Content="Export Source" IsChecked="{Binding Settings.ExportSource, Mode=TwoWay}"
 					ToolTip="{x:Static core:DOS2DETooltips.Checkbox_Locale_ExportXML_Source}" />
 			<Rectangle Style="{StaticResource VerticalSeparator}" Margin="2,0" Width="1" />
 			<Button Content="Copy to Clipboard" x:Name="CopyButton" Click="CopyButton_Click" Padding="4,2"/>

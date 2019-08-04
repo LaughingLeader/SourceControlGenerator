@@ -515,7 +515,11 @@ namespace SCG.Modules.DOS2DE.Utilities
 						var m = regex.Match(f.SourcePath);
 						if(m.Success)
 						{
-							replacePaths.Add(m.Groups[1].Value);
+							var val = m.Groups[1].Value;
+							if(!replacePaths.Contains(val))
+							{
+								replacePaths.Add(val);
+							}
 						}
 						sourceFiles.Add(f.SourcePath);
 					}
@@ -661,7 +665,7 @@ namespace SCG.Modules.DOS2DE.Utilities
 			return 0;
 		}
 
-		public static string ExportDataAsXML(LocaleViewModel data, bool exportSourceName = true, bool exportKeyName = true)
+		public static string ExportDataAsXML(LocaleViewModel data)
 		{
 			string output = "<contentList>\n{0}</contentList>";
 			string entriesStr = "";
@@ -692,14 +696,14 @@ namespace SCG.Modules.DOS2DE.Utilities
 
 						var sourceStr = "";
 
-						if (exportSourceName)
+						if (data.Settings.ExportSource)
 						{
 							sourceStr = $" Source =\"{sourcePath}\"";
 						}
 
 						var keyStr = "";
 
-						if (exportKeyName && !String.IsNullOrWhiteSpace(e.Key) && e.KeyIsEditable)
+						if (data.Settings.ExportKeys && !String.IsNullOrWhiteSpace(e.Key) && e.KeyIsEditable)
 						{
 							keyStr = $" Key=\"{e.Key}\"";
 						}

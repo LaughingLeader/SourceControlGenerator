@@ -149,33 +149,18 @@ namespace SCG.Modules.DOS2DE.Windows
 			return (T)element;
 		}
 
-		private ImageButton saveButton;
-		private ImageButton saveAllButton;
-		private ImageButton importFileButton;
-
 		public void LoadData(LocaleViewModel data)
 		{
 			ViewModel = data;
 
 			ViewModel.PopoutContentCommand = ReactiveCommand.Create(() => PopoutContentWindow(ViewModel.SelectedEntry), ViewModel.CanExecutePopoutContentCommand);
 
-			if(this.TryFindName("SaveButton", out saveButton))
-			{
-				this.OneWayBind(this.ViewModel, vm => vm.SaveCurrentCommand, view => view.saveButton.Command);
-			}
-
-			if (this.TryFindName("SaveAllButton", out saveAllButton))
-			{
-				this.OneWayBind(this.ViewModel, vm => vm.SaveCurrentCommand, view => view.saveAllButton.Command);
-			}
-
-			if (this.TryFindName("ImportFileButton", out importFileButton))
-			{
-				this.OneWayBind(this.ViewModel, vm => vm.SaveCurrentCommand, view => view.importFileButton.Command);
-			}
+			this.OneWayBind(this.ViewModel, vm => vm.SaveCurrentCommand, view => view.SaveButton.Command);
+			this.OneWayBind(this.ViewModel, vm => vm.SaveCurrentCommand, view => view.SaveAllButton.Command);
+			this.OneWayBind(this.ViewModel, vm => vm.SaveCurrentCommand, view => view.ImportFileButton.Command);
 
 			DataContext = ViewModel;
-			ExportWindow.LocaleData = ViewModel;
+			ExportWindow.ViewModel = ViewModel;
 		}
 
 		private struct ViewObservableProperty

@@ -133,7 +133,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 
 		public void OnSelectedKeyChanged(ILocaleKeyEntry key, bool selected)
 		{
-			Parent?.OnSelectedKeyChanged(key, selected);
+			Parent.OnSelectedKeyChanged(key, selected);
 		}
 
 		private bool allSelected;

@@ -240,16 +240,15 @@ namespace SCG.FileGen
 				{
 					if (token == null) token = CancellationToken.None;
 
-					var targetFiles = new ConcurrentBag<string>(files);
 					using (var zip = File.OpenWrite(archiveFilePath))
 					using (var zipWriter = WriterFactory.Open(zip, ArchiveType.Zip, CompressionType.Deflate))
 					{
 						Log.Here().Activity($"Saving {files.Count} files to archive at '{archiveFilePath}'.");
-						foreach (var f in targetFiles)
+						foreach (var f in files)
 						{
 							if(trimPath == null)
 							{
-								await WriteZipAsync(zipWriter, f, f, token.Value).ConfigureAwait(false);
+								await WriteZipAsync(zipWriter, f, f, token.Value);
 							}
 							else
 							{
@@ -257,9 +256,9 @@ namespace SCG.FileGen
 								foreach(var str in trimPath)
 								{
 									entryPath = entryPath.Replace(str, "");
-									Log.Here().Activity($"Replacing '{str}' in '{entryPath}'");
+									//Log.Here().Activity($"Replacing '{str}' in '{entryPath}'");
 								}
-								await WriteZipAsync(zipWriter, entryPath, f, token.Value).ConfigureAwait(false);
+								await WriteZipAsync(zipWriter, entryPath, f, token.Value);
 							}
 						}
 

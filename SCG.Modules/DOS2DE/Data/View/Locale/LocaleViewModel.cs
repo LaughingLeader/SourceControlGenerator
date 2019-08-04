@@ -284,7 +284,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			}
 		}
 
-		private bool anySelected;
+		private bool anySelected = false;
 
 		public bool AnySelected
 		{
@@ -372,18 +372,6 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			set
 			{
 				this.RaiseAndSetIfChanged(ref selectedText, value);
-			}
-		}
-
-		public void UpdateAnySelected(bool recentSelection = false)
-		{
-			if(recentSelection)
-			{
-				AnySelected = true;
-			}
-			else
-			{
-				AnySelected = SelectedGroup?.Tabs.Any(t => t.Entries.Any(e => e.Selected)) == true;
 			}
 		}
 
@@ -527,6 +515,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 						entry.Handle = LocaleEditorCommands.CreateHandle();
 						newHandles.Add(new LocaleHandleHistory(entry, entry.Handle));
 						Log.Here().Activity($"[{entry.Key}] New handle generated. [{entry.Handle}]");
+						entry.Parent.ChangesUnsaved = true;
 					}
 				}
 
@@ -880,7 +869,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 
 		public void OpenExportWindow()
 		{
-			ExportText = LocaleEditorCommands.ExportDataAsXML(this, Settings.ExportSource, Settings.ExportKeys);
+			ExportText = LocaleEditorCommands.ExportDataAsXML(this);
 
 			if (view != null && view.ExportWindow != null)
 			{
@@ -989,10 +978,42 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			}
 		}
 
+		public void UpdateAnySelected(bool recentSelection = false)
+		{
+			if (recentSelection)
+			{
+				if (AnySelected != true)
+				{
+					AnySelected = true;
+				}
+			}
+			else
+			{
+				AnySelected = SelectedGroup?.Tabs.Any(t => t.Entries.Any(e => e.Selected)) == true;
+			}
+		}
+
 		public void KeyEntrySelected(ILocaleKeyEntry keyEntry, bool selected)
 		{
 			UpdateAnySelected(selected);
-			if (selected) SelectedEntry = keyEntry;
+			if (selected)
+			{
+				if (SelectedEntry == null)
+				{
+					SelectedEntry = keyEntry;
+				}
+				else
+				{
+					if (!SelectedEntry.Selected)
+					{
+						SelectedEntry = keyEntry;
+					}
+				}
+			}
+			else if (!AnySelected)
+			{
+				SelectedEntry = null;
+			}
 		}
 
 		/// <summary>
