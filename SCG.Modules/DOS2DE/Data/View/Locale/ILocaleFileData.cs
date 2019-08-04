@@ -25,5 +25,6 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 
 		void SelectAll();
 		void SelectNone();
+		void OnSelectedKeyChanged(ILocaleKeyEntry key, bool selected);
 	}
 }

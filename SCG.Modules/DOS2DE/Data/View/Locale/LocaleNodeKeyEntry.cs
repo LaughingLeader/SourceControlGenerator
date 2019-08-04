@@ -35,7 +35,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 
 		public override void OnSelected(bool isSelected)
 		{
-			LocaleEditorWindow.instance?.KeyEntrySelected(this, isSelected);
+			Parent?.OnSelectedKeyChanged(this, isSelected);
 		}
 
 		private string key = "None";
@@ -138,7 +138,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 
 		#endregion
 
-		public LocaleNodeKeyEntry(LSLib.LS.Node resNode)
+		public LocaleNodeKeyEntry(LSLib.LS.Node resNode, ILocaleFileData parent) : base(parent)
 		{
 			Node = resNode;
 		}

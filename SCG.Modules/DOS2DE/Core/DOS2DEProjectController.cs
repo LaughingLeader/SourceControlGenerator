@@ -1150,16 +1150,6 @@ namespace SCG.Core
 				OpenLocalModsFolderMenuData,
 				new SeparatorData(),
 				new MenuData("DOS2DE.RebuildJunctions", "Rebuild Junctions for Selected...", ReactiveCommand.Create(RebuildJunctions, anySelected))
-#if DEBUG
-				,
-				new SeparatorData(),
-				new MenuData("DOS2DE.ParseLocalizationLSB")
-				{
-					Header = "[Debug] Parse Localization",
-					ClickCommand = new ActionCommand(() => { var f = LocaleEditorCommands.LoadResourceAsync(@"G:\Divinity Original Sin 2\DefEd\Data\Mods\Nemesis_627c8d3a-7e6b-4fd2-8ce5-610d553fdbe9\Localization\LLMIME_MiscText.lsb"); }),
-					IsEnabled = true
-				}
-#endif
 			);
 			OpenLocalizationEditorMenuData = new MenuData("DOS2DE.LocalizationEditor", 
 				"Localization Editor", ReactiveCommand.Create(DOS2DEProjectsView.ToggleDOS2DELocalizationEditor), System.Windows.Input.Key.F7);

@@ -86,7 +86,12 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 
 		public override void OnSelected(bool isSelected)
 		{
-			LocaleEditorWindow.instance?.KeyEntrySelected(this, isSelected);
+			Parent?.OnSelectedKeyChanged(this, isSelected);
+		}
+
+		public LocaleCustomKeyEntry(ILocaleFileData parent) : base(parent)
+		{
+
 		}
 	}
 }

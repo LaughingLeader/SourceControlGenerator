@@ -24,36 +24,36 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			//Data = result.Data;
 			//Name = result.Error;
 
-			ModsGroup.DataFiles.Add(new BaseLocaleFileData("Skills") { ChangesUnsaved = true });
-			ModsGroup.DataFiles.Add(new BaseLocaleFileData("Statuses"));
+			ModsGroup.DataFiles.Add(new BaseLocaleFileData(ModsGroup, "Skills") { ChangesUnsaved = true });
+			ModsGroup.DataFiles.Add(new BaseLocaleFileData(ModsGroup, "Statuses"));
 			for(var i = 1; i < 4; i++)
 			{
-				ModsGroup.DataFiles.Add(new BaseLocaleFileData("Potionslalalalala" + i));
+				ModsGroup.DataFiles.Add(new BaseLocaleFileData(ModsGroup, "Potionslalalalala" + i));
 			}
 
-			PublicGroup.DataFiles.Add(new BaseLocaleFileData("Skills"));
-			PublicGroup.DataFiles.Add(new BaseLocaleFileData("Statuses"));
-			PublicGroup.DataFiles.Add(new BaseLocaleFileData("Potions"));
+			PublicGroup.DataFiles.Add(new BaseLocaleFileData(ModsGroup, "Skills"));
+			PublicGroup.DataFiles.Add(new BaseLocaleFileData(ModsGroup, "Statuses"));
+			PublicGroup.DataFiles.Add(new BaseLocaleFileData(ModsGroup, "Potions"));
 
 			for (var i = 1; i < 5; i++)
 			{
-				CustomGroup.DataFiles.Add(new BaseLocaleFileData("Custom" + i));
+				CustomGroup.DataFiles.Add(new BaseLocaleFileData(ModsGroup, "Custom" + i));
 			}
 
 			foreach (var d in ModsGroup.DataFiles)
 			{
-				LocaleEditorCommands.Debug_CreateEntries(d.Entries);
+				LocaleEditorCommands.Debug_CreateEntries(d, d.Entries);
 			}
 
 			foreach (var d in PublicGroup.DataFiles)
 			{
-				LocaleEditorCommands.Debug_CreateEntries(d.Entries);
+				LocaleEditorCommands.Debug_CreateEntries(d, d.Entries);
 			}
 
 			foreach (var d in CustomGroup.DataFiles)
 			{
 				d.CanClose = d.CanRename = true;
-				LocaleEditorCommands.Debug_CreateCustomEntries(d.Entries);
+				LocaleEditorCommands.Debug_CreateCustomEntries(d, d.Entries);
 			}
 
 			UpdateCombinedGroup(true);

@@ -8,7 +8,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 {
 	public class CustomLocaleTabGroup : LocaleTabGroup
 	{
-		public CustomLocaleTabGroup(string name) : base(name)
+		public CustomLocaleTabGroup(LocaleViewModel parent, string name) : base(parent, name)
 		{
 			CanAddFiles = true;
 		}

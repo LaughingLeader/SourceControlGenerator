@@ -1,5 +1,6 @@
 ﻿using DynamicData.Binding;
 using ReactiveUI;
+using Reactive.Bindings.Extensions;
 using SCG.Commands;
 using SCG.Data;
 using System;
@@ -133,10 +134,19 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			SelectedFileIndex = Tabs.Count - 1;
 		}
 
-		public LocaleTabGroup(string name = "")
+		public LocaleViewModel Parent { get; private set; }
+
+		public void OnSelectedKeyChanged(ILocaleKeyEntry keyEntry, bool selected)
 		{
+			Parent?.UpdateAnySelected(selected);
+			if (selected && Parent != null) Parent.SelectedEntry = keyEntry;
+		}
+
+		public LocaleTabGroup(LocaleViewModel parent, string name = "")
+		{
+			Parent = parent;
 			Name = name;
-			CombinedEntries = new BaseLocaleFileData("All");
+			CombinedEntries = new BaseLocaleFileData(this, "All");
 			CombinedEntries.Locked = true;
 			DataFiles = new ObservableCollectionExtended<ILocaleFileData>();
 			Tabs = new ObservableCollectionExtended<ILocaleFileData>();

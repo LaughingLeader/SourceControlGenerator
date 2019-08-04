@@ -15,7 +15,8 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 
 		public LSLib.LS.Enums.ResourceFormat Format { get; set; }
 
-		public LocaleNodeFileData(LSLib.LS.Enums.ResourceFormat resourceFormat, LSLib.LS.Resource res, string sourcePath, string name = "") : base(name)
+		public LocaleNodeFileData(LocaleTabGroup parent, LSLib.LS.Enums.ResourceFormat resourceFormat, 
+			LSLib.LS.Resource res, string sourcePath, string name = "") : base(parent, name)
 		{
 			Source = res;
 			SourcePath = sourcePath;

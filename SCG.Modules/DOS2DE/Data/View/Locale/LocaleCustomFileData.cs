@@ -12,7 +12,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 	{
 		public ModProjectData Project { get; set; }
 
-		public LocaleCustomFileData(string name = "") : base(name)
+		public LocaleCustomFileData(LocaleTabGroup parent, string name = "") : base(parent, name)
 		{
 			CanRename = CanClose = true;
 		}

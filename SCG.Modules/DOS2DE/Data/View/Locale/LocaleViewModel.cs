@@ -509,7 +509,6 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			}
 		}
 
-
 		public void GenerateHandles()
 		{
 			if (SelectedGroup != null && SelectedGroup.SelectedFile != null)
@@ -685,7 +684,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 				string newFileName = GetNewFileName(sourceRoot, "NewFile");
 
 				FileCommands.Save.OpenDialog(this.view, "Create Localization File...", sourceRoot, (string savePath) => {
-					var fileData = LocaleEditorCommands.CreateFileData(savePath, Path.GetFileName(savePath));
+					var fileData = LocaleEditorCommands.CreateFileData(SelectedGroup, savePath, Path.GetFileName(savePath));
 					SelectedGroup.DataFiles.Add(fileData);
 					SelectedGroup.UpdateCombinedData();
 					SelectedGroup.SelectedFileIndex = SelectedGroup.Tabs.Count - 1;
@@ -818,7 +817,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 				}
 				else if(SelectedGroup.SelectedFile is LocaleCustomFileData customFileData)
 				{
-					LocaleCustomKeyEntry localeEntry = new LocaleCustomKeyEntry
+					LocaleCustomKeyEntry localeEntry = new LocaleCustomKeyEntry(SelectedGroup.SelectedFile)
 					{
 						Handle = Guid.NewGuid().ToString().Replace('-', 'g').Insert(0, "h"),
 						Key = "NewKey" + customFileData.Entries.Count + 1,
@@ -898,7 +897,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			if (IsAddingNewFileTab)
 			{
 				ModProjectData targetProject = LinkedProjects[NewFileTargetProjectIndex];
-				LocaleCustomFileData data = new LocaleCustomFileData(NewFileTabName) { Project = targetProject };
+				LocaleCustomFileData data = new LocaleCustomFileData(newFileTabTargetGroup, NewFileTabName) { Project = targetProject };
 				newFileTabTargetGroup.DataFiles.Add(data);
 				newFileTabTargetGroup.UpdateCombinedData();
 				IsAddingNewFileTab = false;
@@ -1082,11 +1081,11 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			this.PropertyChanged += LocaleViewModel_PropertyChanged;
 			MenuData = new LocaleMenuData();
 
-			CombinedGroup = new LocaleTabGroup("All");
-			ModsGroup = new LocaleTabGroup("Locale (Mods)");
-			PublicGroup = new LocaleTabGroup("Locale (Public)");
-			DialogGroup = new LocaleTabGroup("Dialog");
-			CustomGroup = new CustomLocaleTabGroup("Custom");
+			CombinedGroup = new LocaleTabGroup(this, "All");
+			ModsGroup = new LocaleTabGroup(this, "Locale (Mods)");
+			PublicGroup = new LocaleTabGroup(this, "Locale (Public)");
+			DialogGroup = new LocaleTabGroup(this, "Dialog");
+			CustomGroup = new CustomLocaleTabGroup(this, "Custom");
 
 			Groups = new ObservableCollectionExtended<LocaleTabGroup>
 			{
@@ -1101,8 +1100,6 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			{
 				g.SelectedFileChanged = SelectedFileChanged;
 			}
-
-			this.WhenAnyObservable(x => x.Groups, (g) => g.Groups.WhenAnyValue(e => e.)
 
 			GlobalCommandEnabled = this.WhenAny(vm => vm.IsAddingNewFileTab, e => e.Value == false);
 

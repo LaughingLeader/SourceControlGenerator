@@ -17,6 +17,8 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 		[JsonProperty]
 		public ObservableCollectionExtended<ILocaleKeyEntry> Entries { get; set; } = new ObservableCollectionExtended<ILocaleKeyEntry>();
 
+		public LocaleTabGroup Parent { get; private set; }
+
 		public string SourcePath { get; set; }
 
 		private string name;
@@ -129,6 +131,11 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			foreach (var entry in Entries) { entry.Selected = false; }
 		}
 
+		public void OnSelectedKeyChanged(ILocaleKeyEntry key, bool selected)
+		{
+			Parent?.OnSelectedKeyChanged(key, selected);
+		}
+
 		private bool allSelected;
 
 		public bool AllSelected
@@ -144,9 +151,10 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			}
 		}
 
-		public BaseLocaleFileData(string name = "")
+		public BaseLocaleFileData(LocaleTabGroup parent, string name = "")
 		{
 			Name = name;
+			Parent = parent;
 		}
 	}
 }

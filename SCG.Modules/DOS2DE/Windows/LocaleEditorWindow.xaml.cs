@@ -69,6 +69,8 @@ namespace SCG.Modules.DOS2DE.Windows
 				KeyDown += LocaleEditorWindow_KeyDown;
 
 				disposables = d;
+
+				ViewModel.OnViewLoaded(this, ModuleData, disposables);
 			});
 		}
 
@@ -154,8 +156,6 @@ namespace SCG.Modules.DOS2DE.Windows
 		public void LoadData(LocaleViewModel data)
 		{
 			ViewModel = data;
-
-			ViewModel.OnViewLoaded(this, ModuleData, disposables);
 
 			ViewModel.PopoutContentCommand = ReactiveCommand.Create(() => PopoutContentWindow(ViewModel.SelectedEntry), ViewModel.CanExecutePopoutContentCommand);
 
