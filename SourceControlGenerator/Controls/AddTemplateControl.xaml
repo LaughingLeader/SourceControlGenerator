@@ -9,7 +9,7 @@
 			 xmlns:enum="clr-namespace:SCG.SCGEnum"
 			 xmlns:cv="clr-namespace:SCG.Converters"
 			 xmlns:theme="clr-namespace:SCG.ThemeSystem"
-			 xmlns:Themes="clr-namespace:Microsoft.Windows.Themes;assembly=PresentationFramework.Aero2" x:Name="AddTemplateMain" x:Class="SCG.Controls.AddTemplateControl"
+			 x:Name="AddTemplateMain" x:Class="SCG.Controls.AddTemplateControl"
 			 mc:Ignorable="d" 
 			 d:DesignHeight="300" d:DesignWidth="500" IsVisibleChanged="AddTemplateMain_IsVisibleChanged" Background="{DynamicResource {x:Static SystemColors.ControlLightBrushKey}}"
 			 >
@@ -126,7 +126,7 @@
 								<ColumnDefinition Width="*" />
 								<ColumnDefinition Width="Auto"  />
 							</Grid.ColumnDefinitions>
-							<ComboBox Text="Type" Padding="5,0,0,0" IsEditable="False"
+							<!--<ComboBox Text="Type" Padding="5,0,0,0" IsEditable="False"
 								ItemsSource="{Binding Source={scg:EnumBindingSource {x:Type enum:EditorTextPropertyType}}}"
 								SelectedValue="{Binding EditorTextProperty}" >
 								<ComboBox.Template>
@@ -306,7 +306,7 @@
 										</ControlTemplate.Triggers>
 									</ControlTemplate>
 								</ComboBox.Template>
-							</ComboBox>
+							</ComboBox>-->
 							<TextBox x:Name="EditorTextTextbox" Grid.Column="1" Margin="5,0,5,0" Text="{Binding DefaultEditorText, FallbackValue=Test, Mode=TwoWay}" Background="{x:Null}" VerticalAlignment="Center"/>
 							<Button x:Name="EditorTextExpandButton" Grid.Column="2" Content="Edit" Click="EditorTextExpandButton_Click" Padding="2,0" ToolTip="Edit Text (Multiline Support)"/>
 						</Grid>
