@@ -214,9 +214,10 @@ namespace SCG.Modules.DOS2DE.Data.View
 
 			var sortOrder = SortExpressionComparer<ModProjectData>.Ascending(m => m.DisplayName);
 			
-			var connection = ModProjects.Connect().AutoRefreshOnObservable(x => x.WhenPropertyChanged(p => p.IsManaged)).
-				Buffer(TimeSpan.FromMilliseconds(100)).FlattenBufferResult().ObserveOn(RxApp.MainThreadScheduler).
-				Sort(sortOrder);
+			var connection = ModProjects.Connect().AutoRefreshOnObservable(x => x.WhenPropertyChanged(p => p.IsManaged))
+				//Buffer(TimeSpan.FromMilliseconds(100)).FlattenBufferResult()
+				.ObserveOn(RxApp.MainThreadScheduler)
+				.Sort(sortOrder);
 
 			connection.Filter(m => m.IsManaged).Bind(out _managedProjects).Subscribe();
 			connection.Filter(m => !m.IsManaged).Bind(out _unmanagedProjects).Subscribe();

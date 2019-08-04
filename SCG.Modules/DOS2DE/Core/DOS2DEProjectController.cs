@@ -778,6 +778,8 @@ namespace SCG.Core
 		{
 			bool bSaveData = false;
 
+			Log.Here().Activity($"Selected Projects: {String.Join(";", selectedItems)}");
+
 			foreach (string uuid in selectedItems)
 			{
 				ModProjectData modData = Data.ModProjects.Items.FirstOrDefault(m => m.UUID == uuid);
@@ -803,7 +805,7 @@ namespace SCG.Core
 			if (bSaveData)
 			{
 				Data.ManagedProjectsData.Sort();
-				Log.Here().Activity($"Projects: {String.Join(";", Data.ManagedProjectsData.SortedProjects.Select(m => m.Name))}");
+				
 				if (DOS2DECommands.SaveManagedProjects(Data))
 				{
 					MainWindow.FooterLog("Saved Managed Projects data to {0}.", Data.Settings.AddedProjectsFile);

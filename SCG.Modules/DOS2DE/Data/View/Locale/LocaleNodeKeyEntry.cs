@@ -41,6 +41,11 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 
 		public LSLib.LS.TranslatedString TranslatedString { get; set; }
 
+		public override void OnSelected(bool isSelected)
+		{
+			Parent.OnSelectedKeyChanged(this, isSelected);
+		}
+
 		private string key = "None";
 
 		public string Key

@@ -58,7 +58,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 
 		public virtual void OnSelected(bool isSelected)
 		{
-			
+			//Parent.OnSelectedKeyChanged(this, isSelected);
 		}
 
 		public BaseLocaleKeyEntry(ILocaleFileData parent)

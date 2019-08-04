@@ -500,6 +500,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 
 		public void GenerateHandles()
 		{
+			Log.Here().Activity($"AnySelected: {AnySelected}");
 			if (SelectedGroup != null && SelectedGroup.SelectedFile != null)
 			{
 				Log.Here().Activity("Generating handles...");
@@ -786,7 +787,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 		public ICommand GenerateHandlesCommand { get; private set; }
 
 		public ICommand AddNewKeyCommand { get; private set; }
-		public TaskCommand DeleteKeysCommand { get; private set; }
+		public ICommand DeleteKeysCommand { get; private set; }
 
 		public ICommand OpenPreferencesCommand { get; private set; }
 
@@ -805,6 +806,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 
 		public IObservable<bool> CanExecutePopoutContentCommand { get; private set; }
 		public IObservable<bool> GlobalCommandEnabled { get; private set; }
+		public IObservable<bool> AnySelectedObservable { get; private set; }
 
 		public void AddNewKey()
 		{
@@ -842,12 +844,73 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			{
 				if (SelectedGroup != null && SelectedGroup.SelectedFile != null)
 				{
-					foreach (var entry in SelectedGroup.SelectedFile.Entries.Where(e => e.Selected).ToList())
-					{
-						RemoveWithHistory(SelectedGroup.SelectedFile.Entries, entry);
-					}
+					var deleteKeys = SelectedGroup.SelectedFile.Entries.Where(e => e.Selected).ToList();
+					Log.Here().Activity($"Deleting {deleteKeys.Count} keys.");
 
-					SelectedGroup.UpdateCombinedData();
+					if(SelectedGroup.SelectedFile == SelectedGroup.CombinedEntries)
+					{
+						var selectedFiles = SelectedGroup.DataFiles.Where(f => f.Entries.Any(x => x.Selected)).ToList();
+
+						List<LocaleEntryHistory> lastState = new List<LocaleEntryHistory>();
+						
+						foreach(var f in selectedFiles)
+						{
+							foreach(var e in f.Entries.Where(x => x.Selected))
+							{
+								lastState.Add(new LocaleEntryHistory
+								{
+									ParentFile = f,
+									Entry = e,
+									Index = f.Entries.IndexOf(e)
+								});
+							}
+						}
+
+						void undo()
+						{
+							foreach(var x in lastState)
+							{
+								var fileEntry = SelectedGroup.DataFiles.FirstOrDefault(f => f.SourcePath == x.ParentFile.SourcePath);
+								if(fileEntry != null)
+								{
+									fileEntry.Entries.Insert(x.Index, x.Entry);
+								}
+							}
+							SelectedGroup.UpdateCombinedData();
+						}
+
+						void redo()
+						{
+							for(var i = 0; i < selectedFiles.Count; i++)
+							{
+								var f = selectedFiles[i];
+								f.Entries.RemoveAll(x => x.Selected);
+							}
+							SelectedGroup.UpdateCombinedData();
+						}
+						this.CreateSnapshot(undo, redo);
+						redo();
+					}
+					else
+					{
+						var selectedFile = SelectedGroup.SelectedFile;
+
+						var last = selectedFile.Entries.ToList();
+						var deleteEntries = selectedFile.Entries.Where(x => x.Selected);
+						void undo()
+						{
+							selectedFile.Entries = new ObservableCollectionExtended<ILocaleKeyEntry>(last);
+							SelectedGroup.UpdateCombinedData();
+						}
+						void redo()
+						{
+							selectedFile.Entries.RemoveAll(x => deleteEntries.Contains(x));
+							SelectedGroup.UpdateCombinedData();
+							//Log.Here().Activity($"Entries {selectedFile.Entries.Count} | {next.Count()}.");
+						}
+						this.CreateSnapshot(undo, redo);
+						redo();
+					}
 				}
 				else
 				{
@@ -978,18 +1041,15 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			}
 		}
 
-		public void UpdateAnySelected(bool recentSelection = false)
+		public void UpdateAnySelected(bool selected)
 		{
-			if (recentSelection)
+			if (selected)
 			{
-				if (AnySelected != true)
-				{
-					AnySelected = true;
-				}
+				AnySelected = true;
 			}
 			else
 			{
-				AnySelected = SelectedGroup?.Tabs.Any(t => t.Entries.Any(e => e.Selected)) == true;
+				AnySelected = SelectedGroup?.DataFiles.Any(t => t.Entries.Any(e => e.Selected == true)) == true;
 			}
 		}
 
@@ -1078,7 +1138,13 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 
 			GlobalCommandEnabled.BindTo(ImportKeysCommand, c => c.Enabled).DisposeWith(disposables);
 
-			OpenPreferencesCommand = ReactiveCommand.Create(() => { view.TogglePreferencesWindow(); }, GlobalCommandEnabled);
+			OpenPreferencesCommand = ReactiveCommand.Create(() => { view.TogglePreferencesWindow(); }, GlobalCommandEnabled).DisposeWith(disposables);
+
+			DeleteKeysCommand = ReactiveCommand.Create(() =>
+			{
+				Log.Here().Activity("Deleting keys?");
+				FileCommands.OpenConfirmationDialog(view, "Delete Keys", "Delete selected keys?", "Changes will be lost.", DeleteSelectedKeys);
+			}, AnySelectedObservable).DisposeWith(disposables);
 
 			//var selectedGroupObservable = this.WhenAny(vm => vm.SelectedGroup, x => x.Value);
 
@@ -1140,6 +1206,13 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			}
 
 			GlobalCommandEnabled = this.WhenAny(vm => vm.IsAddingNewFileTab, e => e.Value == false);
+			AnySelectedObservable = this.WhenAnyValue(vm => vm.AnySelected);
+
+			//DeleteKeysCommand = ReactiveCommand.Create(() =>
+			//{
+			//	Log.Here().Activity("Deleting keys?");
+			//	FileCommands.OpenConfirmationDialog(view, "Delete Keys", "Delete selected keys?", "Changes will be lost.", DeleteSelectedKeys);
+			//}, AnySelectedObservable);
 
 			ExportXMLCommand = ReactiveCommand.Create(OpenExportWindow, GlobalCommandEnabled);
 
@@ -1177,12 +1250,8 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 
 			SaveAllCommand = ReactiveCommand.CreateFromTask(SaveAll, GlobalCommandEnabled);
 			SaveCurrentCommand = ReactiveCommand.CreateFromTask(SaveCurrent, GlobalCommandEnabled);
-			GenerateHandlesCommand = ReactiveCommand.Create(GenerateHandles, GlobalCommandEnabled);
+			GenerateHandlesCommand = ReactiveCommand.Create(GenerateHandles, AnySelectedObservable);
 			AddNewKeyCommand = ReactiveCommand.Create(AddNewKey, GlobalCommandEnabled);
-			DeleteKeysCommand = new TaskCommand(DeleteSelectedKeys, view, "Delete Keys", 
-				"Delete selected keys?", "Changes will be lost.");
-
-			GlobalCommandEnabled.BindTo(DeleteKeysCommand, c => c.Enabled);
 
 			AddFontTagCommand = ReactiveCommand.Create(AddFontTag, GlobalCommandEnabled);
 
@@ -1253,13 +1322,13 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			MenuData.Edit.Add(UndoMenuData);
 			MenuData.Edit.Add(RedoMenuData);
 
-			MenuData.Edit.Add(CreateMenuDataWithLink(() => SelectedItem != null, "SelectedItem", "Edit.SelectAll", 
+			MenuData.Edit.Add(CreateMenuDataWithLink(() => AnySelected, "AnySelected", "Edit.SelectAll", 
 				"Select All", ReactiveCommand.Create(() => { SelectedItem?.SelectAll(); }), Key.A, ModifierKeys.Control));
 
-			MenuData.Edit.Add(CreateMenuDataWithLink(() => SelectedItem != null, "SelectedItem", "Edit.SelectNone", 
+			MenuData.Edit.Add(CreateMenuDataWithLink(() => AnySelected, "AnySelected", "Edit.SelectNone", 
 				"Select None", ReactiveCommand.Create(() => { SelectedItem?.SelectNone(); }), Key.D, ModifierKeys.Control));
 
-			MenuData.Edit.Add(CreateMenuDataWithLink(() => SelectedItem != null, "SelectedItem", "Edit.GenerateHandles", 
+			MenuData.Edit.Add(CreateMenuDataWithLink(() => AnySelected, "AnySelected", "Edit.GenerateHandles", 
 				"Generate Handles for Selected", ReactiveCommand.Create(GenerateHandles), Key.G, ModifierKeys.Control | ModifierKeys.Shift));
 
 			MenuData.Edit.Add(CreateMenuDataWithLink(() => CanAddKeys, "CanAddKeys", "Edit.AddKey",

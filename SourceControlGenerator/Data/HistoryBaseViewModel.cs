@@ -8,6 +8,7 @@ using ReactiveHistory;
 using System.Reflection;
 using System.Windows.Input;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace SCG.Data
 {
@@ -46,6 +47,15 @@ namespace SCG.Data
 			int index = source.IndexOf(item);
 			void redo() => source.RemoveAt(index);
 			void undo() => source.Insert(index, item);
+			History.Snapshot(undo, redo);
+			redo();
+		}
+		public void RemoveWithHistory<T>(IList<T> source, IEnumerable<T> items)
+		{
+			var last = source.ToList();
+			var next = source.Where(x => !items.Contains(x));
+			void redo() => source = next.ToList();
+			void undo() => source = last;
 			History.Snapshot(undo, redo);
 			redo();
 		}

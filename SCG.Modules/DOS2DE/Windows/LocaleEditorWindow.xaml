@@ -144,7 +144,6 @@ body {
 						Command="{Binding Path=DataContext.DeleteKeysCommand, RelativeSource={RelativeSource AncestorType={x:Type Window}}}" 
 						ToolTip="{x:Static core:DOS2DETooltips.Button_Locale_DeleteKeys}"
 						Source="{x:Static vdata:IconPathData.DeleteTableRow}"
-						IsEnabled="{Binding Path=DataContext.AnySelected, RelativeSource={RelativeSource AncestorType={x:Type Window}}}"
 						cb:ImageButtonHoverOnDisabled.Enable="True"
 					/>
 					<Rectangle Style="{StaticResource VerticalSeparator}" />
