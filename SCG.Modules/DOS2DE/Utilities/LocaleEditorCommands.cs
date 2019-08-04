@@ -892,27 +892,26 @@ namespace SCG.Modules.DOS2DE.Utilities
 								if (key == null) key = "NewKey";
 								if (content == null) content = "";
 
-								if(key != "NewKey" && content != "")
+								bool addNew = true;
+
+								if (key != "NewKey" && content != "")
 								{
-									if(addDuplicates)
+									var updateEntries = fileData.Entries.Where(e => e.Key == key);
+									if (updateEntries.Count() > 0)
 									{
-										var entry = CreateNewLocaleEntry(fileData, key, content);
-										newEntryList.Add(entry);
-									}
-									else
-									{
-										var updateEntries = fileData.Entries.Where(e => e.Key == key && !e.Content.Equals(content, StringComparison.Ordinal));
-										if(updateEntries.Count() > 0)
+										addNew = addDuplicates != false;
+										Log.Here().Activity($"Updating content for existing key [{key}].");
+										foreach (var entry in updateEntries)
 										{
-											Log.Here().Activity($"Skipping existing key [{key}]. Updating content.");
-											foreach (var entry in updateEntries)
+											if(!entry.Content.Equals(content, StringComparison.Ordinal))
 											{
 												entry.Content = content;
 											}
 										}
 									}
 								}
-								else
+
+								if(addNew)
 								{
 									var entry = CreateNewLocaleEntry(fileData, key, content);
 									newEntryList.Add(entry);
