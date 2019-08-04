@@ -10,6 +10,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 {
 	public interface ILocaleFileData
 	{
+		LocaleTabGroup Parent { get; }
 		ObservableCollectionExtended<ILocaleKeyEntry> Entries { get; set; }
 
 		string SourcePath { get; set; }

@@ -397,30 +397,32 @@ namespace SCG.Modules.DOS2DE.Utilities
 				LocaleNodeKeyEntry localeEntry = new LocaleNodeKeyEntry(node, fileData);
 				NodeAttribute keyAtt = null;
 				NodeAttribute contentAtt = null;
-				node.Attributes.TryGetValue("UUID", out keyAtt);
-				node.Attributes.TryGetValue("Content", out contentAtt);
-
-				localeEntry.KeyAttribute = keyAtt;
-				localeEntry.KeyIsEditable = true;
-
-				if (contentAtt == null)
+				if(node.Attributes.TryGetValue("UUID", out keyAtt))
+				{
+					localeEntry.KeyAttribute = keyAtt;
+				}
+				else
+				{
+					keyAtt = new NodeAttribute(NodeAttribute.DataType.DT_FixedString);
+					localeEntry.KeyAttribute = keyAtt;
+				}
+				if(!node.Attributes.TryGetValue("Content", out contentAtt))
 				{
 					contentAtt = new NodeAttribute(NodeAttribute.DataType.DT_TranslatedString);
-					if(contentAtt.Value is TranslatedString translatedString)
+					if (contentAtt.Value is TranslatedString translatedString)
 					{
 						translatedString.Value = "";
 						translatedString.Handle = CreateHandle();
 						localeEntry.TranslatedString = translatedString;
 					}
-					localeEntry.TranslatedStringAttribute = contentAtt;
 				}
-				else
-				{
-					localeEntry.TranslatedStringAttribute = contentAtt;
-					localeEntry.TranslatedString = contentAtt.Value as TranslatedString;
-				}
+				
+				localeEntry.KeyIsEditable = true;
 
-				if(generateNewHandle)
+				localeEntry.TranslatedStringAttribute = contentAtt;
+				localeEntry.TranslatedString = contentAtt.Value as TranslatedString;
+
+				if (generateNewHandle)
 				{
 					localeEntry.TranslatedString.Handle = CreateHandle();
 				}
@@ -435,12 +437,21 @@ namespace SCG.Modules.DOS2DE.Utilities
 				localeEntry.Key = "Dialog Text";
 
 				NodeAttribute contentAtt = null;
-				node.Attributes.TryGetValue("TagText", out contentAtt);
-				if (contentAtt != null)
+				
+				if (!node.Attributes.TryGetValue("TagText", out contentAtt))
 				{
-					localeEntry.TranslatedStringAttribute = contentAtt;
-					localeEntry.TranslatedString = contentAtt.Value as TranslatedString;
+					contentAtt = new NodeAttribute(NodeAttribute.DataType.DT_TranslatedString);
+					if (contentAtt.Value is TranslatedString translatedString)
+					{
+						translatedString.Value = "";
+						translatedString.Handle = CreateHandle();
+						localeEntry.TranslatedString = translatedString;
+					}
 				}
+
+				localeEntry.TranslatedStringAttribute = contentAtt;
+				localeEntry.TranslatedString = contentAtt.Value as TranslatedString;
+
 				return localeEntry;
 			}
 			return null;
@@ -715,9 +726,16 @@ namespace SCG.Modules.DOS2DE.Utilities
 			return toxml;
 		}
 
-		public static LocaleNodeKeyEntry CreateNewLocaleEntry(LocaleNodeFileData fileData, string key = "NewKey", string content = "")
+		public static LocaleNodeKeyEntry CreateNewLocaleEntry(ILocaleFileData fileData, string key = "NewKey", string content = "")
 		{
-			var rootNode = fileData.Source.Regions.First().Value;
+			Region rootNode = null;
+			ResourceFormat format = ResourceFormat.LSB;
+
+			if(fileData is LocaleNodeFileData nodeFileData)
+			{
+				rootNode = nodeFileData.Source.Regions.First().Value;
+				format = nodeFileData.Format;
+			}
 
 			var refNode = fileData.Entries.Cast<LocaleNodeKeyEntry>().FirstOrDefault(f => f.Node != null)?.Node;
 			if (refNode != null)
@@ -737,7 +755,7 @@ namespace SCG.Modules.DOS2DE.Utilities
 					node.Attributes.Add(kp.Key, att);
 				}
 
-				LocaleNodeKeyEntry localeEntry = LoadFromNode(fileData, node, fileData.Format);
+				LocaleNodeKeyEntry localeEntry = LoadFromNode(fileData, node, format);
 				localeEntry.Key = key == "NewKey" ? key + (fileData.Entries.Count + 1) : key;
 				localeEntry.Content = content;
 				return localeEntry;
@@ -831,7 +849,7 @@ namespace SCG.Modules.DOS2DE.Utilities
 			return newFileDataList;
 		}
 
-		public static List<ILocaleKeyEntry> ImportFilesAsEntries(IEnumerable<string> files, LocaleNodeFileData fileData)
+		public static List<ILocaleKeyEntry> ImportFilesAsEntries(IEnumerable<string> files, ILocaleFileData fileData, bool addDuplicates = false)
 		{
 			List<ILocaleKeyEntry> newEntryList = new List<ILocaleKeyEntry>();
 			try
@@ -874,8 +892,31 @@ namespace SCG.Modules.DOS2DE.Utilities
 								if (key == null) key = "NewKey";
 								if (content == null) content = "";
 
-								var entry = CreateNewLocaleEntry(fileData, key, content);
-								newEntryList.Add(entry);
+								if(key != "NewKey" && content != "")
+								{
+									if(addDuplicates)
+									{
+										var entry = CreateNewLocaleEntry(fileData, key, content);
+										newEntryList.Add(entry);
+									}
+									else
+									{
+										var updateEntries = fileData.Entries.Where(e => e.Key == key && !e.Content.Equals(content, StringComparison.Ordinal));
+										if(updateEntries.Count() > 0)
+										{
+											Log.Here().Activity($"Skipping existing key [{key}]. Updating content.");
+											foreach (var entry in updateEntries)
+											{
+												entry.Content = content;
+											}
+										}
+									}
+								}
+								else
+								{
+									var entry = CreateNewLocaleEntry(fileData, key, content);
+									newEntryList.Add(entry);
+								}
 							}
 							stream.Close();
 						}

@@ -222,9 +222,10 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			}
 		}
 
-		private ILocaleFileData _selectedItem = null;
-
-		public ILocaleFileData SelectedItem => _selectedItem;
+		public ILocaleFileData SelectedItem
+		{
+			get => SelectedGroup?.SelectedFile;
+		}
 
 		public string SelectedEntryContent
 		{
@@ -728,41 +729,44 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 
 		public void ImportFileAsKeys(IEnumerable<string> files)
 		{
-			Log.Here().Activity("Importing keys from files...");
+			if(SelectedItem != null && files.Count() > 0)
+			{
+				Log.Here().Activity("Importing keys from files...");
 
-			var currentItem = SelectedItem;
-			var newKeys = LocaleEditorCommands.ImportFilesAsEntries(files, SelectedItem as LocaleNodeFileData);
-			view.SaveSettings();
+				var currentItem = SelectedItem;
+				var newKeys = LocaleEditorCommands.ImportFilesAsEntries(files, SelectedItem);
 
-			CreateSnapshot(() => {
-				foreach(var k in newKeys)
-				{
-					currentItem.Entries.Remove(k);
-				}
-			}, () => {
+				CreateSnapshot(() => {
+					foreach (var k in newKeys)
+					{
+						currentItem.Entries.Remove(k);
+					}
+				}, () => {
+					foreach (var k in newKeys)
+					{
+						currentItem.Entries.Add(k);
+					}
+				});
+
 				foreach (var k in newKeys)
 				{
-					currentItem.Entries.Add(k);
+					SelectedItem.Entries.Add(k);
 				}
-			});
 
-			foreach (var k in newKeys)
-			{
-				SelectedItem.Entries.Add(k);
-			}
+				SelectedItem.ChangesUnsaved = true;
+				SelectedGroup.UpdateCombinedData();
 
-			SelectedItem.ChangesUnsaved = true;
-			SelectedGroup.UpdateCombinedData();
-
-			if (files.Count() > 0)
-			{
 				Settings.LastEntryImportPath = Path.GetDirectoryName(files.FirstOrDefault());
 				this.RaisePropertyChanged("CurrentImportPath");
 				this.RaisePropertyChanged("CurrentEntryImportPath");
-			}
-			view.SaveSettings();
+				view.SaveSettings();
 
-			ChangesUnsaved = true;
+				ChangesUnsaved = true;
+			}
+			else
+			{
+				Log.Here().Error($"SelectedItem == {SelectedItem}");
+			}
 		}
 
 		private MenuData SaveCurrentMenuData { get; set; }
@@ -1046,7 +1050,11 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 
 			OpenPreferencesCommand = ReactiveCommand.Create(() => { view.TogglePreferencesWindow(); }, GlobalCommandEnabled);
 
-			this.WhenAny(vm => vm.SelectedGroup.SelectedFile, x => x.Value).ToProperty(this, vm => vm.SelectedItem, _selectedItem).DisposeWith(disposables);
+			//var selectedGroupObservable = this.WhenAny(vm => vm.SelectedGroup, x => x.Value);
+
+			//var selectedFileObservable = this.WhenAny(vm => vm.SelectedGroup.SelectedFile, x => x.Value);
+			//selectedFileObservable.Subscribe();
+			//selectedFileObservable.ToProperty(this, vm => vm.SelectedItem, _selectedItem).DisposeWith(disposables);
 
 			this.WhenAny(vm => vm.SelectedEntry.EntryContent, vm => vm.Value).Subscribe((o) => {
 				this.RaisePropertyChanged("SelectedEntryContent");

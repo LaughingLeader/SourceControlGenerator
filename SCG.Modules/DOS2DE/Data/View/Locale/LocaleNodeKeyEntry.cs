@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using ReactiveUI;
+using LSLib.LS;
 
 namespace SCG.Modules.DOS2DE.Data.View.Locale
 {
@@ -24,7 +25,14 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 				keyAttribute = value;
 				if (keyAttribute != null && keyAttribute.Value != null)
 				{
-					Key = (string)keyAttribute.Value;
+					if(keyAttribute.Value is TranslatedString translatedString)
+					{
+						Key = translatedString.Value;
+					}
+					else if (keyAttribute.Value is string str)
+					{
+						Key = str;
+					}
 				}
 			}
 		}
