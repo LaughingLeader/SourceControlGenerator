@@ -595,13 +595,13 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			}
 		}
 
-		public void SaveAll()
+		public async Task SaveAll()
 		{
 			Log.Here().Activity("Saving all files.");
-			var backupSuccess = LocaleEditorCommands.BackupDataFiles(this, ModuleData.Settings.BackupRootDirectory);
-			if (backupSuccess.Result == true)
+			var backupSuccess = await LocaleEditorCommands.BackupDataFiles(this, ModuleData.Settings.BackupRootDirectory);
+			if (backupSuccess == true)
 			{
-				var successes = LocaleEditorCommands.SaveDataFiles(this);
+				var successes = await LocaleEditorCommands.SaveDataFiles(this);
 				Log.Here().Important($"Saved {successes} localization files.");
 				OutputText = $"Saved {successes}/{TotalFiles} files.";
 				OutputType = LogType.Important;
@@ -620,22 +620,31 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			{
 				if (SelectedGroup.SelectedFile != null && SelectedGroup.SelectedFile is LocaleNodeFileData keyFileData)
 				{
-					int result = await LocaleEditorCommands.SaveDataFile(keyFileData);
-					if(result > 0)
+					var backupSuccess = await LocaleEditorCommands.BackupDataFile(keyFileData.SourcePath, ModuleData.Settings.BackupRootDirectory);
+					if (backupSuccess == true)
 					{
-						OutputText = $"Saved '{keyFileData.SourcePath}'";
-						OutputType = LogType.Important;
+						int result = await LocaleEditorCommands.SaveDataFile(keyFileData);
+						if (result > 0)
+						{
+							OutputText = $"Saved '{keyFileData.SourcePath}'";
+							OutputType = LogType.Important;
+						}
+						else
+						{
+							OutputText = $"Error saving '{keyFileData.SourcePath}'. Check the log.";
+							OutputType = LogType.Error;
+						}
+						OutputDate = DateTime.Now.ToShortTimeString();
+
+						keyFileData.ChangesUnsaved = false;
+
+						ChangesUnsaved = false;
 					}
 					else
 					{
-						OutputText = $"Error saving '{keyFileData.SourcePath}'. Check the log.";
+						OutputText = $"Problem occured when backing up files. Check the log.";
 						OutputType = LogType.Error;
 					}
-					OutputDate = DateTime.Now.ToShortTimeString();
-
-					keyFileData.ChangesUnsaved = false;
-
-					ChangesUnsaved = false;
 				}
 			}
 		}
@@ -1145,7 +1154,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 
 			CancelRenamingFileTabCommand = ReactiveCommand.CreateFromTask<ILocaleFileData>(cancelRenamingFileTab);
 
-			SaveAllCommand = ReactiveCommand.Create(SaveAll, GlobalCommandEnabled);
+			SaveAllCommand = ReactiveCommand.CreateFromTask(SaveAll, GlobalCommandEnabled);
 			SaveCurrentCommand = ReactiveCommand.CreateFromTask(SaveCurrent, GlobalCommandEnabled);
 			GenerateHandlesCommand = ReactiveCommand.Create(GenerateHandles, GlobalCommandEnabled);
 			AddNewKeyCommand = ReactiveCommand.Create(AddNewKey, GlobalCommandEnabled);

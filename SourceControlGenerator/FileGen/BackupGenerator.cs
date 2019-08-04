@@ -232,7 +232,7 @@ namespace SCG.FileGen
 			return BackupResult.Error;
 		}
 
-		public static async Task<BackupResult> CreateArchiveFromFiles(List<string> files, string archiveFilePath, CancellationToken? token = null)
+		public static async Task<BackupResult> CreateArchiveFromFiles(List<string> files, string archiveFilePath, IEnumerable<string> trimPath = null, CancellationToken? token = null)
 		{
 			try
 			{
@@ -247,8 +247,20 @@ namespace SCG.FileGen
 						Log.Here().Activity($"Saving {files.Count} files to archive at '{archiveFilePath}'.");
 						foreach (var f in targetFiles)
 						{
-							string rootPath = Path.GetPathRoot(f);
-							await WriteZipAsync(zipWriter, f.Replace(rootPath, ""), f, token.Value).ConfigureAwait(false);
+							if(trimPath == null)
+							{
+								await WriteZipAsync(zipWriter, f, f, token.Value).ConfigureAwait(false);
+							}
+							else
+							{
+								string entryPath = f;
+								foreach(var str in trimPath)
+								{
+									entryPath = entryPath.Replace(str, "");
+									Log.Here().Activity($"Replacing '{str}' in '{entryPath}'");
+								}
+								await WriteZipAsync(zipWriter, entryPath, f, token.Value).ConfigureAwait(false);
+							}
 						}
 
 						return BackupResult.Success;

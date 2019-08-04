@@ -505,23 +505,66 @@ namespace SCG.Modules.DOS2DE.Utilities
 				string sysFormat = CultureInfo.CurrentCulture.DateTimeFormat.ShortDatePattern.Replace("/", "-");
 				string archivePath = Path.Combine(backupDirectory, "LocalizationEditorBackup") + "_" + DateTime.Now.ToString(sysFormat + "_HH-mm-ss") + ".zip";
 
+				List<string> replacePaths = new List<string>();
+
 				foreach (var f in data.SelectedGroup.DataFiles.OfType<LocaleNodeFileData>())
 				{
 					if (File.Exists(f.SourcePath))
 					{
+						Regex regex = new Regex(@"(.*Divinity Original Sin 2\\DefEd\\Data\\)", RegexOptions.IgnoreCase);
+						var m = regex.Match(f.SourcePath);
+						if(m.Success)
+						{
+							replacePaths.Add(m.Groups[1].Value);
+						}
 						sourceFiles.Add(f.SourcePath);
 					}
 				}
 
 				if (sourceFiles.Count > 0)
 				{
-					var result = await BackupGenerator.CreateArchiveFromFiles(sourceFiles, archivePath, token);
+					var result = await BackupGenerator.CreateArchiveFromFiles(sourceFiles, archivePath, replacePaths, token);
 					Log.Here().Activity($"Localization backup result to '{archivePath}': {result.ToString()}");
 					return result != BackupResult.Error;
 				}
 				else
 				{
 					Log.Here().Activity("Skipping localization backup, as no files were found.");
+					return true;
+				}
+			}
+			catch (Exception ex)
+			{
+				Log.Here().Error($"Error backing up localization files: {ex.ToString()}");
+				return false;
+			}
+		}
+
+		public static async Task<bool> BackupDataFile(string sourceFilePath, string backupDirectory, CancellationToken? token = null)
+		{
+			try
+			{
+				if (File.Exists(sourceFilePath))
+				{
+					if (!Directory.Exists(backupDirectory)) Directory.CreateDirectory(backupDirectory);
+					string sysFormat = CultureInfo.CurrentCulture.DateTimeFormat.ShortDatePattern.Replace("/", "-");
+					string archivePath = Path.Combine(backupDirectory, Path.GetFileName(sourceFilePath)) + "_" + DateTime.Now.ToString(sysFormat + "_HH-mm-ss") + ".zip";
+
+					List<string> replacePaths = new List<string>();
+					Regex regex = new Regex(@"(.*Divinity Original Sin 2\\DefEd\\Data\\)", RegexOptions.IgnoreCase);
+					var m = regex.Match(sourceFilePath);
+					if (m.Success)
+					{
+						replacePaths.Add(m.Groups[1].Value);
+					}
+					List<string> sourceFiles = new List<string>() { sourceFilePath };
+					var result = await BackupGenerator.CreateArchiveFromFiles(sourceFiles, archivePath, replacePaths, token);
+					Log.Here().Activity($"Localization backup result to '{archivePath}': {result.ToString()}");
+					return result != BackupResult.Error;
+				}
+				else
+				{
+					Log.Here().Activity("Skipping localization backup, as the file was not found.");
 					return true;
 				}
 			}
@@ -539,7 +582,7 @@ namespace SCG.Modules.DOS2DE.Utilities
 			int success = 0;
 			if (data.SelectedGroup != data.CustomGroup)
 			{
-				foreach (LocaleNodeFileData f in data.SelectedGroup.DataFiles.Cast<LocaleNodeFileData>())
+				foreach (LocaleNodeFileData f in data.SelectedGroup.DataFiles.Where(f => f.ChangesUnsaved).Cast<LocaleNodeFileData>())
 				{
 					success += await SaveDataFile(f, token);
 					f.ChangesUnsaved = false;
@@ -547,7 +590,7 @@ namespace SCG.Modules.DOS2DE.Utilities
 			}
 			else
 			{
-				foreach (var f in data.CustomGroup.DataFiles.Cast<LocaleCustomFileData>())
+				foreach (var f in data.CustomGroup.DataFiles.Where(f => f.ChangesUnsaved).Cast<LocaleCustomFileData>())
 				{
 					string targetDirectory = DOS2DEDefaultPaths.CustomLocaleDirectory(data.ModuleData, f.Project);
 					success += await SaveDataFile(f, targetDirectory, token);
@@ -584,6 +627,10 @@ namespace SCG.Modules.DOS2DE.Utilities
 					await Task.Run(() => LSLib.LS.ResourceUtils.SaveResource(dataFile.Source, dataFile.SourcePath, saveFormat));
 					Log.Here().Important($"Saved '{dataFile.SourcePath}'.");
 					return 1;
+				}
+				else
+				{
+					Log.Here().Error($"Localization file '{dataFile.Name}' has no source.");
 				}
 			}
 			catch (Exception ex)
@@ -728,39 +775,77 @@ namespace SCG.Modules.DOS2DE.Utilities
 
 		public static LocaleNodeKeyEntry CreateNewLocaleEntry(ILocaleFileData fileData, string key = "NewKey", string content = "")
 		{
-			Region rootNode = null;
+			Node parentNode = null;
+			Node refNode = null;
+			string dictKey = "TranslatedStringKey";
+			List<Node> nodeList = null;
+			string refNodeName = "Node";
 			ResourceFormat format = ResourceFormat.LSB;
 
 			if(fileData is LocaleNodeFileData nodeFileData)
 			{
-				rootNode = nodeFileData.Source.Regions.First().Value;
+				var firstNode = nodeFileData.Entries.FirstOrDefault() as LocaleNodeKeyEntry;
+				parentNode = firstNode.Node.Parent;
+				refNode = firstNode.Node;
+				refNodeName = firstNode.Node.Name;
 				format = nodeFileData.Format;
+
+				foreach (var kvp in parentNode.Children)
+				{
+					if (kvp.Value.Contains(firstNode.Node))
+					{
+						Log.Here().Activity($"First node dictionary: {kvp.Key} Nodes in list: {kvp.Value.Count}");
+						nodeList = kvp.Value;
+						break;
+					}
+				}
 			}
 
-			var refNode = fileData.Entries.Cast<LocaleNodeKeyEntry>().FirstOrDefault(f => f.Node != null)?.Node;
-			if (refNode != null)
+			var node = new Node();
+			node.Name = refNodeName;
+			node.Parent = parentNode;
+			Log.Here().Activity($"Node name: {node.Name} | Parent: {parentNode?.Name}");
+
+			foreach (var kp in refNode.Attributes)
 			{
-				var node = new Node();
-				node.Parent = rootNode;
-				node.Name = refNode.Name;
-				//Log.Here().Activity($"Node name: {node.Name}");
-				foreach (var kp in refNode.Attributes)
+				Log.Here().Activity($"Node attibute: {kp.Key}");
+				var att = new NodeAttribute(kp.Value.Type);
+				switch (kp.Value.Type)
 				{
-					var att = new NodeAttribute(kp.Value.Type);
-					att.Value = new TranslatedString()
-					{
-						Value = "",
-						Handle = CreateHandle()
-					};
-					node.Attributes.Add(kp.Key, att);
+					case NodeAttribute.DataType.DT_String:
+					case NodeAttribute.DataType.DT_Path:
+					case NodeAttribute.DataType.DT_FixedString:
+					case NodeAttribute.DataType.DT_LSString:
+					case NodeAttribute.DataType.DT_WString:
+					case NodeAttribute.DataType.DT_LSWString:
+						{
+							att.Value = "";
+							break;
+						}
+
+					case NodeAttribute.DataType.DT_TranslatedString:
+						{
+							var str = new TranslatedString();
+							str.Value = "";
+							str.Handle = CreateHandle();
+							att.Value = str;
+							break;
+						}
+					default:
+						//Lazily copy other attribute values like Stub/etc.
+						att.Value = refNode.Attributes[kp.Key].Value;
+						break;
 				}
 
-				LocaleNodeKeyEntry localeEntry = LoadFromNode(fileData, node, format);
-				localeEntry.Key = key == "NewKey" ? key + (fileData.Entries.Count + 1) : key;
-				localeEntry.Content = content;
-				return localeEntry;
+				node.Attributes.Add(kp.Key, att);
 			}
-			return null;
+
+			parentNode.AppendChild(node);
+
+			LocaleNodeKeyEntry localeEntry = LoadFromNode(fileData, node, format);
+			localeEntry.Key = key == "NewKey" ? key + (fileData.Entries.Count + 1) : key;
+			localeEntry.Content = content;
+			return localeEntry;
 		}
 
 		private static bool delimitStepSkipLine(string line)
@@ -913,6 +998,7 @@ namespace SCG.Modules.DOS2DE.Utilities
 
 								if(addNew)
 								{
+									Log.Here().Activity($"Added new entry for key [{key}].");
 									var entry = CreateNewLocaleEntry(fileData, key, content);
 									newEntryList.Add(entry);
 								}
