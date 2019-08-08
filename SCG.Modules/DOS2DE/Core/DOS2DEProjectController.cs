@@ -94,7 +94,7 @@ namespace SCG.Core
 
 		public async void StartGitGenerationAsync()
 		{
-			var totalSuccess = await OnGitGenerationAsync().ConfigureAwait(false);
+			var totalSuccess = await OnGitGenerationAsync();
 
 			if (totalSuccess >= Data.GitGenerationSettings.ExportProjects.Count)
 			{
@@ -137,7 +137,7 @@ namespace SCG.Core
 
 				ModProjectData modProjectData = (ModProjectData)project;
 
-				var success = await GenerateGitFilesAsync(modProjectData, Data.GitGenerationSettings).ConfigureAwait(false);
+				var success = await GenerateGitFilesAsync(modProjectData, Data.GitGenerationSettings);
 
 				if (success)
 				{
@@ -457,7 +457,7 @@ namespace SCG.Core
 
 					AppController.Main.UpdateProgressMessage($"Creating archive for project {project.ProjectName}...");
 
-					var backupSuccess = await BackupProjectAsync(project, targetBackupOutputDirectory, Data.Settings.BackupMode).ConfigureAwait(false);
+					var backupSuccess = await BackupProjectAsync(project, targetBackupOutputDirectory, Data.Settings.BackupMode);
 
 					if (cancellationTokenSource.IsCancellationRequested)
 					{
@@ -467,13 +467,19 @@ namespace SCG.Core
 					if (backupSuccess == BackupResult.Success)
 					{
 						totalSuccess += 1;
-						Log.Here().Activity("Successfully created archive for {0}.", project.ProjectName);
 						project.LastBackup = DateTime.Now;
-						Data.ManagedProjectsData.SavedProjects.AddOrUpdate(new ProjectAppData
+						Log.Here().Activity("Successfully created archive for {0}.", project.ProjectName);
+
+						RxApp.MainThreadScheduler.Schedule(() =>
 						{
-							Name = project.ProjectName,
-							UUID = project.UUID,
-							LastBackupUTC = DateTime.Now.ToUniversalTime().ToString()
+							Data.ManagedProjectsData.SavedProjects.AddOrUpdate(new ProjectAppData
+							{
+								Name = project.ProjectName,
+								UUID = project.UUID,
+								LastBackupUTC = DateTime.Now.ToUniversalTime().ToString()
+							});
+
+							Log.Here().Activity("Saved backup time {0}.", project.ProjectName);
 						});
 
 						AppController.Main.UpdateProgressLog("Archive created.");
@@ -504,7 +510,10 @@ namespace SCG.Core
 				AppController.Main.FinishProgress();
 			}
 
-			if (totalSuccess > 0) DOS2DECommands.SaveManagedProjects(this.Data);
+			if (totalSuccess > 0)
+			{
+				DOS2DECommands.SaveManagedProjects(this.Data);
+			}
 
 			return totalSuccess;
 		}

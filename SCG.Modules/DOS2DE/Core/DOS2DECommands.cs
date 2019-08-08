@@ -235,8 +235,8 @@ namespace SCG.Modules.DOS2DE.Core
 		{
 			//await new SynchronizationContextRemover();
 			var newMods = await LoadModProjectsAsync(dispatcher, Data, clearExisting);
-			await LoadManagedProjectsAsync(dispatcher, Data, newMods, clearExisting).ConfigureAwait(false);
-			await LoadSourceControlDataAsync(Data, newMods).ConfigureAwait(false);
+			await LoadManagedProjectsAsync(dispatcher, Data, newMods, clearExisting);
+			await LoadSourceControlDataAsync(Data, newMods);
 			return newMods;
 		}
 
