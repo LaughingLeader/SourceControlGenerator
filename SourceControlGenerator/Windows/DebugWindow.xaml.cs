@@ -147,7 +147,7 @@ namespace SCG.Windows
 			Stopwatch timer = new Stopwatch();
 			timer.Start();
 
-			var result = await BackupTest().ConfigureAwait(false);
+			var result = await BackupTest();
 
 			timer.Stop();
 
@@ -167,7 +167,7 @@ namespace SCG.Windows
 				string archiveName = "DebugBackupTest_" + DateTime.Now.ToString(sysFormat + "_HH-mm-ss") + ".zip";
 				Directory.CreateDirectory("Debug");
 				string outputFilePath = @"Debug\" + archiveName;
-				return await BackupGenerator.CreateArchiveFromDirectory(debugWindowData.BackupFolderPath.Replace("/", "\\\\"), outputFilePath, true, Token.Token).ConfigureAwait(false);
+				return await BackupGenerator.CreateArchiveFromDirectory(debugWindowData.BackupFolderPath.Replace("/", "\\\\"), outputFilePath, true, Token.Token);
 			}
 
 			return BackupResult.Error;

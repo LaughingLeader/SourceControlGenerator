@@ -41,14 +41,14 @@ namespace SCG.Modules.DOS2DE.Utilities
 				{
 					if (token.Value.IsCancellationRequested) throw new TaskCanceledException("Cancelled package creation.");
 					AppController.Main.UpdateProgressLog($"Searching folder \"{f}\" for files to add to package.");
-					await AddFilesToPackage(package, f, dataRootPath, outputPath, ignoredFiles, token.Value).ConfigureAwait(false);
+					await AddFilesToPackage(package, f, dataRootPath, outputPath, ignoredFiles, token.Value);
 				}
 
 				AppController.Main.UpdateProgressLog($"Writing package to \"{outputPath}\"");
 
 				using (var writer = new PackageWriter(package, outputPath))
 				{
-					await WritePackage(writer, package, outputPath, token.Value).ConfigureAwait(false);
+					await WritePackage(writer, package, outputPath, token.Value);
 				}
 
 				Log.Here().Activity($"Package successfully created at {outputPath}");
@@ -126,7 +126,7 @@ namespace SCG.Modules.DOS2DE.Utilities
 				var awaiter = childTask.GetAwaiter();
 				while (!awaiter.IsCompleted)
 				{
-					await Task.Delay(0, token).ConfigureAwait(false);
+					await Task.Delay(0, token);
 				}
 			}, token);
 

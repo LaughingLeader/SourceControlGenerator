@@ -519,8 +519,8 @@ namespace SCG.Modules.DOS2DE.Data.View
 
 		public async Task LoadAllDataAsync(string metaFilePath, string projectsFolderPath)
 		{
-			await LoadModMetaAsync(metaFilePath).ConfigureAwait(false);
-			await LoadProjectMetaAsync(projectsFolderPath).ConfigureAwait(false);
+			await LoadModMetaAsync(metaFilePath);
+			await LoadProjectMetaAsync(projectsFolderPath);
 		}
 
 		public async Task ReloadDataAsync()

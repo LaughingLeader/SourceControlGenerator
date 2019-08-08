@@ -52,7 +52,7 @@ namespace SCG.FileGen
 						}
 					}));
 
-					await Task.WhenAll(tasks).ConfigureAwait(false);
+					await Task.WhenAll(tasks);
 
 					if (updateProgress) AppController.Main.UpdateProgress(updateValue);
 
@@ -68,7 +68,7 @@ namespace SCG.FileGen
 							{
 								//Disabled for now, since it seems to slow the process down.
 								//if (updateProgress) AppController.Main.UpdateProgressLog($"Adding \"{f.Replace(rootPath, "").Replace(@"\", "/").Substring(1)}\" to archive...");
-								await WriteZipAsync(zipWriter, f.Replace(rootPath, ""), f, token.Value).ConfigureAwait(false);
+								await WriteZipAsync(zipWriter, f.Replace(rootPath, ""), f, token.Value);
 							}
 
 							return BackupResult.Success;
@@ -114,11 +114,11 @@ namespace SCG.FileGen
 					foreach(var f in foldersToParse)
 					{
 						if (updateProgress) AppController.Main.UpdateProgressLog($"Searching source folder \"{Path.GetDirectoryName(f.SourcePath)}\" for files to save.");
-						await CrawlDirectoryAsync(targetFiles, f.SourcePath, "*", System.IO.SearchOption.AllDirectories, token.Value).ConfigureAwait(false);
+						await CrawlDirectoryAsync(targetFiles, f.SourcePath, "*", System.IO.SearchOption.AllDirectories, token.Value);
 					}
 
 					if (updateProgress) AppController.Main.UpdateProgressLog($"Searching repository for files to save.");
-					await CrawlDirectoryAsync(targetFiles, repoPath, "*", System.IO.SearchOption.TopDirectoryOnly, token.Value).ConfigureAwait(false);
+					await CrawlDirectoryAsync(targetFiles, repoPath, "*", System.IO.SearchOption.TopDirectoryOnly, token.Value);
 
 					if (updateProgress) AppController.Main.UpdateProgress(updateValue);
 
@@ -138,7 +138,7 @@ namespace SCG.FileGen
 									return BackupResult.Skipped;
 								}
 								//Log.Here().Important($"Adding file {f} to archive.");
-								await WriteZipAsync(zipWriter, f.Replace(rootPath, "").Replace(repoPath, ""), f, token.Value).ConfigureAwait(false);
+								await WriteZipAsync(zipWriter, f.Replace(rootPath, "").Replace(repoPath, ""), f, token.Value);
 							}
 
 							return BackupResult.Success;
@@ -187,7 +187,7 @@ namespace SCG.FileGen
 					}
 				});
 
-				await Task.WhenAll(task).ConfigureAwait(false);
+				await Task.WhenAll(task);
 
 				if (updateProgress) AppController.Main.UpdateProgress(updateValue);
 
@@ -206,7 +206,7 @@ namespace SCG.FileGen
 						{
 							//Log.Here().Important($"Adding file {f} to archive.");
 
-							await WriteZipAsync(zipWriter, f.Replace(directoryPath, ""), f, token.Value).ConfigureAwait(false);
+							await WriteZipAsync(zipWriter, f.Replace(directoryPath, ""), f, token.Value);
 						}
 
 						return BackupResult.Success;
@@ -315,7 +315,7 @@ namespace SCG.FileGen
 				var awaiter = childTask.GetAwaiter();
 				while (!awaiter.IsCompleted)
 				{
-					await Task.Delay(0, token).ConfigureAwait(false);
+					await Task.Delay(0, token);
 				}
 			}, token);
 
@@ -349,7 +349,7 @@ namespace SCG.FileGen
 				var awaiter = childTask.GetAwaiter();
 				while (!awaiter.IsCompleted)
 				{
-					await Task.Delay(0, token).ConfigureAwait(false);
+					await Task.Delay(0, token);
 				}
 			}, token);
 
