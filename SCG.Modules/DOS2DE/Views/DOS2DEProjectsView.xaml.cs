@@ -170,7 +170,7 @@ namespace SCG.Modules.DOS2DE.Views
 
 		public static async Task<Unit> OpenLocalizationEditorForProject(ModProjectData modData)
 		{
-			var data = await LocaleEditorCommands.LoadLocalizationDataAsync(_instance.ViewModel, modData).ConfigureAwait(false);
+			var data = await LocaleEditorCommands.LoadLocalizationDataAsync(_instance.ViewModel, modData);
 			_instance.MainWindow.Dispatcher.Invoke(new Action(() => {
 				_instance.OpenLocalizationEditorWithData(data);
 			}), DispatcherPriority.Normal);
@@ -180,7 +180,7 @@ namespace SCG.Modules.DOS2DE.Views
 		private async void OpenLocalizationEditorAsync()
 		{
 			var data = await LocaleEditorCommands.LoadLocalizationDataAsync(ViewModel,
-				ViewModel.ManagedProjects.Where(p => p.Selected)).ConfigureAwait(false);
+				ViewModel.ManagedProjects.Where(p => p.Selected));
 			_instance.MainWindow.Dispatcher.Invoke(new Action(() => OpenLocalizationEditorWithData(data)), DispatcherPriority.Normal);
 		}
 
@@ -350,7 +350,7 @@ namespace SCG.Modules.DOS2DE.Views
 
 		private async void DeselectSelectedRows()
 		{
-			await Task.Delay(200).ConfigureAwait(false);
+			await Task.Delay(200);
 
 			DataGrid managedGrid = (DataGrid)this.FindName("ManagedProjectsDataGrid");
 

@@ -191,7 +191,7 @@ namespace SCG.Core
 						author = modProject.ModuleInfo.Author;
 					}
 
-					var result = await GitGenerator.InitRepository(gitProjectRootDirectory, author).ConfigureAwait(false);
+					var result = await GitGenerator.InitRepository(gitProjectRootDirectory, author);
 					if (result)
 					{
 						Log.Here().Activity("Created git repository for project ({0}) at {1}", modProject.ProjectName, gitProjectRootDirectory);
@@ -307,7 +307,7 @@ namespace SCG.Core
 				if (generationSettings.InitGit && commitGit)
 				{
 					AppController.Main.UpdateProgressLog("Committing new files...");
-					var result = await GitGenerator.Commit(gitProjectRootDirectory, commitMessage).ConfigureAwait(false);
+					var result = await GitGenerator.Commit(gitProjectRootDirectory, commitMessage);
 					if (result)
 					{
 						AppController.Main.UpdateProgressLog($"Successfully commited git repo for project {modProject.DisplayName}.");
@@ -409,7 +409,7 @@ namespace SCG.Core
 
 			ConcurrentBag<ModProjectData> selectedProjects = new ConcurrentBag<ModProjectData>(sortedProjects);
 
-			var totalSuccess = await BackupSelectedProjectsAsync(selectedProjects).ConfigureAwait(false);
+			var totalSuccess = await BackupSelectedProjectsAsync(selectedProjects);
 			if (totalSuccess >= selectedProjects.Count)
 			{
 				if (String.IsNullOrWhiteSpace(targetBackupOutputDirectory))
@@ -559,7 +559,7 @@ namespace SCG.Core
 			{
 				AppController.Main.UpdateProgressLog("Creating zip archive from project folders...");
 				//Log.Here().Activity($"Git project not found. Archiving project {modProject.ProjectName} from project folders directly.");
-				return await BackupGenerator.CreateArchiveFromRoot(Data.Settings.DOS2DEDataDirectory.Replace("/", "\\\\"), sourceFolders, archivePath, true, cancellationTokenSource.Token).ConfigureAwait(false);
+				return await BackupGenerator.CreateArchiveFromRoot(Data.Settings.DOS2DEDataDirectory.Replace("/", "\\\\"), sourceFolders, archivePath, true, cancellationTokenSource.Token);
 			}
 			else
 			{
@@ -568,13 +568,13 @@ namespace SCG.Core
 				if (mode == BackupMode.GitArchive)
 				{
 					AppController.Main.UpdateProgressLog("Running git archive command...");
-					var success = await GitGenerator.Archive(gitProjectDirectory, archivePath).ConfigureAwait(false);
+					var success = await GitGenerator.Archive(gitProjectDirectory, archivePath);
 					return success ? BackupResult.Success : BackupResult.Error;
 				}
 				else
 				{
 					AppController.Main.UpdateProgressLog("Creating zip archive...");
-					return await BackupGenerator.CreateArchiveFromRepo(gitProjectDirectory, Data.Settings.DOS2DEDataDirectory.Replace("/", "\\\\"), sourceFolders, archivePath, true, cancellationTokenSource.Token).ConfigureAwait(false);
+					return await BackupGenerator.CreateArchiveFromRepo(gitProjectDirectory, Data.Settings.DOS2DEDataDirectory.Replace("/", "\\\\"), sourceFolders, archivePath, true, cancellationTokenSource.Token);
 				}
 				//Seems to have a problem with junctions and long paths
 				//return BackupGenerator.CreateArchiveFromRepo(gitProjectDirectory, archivePath);
@@ -610,7 +610,7 @@ namespace SCG.Core
 
 			string localModsFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), @"Larian Studios\Divinity Original Sin 2 Definitive Edition\Local Mods");
 
-			var totalSuccess = await PackageSelectedProjectsAsync(selectedProjects, localModsFolder).ConfigureAwait(false);
+			var totalSuccess = await PackageSelectedProjectsAsync(selectedProjects, localModsFolder);
 			if (totalSuccess >= selectedProjects.Count)
 			{
 				MainWindow.FooterLog($"Successfully packaged all selected projects to {localModsFolder}");
@@ -654,7 +654,7 @@ namespace SCG.Core
 
 					AppController.Main.UpdateProgressMessage($"Creating package for project {project.ProjectName}...");
 
-					var backupSuccess = await PackageProjectAsync(project, targetFolder, exportDirectories).ConfigureAwait(false);
+					var backupSuccess = await PackageProjectAsync(project, targetFolder, exportDirectories);
 
 					if (cancellationTokenSource.IsCancellationRequested)
 					{
@@ -745,7 +745,7 @@ namespace SCG.Core
 				}
 
 				var result = await DOS2DEPackageCreator.CreatePackage(Data.Settings.DOS2DEDataDirectory.Replace("/", "\\"), 
-					sourceFolders, outputPackage, IgnoredExportFiles, cancellationTokenSource.Token).ConfigureAwait(false);
+					sourceFolders, outputPackage, IgnoredExportFiles, cancellationTokenSource.Token);
 				if (result)
 				{
 					return BackupResult.Success;

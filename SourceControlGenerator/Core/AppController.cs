@@ -112,13 +112,13 @@ namespace SCG.Core
 			{
 				Log.Here().Important($"Attempting to load module {Name}.");
 				AssemblyLoader.Call(AppDomain.CurrentDomain, fileName, "SCG.Module", "Init");
-				return await Task.FromResult(true).ConfigureAwait(false);
+				return await Task.FromResult(true);
 			}
 			catch (Exception ex)
 			{
 				Log.Here().Error("Error loading module file {0}: {1}", fileName, ex.ToString());
 			}
-			return await Task.FromResult(false).ConfigureAwait(false);
+			return await Task.FromResult(false);
 		}
 
 		private IProjectController currentModule;
@@ -353,7 +353,7 @@ namespace SCG.Core
 		public async void FinishProgress()
 		{
 			Data.ProgressValue = Data.ProgressValueMax;
-			await Task.Delay(500).ConfigureAwait(false);
+			await Task.Delay(500);
 			RxApp.MainThreadScheduler.Schedule(() =>
 			{
 				Data.ProgressValue = Data.ProgressValueMax;
