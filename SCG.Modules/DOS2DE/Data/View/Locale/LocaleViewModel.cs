@@ -1077,35 +1077,6 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			}
 		}
 
-		/// <summary>
-		/// Creates a new MenuData whose IsEnabled property is linked to a property in this view data.
-		/// When the property in this class changes, the linked menudata's IsEnabled will update accordingly.
-		/// </summary>
-		/// <param name="setEnabled"></param>
-		/// <param name="PropertyName"></param>
-		/// <param name="MenuID"></param>
-		/// <param name="menuName"></param>
-		/// <param name="command"></param>
-		/// <param name="shortcutKey"></param>
-		/// <param name="shortcutModifiers"></param>
-		/// <returns></returns>
-		private MenuData CreateMenuDataWithLink(Func<bool>setEnabled, string PropertyName, string MenuID, string menuName, ICommand command = null,
-			Key? shortcutKey = null, ModifierKeys? shortcutModifiers = null)
-		{
-			var mdata = new MenuData(MenuID, menuName, command, shortcutKey, shortcutModifiers);
-
-			if(!MenuEnabledLinks.ContainsKey(PropertyName))
-			{
-				MenuEnabledLinks.Add(PropertyName, new List<Action>());
-			}
-
-			MenuEnabledLinks[PropertyName].Add(() => {
-				mdata.IsEnabled = setEnabled();
-				//Log.Here().Activity($"Set IsEnabled for menu entry {mdata.ID} to {mdata.IsEnabled}");
-			});
-			return mdata;
-		}
-
 		public void OnViewLoaded(LocaleEditorWindow v, DOS2DEModuleData moduleData, CompositeDisposable disposables)
 		{
 			view = v;
