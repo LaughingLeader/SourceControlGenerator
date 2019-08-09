@@ -1,4 +1,5 @@
 ﻿using DynamicData.Binding;
+using SCG.Modules.DOS2DE.Data.Savable;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -13,6 +14,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 		LocaleTabGroup Parent { get; }
 		ObservableCollectionExtended<ILocaleKeyEntry> Entries { get; set; }
 
+		LocaleFileLinkData FileLinkData { get; set; }
 		string SourcePath { get; set; }
 		string Name { get; set; }
 		string RenameText { get; set; }

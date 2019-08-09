@@ -12,7 +12,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 {
 	public interface ILocaleKeyEntry
 	{
-		ILocaleFileData Parent { get; }
+		ILocaleFileData Parent { get; set; }
 		bool KeyIsEditable { get; set; }
 		bool Selected { get; set; }
 
@@ -31,7 +31,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 
 	public class BaseLocaleKeyEntry : PropertyChangedHistoryBase
 	{
-		public ILocaleFileData Parent { get; private set; }
+		public ILocaleFileData Parent { get; set; }
 
 		private bool keyIsEditable = true;
 
@@ -60,6 +60,8 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 		{
 			//Parent.OnSelectedKeyChanged(this, isSelected);
 		}
+
+		public BaseLocaleKeyEntry() { }
 
 		public BaseLocaleKeyEntry(ILocaleFileData parent)
 		{

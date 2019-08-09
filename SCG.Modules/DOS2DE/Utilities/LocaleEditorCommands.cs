@@ -30,8 +30,16 @@ using System.Text.RegularExpressions;
 
 namespace SCG.Modules.DOS2DE.Utilities
 {
-	public class LocaleEditorCommands
+	public struct TextualLocaleEntry
 	{
+		public string Key;
+		public string Content;
+	}
+
+	public static class LocaleEditorCommands
+	{
+		public static readonly string UnsetHandle = "ls::TranslatedStringRepository::s_HandleUnknown";
+
 		#region Loading Localization Files
 		public static async Task<LocaleViewModel> LoadLocalizationDataAsync(DOS2DEModuleData vm, ModProjectData modProject, CancellationToken? token = null)
 		{
@@ -321,7 +329,12 @@ namespace SCG.Modules.DOS2DE.Utilities
 				var resource = LSLib.LS.ResourceUtils.LoadResource(path, resourceFormat);
 
 				var data = new LocaleNodeFileData(groupData, resourceFormat, resource, path, Path.GetFileName(path));
-				LoadFromResource(data, resource, resourceFormat);
+				var entries = LoadFromResource(resource, resourceFormat);
+				foreach(var entry in entries)
+				{
+					data.Entries.Add(entry);
+					entry.Parent = data;
+				}
 				
 				//foreach (var entry in data.Entries)
 				//{
@@ -332,8 +345,10 @@ namespace SCG.Modules.DOS2DE.Utilities
 			});
 		}
 
-		public static bool LoadFromResource(LocaleNodeFileData stringKeyFileData, Resource resource, ResourceFormat resourceFormat, bool sort = true)
+		public static List<LocaleNodeKeyEntry> LoadFromResource(Resource resource, ResourceFormat resourceFormat, bool sort = true)
 		{
+			List<LocaleNodeKeyEntry> newEntries = new List<LocaleNodeKeyEntry>();
+
 			try
 			{
 				if (resourceFormat == ResourceFormat.LSB)
@@ -343,8 +358,8 @@ namespace SCG.Modules.DOS2DE.Utilities
 					{
 						foreach (var node in entry.Value)
 						{
-							LocaleNodeKeyEntry localeEntry = LoadFromNode(stringKeyFileData, node, resourceFormat);
-							stringKeyFileData.Entries.Add(localeEntry);
+							LocaleNodeKeyEntry localeEntry = LoadFromNode(node, resourceFormat);
+							newEntries.Add(localeEntry);
 						}
 
 					}
@@ -364,8 +379,8 @@ namespace SCG.Modules.DOS2DE.Utilities
 
 					foreach(var node in stringNodes)
 					{
-						LocaleNodeKeyEntry localeEntry = LoadFromNode(stringKeyFileData, node, resourceFormat);
-						stringKeyFileData.Entries.Add(localeEntry);
+						LocaleNodeKeyEntry localeEntry = LoadFromNode(node, resourceFormat);
+						newEntries.Add(localeEntry);
 					}
 
 					/*
@@ -378,23 +393,22 @@ namespace SCG.Modules.DOS2DE.Utilities
 
 				if (sort)
 				{
-					stringKeyFileData.Entries = new ObservableCollectionExtended<ILocaleKeyEntry>(stringKeyFileData.Entries.OrderBy(e => e.Key).ToList());
+					newEntries = newEntries.OrderBy(e => e.Key).ToList();
 				}
-
-				return true;
 			}
 			catch(Exception ex)
 			{
 				Log.Here().Error($"Error loading from resource: {ex.ToString()}");
-				return false;
 			}
+
+			return newEntries;
 		}
 
-		public static LocaleNodeKeyEntry LoadFromNode(ILocaleFileData fileData, Node node, ResourceFormat resourceFormat, bool generateNewHandle = false)
+		public static LocaleNodeKeyEntry LoadFromNode(Node node, ResourceFormat resourceFormat, bool generateNewHandle = false)
 		{
 			if (resourceFormat == ResourceFormat.LSB)
 			{
-				LocaleNodeKeyEntry localeEntry = new LocaleNodeKeyEntry(node, fileData);
+				LocaleNodeKeyEntry localeEntry = new LocaleNodeKeyEntry(node);
 				NodeAttribute keyAtt = null;
 				NodeAttribute contentAtt = null;
 				if(node.Attributes.TryGetValue("UUID", out keyAtt))
@@ -431,7 +445,7 @@ namespace SCG.Modules.DOS2DE.Utilities
 			}
 			else if (resourceFormat == ResourceFormat.LSJ || resourceFormat == ResourceFormat.LSX)
 			{
-				LocaleNodeKeyEntry localeEntry = new LocaleNodeKeyEntry(node, fileData);
+				LocaleNodeKeyEntry localeEntry = new LocaleNodeKeyEntry(node);
 				
 				localeEntry.KeyIsEditable = false;
 				localeEntry.Key = "Dialog Text";
@@ -757,9 +771,119 @@ namespace SCG.Modules.DOS2DE.Utilities
 		{
 			var resource = CreateLocalizationResource();
 			var fileData = new LocaleNodeFileData(groupData, ResourceFormat.LSX, resource, destinationPath, name);
-			LoadFromResource(fileData, resource, ResourceFormat.LSB, true);
+			var entries = LoadFromResource(resource, ResourceFormat.LSB, true);
+			foreach (var entry in entries)
+			{
+				entry.Parent = fileData;
+				fileData.Entries.Add(entry);
+			}
 			fileData.ChangesUnsaved = true;
 			return fileData;
+		}
+
+		public static void RefreshFileData(LocaleNodeFileData fileData)
+		{
+			var entries = LoadFromResource(fileData.Source, fileData.Format, true);
+			foreach (var entry in entries)
+			{
+				var existingEntry = fileData.Entries.FirstOrDefault(x => x.Key == entry.Key || 
+					(x.Handle == entry.Handle && x.Handle != UnsetHandle));
+				if(existingEntry != null)
+				{
+					if(!entry.Key.Equals(String.Empty) && !entry.Key.Equals("None"))
+					{
+						existingEntry.Key = entry.Key;
+					}
+					
+					if(entry.Handle != UnsetHandle)
+					{
+						existingEntry.Handle = entry.Handle;
+					}
+
+					if (!entry.Content.Equals(String.Empty) && !entry.Content.Equals("Content"))
+					{
+						existingEntry.Content = entry.Content;
+					}
+				}
+				else
+				{
+					entry.Parent = fileData;
+					fileData.Entries.Add(entry);
+				}
+			}
+			fileData.ChangesUnsaved = entries.Count > 0;
+		}
+
+		public static void RefreshLinkedData(ILocaleFileData fileData)
+		{
+			if (fileData.FileLinkData != null && File.Exists(fileData.FileLinkData.SourceFile))
+			{
+				string path = fileData.FileLinkData.SourceFile;
+				if (FileCommands.FileExtensionFound(path, ".txt", ".tsv", ".csv"))
+				{
+					char delimiter = '\t';
+					if (FileCommands.FileExtensionFound(path, ".csv")) delimiter = ',';
+
+					using (var stream = new System.IO.StreamReader(path))
+					{
+						int lineNum = 0;
+						string line = String.Empty;
+
+						Regex r = new Regex($"(.*){delimiter}+?(.*)");
+
+						List<TextualLocaleEntry> entries = new List<TextualLocaleEntry>();
+
+						while ((line = stream.ReadLine()) != null)
+						{
+							lineNum += 1;
+							// Skip top line, as it typically describes the columns
+							if (lineNum == 1 && delimitStepSkipLine(line)) continue;
+
+							var match = r.Match(line);
+							if (match.Success)
+							{
+								string key = match.Groups.Count >= 1 ? match.Groups[1].Value : String.Empty;
+								string content = match.Groups.Count >= 2 ? match.Groups[2].Value : String.Empty;
+
+								if(String.IsNullOrWhiteSpace(key) && !String.IsNullOrWhiteSpace(content))
+								{
+									key = "NewKey" + (entries.Count + 1);
+								}
+
+								if (!String.IsNullOrWhiteSpace(key))
+								{
+									entries.Add(new TextualLocaleEntry { Key = key, Content = content });
+								}
+							}
+						}
+
+						if(entries.Count > 0)
+						{
+							foreach(var entry in entries)
+							{
+								var existingEntry = fileData.Entries.FirstOrDefault(x => x.Key == entry.Key);
+								if (existingEntry != null)
+								{
+									if (!String.IsNullOrWhiteSpace(entry.Content))
+									{
+										existingEntry.Content = entry.Content;
+									}
+								}
+								else
+								{
+									if(fileData is LocaleNodeFileData nodeFileData)
+									{
+										var newEntry = CreateNewLocaleEntry(nodeFileData, entry.Key, entry.Content);
+									}
+								}
+							}
+
+							fileData.ChangesUnsaved = true;
+						}
+					}
+				}
+				
+			}
 		}
 
 		public static string EscapeXml(string s)
@@ -846,9 +970,10 @@ namespace SCG.Modules.DOS2DE.Utilities
 
 			parentNode.AppendChild(node);
 
-			LocaleNodeKeyEntry localeEntry = LoadFromNode(fileData, node, format);
+			LocaleNodeKeyEntry localeEntry = LoadFromNode(node, format);
 			localeEntry.Key = key == "NewKey" ? key + (fileData.Entries.Count + 1) : key;
 			localeEntry.Content = content;
+			localeEntry.Parent = fileData;
 			return localeEntry;
 		}
 
@@ -1069,7 +1194,8 @@ namespace SCG.Modules.DOS2DE.Utilities
 				}
 
 				node.Attributes.Add("Content", att);
-				var entry = LoadFromNode(fileData, node, ResourceFormat.LSB, false);
+				var entry = LoadFromNode(node, ResourceFormat.LSB, false);
+				entry.Parent = fileData;
 				Entries.Add(entry);
 			}
 		}

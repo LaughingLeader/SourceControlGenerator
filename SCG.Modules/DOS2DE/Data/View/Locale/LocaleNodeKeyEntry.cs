@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using ReactiveUI;
 using LSLib.LS;
+using SCG.Modules.DOS2DE.Utilities;
 
 namespace SCG.Modules.DOS2DE.Data.View.Locale
 {
@@ -79,7 +80,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 
 		public string Handle
 		{
-			get { return TranslatedString != null ? TranslatedString.Handle : "ls::TranslatedStringRepository::s_HandleUnknown"; }
+			get { return TranslatedString != null ? TranslatedString.Handle : LocaleEditorCommands.UnsetHandle; }
 			set
 			{
 				if (TranslatedString != null)
@@ -146,6 +147,10 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 
 		#endregion
 
+		public LocaleNodeKeyEntry(LSLib.LS.Node resNode) : base()
+		{
+			Node = resNode;
+		}
 		public LocaleNodeKeyEntry(LSLib.LS.Node resNode, ILocaleFileData parent) : base(parent)
 		{
 			Node = resNode;

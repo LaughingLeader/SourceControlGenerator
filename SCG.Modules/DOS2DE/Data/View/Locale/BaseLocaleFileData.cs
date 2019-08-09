@@ -2,28 +2,29 @@
 using Newtonsoft.Json;
 using ReactiveUI;
 using SCG.Data;
+using SCG.Modules.DOS2DE.Data.Savable;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace SCG.Modules.DOS2DE.Data.View.Locale
 {
-	[JsonObject(MemberSerialization.OptIn)]
 	public class BaseLocaleFileData : ReactiveObject, ILocaleFileData
 	{
-		[JsonProperty]
 		public ObservableCollectionExtended<ILocaleKeyEntry> Entries { get; set; } = new ObservableCollectionExtended<ILocaleKeyEntry>();
 
 		public LocaleTabGroup Parent { get; private set; }
 
 		public string SourcePath { get; set; }
 
+		public LocaleFileLinkData FileLinkData { get; set; }
+
 		private string name;
 
-		[JsonProperty]
 		public string Name
 		{
 			get { return name; }

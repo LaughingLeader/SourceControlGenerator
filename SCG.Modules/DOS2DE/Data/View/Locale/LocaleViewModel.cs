@@ -787,6 +787,8 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 
 		public ICommand AddNewKeyCommand { get; private set; }
 		public ICommand DeleteKeysCommand { get; private set; }
+		public ICommand RefreshFileCommand { get; private set; }
+		public ICommand LoadFileLinkDataCommand { get; private set; }
 
 		public ICommand OpenPreferencesCommand { get; private set; }
 
@@ -805,6 +807,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 
 		public IObservable<bool> CanExecutePopoutContentCommand { get; private set; }
 		public IObservable<bool> GlobalCommandEnabled { get; private set; }
+		public IObservable<bool> FileSelectedObservable { get; private set; }
 		public IObservable<bool> CanImportFilesObservable { get; private set; }
 		public IObservable<bool> CanImportKeysObservable { get; private set; }
 		public IObservable<bool> AnySelectedObservable { get; private set; }
@@ -1082,11 +1085,8 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			view = v;
 			ModuleData = moduleData;
 
-			Log.Here().Activity("View loaded?");
-
 			ImportFileCommand = ReactiveCommand.Create(() =>
 			{
-				Log.Here().Activity("Opening file browser");
 				FileCommands.Load.OpenMultiFileDialog(view, DOS2DETooltips.Button_Locale_ImportFile, 
 					CurrentEntryImportPath, ImportFilesAsFileData, "", null, DOS2DEFileFilters.AllLocaleFilesList.ToArray());
 			}, CanImportFilesObservable).DisposeWith(disposables);
@@ -1220,6 +1220,19 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 				}
 			}, GlobalCommandEnabled).DisposeWith(disposables);
 
+			RefreshFileCommand = ReactiveCommand.Create<ILocaleFileData>((ILocaleFileData fileData) =>
+			{
+				if(fileData is LocaleNodeFileData nodeFile)
+				{
+					LocaleEditorCommands.RefreshFileData(nodeFile);
+				}
+			}, FileSelectedObservable);
+
+			LoadFileLinkDataCommand = ReactiveCommand.Create<ILocaleFileData>((ILocaleFileData fileData) =>
+			{
+				LocaleEditorCommands.RefreshLinkedData(fileData);
+			}, FileSelectedObservable);
+
 			var SaveCurrentMenuData = new MenuData("SaveCurrent", "Save", SaveCurrentCommand, Key.S, ModifierKeys.Control);
 
 			MenuData.File.Add(SaveCurrentMenuData);
@@ -1297,6 +1310,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 
 			GlobalCommandEnabled = this.WhenAny(vm => vm.IsAddingNewFileTab, e => e.Value == false);
 			AnySelectedObservable = this.WhenAnyValue(vm => vm.AnySelected);
+			FileSelectedObservable = this.WhenAny(vm => vm.SelectedGroup.SelectedFile, e => e.Value != null);
 			CanImportFilesObservable = this.WhenAnyValue(vm => vm.CanAddFile);
 			CanImportKeysObservable = this.WhenAnyValue(vm => vm.CanAddKeys);
 		}
