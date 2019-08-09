@@ -119,7 +119,7 @@ namespace SCG.Commands
 			SingleCallback?.Invoke(path);
 		}
 
-		private void OnCanceled(string file, Microsoft.WindowsAPICodePack.Dialogs.CommonFileDialogResult result)
+		private void OnCanceled(string file, FileDialogResult result)
 		{
 			BrowserOpen = false;
 			//Log.Here().Activity($"File opening canceled. Reason: `{result}`.");

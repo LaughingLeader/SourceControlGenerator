@@ -250,7 +250,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			}
 		}
 
-		private bool canSave;
+		private bool canSave = false;
 
 		public bool CanSave
 		{
@@ -258,11 +258,10 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			set
 			{
 				this.RaiseAndSetIfChanged(ref canSave, value);
-				SaveCurrentMenuData.IsEnabled = canSave;
 			}
 		}
 
-		private bool canAddFile;
+		private bool canAddFile = false;
 
 		public bool CanAddFile
 		{
@@ -273,7 +272,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			}
 		}
 
-		private bool canAddKeys;
+		private bool canAddKeys = false;
 
 		public bool CanAddKeys
 		{
@@ -692,41 +691,41 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			}
 		}
 
-		public void ImportFileAsFileData(IEnumerable<string> files)
+		public void ImportFilesAsFileData(IEnumerable<string> files)
 		{
-			var currentGroup = Groups.Where(g => g == SelectedGroup).First();
-			var newFileDataList = LocaleEditorCommands.ImportFilesAsData(files, SelectedGroup);
-			view.SaveSettings();
-
-			CreateSnapshot(() => {
-				var list = currentGroup.DataFiles.ToList();
-				foreach(var entry in newFileDataList)
-				{
-					if (list.Contains(entry)) list.Remove(entry);
-				}
-				currentGroup.DataFiles = new ObservableCollectionExtended<ILocaleFileData>(list);
-			}, () => {
-				currentGroup.DataFiles.AddRange(newFileDataList);
-			});
-
-			SelectedGroup.DataFiles.AddRange(newFileDataList);
-
-			SelectedGroup.ChangesUnsaved = true;
-			SelectedGroup.UpdateCombinedData();
-			SelectedGroup.SelectLast();
-
 			if(files.Count() > 0)
 			{
+				var currentGroup = Groups.Where(g => g == SelectedGroup).First();
+				var newFileDataList = LocaleEditorCommands.ImportFilesAsData(files, SelectedGroup);
+
+				CreateSnapshot(() => {
+					var list = currentGroup.DataFiles.ToList();
+					foreach (var entry in newFileDataList)
+					{
+						if (list.Contains(entry)) list.Remove(entry);
+					}
+					currentGroup.DataFiles = new ObservableCollectionExtended<ILocaleFileData>(list);
+				}, () => {
+					currentGroup.DataFiles.AddRange(newFileDataList);
+				});
+
+				SelectedGroup.DataFiles.AddRange(newFileDataList);
+
+				SelectedGroup.ChangesUnsaved = true;
+				SelectedGroup.UpdateCombinedData();
+				SelectedGroup.SelectLast();
+
 				Settings.LastFileImportPath = Path.GetDirectoryName(files.FirstOrDefault());
 				this.RaisePropertyChanged("CurrentImportPath");
 				this.RaisePropertyChanged("CurrentFileImportPath");
-			}
-			view.SaveSettings();
 
-			ChangesUnsaved = true;
+				view.SaveSettings();
+
+				ChangesUnsaved = true;
+			}
 		}
 
-		public void ImportFileAsKeys(IEnumerable<string> files)
+		public void ImportFilesAsKeys(IEnumerable<string> files)
 		{
 			if(SelectedItem != null && files.Count() > 0)
 			{
@@ -768,7 +767,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			}
 		}
 
-		private MenuData SaveCurrentMenuData { get; set; }
+		//private MenuData SaveCurrentMenuData { get; set; }
 		//private MenuData SelectAllMenuData { get; set; }
 		//private MenuData SelectNoneMenuData { get; set; }
 		//private MenuData GenerateHandlesMenuData { get; set; }
@@ -778,8 +777,8 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 		public ICommand ConfirmFileAddToGroupCommand { get; private set; }
 		public ICommand CancelFileAddToGroupCommand { get; private set; }
 		public ICommand CloseFileCommand { get; private set; }
-		public OpenFileBrowserCommand ImportFileCommand { get; internal set; }
-		public OpenFileBrowserCommand ImportKeysCommand { get; internal set; }
+		public ICommand ImportFileCommand { get; internal set; }
+		public ICommand ImportKeysCommand { get; internal set; }
 		public ICommand ExportXMLCommand { get; private set; }
 
 		public ICommand SaveAllCommand { get; private set; }
@@ -806,6 +805,8 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 
 		public IObservable<bool> CanExecutePopoutContentCommand { get; private set; }
 		public IObservable<bool> GlobalCommandEnabled { get; private set; }
+		public IObservable<bool> CanImportFilesObservable { get; private set; }
+		public IObservable<bool> CanImportKeysObservable { get; private set; }
 		public IObservable<bool> AnySelectedObservable { get; private set; }
 
 		public void AddNewKey()
@@ -1110,33 +1111,20 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			view = v;
 			ModuleData = moduleData;
 
-			ImportFileCommand = new OpenFileBrowserCommand(ImportFileAsFileData)
+			Log.Here().Activity("View loaded?");
+
+			ImportFileCommand = ReactiveCommand.Create(() =>
 			{
-				DefaultParams = new OpenFileBrowserParams()
-				{
-					Title = DOS2DETooltips.Button_Locale_ImportFile,
-					ParentWindow = view,
-					UseFolderBrowser = false,
-					Filters = DOS2DEFileFilters.AllLocaleFilesList.ToArray(),
-					StartDirectory = CurrentFileImportPath
-				}
-			};
+				Log.Here().Activity("Opening file browser");
+				FileCommands.Load.OpenMultiFileDialog(view, DOS2DETooltips.Button_Locale_ImportFile, 
+					CurrentEntryImportPath, ImportFilesAsFileData, "", null, DOS2DEFileFilters.AllLocaleFilesList.ToArray());
+			}, CanImportFilesObservable).DisposeWith(disposables);
 
-			GlobalCommandEnabled.BindTo(ImportFileCommand, c => c.Enabled).DisposeWith(disposables);
-
-			ImportKeysCommand = new OpenFileBrowserCommand(ImportFileAsKeys)
+			ImportKeysCommand = ReactiveCommand.Create(() =>
 			{
-				DefaultParams = new OpenFileBrowserParams()
-				{
-					Title = DOS2DETooltips.Button_Locale_ImportKeys,
-					ParentWindow = view,
-					UseFolderBrowser = false,
-					Filters = DOS2DEFileFilters.AllLocaleFilesList.ToArray(),
-					StartDirectory = CurrentEntryImportPath
-				}
-			};
-
-			GlobalCommandEnabled.BindTo(ImportKeysCommand, c => c.Enabled).DisposeWith(disposables);
+				FileCommands.Load.OpenMultiFileDialog(view, DOS2DETooltips.Button_Locale_ImportKeys,
+					CurrentEntryImportPath, ImportFilesAsKeys, "", null, DOS2DEFileFilters.AllLocaleFilesList.ToArray());
+			}, CanImportKeysObservable).DisposeWith(disposables);
 
 			OpenPreferencesCommand = ReactiveCommand.Create(() => { view.TogglePreferencesWindow(); }, GlobalCommandEnabled).DisposeWith(disposables);
 
@@ -1172,9 +1160,140 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			CanExecutePopoutContentCommand = this.WhenAny(vm => vm.SelectedEntry, e => e.Value != null);
 
 			LocaleEditorCommands.LoadSettings(ModuleData, this);
-			MenuData.RegisterShortcuts(view.InputBindings);
 
 			UpdateCombinedGroup(true);
+
+			ExportXMLCommand = ReactiveCommand.Create(OpenExportWindow, AnySelectedObservable).DisposeWith(disposables);
+			AddFileToGroupCommand = ReactiveCommand.Create<CustomLocaleTabGroup>(AddCustomFileToGroup, CanImportFilesObservable).DisposeWith(disposables);
+
+			var canConfirmAddFile = this.WhenAny(vm => vm.NewFileTabName, e => !String.IsNullOrWhiteSpace(e.Value));
+			ConfirmFileAddToGroupCommand = ReactiveCommand.Create(ConfirmCustomFileAddToGroup, canConfirmAddFile).DisposeWith(disposables);
+			CancelFileAddToGroupCommand = ReactiveCommand.Create(() =>
+			{
+				if (IsAddingNewFileTab)
+				{
+					IsAddingNewFileTab = false;
+					NewFileTabName = "";
+					newFileTabTargetGroup = null;
+				}
+			}).DisposeWith(disposables);
+
+			CloseFileCommand = ReactiveCommand.Create<ILocaleFileData>(CloseFileInGroup, GlobalCommandEnabled).DisposeWith(disposables);
+			ToggleRenameFileTabCommand = ReactiveCommand.Create<ILocaleFileData>((ILocaleFileData fileData) => {
+				fileData.IsRenaming = !fileData.IsRenaming;
+			}, GlobalCommandEnabled).DisposeWith(disposables);
+
+			async Task<Unit> cancelRenamingFileTab(ILocaleFileData fileData)
+			{
+				await Task.Delay(50);
+				if (fileData.IsRenaming)
+				{
+					fileData.RenameText = fileData.Name;
+					fileData.IsRenaming = false;
+				}
+				return Unit.Default;
+			}
+
+			CancelRenamingFileTabCommand = ReactiveCommand.CreateFromTask<ILocaleFileData>(cancelRenamingFileTab).DisposeWith(disposables);
+
+			SaveAllCommand = ReactiveCommand.CreateFromTask(SaveAll, GlobalCommandEnabled).DisposeWith(disposables);
+			SaveCurrentCommand = ReactiveCommand.CreateFromTask(SaveCurrent, GlobalCommandEnabled).DisposeWith(disposables);
+			GenerateHandlesCommand = ReactiveCommand.Create(GenerateHandles, AnySelectedObservable).DisposeWith(disposables);
+			AddNewKeyCommand = ReactiveCommand.Create(AddNewKey, CanImportKeysObservable).DisposeWith(disposables);
+
+			AddFontTagCommand = ReactiveCommand.Create(AddFontTag, AnySelectedObservable).DisposeWith(disposables);
+
+			ToggleContentLightModeCommand = ReactiveCommand.Create(() => ContentLightMode = !ContentLightMode, GlobalCommandEnabled).DisposeWith(disposables);
+			ChangeContentFontSizeCommand = ReactiveCommand.Create<string>((fontSizeStr) => {
+				this.RaisePropertyChanging("ContentFontSize");
+				if (int.TryParse(fontSizeStr, out contentFontSize))
+				{
+					this.RaisePropertyChanged("ContentFontSize");
+				}
+			}, GlobalCommandEnabled).DisposeWith(disposables);
+
+			IObservable<bool> canSelectNone = this.WhenAnyValue(vm => vm.SelectedText, (text) => text != String.Empty);
+
+			SelectNoneCommand = ReactiveCommand.Create<object>((targetObject) =>
+			{
+				if (targetObject is Xceed.Wpf.Toolkit.RichTextBox rtb)
+				{
+					rtb.Selection.Select(rtb.CaretPosition.DocumentStart, rtb.CaretPosition.DocumentStart);
+				}
+				else if (targetObject is System.Windows.Controls.TextBox tb)
+				{
+					tb.Select(tb.CaretIndex, 0);
+				}
+			}, canSelectNone).DisposeWith(disposables);
+
+			CopyToClipboardCommand = ReactiveCommand.Create<string>((str) =>
+			{
+				if (str != String.Empty)
+				{
+					string current = Clipboard.GetText(TextDataFormat.Text);
+					void undo()
+					{
+						Clipboard.SetText(current);
+
+						AppController.Main.SetFooter($"Reverted clipboard text to '{current}'.", LogType.Important);
+					};
+					void redo()
+					{
+						Clipboard.SetText(str, TextDataFormat.Text);
+
+						AppController.Main.SetFooter($"Copied text '{str}' to clipboard.", LogType.Activity);
+					}
+
+					CreateSnapshot(undo, redo);
+					redo();
+				}
+			}, GlobalCommandEnabled).DisposeWith(disposables);
+
+			var SaveCurrentMenuData = new MenuData("SaveCurrent", "Save", SaveCurrentCommand, Key.S, ModifierKeys.Control);
+
+			MenuData.File.Add(SaveCurrentMenuData);
+			MenuData.File.Add(new MenuData("File.SaveAll", "Save All", SaveAllCommand, Key.S, ModifierKeys.Control | ModifierKeys.Shift));
+
+			MenuData.File.Add(new MenuData("File.ImportFile", "Import File", ImportFileCommand));
+			MenuData.File.Add(new MenuData("File.ImportKeys", "Import File as Keys", ImportKeysCommand));
+			MenuData.File.Add(new MenuData("File.ExportSelected", DOS2DETooltips.Button_Locale_ExportToXML, ExportXMLCommand, Key.E, ModifierKeys.Control | ModifierKeys.Shift));
+
+			//MenuData.File.Add(CreateMenuDataWithLink(() => CanAddFile, "CanAddFile", "File.ImportFile", "Import File", ImportFileCommand));
+			//MenuData.File.Add(CreateMenuDataWithLink(() => CanAddKeys, "CanAddKeys", "File.ImportKeys", "Import File as Keys", ImportKeysCommand));
+
+			//MenuData.File.Add(CreateMenuDataWithLink(() => AnySelected, "AnySelected", "File.ExportSelected", DOS2DETooltips.Button_Locale_ExportToXML, ExportXMLCommand, Key.E, ModifierKeys.Control | ModifierKeys.Shift));
+
+			UndoMenuData = new MenuData("Edit.Undo", "Undo", UndoCommand, Key.Z, ModifierKeys.Control);
+			RedoMenuData = new MenuData("Edit.Redo", "Redo", RedoCommand,
+					new MenuShortcutInputBinding(Key.Z, ModifierKeys.Control | ModifierKeys.Shift),
+					new MenuShortcutInputBinding(Key.Y, ModifierKeys.Control)
+				);
+			MenuData.Edit.Add(UndoMenuData);
+			MenuData.Edit.Add(RedoMenuData);
+
+			var SelectAllEntriesCommand = ReactiveCommand.Create(() => { SelectedItem?.SelectAll(); });
+			var DeselectAllEntriesCommand = ReactiveCommand.Create(() => { SelectedItem?.SelectNone(); });
+
+			MenuData.Edit.Add(new MenuData("Edit.SelectAll", "Select All", SelectAllEntriesCommand, Key.A, ModifierKeys.Control));
+			MenuData.Edit.Add(new MenuData("Edit.SelectNone", "Select None", DeselectAllEntriesCommand, Key.D, ModifierKeys.Control));
+			MenuData.Edit.Add(new MenuData("Edit.GenerateHandles", "Generate Handles for Selected", GenerateHandlesCommand, Key.G, ModifierKeys.Control | ModifierKeys.Shift));
+			MenuData.Edit.Add(new MenuData("Edit.AddKey", "Add Key", AddNewKeyCommand));
+			MenuData.Edit.Add(new MenuData("Edit.DeleteSelectedKeys", "Delete Selected Keys", DeleteKeysCommand));
+
+			MenuData.Settings.Add(new MenuData("Settings.Preferences", "Preferences", OpenPreferencesCommand));
+
+			MenuData larianWikiMenu = new MenuData("Help.Links.LarianWiki", "Larian Wiki");
+			larianWikiMenu.Add(new MenuData("Help.Links.LarianWiki.KeyEditor", "Translated String Key Editor",
+				ReactiveCommand.Create(() => { Helpers.Web.OpenUri(@"https://docs.larian.game/Translated_string_key_editor"); })));
+			larianWikiMenu.Add(new MenuData("Help.Links.LarianWiki.LocalizationGuide", "Modding: Localization",
+				ReactiveCommand.Create(() => { Helpers.Web.OpenUri(@"https://docs.larian.game/Modding:_Localization"); })));
+
+			MenuData.Help.Add(larianWikiMenu);
+
+			MenuData.RegisterShortcuts(view.InputBindings);
+
+			//The window starts with the All/All selected.
+			CanSave = AnySelected = CanAddFile = CanAddKeys = false;
 		}
 
 		public MenuData UndoMenuData { get; private set; }
@@ -1207,150 +1326,8 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 
 			GlobalCommandEnabled = this.WhenAny(vm => vm.IsAddingNewFileTab, e => e.Value == false);
 			AnySelectedObservable = this.WhenAnyValue(vm => vm.AnySelected);
-
-			//DeleteKeysCommand = ReactiveCommand.Create(() =>
-			//{
-			//	Log.Here().Activity("Deleting keys?");
-			//	FileCommands.OpenConfirmationDialog(view, "Delete Keys", "Delete selected keys?", "Changes will be lost.", DeleteSelectedKeys);
-			//}, AnySelectedObservable);
-
-			ExportXMLCommand = ReactiveCommand.Create(OpenExportWindow, GlobalCommandEnabled);
-
-			AddFileToGroupCommand = ReactiveCommand.Create<CustomLocaleTabGroup>(AddCustomFileToGroup);
-
-			var canConfirmAddFile = this.WhenAny(vm => vm.NewFileTabName, e => !String.IsNullOrWhiteSpace(e.Value));
-			ConfirmFileAddToGroupCommand = ReactiveCommand.Create(ConfirmCustomFileAddToGroup, canConfirmAddFile);
-			CancelFileAddToGroupCommand = ReactiveCommand.Create(() =>
-			{
-				if(IsAddingNewFileTab)
-				{
-					IsAddingNewFileTab = false;
-					NewFileTabName = "";
-					newFileTabTargetGroup = null;
-				}
-			});
-
-			CloseFileCommand = ReactiveCommand.Create<ILocaleFileData>(CloseFileInGroup, GlobalCommandEnabled);
-			ToggleRenameFileTabCommand = ReactiveCommand.Create<ILocaleFileData>((ILocaleFileData fileData) => {
-				fileData.IsRenaming = !fileData.IsRenaming;
-			}, GlobalCommandEnabled);
-
-			async Task<Unit> cancelRenamingFileTab(ILocaleFileData fileData)
-			{
-				await Task.Delay(50);
-				if (fileData.IsRenaming)
-				{
-					fileData.RenameText = fileData.Name;
-					fileData.IsRenaming = false;
-				}
-				return Unit.Default;
-			}
-
-			CancelRenamingFileTabCommand = ReactiveCommand.CreateFromTask<ILocaleFileData>(cancelRenamingFileTab);
-
-			SaveAllCommand = ReactiveCommand.CreateFromTask(SaveAll, GlobalCommandEnabled);
-			SaveCurrentCommand = ReactiveCommand.CreateFromTask(SaveCurrent, GlobalCommandEnabled);
-			GenerateHandlesCommand = ReactiveCommand.Create(GenerateHandles, AnySelectedObservable);
-			AddNewKeyCommand = ReactiveCommand.Create(AddNewKey, GlobalCommandEnabled);
-
-			AddFontTagCommand = ReactiveCommand.Create(AddFontTag, GlobalCommandEnabled);
-
-			ToggleContentLightModeCommand = ReactiveCommand.Create(() => ContentLightMode = !ContentLightMode, GlobalCommandEnabled);
-			ChangeContentFontSizeCommand = ReactiveCommand.Create<string>((fontSizeStr) => {
-				this.RaisePropertyChanging("ContentFontSize");
-				if (int.TryParse(fontSizeStr, out contentFontSize))
-				{
-					this.RaisePropertyChanged("ContentFontSize");
-				}
-			}, GlobalCommandEnabled);
-
-			IObservable<bool> canSelectNone = this.WhenAnyValue(vm => vm.SelectedText, (text) => text != String.Empty);
-			SelectNoneCommand = ReactiveCommand.Create<object>((targetObject) =>
-			{
-				if(targetObject is Xceed.Wpf.Toolkit.RichTextBox rtb)
-				{
-					rtb.Selection.Select(rtb.CaretPosition.DocumentStart, rtb.CaretPosition.DocumentStart);
-				}
-				else if (targetObject is System.Windows.Controls.TextBox tb)
-				{
-					tb.Select(tb.CaretIndex, 0);
-				}
-			}, canSelectNone);
-
-			CopyToClipboardCommand = ReactiveCommand.Create<string>((str) =>
-			{
-				if (str != String.Empty)
-				{
-					string current = Clipboard.GetText(TextDataFormat.Text);
-					void undo()
-					{
-						Clipboard.SetText(current);
-
-						AppController.Main.SetFooter($"Reverted clipboard text to '{current}'.", LogType.Important);
-					};
-					void redo()
-					{
-						Clipboard.SetText(str, TextDataFormat.Text);
-
-						AppController.Main.SetFooter($"Copied text '{str}' to clipboard.", LogType.Activity);
-					}
-
-					CreateSnapshot(undo, redo);
-					redo();
-				}
-			}, GlobalCommandEnabled);
-
-			SaveCurrentMenuData = new MenuData("SaveCurrent", "Save", SaveCurrentCommand, Key.S, ModifierKeys.Control);
-
-			MenuData.File.Add(SaveCurrentMenuData);
-			MenuData.File.Add(new MenuData("File.SaveAll", "Save All", SaveAllCommand, Key.S, ModifierKeys.Control | ModifierKeys.Shift));
-			
-			MenuData.File.Add(CreateMenuDataWithLink(() => CanAddFile, "CanAddFile", "File.ImportFile",
-				"Import File", ImportFileCommand));
-
-			MenuData.File.Add(CreateMenuDataWithLink(() => CanAddKeys, "CanAddKeys", "File.ImportKeys",
-				"Import File as Keys", ImportKeysCommand));
-
-			MenuData.File.Add(CreateMenuDataWithLink(() => AnySelected, "AnySelected", "File.ExportSelected",
-				DOS2DETooltips.Button_Locale_ExportToXML, ExportXMLCommand, Key.E, ModifierKeys.Control | ModifierKeys.Shift));
-
-			UndoMenuData = new MenuData("Edit.Undo", "Undo", UndoCommand, Key.Z, ModifierKeys.Control);
-			RedoMenuData = new MenuData("Edit.Redo", "Redo", RedoCommand,
-					new MenuShortcutInputBinding(Key.Z, ModifierKeys.Control | ModifierKeys.Shift),
-					new MenuShortcutInputBinding(Key.Y, ModifierKeys.Control)
-				);
-			MenuData.Edit.Add(UndoMenuData);
-			MenuData.Edit.Add(RedoMenuData);
-
-			MenuData.Edit.Add(CreateMenuDataWithLink(() => AnySelected, "AnySelected", "Edit.SelectAll", 
-				"Select All", ReactiveCommand.Create(() => { SelectedItem?.SelectAll(); }), Key.A, ModifierKeys.Control));
-
-			MenuData.Edit.Add(CreateMenuDataWithLink(() => AnySelected, "AnySelected", "Edit.SelectNone", 
-				"Select None", ReactiveCommand.Create(() => { SelectedItem?.SelectNone(); }), Key.D, ModifierKeys.Control));
-
-			MenuData.Edit.Add(CreateMenuDataWithLink(() => AnySelected, "AnySelected", "Edit.GenerateHandles", 
-				"Generate Handles for Selected", ReactiveCommand.Create(GenerateHandles), Key.G, ModifierKeys.Control | ModifierKeys.Shift));
-
-			MenuData.Edit.Add(CreateMenuDataWithLink(() => CanAddKeys, "CanAddKeys", "Edit.AddKey",
-				"Add Key", AddNewKeyCommand));
-
-			MenuData.Edit.Add(CreateMenuDataWithLink(() => AnySelected, "AnySelected", "Edit.DeleteKeys",
-				"Delete Selected Keys", DeleteKeysCommand));
-
-			MenuData.Settings.Add(new MenuData("Settings.Preferences", "Preferences", OpenPreferencesCommand));
-
-			MenuData larianWikiMenu = new MenuData("Help.Links.LarianWiki", "Larian Wiki");
-			larianWikiMenu.Add(new MenuData("Help.Links.LarianWiki.KeyEditor", "Translated String Key Editor",
-				ReactiveCommand.Create(() => { Helpers.Web.OpenUri(@"https://docs.larian.game/Translated_string_key_editor"); })));
-			larianWikiMenu.Add(new MenuData("Help.Links.LarianWiki.LocalizationGuide", "Modding: Localization",
-				ReactiveCommand.Create(() => { Helpers.Web.OpenUri(@"https://docs.larian.game/Modding:_Localization"); })));
-
-			MenuData.Help.Add(larianWikiMenu);
-
-			CanSave = false;
-			AnySelected = false;
-			CanAddFile = false;
-			CanAddKeys = false;
+			CanImportFilesObservable = this.WhenAnyValue(vm => vm.CanAddFile);
+			CanImportKeysObservable = this.WhenAnyValue(vm => vm.CanAddKeys);
 		}
 	}
 

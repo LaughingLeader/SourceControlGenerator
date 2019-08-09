@@ -24,6 +24,7 @@ using SCG.Extensions;
 using System.Reactive.Disposables;
 using SCG.Controls;
 using SCG.Modules.DOS2DE.Core;
+using TheArtOfDev.HtmlRenderer.WPF;
 
 namespace SCG.Modules.DOS2DE.Windows
 {
@@ -71,6 +72,16 @@ namespace SCG.Modules.DOS2DE.Windows
 				disposables = d;
 
 				ViewModel.OnViewLoaded(this, ModuleData, disposables);
+
+				ViewModel.PopoutContentCommand = ReactiveCommand.Create(() => PopoutContentWindow(ViewModel.SelectedEntry), ViewModel.CanExecutePopoutContentCommand).DisposeWith(d);
+
+				entryContentPreviewHtmlPanel = (HtmlPanel)this.TryFindResource("EntryContentPreview");
+
+				this.OneWayBind(this.ViewModel, vm => vm.SaveCurrentCommand, view => view.SaveButton.Command).DisposeWith(d);
+				this.OneWayBind(this.ViewModel, vm => vm.SaveAllCommand, view => view.SaveAllButton.Command).DisposeWith(d);
+				this.OneWayBind(this.ViewModel, vm => vm.ImportFileCommand, view => view.ImportFileButton.Command).DisposeWith(d);
+
+				this.OneWayBind(this.ViewModel, vm => vm.SelectedEntryHtmlContent, view => view.EntryContentPreviewHtmlPanel.Text).DisposeWith(d);
 			});
 		}
 
@@ -149,15 +160,13 @@ namespace SCG.Modules.DOS2DE.Windows
 			return (T)element;
 		}
 
+		private HtmlPanel entryContentPreviewHtmlPanel;
+
+		public HtmlPanel EntryContentPreviewHtmlPanel => entryContentPreviewHtmlPanel;
+
 		public void LoadData(LocaleViewModel data)
 		{
 			ViewModel = data;
-
-			ViewModel.PopoutContentCommand = ReactiveCommand.Create(() => PopoutContentWindow(ViewModel.SelectedEntry), ViewModel.CanExecutePopoutContentCommand);
-
-			this.OneWayBind(this.ViewModel, vm => vm.SaveCurrentCommand, view => view.SaveButton.Command);
-			this.OneWayBind(this.ViewModel, vm => vm.SaveCurrentCommand, view => view.SaveAllButton.Command);
-			this.OneWayBind(this.ViewModel, vm => vm.SaveCurrentCommand, view => view.ImportFileButton.Command);
 
 			DataContext = ViewModel;
 			ExportWindow.ViewModel = ViewModel;
@@ -260,18 +269,19 @@ namespace SCG.Modules.DOS2DE.Windows
 		/// <param name="e"></param>
 		private void LocaleEntryDataGrid_GotFocus(object sender, RoutedEventArgs e)
 		{
-			if(sender is DataGrid dg && e.OriginalSource is DataGridCell cell)
+			//if (e.OriginalSource is DataGridCell cell && cell.DataContext is ILocaleKeyEntry entry)
+			//{
+			//	//entry.Selected = !entry.Selected;
+			//	e.Handled = true;
+			//}
+		}
+
+		private void CheckBoxCell_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+		{
+			if (sender is DataGridCell cell && cell.DataContext is ILocaleKeyEntry entry)
 			{
-				if (cell.Column is DataGridCheckBoxColumn column)
-				{
-					dg.BeginEdit();
-					CheckBox chkBox = cell.Content as CheckBox;
-					if (chkBox != null)
-					{
-						chkBox.IsChecked = !chkBox.IsChecked;
-					}
-					e.Handled = true;
-				}
+				entry.Selected = !entry.Selected;
+				e.Handled = true;
 			}
 		}
 

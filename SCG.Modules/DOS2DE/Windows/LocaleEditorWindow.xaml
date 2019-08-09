@@ -525,7 +525,7 @@ body {
 								<cb:DataContextSpy x:Key="FileData" DataContext="{Binding}" />
 							</DataGrid.Resources>
 							<DataGrid.Columns>
-								<DataGridCheckBoxColumn MinWidth="25" CanUserResize="False" 
+								<DataGridCheckBoxColumn MinWidth="25" CanUserResize="False" IsThreeState="False"
 									Binding="{Binding Selected, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" >
 									<DataGridCheckBoxColumn.Header>
 										<CheckBox IsChecked="{Binding Source={StaticResource FileData}, Path=DataContext.AllSelected, Mode=TwoWay}"
@@ -534,6 +534,7 @@ body {
 									<DataGridCheckBoxColumn.CellStyle>
 										<Style TargetType="{x:Type DataGridCell}" BasedOn="{StaticResource DataGrid_NoHighlight}">
 											<Setter Property="Margin" Value="0" />
+											<EventSetter Event="PreviewMouseLeftButtonDown" Handler="CheckBoxCell_MouseLeftButtonDown"/>
 										</Style>
 									</DataGridCheckBoxColumn.CellStyle>
 								</DataGridCheckBoxColumn>
@@ -1086,7 +1087,6 @@ body {
 				<c:ImageButton
 					x:Name="ImportFileButton"
 					Command="{Binding ImportFileCommand}"
-					CommandParameter="{Binding CurrentFileImportPath, Converter={StaticResource ParamsToOpenFileBrowserParamsConverter}}"
 					ToolTip_Enabled="{x:Static core:DOS2DETooltips.Button_Locale_ImportFile}"
 					ToolTip_Disabled="{x:Static core:DOS2DETooltips.Button_Locale_ImportFile_Disabled}"
 					Source="{x:Static vdata:IconPathData.ImportFile}"

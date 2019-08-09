@@ -781,7 +781,7 @@ namespace SCG.Modules.DOS2DE.Utilities
 		{
 			Node parentNode = null;
 			Node refNode = null;
-			string dictKey = "TranslatedStringKey";
+			//string dictKey = "TranslatedStringKey";
 			List<Node> nodeList = null;
 			string refNodeName = "Node";
 			ResourceFormat format = ResourceFormat.LSB;
@@ -861,9 +861,9 @@ namespace SCG.Modules.DOS2DE.Utilities
 		private static LocaleNodeFileData CreateNodeFileDataFromTextual(LocaleTabGroup groupData, System.IO.StreamReader stream, string sourceDirectory, string filePath, char delimiter)
 		{
 			//For exporting to lsb later
-			string futureSourcePath = Path.Combine(sourceDirectory, Path.GetFileNameWithoutExtension(filePath), ".lsb");
+			string name = Path.Combine(Path.GetFileNameWithoutExtension(filePath), ".lsb");
+			string futureSourcePath = Path.Combine(sourceDirectory, name);
 
-			string name = Path.GetFileName(filePath);
 			LocaleNodeFileData fileData = CreateFileData(groupData, futureSourcePath, name);
 
 			int lineNum = 0;

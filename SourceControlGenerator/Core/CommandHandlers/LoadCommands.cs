@@ -23,6 +23,12 @@ using Newtonsoft.Json;
 
 namespace SCG.Commands
 {
+	public enum FileDialogResult
+	{
+		None = 0,
+		Cancel = 1,
+		Ok = 2
+	}
 	public class LoadCommands
 	{
 		/*
@@ -68,7 +74,7 @@ namespace SCG.Commands
 			return fileDialog;
 		}
 
-		public void OpenFileDialog(Window parentWindow, string title, string startingDirectory, Action<string> OnFileSelected, string defaultFilename = "", Action<string, CommonFileDialogResult> OnCancel = null, params FileBrowserFilter[] filters)
+		public void OpenFileDialog(Window parentWindow, string title, string startingDirectory, Action<string> OnFileSelected, string defaultFilename = "", Action<string, FileDialogResult> OnCancel = null, params FileBrowserFilter[] filters)
 		{
 			var fileDialog = CreateOpenDialog(title, startingDirectory, defaultFilename, false, filters);
 
@@ -79,11 +85,11 @@ namespace SCG.Commands
 			}
 			else
 			{
-				OnCancel?.Invoke(fileDialog.InitialDirectory, result);
+				OnCancel?.Invoke(fileDialog.InitialDirectory, (FileDialogResult)result);
 			}
 		}
 
-		public void OpenMultiFileDialog(Window parentWindow, string Title, string startingDirectory, Action<IEnumerable<string>> OnFileSelected, string defaultFilename = "", Action<string, CommonFileDialogResult> OnCancel = null, params FileBrowserFilter[] filters)
+		public void OpenMultiFileDialog(Window parentWindow, string Title, string startingDirectory, Action<IEnumerable<string>> OnFileSelected, string defaultFilename = "", Action<string, FileDialogResult> OnCancel = null, params FileBrowserFilter[] filters)
 		{
 			if (parentWindow == null) parentWindow = AppController.Main.MainWindow;
 			var fileDialog = CreateOpenDialog(Title, startingDirectory, defaultFilename, true, filters);
@@ -95,7 +101,7 @@ namespace SCG.Commands
 			}
 			else
 			{
-				OnCancel?.Invoke(fileDialog.InitialDirectory, result);
+				OnCancel?.Invoke(fileDialog.InitialDirectory, (FileDialogResult)result);
 			}
 		}
 
