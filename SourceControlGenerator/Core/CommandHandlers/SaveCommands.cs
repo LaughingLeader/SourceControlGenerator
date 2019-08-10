@@ -106,10 +106,69 @@ namespace SCG.Commands
 			}
 		}
 
-		public void OpenDialog(Window ParentWindow, string Title, string FilePath, Action<string> SaveAction, string FileName = "", string filter = "All files (*.*)|*.*")
+		public void OpenSaveDialog(Window ParentWindow, string Title, Action<FileDialogResult, string> OnClose, string DefaultFileName = "", string InitialDirectory = "", params FileBrowserFilter[] Filters)
+		{
+			try
+			{
+				var fileDialog = new CommonSaveFileDialog();
+				fileDialog.Title = Title;
+
+				fileDialog.AlwaysAppendDefaultExtension = false;
+				fileDialog.OverwritePrompt = true;
+
+				//Log.Here().Important($"Initial directory: {InitialDirectory} | Default FileName: {DefaultFileName} | FilePath: {FilePath}");
+
+				if (!String.IsNullOrEmpty(DefaultFileName)) fileDialog.DefaultFileName = DefaultFileName;
+
+				//if (FileCommands.IsValidFilePath(InitialDirectory) && !FileCommands.IsValidDirectoryPath(InitialDirectory)) InitialDirectory = Directory.GetParent(InitialDirectory).FullName + @"\";
+
+				if (!String.IsNullOrWhiteSpace(InitialDirectory) && FileCommands.IsValidDirectoryPath(InitialDirectory))
+				{
+					fileDialog.InitialDirectory = Path.GetFullPath(InitialDirectory);
+				}
+				else
+				{
+					fileDialog.InitialDirectory = Directory.GetCurrentDirectory();
+				}
+
+				//Log.Here().Important($"Initial directory set to {fileDialog.InitialDirectory}");
+
+				if (Filters != null)
+				{
+					if (Filters.Length <= 0)
+					{
+						fileDialog.Filters.Add(new CommonFileDialogFilter(CommonFileFilters.All.Name, CommonFileFilters.All.Values));
+					}
+					else
+					{
+						foreach (var filter in Filters)
+						{
+							fileDialog.Filters.Add(new CommonFileDialogFilter(filter.Name, filter.Values));
+						}
+					}
+				}
+				else
+				{
+					fileDialog.Filters.Add(new CommonFileDialogFilter(CommonFileFilters.All.Name, CommonFileFilters.All.Values));
+				}
+
+				var result = fileDialog.ShowDialog(ParentWindow);
+				FileDialogResult fileDialogResult = FileDialogResult.Ok;
+				if (result == CommonFileDialogResult.Cancel) fileDialogResult = FileDialogResult.Cancel;
+				if (result == CommonFileDialogResult.None) fileDialogResult = FileDialogResult.None;
+
+				OnClose.Invoke(fileDialogResult, fileDialog.FileName);
+			}
+			catch (Exception ex)
+			{
+				Log.Here().Error($"Error opening dialog window: {ex.ToString()}");
+			}
+		}
+
+		public void OpenDialog_Old(Window ParentWindow, string Title, string FilePath, Action<string> SaveAction, string DefaultFileName = "", string filter = "All files (*.*)|*.*")
 		{
 			string filePath = FilePath;
-			string fileName = FileName;
+			string fileName = DefaultFileName;
 			if (String.IsNullOrWhiteSpace(filePath))
 			{
 				filePath = AppDomain.CurrentDomain.BaseDirectory;
