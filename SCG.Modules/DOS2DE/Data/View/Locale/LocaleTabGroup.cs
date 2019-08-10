@@ -118,7 +118,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			{
 				CombinedEntries.Entries.AddRange(obj.Entries);
 			}
-			CombinedEntries.Entries.OrderBy(e => e.Key);
+			//CombinedEntries.Entries.OrderBy(e => e.Key);
 			this.RaisePropertyChanged("CombinedEntries");
 			this.RaisePropertyChanged("Tabs");
 			Log.Here().Activity($"Updated combined entries for '{Name}'.");

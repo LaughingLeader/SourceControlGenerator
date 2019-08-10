@@ -227,7 +227,8 @@ namespace SCG.Windows
 
 		public static void FooterLog(string Message, params object[] Vars)
 		{
-			RxApp.MainThreadScheduler.Schedule(() => {
+			_instance?.Dispatcher.Invoke(() =>
+			{
 				Message = String.Format(Message, Vars);
 				_instance.Controller.SetFooter(Message, LogType.Important);
 				Log.AllCallback?.Invoke(Message, LogType.Important);
@@ -236,14 +237,12 @@ namespace SCG.Windows
 
 		public static void FooterError(string Message, params object[] Vars)
 		{
-			if (_instance != null)
+			_instance?.Dispatcher.Invoke(() =>
 			{
-				RxApp.MainThreadScheduler.Schedule(() => {
-					Message = String.Format(Message, Vars);
-					_instance.Controller.SetFooter(Message, LogType.Error);
-					Log.AllCallback?.Invoke(Message, LogType.Error);
-				});
-			}
+				Message = String.Format(Message, Vars);
+				_instance.Controller.SetFooter(Message, LogType.Error);
+				Log.AllCallback?.Invoke(Message, LogType.Error);
+			});
 		}
 		
 		private void HandleColumnHeaderSizeChanged(object sender, SizeChangedEventArgs sizeChangedEventArgs)

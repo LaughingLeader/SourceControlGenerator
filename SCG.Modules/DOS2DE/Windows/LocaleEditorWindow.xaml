@@ -98,7 +98,30 @@ body {
 					</Trigger>
 				</Style.Triggers>
 			</Style>
-
+			<Style x:Key="CellNoHighlightChangesUnsaved" TargetType="{x:Type DataGridCell}">
+				<Style.Triggers>
+					<Trigger Property="IsSelected" Value="True">
+						<Setter Property="Foreground" Value="Black" />
+						<Setter Property="BorderBrush" Value="{x:Null}" />
+					</Trigger>
+					<Trigger Property="IsSelected" Value="False">
+						<Setter Property="Background" Value="{x:Null}" />
+					</Trigger>
+					<DataTrigger Binding="{Binding ChangesUnsaved}" Value="True">
+						<Setter Property="Background">
+							<Setter.Value>
+								<SolidColorBrush Color="Lime" Opacity="0.35" />
+							</Setter.Value>
+						</Setter>
+					</DataTrigger>
+					<DataTrigger Binding="{Binding ChangesUnsaved}" Value="False">
+						<Setter Property="Background" Value="{x:Null}" />
+					</DataTrigger>
+				</Style.Triggers>
+			</Style>
+			<Style x:Key="ProjectsHeaderStyle" TargetType="{x:Type DataGridColumnHeader}" BasedOn="{StaticResource {x:Type DataGridColumnHeader}}">
+				<Setter Property="HorizontalContentAlignment" Value="Center" />
+			</Style>
 			<SolidColorBrush x:Key="TabItem.Selected.Background" Color="#FFFFFF"/>
 			<SolidColorBrush x:Key="TabItem.Selected.Border" Color="#ACACAC"/>
 			<Grid x:Key="KeyActionsGrid" Background="#FFD0FFD0" >
@@ -426,17 +449,7 @@ body {
 					</Setter.Value>
 				</Setter>
 			</Style>
-
-			<Style x:Key="DataGrid_NoHighlight" TargetType="DataGridCell">
-				<Style.Triggers>
-					<Trigger  Property="IsSelected" Value="true">
-						<Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}"/>
-						<Setter Property="Background" Value="{x:Null}" />
-						<Setter Property="BorderBrush" Value="{x:Null}" />
-					</Trigger>
-				</Style.Triggers>
-			</Style>
-
+			
 			<Style x:Key="LocaleDataGridStyle" TargetType="{x:Type DataGrid}">
 				<Setter Property="Background" Value="{DynamicResource {x:Static SystemColors.ControlBrushKey}}"/>
 				<Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}"/>
@@ -537,7 +550,6 @@ body {
 							<ColumnDefinition Width="*"/>
 						</Grid.ColumnDefinitions>-->
 						<DataGrid x:Name="LocaleEntryDataGrid"
-								GotFocus="LocaleEntryDataGrid_GotFocus"
 								ItemsSource="{Binding Entries}" 
 								BorderThickness="0,1,0,0"
 								AutoGenerateColumns="False" 
@@ -550,28 +562,37 @@ body {
 							<DataGrid.Resources>
 								<cb:DataContextSpy x:Key="FileData" DataContext="{Binding}" />
 							</DataGrid.Resources>
+							<DataGrid.RowStyle>
+								<Style TargetType="{x:Type DataGridRow}" BasedOn="{StaticResource {x:Type DataGridRow}}">
+									<Setter Property="IsSelected" Value="{Binding Selected}" />
+								</Style>
+							</DataGrid.RowStyle>
 							<DataGrid.Columns>
-								<DataGridCheckBoxColumn MinWidth="25" CanUserResize="False" IsThreeState="False"
-									Binding="{Binding Selected, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" >
-									<DataGridCheckBoxColumn.Header>
-										<CheckBox IsChecked="{Binding Source={StaticResource FileData}, Path=DataContext.AllSelected, Mode=TwoWay}"
-										  ToolTip="Select/Deselect All" />
-									</DataGridCheckBoxColumn.Header>
-									<DataGridCheckBoxColumn.CellStyle>
-										<Style TargetType="{x:Type DataGridCell}" BasedOn="{StaticResource DataGrid_NoHighlight}">
+								<DataGridTemplateColumn MinWidth="25" CanUserResize="False" HeaderStyle="{StaticResource ProjectsHeaderStyle}" >
+									<DataGridTemplateColumn.Header>
+										<CheckBox IsChecked="{Binding Source={StaticResource FileData}, Path=DataContext.AllSelected, Mode=TwoWay}" ToolTip="Select/Deselect All" />
+									</DataGridTemplateColumn.Header>
+									<DataGridTemplateColumn.CellStyle>
+										<Style TargetType="{x:Type DataGridCell}" BasedOn="{StaticResource CellNoHighlightChangesUnsaved}">
 											<Setter Property="Margin" Value="0" />
-											<EventSetter Event="PreviewMouseLeftButtonDown" Handler="CheckBoxCell_MouseLeftButtonDown"/>
 										</Style>
-									</DataGridCheckBoxColumn.CellStyle>
-								</DataGridCheckBoxColumn>
+									</DataGridTemplateColumn.CellStyle>
+									<DataGridTemplateColumn.CellTemplate>
+										<DataTemplate>
+											<CheckBox IsChecked="{Binding Selected, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Center" VerticalAlignment="Center"
+													  IsEnabled="{Binding RelativeSource={RelativeSource AncestorType={x:Type DataGridRow}},Path=IsSelected,Mode=OneWay}"
+													  />
+										</DataTemplate>
+									</DataGridTemplateColumn.CellTemplate>
+								</DataGridTemplateColumn>
 								<DataGridTextColumn Header="Key" Binding="{Binding EntryKey}" MinWidth="50" Width="Auto">
 									<DataGridTextColumn.CellStyle>
-										<Style TargetType="DataGridCell" BasedOn="{StaticResource DataGrid_NoHighlight}">
+										<Style TargetType="DataGridCell" BasedOn="{StaticResource CellNoHighlightChangesUnsaved}">
 											<Setter Property="IsEnabled" Value="{Binding KeyIsEditable}" />
 										</Style>
 									</DataGridTextColumn.CellStyle>
 								</DataGridTextColumn>
-								<DataGridTemplateColumn Header="Content" Width="*">
+								<DataGridTemplateColumn Header="Content" Width="*" CellStyle="{StaticResource CellNoHighlightChangesUnsaved}">
 									<DataGridTemplateColumn.CellTemplate>
 										<DataTemplate>
 											<TextBox
@@ -601,23 +622,20 @@ body {
 													<ColumnDefinition Width="*" />
 													<ColumnDefinition Width="Auto" />
 												</Grid.ColumnDefinitions>
-												--><!--<c:ImageButton x:Name="ExpandContentButton" Grid.Column="1"
+												-->
+											<!--<c:ImageButton x:Name="ExpandContentButton" Grid.Column="1"
 													Command="{Binding Path=DataContext.ExpandContentCommand, RelativeSource={RelativeSource AncestorType={x:Type Window}}}"
 													CommandParameter="{Binding}"
 													ToolTip="{x:Static core:DOS2DETooltips.Button_Locale_ExpandText}"
 													Source="{x:Static vdata:IconPathData.Ellipsis}"
-												/>--><!--
+												/>-->
+											<!--
 											</Grid>-->
 										</DataTemplate>
 									</DataGridTemplateColumn.CellTemplate>
 								</DataGridTemplateColumn>
-								<DataGridTextColumn Header="Handle" Binding="{Binding EntryHandle}" Width="150" />
+								<DataGridTextColumn Header="Handle" Binding="{Binding EntryHandle}" Width="150" CellStyle="{StaticResource CellNoHighlightChangesUnsaved}"/>
 							</DataGrid.Columns>
-							<DataGrid.RowStyle>
-								<Style TargetType="{x:Type DataGridRow}">
-									<EventSetter Event="GotFocus" Handler="EntryDataGrid_RowFocused" />
-								</Style>
-							</DataGrid.RowStyle>
 						</DataGrid>
 						<GridSplitter Grid.Row="1" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Height="3" Background="{Binding ElementName=LocaleEntryDataGrid, Path=BorderBrush}" />
 						<Border Grid.Row="2" 

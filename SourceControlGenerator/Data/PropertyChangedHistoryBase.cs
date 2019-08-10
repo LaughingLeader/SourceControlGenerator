@@ -14,6 +14,7 @@ namespace SCG.Data
 {
 	public interface IPropertyChangedHistoryBase
 	{
+		bool ChangesUnsaved { get; set; }
 		IHistory History { get; set; }
 		void SetHistoryFromObject(IPropertyChangedHistoryBase obj);
 	}
@@ -22,6 +23,15 @@ namespace SCG.Data
 	{
 		[IgnoreDataMember]
 		public IHistory History { get; set; }
+
+		private bool changedUnsaved = false;
+
+		[IgnoreDataMember]
+		public bool ChangesUnsaved
+		{
+			get => changedUnsaved;
+			set { this.RaiseAndSetIfChanged(ref changedUnsaved, value); }
+		}
 
 		public void SetHistoryFromObject(IPropertyChangedHistoryBase obj)
 		{
@@ -84,13 +94,16 @@ namespace SCG.Data
 				{
 					var undoValue = field;
 					var redoValue = value;
+					bool lastChangesUnsaved = ChangesUnsaved;
 
 					History.Snapshot(() =>
 					{
 						this.SetProperty(this, propertyName, undoValue, true);
+						ChangesUnsaved = lastChangesUnsaved;
 					}, () =>
 					{
 						this.SetProperty(this, propertyName, redoValue, true);
+						ChangesUnsaved = true;
 					});
 				}
 
@@ -132,13 +145,16 @@ namespace SCG.Data
 				{
 					var undoValue = field;
 					var redoValue = value;
+					bool lastChangesUnsaved = ChangesUnsaved;
 
 					History.Snapshot(() =>
 					{
 						this.SetField(fieldName, undoValue, propertyName, true);
+						ChangesUnsaved = lastChangesUnsaved;
 					}, () =>
 					{
 						this.SetField(fieldName, redoValue, propertyName, true);
+						ChangesUnsaved = true;
 					});
 				}
 

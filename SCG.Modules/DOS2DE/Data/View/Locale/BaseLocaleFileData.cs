@@ -29,7 +29,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			set
 			{
 				this.RaiseAndSetIfChanged(ref fileLinkData, value);
-				HasFileLink = !String.IsNullOrEmpty(fileLinkData.LinkFilePath);
+				HasFileLink = !String.IsNullOrEmpty(fileLinkData.ReadFrom);
 			}
 		}
 
@@ -94,6 +94,14 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			get { return changesUnsaved; }
 			set
 			{
+				if(changesUnsaved == true && value == false)
+				{
+					foreach(var entry in Entries)
+					{
+						entry.ChangedUnsaved = false;
+					}
+				}
+
 				this.RaiseAndSetIfChanged(ref changesUnsaved, value);
 				UpdateDisplayName();
 			}

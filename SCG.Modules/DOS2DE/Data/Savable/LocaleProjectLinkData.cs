@@ -21,12 +21,10 @@ namespace SCG.Modules.DOS2DE.Data.Savable
 	[DataContract]
 	public struct LocaleFileLinkData
 	{
-		private string sourceFile;
+		[DataMember]
+		public string ReadFrom { get; set; }
 
 		[DataMember]
-		public string LinkFilePath { get; set; }
-
-		[DataMember]
-		public string TargetLocaleFileName { get; set; }
+		public string TargetFile { get; set; }
 	}
 }

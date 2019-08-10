@@ -68,24 +68,6 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			}
 		}
 
-		private bool changesUnsaved = false;
-
-		public bool ChangesUnsaved
-		{
-			get => changesUnsaved;
-			set
-			{
-				if (this.RaiseAndSetIfChanged(ref changesUnsaved, value) == true)
-				{
-					WindowTitle = "*Localization Editor";
-				}
-				else
-				{
-					WindowTitle = "Localization Editor";
-				}
-			}
-		}
-
 		private string windowTitle = "Localization Editor";
 
 		public string WindowTitle
@@ -660,7 +642,6 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 						OutputDate = DateTime.Now.ToShortTimeString();
 
 						keyFileData.ChangesUnsaved = false;
-
 						ChangesUnsaved = false;
 					}
 					else
@@ -912,6 +893,10 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 								if(fileEntry != null)
 								{
 									fileEntry.Entries.Insert(x.Index, x.Entry);
+									if(fileEntry is LocaleNodeFileData nodeFileData && x.Entry is LocaleNodeKeyEntry nodeKeyEntry)
+									{
+										nodeFileData.RootRegion.AppendChild(nodeKeyEntry.Node);
+									}
 								}
 							}
 							SelectedGroup.UpdateCombinedData();
@@ -922,7 +907,24 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 							for(var i = 0; i < selectedFiles.Count; i++)
 							{
 								var f = selectedFiles[i];
-								f.Entries.RemoveAll(x => x.Selected);
+								for(var k = 0; k < f.Entries.Count; k++)
+								{
+									var entry = f.Entries[k];
+									if(entry.Selected)
+									{
+										f.Entries.Remove(entry);
+										if (f is LocaleNodeFileData nodeFileData && entry is LocaleNodeKeyEntry nodeKeyEntry)
+										{
+											//Log.Here().Important($"Looking for container for '{nodeKeyEntry.Node.Name}' => {nodeKeyEntry.Key}.");
+											var nodeContainer = nodeFileData.RootRegion.Children.Values.Where(l => l.Contains(nodeKeyEntry.Node));
+											foreach(var list in nodeContainer)
+											{
+												//Log.Here().Important($"Removing node '{nodeKeyEntry.Node.Name}' from list.");
+												list.Remove(nodeKeyEntry.Node);
+											}
+										}
+									}
+								}
 							}
 							SelectedGroup.UpdateCombinedData();
 						}
@@ -942,7 +944,25 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 						}
 						void redo()
 						{
-							selectedFile.Entries.RemoveAll(x => deleteEntries.Contains(x));
+							//selectedFile.Entries.RemoveAll(x => deleteEntries.Contains(x));
+							for (var k = 0; k < selectedFile.Entries.Count; k++)
+							{
+								var entry = selectedFile.Entries[k];
+								if (entry.Selected)
+								{
+									selectedFile.Entries.Remove(entry);
+									if (selectedFile is LocaleNodeFileData nodeFileData && entry is LocaleNodeKeyEntry nodeKeyEntry)
+									{
+										//Log.Here().Important($"Looking for container for '{nodeKeyEntry.Node.Name}' => {nodeKeyEntry.Key}.");
+										var nodeContainer = nodeFileData.RootRegion.Children.Values.Where(l => l.Contains(nodeKeyEntry.Node));
+										foreach (var list in nodeContainer)
+										{
+											//Log.Here().Important($"Removing node '{nodeKeyEntry.Node.Name}' from list.");
+											list.Remove(nodeKeyEntry.Node);
+										}
+									}
+								}
+							}
 							SelectedGroup.UpdateCombinedData();
 							//Log.Here().Activity($"Entries {selectedFile.Entries.Count} | {next.Count()}.");
 						}
@@ -1121,33 +1141,48 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 				if (File.Exists(filePath))
 				{
 					var lastLinkData = fileData.FileLinkData;
+					List<TextualLocaleEntry> lastValues = fileData.Entries.Select(x => new TextualLocaleEntry { Key = x.Key, Content = x.Content, Handle = x.Handle }).ToList();
+
 					void undo()
 					{
 						fileData.FileLinkData = lastLinkData;
+
+						foreach (var lastEntry in lastValues)
+						{
+							var entry = fileData.Entries.FirstOrDefault(x => x.Handle == lastEntry.Handle);
+							if (entry != null)
+							{
+								entry.Key = lastEntry.Key;
+								entry.Content = lastEntry.Content;
+							}
+						}
 					}
 
 					void redo()
 					{
 						fileData.FileLinkData = new LocaleFileLinkData()
 						{
-							LinkFilePath = filePath,
-							TargetLocaleFileName = fileData.SourcePath
+							ReadFrom = filePath,
+							TargetFile = fileData.SourcePath
 						};
 
-						Log.Here().Activity($"Refreshing data for '{fileData.SourcePath}' from linked file '{filePath}'.");
+						Log.Here().Activity($"Loading data for '{fileData.SourcePath}' from linked file '{filePath}'.");
 						LocaleEditorCommands.RefreshLinkedData(fileData);
 
 						if (fileData is LocaleNodeFileData nodeFileData)
 						{
-							if (nodeFileData.ModProject != null && !String.IsNullOrEmpty(nodeFileData.FileLinkData.LinkFilePath))
+							if (nodeFileData.ModProject != null && !String.IsNullOrEmpty(nodeFileData.FileLinkData.ReadFrom))
 							{
+								Log.Here().Activity($"Looking for linked list for '{nodeFileData.ModProject.UUID}'.");
 								var linkedList = LinkedLocaleData.FirstOrDefault(x => x.ProjectUUID.Equals(nodeFileData.ModProject.UUID, StringComparison.OrdinalIgnoreCase));
 								if (linkedList == null)
 								{
+									Log.Here().Activity("  Linked list not found. Creating new.");
 									linkedList = new LocaleProjectLinkData()
 									{
 										ProjectUUID = nodeFileData.ModProject.UUID,
 									};
+									LinkedLocaleData.Add(linkedList);
 								}
 
 								linkedList.Links.Add(fileData.FileLinkData);
@@ -1167,9 +1202,27 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 
 		public void RefreshLinkedData(ILocaleFileData fileData)
 		{
-			if(!String.IsNullOrEmpty(fileData.FileLinkData.LinkFilePath))
+			if(!String.IsNullOrEmpty(fileData.FileLinkData.ReadFrom))
 			{
-				LocaleEditorCommands.RefreshLinkedData(fileData);
+				List<TextualLocaleEntry> lastValues = fileData.Entries.Select(x => new TextualLocaleEntry { Key = x.Key, Content = x.Content, Handle = x.Handle }).ToList();
+				void undo()
+				{
+					foreach(var lastEntry in lastValues)
+					{
+						var entry = fileData.Entries.FirstOrDefault(x => x.Handle == lastEntry.Handle);
+						if (entry != null)
+						{
+							entry.Key = lastEntry.Key;
+							entry.Content = lastEntry.Content;
+						}
+					}
+				}
+				void redo()
+				{
+					LocaleEditorCommands.RefreshLinkedData(fileData);
+				}
+				CreateSnapshot(undo, redo);
+				redo();
 			}
 		}
 
@@ -1213,13 +1266,25 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			}
 
 			FileCommands.OpenConfirmationDialog(view, "Remove Link", 
-				$"Remove external link '{fileData.FileLinkData.LinkFilePath}' from {fileData.FileLinkData.TargetLocaleFileName}?", "", onConfirm);
+				$"Remove external link '{fileData.FileLinkData.ReadFrom}' from {fileData.FileLinkData.TargetFile}?", "", onConfirm);
 		}
 
 		public void OnViewLoaded(LocaleEditorWindow v, DOS2DEModuleData moduleData, CompositeDisposable disposables)
 		{
 			view = v;
 			ModuleData = moduleData;
+
+			this.WhenAnyValue(vm => vm.ChangesUnsaved).Subscribe((b) =>
+			{
+				if (b)
+				{
+					WindowTitle = "*Localization Editor";
+				}
+				else
+				{
+					WindowTitle = "Localization Editor";
+				}
+			}).DisposeWith(disposables);
 
 			//this.WhenAnyValue(vm => vm.SelectedGroup.SelectedFile).BindTo(this, vm => vm.SelectedFile).DisposeWith(disposables);
 

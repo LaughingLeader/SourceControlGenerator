@@ -262,29 +262,6 @@ namespace SCG.Modules.DOS2DE.Windows
 			ViewModel.MenuData.UnregisterShortcuts(this.InputBindings);
 		}
 
-		/// <summary>
-		/// Single-click selection
-		/// </summary>
-		/// <param name="sender"></param>
-		/// <param name="e"></param>
-		private void LocaleEntryDataGrid_GotFocus(object sender, RoutedEventArgs e)
-		{
-			//if (e.OriginalSource is DataGridCell cell && cell.DataContext is ILocaleKeyEntry entry)
-			//{
-			//	//entry.Selected = !entry.Selected;
-			//	e.Handled = true;
-			//}
-		}
-
-		private void CheckBoxCell_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
-		{
-			if (sender is DataGridCell cell && cell.DataContext is ILocaleKeyEntry entry)
-			{
-				entry.Selected = !entry.Selected;
-				e.Handled = true;
-			}
-		}
-
 		private void EntryDataGrid_RowFocused(object sender, RoutedEventArgs e)
 		{
 			//Log.Here().Activity($"EntryDataGrid_RowFocused: {sender} | {e.Source}");

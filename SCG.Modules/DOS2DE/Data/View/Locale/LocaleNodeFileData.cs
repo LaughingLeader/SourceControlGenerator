@@ -1,5 +1,8 @@
 ﻿using DynamicData.Binding;
+using LSLib.LS;
+using LSLib.LS.Enums;
 using SCG.Data;
+using SCG.Modules.DOS2DE.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -11,19 +14,56 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 {
 	public class LocaleNodeFileData : BaseLocaleFileData
 	{
-		public LSLib.LS.Resource Source { get; private set; }
+		public Resource Source { get; private set; }
 
-		public LSLib.LS.Enums.ResourceFormat Format { get; set; }
+		public ResourceFormat Format { get; set; }
 
 		public ModProjectData ModProject { get; set; }
 
-		public LocaleNodeFileData(LocaleTabGroup parent, LSLib.LS.Enums.ResourceFormat resourceFormat, 
-			LSLib.LS.Resource res, string sourcePath, string name = "") : base(parent, name)
+		public Region RootRegion { get; private set; }
+
+		public LocaleNodeFileData(LocaleTabGroup parent, ResourceFormat resourceFormat, 
+			Resource res, string sourcePath, string name = "") : base(parent, name)
 		{
 			Source = res;
 			SourcePath = sourcePath;
 			Format = resourceFormat;
 			CanCreateFileLink = true;
+
+			if(res != null)
+			{
+				RootRegion = res.Regions.Values.FirstOrDefault();
+				//Log.Here().Activity($"Region {RootRegion.Name} | {RootRegion.RegionName}");
+				//foreach (var attkvp in RootRegion.Attributes)
+				//{
+				//	Log.Here().Activity($"  Attributes: {attkvp.Key} => {attkvp.Value.Type} => {attkvp.Value.Value}");
+				//}
+
+				//if (RootRegion != null)
+				//{
+					//var nodeList = RootRegion.Children.Values.Where(x => x.Count > 0).OrderBy(x => x.Count).FirstOrDefault();
+
+					//Log.Here().Activity($"Parsing region for {this.SourcePath}.");
+
+					//foreach (var kvp in RootRegion.Children)
+					//{
+					//	Log.Here().Activity($"[{kvp.Key}] NodeList: {kvp.Value.Count}");
+					//	for (var i = 0; i < kvp.Value.Count; i++)
+					//	{
+					//		var x = kvp.Value[i];
+					//		Log.Here().Activity($"  [{i}] Node: {x.Name}");
+					//		foreach (var attkvp in x.Attributes)
+					//		{
+					//			Log.Here().Activity($"   Attributes: {attkvp.Key} => {attkvp.Value.Type}");
+					//		}
+					//		foreach (var nodekvp in x.Children)
+					//		{
+					//			Log.Here().Activity($"   Nodes: {nodekvp.Key} => {String.Join(",", nodekvp.Value.Select(n => n.Name))}");
+					//		}
+					//	}
+					//}
+				//}
+			}
 		}
 	}
 }

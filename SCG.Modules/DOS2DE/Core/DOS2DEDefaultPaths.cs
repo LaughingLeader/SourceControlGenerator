@@ -20,17 +20,17 @@ namespace SCG.Modules.DOS2DE.Core
 
 		public static string LocalizationEditorFolder(IModuleData Data)
 		{
-			return Path.Combine(LocalizationEditorFolder(Data), @"\LocalizationEditor\");
+			return DefaultPaths.ModuleRootFolder(Data) + @"\LocalizationEditor\";
 		}
 
 		public static string LocalizationEditorLinkFolder(IModuleData Data)
 		{
-			return Path.Combine(LocalizationEditorFolder(Data), @"\Links\");
+			return LocalizationEditorFolder(Data) + @"Links\";
 		}
 
 		public static string LocalizationEditorSettings(IModuleData Data)
 		{
-			return Path.Combine(LocalizationEditorFolder(Data), @"LocalizationEditorSettings.txt");
+			return LocalizationEditorFolder(Data) + @"LocalizationEditorSettings.txt";
 		}
 
 		public static string CustomLocaleDirectory(DOS2DEModuleData Data, ModProjectData modProject)

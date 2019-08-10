@@ -53,15 +53,18 @@ namespace SCG.Data.View
 
 		public void Add(LogData log)
 		{
-			Logs.Add(log);
-			this.RaisePropertyChanged("Logs");
-			this.RaisePropertyChanged("CanClear");
-
-			if (LastLogs != null)
+			RxApp.MainThreadScheduler.Schedule(() =>
 			{
-				LastLogs = null;
-				this.RaisePropertyChanged("CanRestore");
-			}
+				Logs.Add(log);
+				this.RaisePropertyChanged("Logs");
+				this.RaisePropertyChanged("CanClear");
+
+				if (LastLogs != null)
+				{
+					LastLogs = null;
+					this.RaisePropertyChanged("CanRestore");
+				}
+			});
 		}
 
 		public void Clear()
