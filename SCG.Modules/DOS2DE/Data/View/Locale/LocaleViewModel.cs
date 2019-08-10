@@ -863,13 +863,10 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			{
 				if (SelectedGroup != null && SelectedGroup.SelectedFile != null)
 				{
-					var deleteKeys = SelectedGroup.SelectedFile.Entries.Where(e => e.Selected).ToList();
-					Log.Here().Activity($"Deleting {deleteKeys.Count} keys.");
-
 					if(SelectedGroup.SelectedFile == SelectedGroup.CombinedEntries)
 					{
 						var selectedEntries = SelectedGroup.DataFiles.SelectMany(f => f.Entries.Where(x => x.Selected)).ToList();
-
+						Log.Here().Activity($"Deleting {selectedEntries.Count} keys.");
 						List<LocaleEntryHistory> lastState = new List<LocaleEntryHistory>();
 						
 						foreach(var entry in selectedEntries)
@@ -878,7 +875,9 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 							{
 								ParentFile = entry.Parent,
 								Entry = entry,
-								Index = entry.Parent.Entries.IndexOf(entry)
+								Index = entry.Parent.Entries.IndexOf(entry),
+								ChangesUnsaved = entry.ChangesUnsaved,
+								ParentChangesUnsaved = entry.Parent.ChangesUnsaved
 							});
 						}
 
@@ -889,8 +888,10 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 								var fileEntry = SelectedGroup.DataFiles.FirstOrDefault(f => f.SourcePath == x.ParentFile.SourcePath);
 								if(fileEntry != null)
 								{
+									x.Entry.ChangesUnsaved = x.ChangesUnsaved;
 									fileEntry.Entries.Insert(x.Index, x.Entry);
-									if(fileEntry is LocaleNodeFileData nodeFileData && x.Entry is LocaleNodeKeyEntry nodeKeyEntry)
+									fileEntry.ChangesUnsaved = x.ParentChangesUnsaved;
+									if (fileEntry is LocaleNodeFileData nodeFileData && x.Entry is LocaleNodeKeyEntry nodeKeyEntry)
 									{
 										nodeFileData.RootRegion.AppendChild(nodeKeyEntry.Node);
 									}
@@ -914,6 +915,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 										list.Remove(nodeKeyEntry.Node);
 									}
 								}
+								entry.Parent.ChangesUnsaved = true;
 							}
 							SelectedGroup.UpdateCombinedData();
 						}
@@ -925,34 +927,34 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 						var selectedFile = SelectedGroup.SelectedFile;
 
 						var last = selectedFile.Entries.ToList();
-						var deleteEntries = selectedFile.Entries.Where(x => x.Selected);
+						var deleteEntries = selectedFile.Entries.Where(x => x.Selected).ToArray();
+						var lastChangesUnsaved = selectedFile.ChangesUnsaved;
 						void undo()
 						{
 							selectedFile.Entries = new ObservableCollectionExtended<ILocaleKeyEntry>(last);
 							SelectedGroup.UpdateCombinedData();
+							selectedFile.ChangesUnsaved = lastChangesUnsaved;
 						}
 						void redo()
 						{
 							//selectedFile.Entries.RemoveAll(x => deleteEntries.Contains(x));
-							for (var k = 0; k < selectedFile.Entries.Count; k++)
+							for(var i = 0; i < deleteEntries.Length;i++)
 							{
-								var entry = selectedFile.Entries[k];
-								if (entry.Selected)
+								var entry = deleteEntries[i];
+								entry.Parent.Entries.Remove(entry);
+								if (selectedFile is LocaleNodeFileData nodeFileData && entry is LocaleNodeKeyEntry nodeKeyEntry)
 								{
-									selectedFile.Entries.Remove(entry);
-									if (selectedFile is LocaleNodeFileData nodeFileData && entry is LocaleNodeKeyEntry nodeKeyEntry)
+									Log.Here().Important($"Looking for container for '{nodeKeyEntry.Node.Name}' => {nodeKeyEntry.Key}.");
+									var nodeContainer = nodeFileData.RootRegion.Children.Values.Where(l => l.Contains(nodeKeyEntry.Node));
+									foreach (var list in nodeContainer)
 									{
-										//Log.Here().Important($"Looking for container for '{nodeKeyEntry.Node.Name}' => {nodeKeyEntry.Key}.");
-										var nodeContainer = nodeFileData.RootRegion.Children.Values.Where(l => l.Contains(nodeKeyEntry.Node));
-										foreach (var list in nodeContainer)
-										{
-											//Log.Here().Important($"Removing node '{nodeKeyEntry.Node.Name}' from list.");
-											list.Remove(nodeKeyEntry.Node);
-										}
+										Log.Here().Important($"Removing node '{nodeKeyEntry.Node.Name}' from list.");
+										list.Remove(nodeKeyEntry.Node);
 									}
 								}
 							}
 							SelectedGroup.UpdateCombinedData();
+							selectedFile.ChangesUnsaved = true;
 							//Log.Here().Activity($"Entries {selectedFile.Entries.Count} | {next.Count()}.");
 						}
 						this.CreateSnapshot(undo, redo);

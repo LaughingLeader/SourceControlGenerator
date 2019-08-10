@@ -11,5 +11,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 		public ILocaleFileData ParentFile;
 		public ILocaleKeyEntry Entry;
 		public int Index;
+		public bool ChangesUnsaved;
+		public bool ParentChangesUnsaved;
 	}
 }
