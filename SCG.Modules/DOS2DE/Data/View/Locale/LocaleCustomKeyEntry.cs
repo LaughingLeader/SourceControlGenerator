@@ -55,7 +55,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			{
 				if(this.UpdateWithHistory(ref key, value))
 				{
-					ChangedUnsaved = true;
+					ChangesUnsaved = true;
 					this.RaisePropertyChanged("Key");
 				}
 			}
@@ -68,7 +68,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			{
 				if(this.UpdateWithHistory(ref content, value))
 				{
-					ChangedUnsaved = true;
+					ChangesUnsaved = true;
 					this.RaisePropertyChanged("Content");
 				}
 			}
@@ -81,7 +81,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			{
 				if(this.UpdateWithHistory(ref handle, value))
 				{
-					ChangedUnsaved = true;
+					ChangesUnsaved = true;
 					this.RaisePropertyChanged("Handle");
 				}
 			}

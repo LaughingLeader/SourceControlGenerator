@@ -98,7 +98,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 				{
 					foreach(var entry in Entries)
 					{
-						entry.ChangedUnsaved = false;
+						entry.ChangesUnsaved = false;
 					}
 				}
 

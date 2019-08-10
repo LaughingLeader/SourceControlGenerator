@@ -868,21 +868,18 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 
 					if(SelectedGroup.SelectedFile == SelectedGroup.CombinedEntries)
 					{
-						var selectedFiles = SelectedGroup.DataFiles.Where(f => f.Entries.Any(x => x.Selected)).ToList();
+						var selectedEntries = SelectedGroup.DataFiles.SelectMany(f => f.Entries.Where(x => x.Selected)).ToList();
 
 						List<LocaleEntryHistory> lastState = new List<LocaleEntryHistory>();
 						
-						foreach(var f in selectedFiles)
+						foreach(var entry in selectedEntries)
 						{
-							foreach(var e in f.Entries.Where(x => x.Selected))
+							lastState.Add(new LocaleEntryHistory
 							{
-								lastState.Add(new LocaleEntryHistory
-								{
-									ParentFile = f,
-									Entry = e,
-									Index = f.Entries.IndexOf(e)
-								});
-							}
+								ParentFile = entry.Parent,
+								Entry = entry,
+								Index = entry.Parent.Entries.IndexOf(entry)
+							});
 						}
 
 						void undo()
@@ -904,25 +901,17 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 
 						void redo()
 						{
-							for(var i = 0; i < selectedFiles.Count; i++)
+							foreach (var entry in selectedEntries)
 							{
-								var f = selectedFiles[i];
-								for(var k = 0; k < f.Entries.Count; k++)
+								entry.Parent.Entries.Remove(entry);
+								if (entry is LocaleNodeKeyEntry nodeKeyEntry && entry.Parent is LocaleNodeFileData nodeFileData)
 								{
-									var entry = f.Entries[k];
-									if(entry.Selected)
+									Log.Here().Important($"Looking for container for '{nodeKeyEntry.Node.Name}' => {nodeKeyEntry.Key}.");
+									var nodeContainer = nodeFileData.RootRegion.Children.Values.Where(l => l.Contains(nodeKeyEntry.Node));
+									foreach (var list in nodeContainer)
 									{
-										f.Entries.Remove(entry);
-										if (f is LocaleNodeFileData nodeFileData && entry is LocaleNodeKeyEntry nodeKeyEntry)
-										{
-											//Log.Here().Important($"Looking for container for '{nodeKeyEntry.Node.Name}' => {nodeKeyEntry.Key}.");
-											var nodeContainer = nodeFileData.RootRegion.Children.Values.Where(l => l.Contains(nodeKeyEntry.Node));
-											foreach(var list in nodeContainer)
-											{
-												//Log.Here().Important($"Removing node '{nodeKeyEntry.Node.Name}' from list.");
-												list.Remove(nodeKeyEntry.Node);
-											}
-										}
+										Log.Here().Important($"Removing node '{nodeKeyEntry.Node.Name}' from list.");
+										list.Remove(nodeKeyEntry.Node);
 									}
 								}
 							}
@@ -1174,7 +1163,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 							if (nodeFileData.ModProject != null && !String.IsNullOrEmpty(nodeFileData.FileLinkData.ReadFrom))
 							{
 								Log.Here().Activity($"Looking for linked list for '{nodeFileData.ModProject.UUID}'.");
-								var linkedList = LinkedLocaleData.FirstOrDefault(x => x.ProjectUUID.Equals(nodeFileData.ModProject.UUID, StringComparison.OrdinalIgnoreCase));
+								var linkedList = LinkedLocaleData.FirstOrDefault(x => nodeFileData.ModProject.UUID == x.ProjectUUID);
 								if (linkedList == null)
 								{
 									Log.Here().Activity("  Linked list not found. Creating new.");

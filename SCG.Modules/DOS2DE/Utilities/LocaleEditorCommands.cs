@@ -860,10 +860,11 @@ namespace SCG.Modules.DOS2DE.Utilities
 					try
 					{
 						LocaleProjectLinkData data = await JsonInterface.DeserializeObjectAsync<LocaleProjectLinkData>(filePath);
-
-						if (data.Links.Count > 0)
+						if (data != null && data.Links.Count > 0)
 						{
-							foreach(var link in data.Links)
+							Log.Here().Activity($"Line file loaded: '{filePath}' => {data.ProjectUUID}.");
+
+							foreach (var link in data.Links)
 							{
 								Log.Here().Activity($"Searching for locale files for '{link.TargetFile}'.");
 								var targetFiles = localizationData.Groups.SelectMany(g => g.DataFiles).Where(f => sourceFileMatch(f.SourcePath, link.TargetFile));
@@ -874,6 +875,8 @@ namespace SCG.Modules.DOS2DE.Utilities
 									RefreshLinkedData(fileData);
 								}
 							}
+
+							localizationData.LinkedLocaleData.Add(data);
 						}
 					}
 					catch (Exception ex)
@@ -953,7 +956,7 @@ namespace SCG.Modules.DOS2DE.Utilities
 						int lineNum = 0;
 						string line = String.Empty;
 
-						Regex r = new Regex($"(.*){delimiter}+?(.*)");
+						Regex r = new Regex($"(.*?){delimiter}+?(.*)");
 
 						List<TextualLocaleEntry> entries = new List<TextualLocaleEntry>();
 

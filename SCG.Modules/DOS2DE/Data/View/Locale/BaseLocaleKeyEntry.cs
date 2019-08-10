@@ -15,7 +15,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 		ILocaleFileData Parent { get; set; }
 		bool KeyIsEditable { get; set; }
 		bool Selected { get; set; }
-		bool ChangedUnsaved { get; set; }
+		bool ChangesUnsaved { get; set; }
 
 		//Code accessible properties for changes without history
 		string Key { get; set; }
@@ -55,14 +55,6 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 				this.RaiseAndSetIfChanged(ref selected, value);
 				OnSelected(selected);
 			}
-		}
-
-		private bool changesUnsaved = false;
-
-		public bool ChangedUnsaved
-		{
-			get => changesUnsaved;
-			set { this.RaiseAndSetIfChanged(ref changesUnsaved, value); }
 		}
 
 		public virtual void OnSelected(bool isSelected)
