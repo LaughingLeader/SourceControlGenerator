@@ -866,7 +866,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 					if(SelectedGroup.SelectedFile == SelectedGroup.CombinedEntries)
 					{
 						var selectedEntries = SelectedGroup.DataFiles.SelectMany(f => f.Entries.Where(x => x.Selected)).ToList();
-						Log.Here().Activity($"Deleting {selectedEntries.Count} keys.");
+						Log.Here().Important($"Deleting {selectedEntries.Count} keys.");
 						List<LocaleEntryHistory> lastState = new List<LocaleEntryHistory>();
 						
 						foreach(var entry in selectedEntries)
@@ -907,11 +907,11 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 								entry.Parent.Entries.Remove(entry);
 								if (entry is LocaleNodeKeyEntry nodeKeyEntry && entry.Parent is LocaleNodeFileData nodeFileData)
 								{
-									Log.Here().Important($"Looking for container for '{nodeKeyEntry.Node.Name}' => {nodeKeyEntry.Key}.");
+									//Log.Here().Important($"Looking for container for '{nodeKeyEntry.Node.Name}' => {nodeKeyEntry.Key}.");
 									var nodeContainer = nodeFileData.RootRegion.Children.Values.Where(l => l.Contains(nodeKeyEntry.Node));
 									foreach (var list in nodeContainer)
 									{
-										Log.Here().Important($"Removing node '{nodeKeyEntry.Node.Name}' from list.");
+										//Log.Here().Important($"Removing node '{nodeKeyEntry.Node.Name}' from list.");
 										list.Remove(nodeKeyEntry.Node);
 									}
 								}
@@ -927,7 +927,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 						var selectedFile = SelectedGroup.SelectedFile;
 
 						var last = selectedFile.Entries.ToList();
-						var deleteEntries = selectedFile.Entries.Where(x => x.Selected).ToArray();
+						var deleteEntries = selectedFile.Entries.Where(x => x.Selected).ToList();
 						var lastChangesUnsaved = selectedFile.ChangesUnsaved;
 						void undo()
 						{
@@ -938,17 +938,18 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 						void redo()
 						{
 							//selectedFile.Entries.RemoveAll(x => deleteEntries.Contains(x));
-							for(var i = 0; i < deleteEntries.Length;i++)
+							Log.Here().Important($"Deleting {deleteEntries.Count} keys.");
+							for (var i = 0; i < deleteEntries.Count; i++)
 							{
 								var entry = deleteEntries[i];
 								entry.Parent.Entries.Remove(entry);
 								if (selectedFile is LocaleNodeFileData nodeFileData && entry is LocaleNodeKeyEntry nodeKeyEntry)
 								{
-									Log.Here().Important($"Looking for container for '{nodeKeyEntry.Node.Name}' => {nodeKeyEntry.Key}.");
+									//Log.Here().Important($"Looking for container for '{nodeKeyEntry.Node.Name}' => {nodeKeyEntry.Key}.");
 									var nodeContainer = nodeFileData.RootRegion.Children.Values.Where(l => l.Contains(nodeKeyEntry.Node));
 									foreach (var list in nodeContainer)
 									{
-										Log.Here().Important($"Removing node '{nodeKeyEntry.Node.Name}' from list.");
+										//Log.Here().Important($"Removing node '{nodeKeyEntry.Node.Name}' from list.");
 										list.Remove(nodeKeyEntry.Node);
 									}
 								}
