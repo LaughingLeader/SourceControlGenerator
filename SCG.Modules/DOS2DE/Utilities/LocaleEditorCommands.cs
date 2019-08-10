@@ -59,44 +59,7 @@ namespace SCG.Modules.DOS2DE.Utilities
 				}
 			}
 
-			string linkFolder = DOS2DEDefaultPaths.LocalizationEditorLinkFolder(vm);
-			if (Directory.Exists(linkFolder))
-			{
-				var linkFiles = Directory.EnumerateFiles(linkFolder, new DirectoryEnumerationFilters
-				{
-					InclusionFilter = (f) =>
-					{
-						return f.Extension.Equals(".json", StringComparison.OrdinalIgnoreCase) && 
-							f.FileName.CaseInsensitiveContains(modProject.ProjectName, StringComparison.OrdinalIgnoreCase);
-					}
-				});
-
-				bool sourceFileMatch(string sourcePath, string storedFileName)
-				{
-					return Path.GetFileNameWithoutExtension(sourcePath).Equals(storedFileName, StringComparison.OrdinalIgnoreCase);
-				}
-
-				foreach(var filePath in linkFiles)
-				{
-					try
-					{
-						LocaleFileLinkData data = await JsonInterface.DeserializeObjectAsync<LocaleFileLinkData>(filePath);
-						if (!String.IsNullOrWhiteSpace(data.TargetLocaleFileName))
-						{
-							var targetFiles = localizationData.Groups.SelectMany(g => g.DataFiles).Where(f => sourceFileMatch(f.SourcePath, data.TargetLocaleFileName));
-							foreach(var fileData in targetFiles)
-							{
-								fileData.FileLinkData = data;
-								Log.Here().Activity($"Set linked data for '{fileData.SourcePath}' to {data.LinkFilePath}");
-							}
-						}
-					}
-					catch(Exception ex)
-					{
-						Log.Here().Error($"Error deserializing '{filePath}': {ex.ToString()}");
-					}
-				}
-			}
+			await LoadLinkedFilesAsync(vm, modProject, localizationData);
 
 			return localizationData;
 		}
@@ -122,43 +85,9 @@ namespace SCG.Modules.DOS2DE.Utilities
 				}
 			}
 
-			string linkFolder = DOS2DEDefaultPaths.LocalizationEditorLinkFolder(vm);
-			if (Directory.Exists(linkFolder))
+			foreach(var project in modProjects)
 			{
-				var linkFiles = Directory.EnumerateFiles(linkFolder, new DirectoryEnumerationFilters
-				{
-					InclusionFilter = (f) =>
-					{
-						return f.Extension.Equals(".json", StringComparison.OrdinalIgnoreCase) &&
-							modProjects.Any(p => p.ProjectName.CaseInsensitiveContains(f.FileName, StringComparison.OrdinalIgnoreCase));
-					}
-				});
-
-				bool sourceFileMatch(string sourcePath, string storedFileName)
-				{
-					return Path.GetFileNameWithoutExtension(sourcePath).Equals(storedFileName, StringComparison.OrdinalIgnoreCase);
-				}
-
-				foreach (var filePath in linkFiles)
-				{
-					try
-					{
-						LocaleFileLinkData data = await JsonInterface.DeserializeObjectAsync<LocaleFileLinkData>(filePath);
-						if (!String.IsNullOrWhiteSpace(data.TargetLocaleFileName))
-						{
-							var targetFiles = localizationData.Groups.SelectMany(g => g.DataFiles).Where(f => sourceFileMatch(f.SourcePath, data.TargetLocaleFileName));
-							foreach (var fileData in targetFiles)
-							{
-								fileData.FileLinkData = data;
-								Log.Here().Activity($"Set linked data for '{fileData.SourcePath}' to {data.LinkFilePath}");
-							}
-						}
-					}
-					catch (Exception ex)
-					{
-						Log.Here().Error($"Error deserializing '{filePath}': {ex.ToString()}");
-					}
-				}
+				await LoadLinkedFilesAsync(vm, project, localizationData);
 			}
 
 			return localizationData;
@@ -892,6 +821,53 @@ namespace SCG.Modules.DOS2DE.Utilities
 				}
 			}
 			fileData.ChangesUnsaved = entries.Count > 0;
+		}
+
+		public static async Task<bool> LoadLinkedFilesAsync(DOS2DEModuleData vm, ModProjectData modProject, LocaleViewModel localizationData)
+		{
+			string linkFolder = DOS2DEDefaultPaths.LocalizationEditorLinkFolder(vm);
+			if (Directory.Exists(linkFolder))
+			{
+				var linkFiles = Directory.EnumerateFiles(linkFolder, new DirectoryEnumerationFilters
+				{
+					InclusionFilter = (f) =>
+					{
+						return f.Extension.Equals(".json", StringComparison.OrdinalIgnoreCase) &&
+							f.FileName.CaseInsensitiveContains(modProject.ProjectName, StringComparison.OrdinalIgnoreCase);
+					}
+				});
+
+				bool sourceFileMatch(string sourcePath, string storedFileName)
+				{
+					return Path.GetFileNameWithoutExtension(sourcePath).Equals(storedFileName, StringComparison.OrdinalIgnoreCase);
+				}
+
+				foreach (var filePath in linkFiles)
+				{
+					try
+					{
+						LocaleFileLinkData data = await JsonInterface.DeserializeObjectAsync<LocaleFileLinkData>(filePath);
+						if (!String.IsNullOrWhiteSpace(data.TargetLocaleFileName))
+						{
+							var targetFiles = localizationData.Groups.SelectMany(g => g.DataFiles).Where(f => sourceFileMatch(f.SourcePath, data.TargetLocaleFileName));
+							foreach (var fileData in targetFiles)
+							{
+								fileData.FileLinkData = data;
+								Log.Here().Activity($"Set linked data for '{fileData.SourcePath}' to '{data.LinkFilePath}'. Loading entries from linked file.");
+								RefreshLinkedData(fileData);
+							}
+						}
+					}
+					catch (Exception ex)
+					{
+						Log.Here().Error($"Error deserializing '{filePath}': {ex.ToString()}");
+					}
+				}
+
+				return true;
+			}
+
+			return false;
 		}
 
 		public static void SaveLinkedDataForFile(DOS2DEModuleData moduleData, IEnumerable<LocaleProjectLinkData> linkedLocaleData, ILocaleFileData fileData)
