@@ -597,6 +597,10 @@
     <Resource Include="Resources\Icons\OpenLocalizationEditor_16x.png" />
     <Resource Include="Resources\Icons\Close1_16x.png" />
     <Resource Include="Resources\Icons\Close2_Red_16x.png" />
+    <Resource Include="Resources\Icons\ASX_Link_blue_16x.png" />
+    <Resource Include="Resources\Icons\LinkFile_16x.png" />
+    <Resource Include="Resources\Icons\LinkRemoved_16x.png" />
+    <Resource Include="Resources\Icons\LinkVertical_16x.png" />
     <Content Include="Resources\Logos\DivinityOriginalSin2DE.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

@@ -21,7 +21,18 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 
 		public string SourcePath { get; set; }
 
-		public LocaleFileLinkData FileLinkData { get; set; }
+		private LocaleFileLinkData fileLinkData;
+
+		public LocaleFileLinkData FileLinkData
+		{
+			get => fileLinkData;
+			set
+			{
+				this.RaiseAndSetIfChanged(ref fileLinkData, value);
+				HasFileLink = !String.IsNullOrEmpty(fileLinkData.LinkFilePath);
+			}
+		}
+
 
 		private string name;
 
@@ -121,6 +132,21 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			set { this.RaiseAndSetIfChanged(ref renamingName, value); }
 		}
 
+		private bool hasFileLink;
+
+		public bool HasFileLink
+		{
+			get => hasFileLink;
+			set { this.RaiseAndSetIfChanged(ref hasFileLink, value); }
+		}
+
+		private bool canCreateFileLink;
+
+		public bool CanCreateFileLink
+		{
+			get => canCreateFileLink;
+			set { this.RaiseAndSetIfChanged(ref canCreateFileLink, value); }
+		}
 
 		public void SelectAll()
 		{

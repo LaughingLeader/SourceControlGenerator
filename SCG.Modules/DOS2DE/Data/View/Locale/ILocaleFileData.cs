@@ -25,6 +25,8 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 		bool CanClose { get; set; }
 		bool CanRename { get; set; }
 		bool IsRenaming { get; set; }
+		bool HasFileLink { get; set; }
+		bool CanCreateFileLink { get; set; }
 
 		void SelectAll();
 		void SelectNone();

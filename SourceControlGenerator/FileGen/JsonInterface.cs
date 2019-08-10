@@ -15,9 +15,15 @@ namespace SCG.FileGen
 			return JsonConvert.DeserializeObject<T>(File.ReadAllText(path));
 		}
 
-		public static string SerializeObject(object o)
+		public static async Task<T> DeserializeObjectAsync<T>(string path)
 		{
-			return JsonConvert.SerializeObject(o, Newtonsoft.Json.Formatting.Indented);
+			string contents = await FileCommands.ReadFileAsync(path);
+			return JsonConvert.DeserializeObject<T>(contents);
+		}
+
+		public static string SerializeObject(object o, bool indented = true)
+		{
+			return JsonConvert.SerializeObject(o, indented ? Formatting.Indented : Formatting.None);
 		}
 	}
 }

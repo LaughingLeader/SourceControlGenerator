@@ -18,7 +18,6 @@ using System.Xml.Serialization;
 using System.Collections.ObjectModel;
 using System.Globalization;
 using SCG.FileGen;
-using Newtonsoft.Json;
 using SCG.Modules.DOS2DE.Data;
 using SCG.Modules.DOS2DE.Core;
 using SCG.Modules.DOS2DE.Windows;
@@ -27,6 +26,7 @@ using DynamicData.Binding;
 using ReactiveUI;
 using System.Reactive.Concurrency;
 using System.Text.RegularExpressions;
+using SCG.Modules.DOS2DE.Data.Savable;
 
 namespace SCG.Modules.DOS2DE.Utilities
 {
@@ -58,6 +58,46 @@ namespace SCG.Modules.DOS2DE.Utilities
 					}
 				}
 			}
+
+			string linkFolder = DOS2DEDefaultPaths.LocalizationEditorLinkFolder(vm);
+			if (Directory.Exists(linkFolder))
+			{
+				var linkFiles = Directory.EnumerateFiles(linkFolder, new DirectoryEnumerationFilters
+				{
+					InclusionFilter = (f) =>
+					{
+						return f.Extension.Equals(".json", StringComparison.OrdinalIgnoreCase) && 
+							f.FileName.CaseInsensitiveContains(modProject.ProjectName, StringComparison.OrdinalIgnoreCase);
+					}
+				});
+
+				bool sourceFileMatch(string sourcePath, string storedFileName)
+				{
+					return Path.GetFileNameWithoutExtension(sourcePath).Equals(storedFileName, StringComparison.OrdinalIgnoreCase);
+				}
+
+				foreach(var filePath in linkFiles)
+				{
+					try
+					{
+						LocaleFileLinkData data = await JsonInterface.DeserializeObjectAsync<LocaleFileLinkData>(filePath);
+						if (!String.IsNullOrWhiteSpace(data.TargetLocaleFileName))
+						{
+							var targetFiles = localizationData.Groups.SelectMany(g => g.DataFiles).Where(f => sourceFileMatch(f.SourcePath, data.TargetLocaleFileName));
+							foreach(var fileData in targetFiles)
+							{
+								fileData.FileLinkData = data;
+								Log.Here().Activity($"Set linked data for '{fileData.SourcePath}' to {data.LinkFilePath}");
+							}
+						}
+					}
+					catch(Exception ex)
+					{
+						Log.Here().Error($"Error deserializing '{filePath}': {ex.ToString()}");
+					}
+				}
+			}
+
 			return localizationData;
 		}
 
@@ -81,6 +121,46 @@ namespace SCG.Modules.DOS2DE.Utilities
 					}
 				}
 			}
+
+			string linkFolder = DOS2DEDefaultPaths.LocalizationEditorLinkFolder(vm);
+			if (Directory.Exists(linkFolder))
+			{
+				var linkFiles = Directory.EnumerateFiles(linkFolder, new DirectoryEnumerationFilters
+				{
+					InclusionFilter = (f) =>
+					{
+						return f.Extension.Equals(".json", StringComparison.OrdinalIgnoreCase) &&
+							modProjects.Any(p => p.ProjectName.CaseInsensitiveContains(f.FileName, StringComparison.OrdinalIgnoreCase));
+					}
+				});
+
+				bool sourceFileMatch(string sourcePath, string storedFileName)
+				{
+					return Path.GetFileNameWithoutExtension(sourcePath).Equals(storedFileName, StringComparison.OrdinalIgnoreCase);
+				}
+
+				foreach (var filePath in linkFiles)
+				{
+					try
+					{
+						LocaleFileLinkData data = await JsonInterface.DeserializeObjectAsync<LocaleFileLinkData>(filePath);
+						if (!String.IsNullOrWhiteSpace(data.TargetLocaleFileName))
+						{
+							var targetFiles = localizationData.Groups.SelectMany(g => g.DataFiles).Where(f => sourceFileMatch(f.SourcePath, data.TargetLocaleFileName));
+							foreach (var fileData in targetFiles)
+							{
+								fileData.FileLinkData = data;
+								Log.Here().Activity($"Set linked data for '{fileData.SourcePath}' to {data.LinkFilePath}");
+							}
+						}
+					}
+					catch (Exception ex)
+					{
+						Log.Here().Error($"Error deserializing '{filePath}': {ex.ToString()}");
+					}
+				}
+			}
+
 			return localizationData;
 		}
 
@@ -125,7 +205,7 @@ namespace SCG.Modules.DOS2DE.Utilities
 					if (Directory.Exists(modsLocalePath))
 					{
 						Log.Here().Activity($"Loading localization data from '{modsLocalePath}'.");
-						var modsLocaleData = await LoadFilesAsync(localizationData.ModsGroup, modsLocalePath, token, ".lsb");
+						var modsLocaleData = await LoadFilesAsync(localizationData.ModsGroup, modsLocalePath, modProjectData, token, ".lsb");
 						localizationData.ModsGroup.SourceDirectories.Add(modsLocalePath);
 						localizationData.ModsGroup.DataFiles.AddRange(modsLocaleData);
 					}
@@ -138,9 +218,12 @@ namespace SCG.Modules.DOS2DE.Utilities
 					if (Directory.Exists(dialogLocalePath))
 					{
 						Log.Here().Activity($"Loading dialog localization data from '{dialogLocalePath}'.");
-						var dialogLocaleData = await LoadFilesAsync(localizationData.DialogGroup, dialogLocalePath, token, ".lsj");
+						var dialogLocaleData = await LoadFilesAsync(localizationData.DialogGroup, dialogLocalePath, modProjectData, token, ".lsj");
 						//Lock dialog files, as adding a new entry is more complicated than simply adding a key.
-						dialogLocaleData.ForEach(f => f.Locked = true);
+						dialogLocaleData.ForEach(f => {
+							f.Locked = true;
+							f.CanCreateFileLink = false;
+						});
 						localizationData.DialogGroup.SourceDirectories.Add(dialogLocalePath);
 						localizationData.DialogGroup.DataFiles.AddRange(dialogLocaleData);
 					}
@@ -163,7 +246,7 @@ namespace SCG.Modules.DOS2DE.Utilities
 					if (Directory.Exists(publicLocalePath))
 					{
 						Log.Here().Activity($"Loading localization data from '{publicLocalePath}'.");
-						var publicLocaleData = await LoadFilesAsync(localizationData.PublicGroup, publicLocalePath, token, ".lsb");
+						var publicLocaleData = await LoadFilesAsync(localizationData.PublicGroup, publicLocalePath, modProjectData, token, ".lsb");
 						localizationData.PublicGroup.SourceDirectories.Add(publicLocalePath);
 						localizationData.PublicGroup.DataFiles.AddRange(publicLocaleData);
 					}
@@ -217,7 +300,7 @@ namespace SCG.Modules.DOS2DE.Utilities
 			}
 		}
 
-		private static async Task<List<LocaleNodeFileData>> LoadFilesAsync(LocaleTabGroup groupData, string directoryPath, CancellationToken? token = null, params string[] fileExtensions)
+		private static async Task<List<LocaleNodeFileData>> LoadFilesAsync(LocaleTabGroup groupData, string directoryPath, ModProjectData modProjectData, CancellationToken? token = null, params string[] fileExtensions)
 		{
 			List<LocaleNodeFileData> stringKeyData = new List<LocaleNodeFileData>();
 
@@ -249,6 +332,7 @@ namespace SCG.Modules.DOS2DE.Utilities
 			foreach (var filePath in targetFiles)
 			{
 				var data = await LoadResourceAsync(groupData, filePath);
+				data.ModProject = modProjectData;
 				stringKeyData.Add(data);
 			}
 			stringKeyData = stringKeyData.OrderBy(f => f.Name).ToList();
@@ -299,20 +383,16 @@ namespace SCG.Modules.DOS2DE.Utilities
 
 		private static async Task<LocaleCustomFileData> LoadCustomFileAsync(string path)
 		{
-			using (var reader = File.OpenText(path))
+			try
 			{
-				var fileText = await reader.ReadToEndAsync();
-				try
-				{
-					LocaleCustomFileData fileData = await Task.Run(() => JsonConvert.DeserializeObject<LocaleCustomFileData>(fileText));
-					fileData.CanClose = true;
-					return fileData;
-				}
-				catch(Exception ex)
-				{
-					Log.Here().Error($"Error deserializing '{path}': {ex.ToString()}");
-					return null;
-				}
+				LocaleCustomFileData fileData = await JsonInterface.DeserializeObjectAsync<LocaleCustomFileData>(path);
+				fileData.CanClose = true;
+				return fileData;
+			}
+			catch (Exception ex)
+			{
+				Log.Here().Error($"Error deserializing '{path}': {ex.ToString()}");
+				return null;
 			}
 		}
 
@@ -665,7 +745,7 @@ namespace SCG.Modules.DOS2DE.Utilities
 				Log.Here().Activity($"Saving '{dataFile.Name}' to '{dataFile.SourcePath}'.");
 
 				string outputFilename = Path.Combine(targetDirectory, dataFile.Name, ".json");
-				string json = JsonConvert.SerializeObject(dataFile, Newtonsoft.Json.Formatting.Indented);
+				string json = JsonInterface.SerializeObject(dataFile);
 				if(await FileCommands.WriteToFileAsync(outputFilename, json))
 				{
 					Log.Here().Important($"Saved '{dataFile.SourcePath}'.");
@@ -814,11 +894,61 @@ namespace SCG.Modules.DOS2DE.Utilities
 			fileData.ChangesUnsaved = entries.Count > 0;
 		}
 
+		public static void SaveLinkedDataForFile(DOS2DEModuleData moduleData, IEnumerable<LocaleProjectLinkData> linkedLocaleData, ILocaleFileData fileData)
+		{
+			if (fileData.HasFileLink && fileData is LocaleNodeFileData nodeFileData)
+			{
+				if (nodeFileData.ModProject != null && !String.IsNullOrEmpty(nodeFileData.FileLinkData.LinkFilePath))
+				{
+					var linkedList = linkedLocaleData.FirstOrDefault(x => x.ProjectUUID.Equals(nodeFileData.ModProject.UUID, StringComparison.OrdinalIgnoreCase));
+					if (linkedList == null)
+					{
+						linkedList = new LocaleProjectLinkData()
+						{
+							ProjectUUID = nodeFileData.ModProject.UUID,
+						};
+					}
+
+					linkedList.Links.Add(fileData.FileLinkData);
+
+					SaveLinkedData(moduleData, linkedList);
+				}
+			}
+		}
+
+		public static void SaveLinkedData(DOS2DEModuleData moduleData, LocaleProjectLinkData linkFile)
+		{
+			var dir = DOS2DEDefaultPaths.LocalizationEditorLinkFolder(moduleData);
+			if(!Directory.Exists(dir))
+			{
+				Directory.CreateDirectory(dir);
+			}
+
+			var filePath = moduleData.ModProjects.Items.Where(x => x.UUID.Equals(linkFile.ProjectUUID, StringComparison.OrdinalIgnoreCase)).
+					Select(x => x.ProjectName).FirstOrDefault();
+			if (!String.IsNullOrEmpty(filePath))
+			{
+				filePath += ".json";
+				Log.Here().Activity($"Saving linked data to '{filePath}'.");
+				string json = JsonInterface.SerializeObject(linkFile);
+				FileCommands.WriteToFile(filePath, json);
+			}
+		}
+
+		public static void SaveAllLinkedData(DOS2DEModuleData moduleData, IEnumerable<LocaleProjectLinkData> linkFiles)
+		{
+			foreach (var data in linkFiles)
+			{
+				SaveLinkedData(moduleData, data);
+			}
+		}
+
 		public static void RefreshLinkedData(ILocaleFileData fileData)
 		{
-			if (fileData.FileLinkData != null && File.Exists(fileData.FileLinkData.SourceFile))
+			if (File.Exists(fileData.FileLinkData.LinkFilePath))
 			{
-				string path = fileData.FileLinkData.SourceFile;
+				Log.Here().Activity($"Loading linked file data from {fileData.FileLinkData.LinkFilePath}");
+				string path = fileData.FileLinkData.LinkFilePath;
 				if (FileCommands.FileExtensionFound(path, ".txt", ".tsv", ".csv"))
 				{
 					char delimiter = '\t';
@@ -1153,7 +1283,7 @@ namespace SCG.Modules.DOS2DE.Utilities
 			if(File.Exists(settingsPath))
 			{
 				Log.Here().Activity($"Loading localization editor settings from '{settingsPath}'.");
-				localeData.Settings = JsonConvert.DeserializeObject<LocaleEditorSettingsData>(File.ReadAllText(settingsPath));
+				localeData.Settings = JsonInterface.DeserializeObject<LocaleEditorSettingsData>(settingsPath);
 			}
 			else
 			{
@@ -1168,7 +1298,7 @@ namespace SCG.Modules.DOS2DE.Utilities
 			if (localeData.Settings != null)
 			{
 				Log.Here().Activity($"Saving localization editor settings to '{settingsPath}'.");
-				string json = JsonConvert.SerializeObject(localeData.Settings, Newtonsoft.Json.Formatting.Indented);
+				string json = JsonInterface.SerializeObject(localeData.Settings);
 				FileCommands.WriteToFile(settingsPath, json);
 			}
 		}

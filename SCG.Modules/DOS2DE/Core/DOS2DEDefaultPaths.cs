@@ -18,9 +18,19 @@ namespace SCG.Modules.DOS2DE.Core
 
 		public static readonly string DataDirectory_DefEd = @"\DefEd\Data";
 
+		public static string LocalizationEditorFolder(IModuleData Data)
+		{
+			return Path.Combine(LocalizationEditorFolder(Data), @"\LocalizationEditor\");
+		}
+
+		public static string LocalizationEditorLinkFolder(IModuleData Data)
+		{
+			return Path.Combine(LocalizationEditorFolder(Data), @"\Links\");
+		}
+
 		public static string LocalizationEditorSettings(IModuleData Data)
 		{
-			return DefaultPaths.ModuleSettingsFolder(Data) + @"\LocalizationEditorSettings.txt";
+			return Path.Combine(LocalizationEditorFolder(Data), @"LocalizationEditorSettings.txt");
 		}
 
 		public static string CustomLocaleDirectory(DOS2DEModuleData Data, ModProjectData modProject)

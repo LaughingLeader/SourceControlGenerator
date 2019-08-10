@@ -65,6 +65,12 @@ namespace SCG.Modules.DOS2DE.Core
 		public static string Button_Locale_ImportKeys = "Import Entries From File...";
 		public static string Button_Locale_ImportKeys_Disabled = "Import Entries (Disabled for All & Dialog Files)";
 
+		public static string Button_Locale_RefreshFile = "Refresh File";
+
+		public static string Button_Locale_RefreshLinkedData = "Reload Data From Link";
+		public static string Button_Locale_SetLinkedData = "Create Link to File\nThis localization file will be linked to an external textual file, and can automatically load changes.";
+		public static string Button_Locale_RemoveLinkedData = "Remove Link to File";
+
 		public static string Button_Locale_InsertFontText = "Wrap selected text around an HTML <font> tag\nThis action will use the selected color";
 		public static string Button_Locale_ExpandText = "Expand Text";
 

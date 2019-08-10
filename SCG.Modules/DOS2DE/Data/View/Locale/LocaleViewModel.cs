@@ -24,6 +24,8 @@ using System.Windows.Media;
 using SCG.Windows;
 using System.Threading.Tasks;
 using System.Reactive.Disposables;
+using SCG.Modules.DOS2DE.Data.Savable;
+using SCG.FileGen;
 
 namespace SCG.Modules.DOS2DE.Data.View.Locale
 {
@@ -52,6 +54,8 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 		public DOS2DEModuleData ModuleData { get; set; }
 
 		public List<ModProjectData> LinkedProjects { get; set; } = new List<ModProjectData>();
+
+		public List<LocaleProjectLinkData> LinkedLocaleData { get; set; } = new List<LocaleProjectLinkData>();
 
 		private LocaleMenuData menuData;
 
@@ -105,13 +109,17 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 				bool updateCanSave = selectedGroupIndex != value;
 				
 				this.RaiseAndSetIfChanged(ref selectedGroupIndex, value);
-				this.RaisePropertyChanged("SelectedGroup");
-				this.RaisePropertyChanged("SelectedItem");
+
+				if(Groups.Count > selectedGroupIndex)
+				{
+					SelectedGroup = Groups[SelectedGroupIndex];
+				}
+
 				this.RaisePropertyChanged("CurrentImportPath");
 
 				if (updateCanSave)
 				{
-					SelectedFileChanged(Groups[selectedGroupIndex], Groups[selectedGroupIndex].SelectedFile);
+					SelectedFileChanged(SelectedGroup, SelectedFile);
 				}
 			}
 		}
@@ -201,11 +209,29 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			}
 		}
 
+		private LocaleTabGroup selectedGroup;
+
 		public LocaleTabGroup SelectedGroup
 		{
-			get
+			get => selectedGroup;
+			set
 			{
-				return SelectedGroupIndex > -1 ? Groups[SelectedGroupIndex] : null;
+				this.RaiseAndSetIfChanged(ref selectedGroup, value);
+				if(selectedGroup != null)
+				{
+					SelectedFile = selectedGroup.SelectedFile;
+				}
+			}
+		}
+
+		private ILocaleFileData selectedFile;
+
+		public ILocaleFileData SelectedFile
+		{
+			get => selectedFile;
+			set
+			{
+				this.RaiseAndSetIfChanged(ref selectedFile, value);
 			}
 		}
 
@@ -220,11 +246,6 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 				this.RaisePropertyChanged("SelectedEntryContent");
 				this.RaisePropertyChanged("SelectedEntryHtmlContent");
 			}
-		}
-
-		public ILocaleFileData SelectedItem
-		{
-			get => SelectedGroup?.SelectedFile;
 		}
 
 		public string SelectedEntryContent
@@ -283,14 +304,25 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			}
 		}
 
-		private bool anySelected = false;
+		private bool anyEntrySelected = false;
 
-		public bool AnySelected
+		public bool AnyEntrySelected
 		{
-			get => anySelected;
+			get => anyEntrySelected;
 			set
 			{
-				this.RaiseAndSetIfChanged(ref anySelected, value);
+				this.RaiseAndSetIfChanged(ref anyEntrySelected, value);
+			}
+		}
+
+		private bool anyFileSelected = false;
+
+		public bool AnyFileSelected
+		{
+			get => anyFileSelected;
+			set
+			{
+				this.RaiseAndSetIfChanged(ref anyFileSelected, value);
 			}
 		}
 
@@ -376,6 +408,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 
 		private void SelectedFileChanged(LocaleTabGroup group, ILocaleFileData keyFileData)
 		{
+			SelectedFile = keyFileData;
 			if (keyFileData != null)
 			{
 				CanSave = (group.CombinedEntries != keyFileData) || group.DataFiles.Count == 1;
@@ -457,7 +490,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 		{
 			get
 			{
-				if (SelectedItem != null && SelectedItem is LocaleNodeFileData data)
+				if (SelectedFile != null && SelectedFile is LocaleNodeFileData data)
 				{
 					return Path.GetDirectoryName(data.SourcePath);
 				}
@@ -499,7 +532,6 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 
 		public void GenerateHandles()
 		{
-			Log.Here().Activity($"AnySelected: {AnySelected}");
 			if (SelectedGroup != null && SelectedGroup.SelectedFile != null)
 			{
 				Log.Here().Activity("Generating handles...");
@@ -601,13 +633,15 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 				OutputType = LogType.Error;
 			}
 			OutputDate = DateTime.Now.ToShortTimeString();
+
+			LocaleEditorCommands.SaveAllLinkedData(ModuleData, LinkedLocaleData);
 		}
 
 		public async Task SaveCurrent()
 		{
-			if(SelectedGroup != null)
+			if(SelectedFile != null)
 			{
-				if (SelectedGroup.SelectedFile != null && SelectedGroup.SelectedFile is LocaleNodeFileData keyFileData)
+				if (SelectedFile is LocaleNodeFileData keyFileData)
 				{
 					var backupSuccess = await LocaleEditorCommands.BackupDataFile(keyFileData.SourcePath, ModuleData.Settings.BackupRootDirectory);
 					if (backupSuccess == true)
@@ -634,6 +668,8 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 						OutputText = $"Problem occured when backing up files. Check the log.";
 						OutputType = LogType.Error;
 					}
+
+					LocaleEditorCommands.SaveLinkedDataForFile(ModuleData, LinkedLocaleData, SelectedFile);
 				}
 			}
 		}
@@ -727,12 +763,12 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 
 		public void ImportFilesAsKeys(IEnumerable<string> files)
 		{
-			if(SelectedItem != null && files.Count() > 0)
+			if(SelectedFile != null && files.Count() > 0)
 			{
 				Log.Here().Activity("Importing keys from files...");
 
-				var currentItem = SelectedItem;
-				var newKeys = LocaleEditorCommands.ImportFilesAsEntries(files, SelectedItem);
+				var currentItem = SelectedFile;
+				var newKeys = LocaleEditorCommands.ImportFilesAsEntries(files, SelectedFile);
 
 				CreateSnapshot(() => {
 					foreach (var k in newKeys)
@@ -748,10 +784,10 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 
 				foreach (var k in newKeys)
 				{
-					SelectedItem.Entries.Add(k);
+					SelectedFile.Entries.Add(k);
 				}
 
-				SelectedItem.ChangesUnsaved = true;
+				SelectedFile.ChangesUnsaved = true;
 				SelectedGroup.UpdateCombinedData();
 
 				Settings.LastEntryImportPath = Path.GetDirectoryName(files.FirstOrDefault());
@@ -760,10 +796,6 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 				view.SaveSettings();
 
 				ChangesUnsaved = true;
-			}
-			else
-			{
-				Log.Here().Error($"SelectedItem == {SelectedItem}");
 			}
 		}
 
@@ -788,7 +820,9 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 		public ICommand AddNewKeyCommand { get; private set; }
 		public ICommand DeleteKeysCommand { get; private set; }
 		public ICommand RefreshFileCommand { get; private set; }
-		public ICommand LoadFileLinkDataCommand { get; private set; }
+		public ICommand ReloadFileLinkDataCommand { get; private set; }
+		public ICommand SetFileLinkDataCommand { get; private set; }
+		public ICommand RemoveFileLinkDataCommand { get; private set; }
 
 		public ICommand OpenPreferencesCommand { get; private set; }
 
@@ -810,7 +844,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 		public IObservable<bool> FileSelectedObservable { get; private set; }
 		public IObservable<bool> CanImportFilesObservable { get; private set; }
 		public IObservable<bool> CanImportKeysObservable { get; private set; }
-		public IObservable<bool> AnySelectedObservable { get; private set; }
+		public IObservable<bool> AnySelectedEntryObservable { get; private set; }
 
 		public void AddNewKey()
 		{
@@ -1049,11 +1083,11 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 		{
 			if (selected)
 			{
-				AnySelected = true;
+				AnyEntrySelected = true;
 			}
 			else
 			{
-				AnySelected = SelectedGroup?.DataFiles.Any(t => t.Entries.Any(e => e.Selected == true)) == true;
+				AnyEntrySelected = SelectedGroup?.DataFiles.Any(t => t.Entries.Any(e => e.Selected == true)) == true;
 			}
 		}
 
@@ -1074,16 +1108,127 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 					}
 				}
 			}
-			else if (!AnySelected)
+			else if (!AnyEntrySelected)
 			{
 				SelectedEntry = null;
 			}
+		}
+
+		public void SetLinkedData(ILocaleFileData fileData)
+		{
+			void OnFileSelected(string filePath)
+			{
+				if (File.Exists(filePath))
+				{
+					var lastLinkData = fileData.FileLinkData;
+					void undo()
+					{
+						fileData.FileLinkData = lastLinkData;
+					}
+
+					void redo()
+					{
+						fileData.FileLinkData = new LocaleFileLinkData()
+						{
+							LinkFilePath = filePath,
+							TargetLocaleFileName = fileData.SourcePath
+						};
+
+						Log.Here().Activity($"Refreshing data for '{fileData.SourcePath}' from linked file '{filePath}'.");
+						LocaleEditorCommands.RefreshLinkedData(fileData);
+
+						if (fileData is LocaleNodeFileData nodeFileData)
+						{
+							if (nodeFileData.ModProject != null && !String.IsNullOrEmpty(nodeFileData.FileLinkData.LinkFilePath))
+							{
+								var linkedList = LinkedLocaleData.FirstOrDefault(x => x.ProjectUUID.Equals(nodeFileData.ModProject.UUID, StringComparison.OrdinalIgnoreCase));
+								if (linkedList == null)
+								{
+									linkedList = new LocaleProjectLinkData()
+									{
+										ProjectUUID = nodeFileData.ModProject.UUID,
+									};
+								}
+
+								linkedList.Links.Add(fileData.FileLinkData);
+
+								LocaleEditorCommands.SaveLinkedData(ModuleData, linkedList);
+							}
+						}
+					}
+
+					CreateSnapshot(undo, redo);
+					redo();
+				}
+			}
+			FileCommands.Load.OpenFileDialog(view, "Pick localization file to link...",
+					CurrentEntryImportPath, OnFileSelected, "", null, CommonFileFilters.DelimitedLocaleFiles);
+		}
+
+		public void RefreshLinkedData(ILocaleFileData fileData)
+		{
+			if(!String.IsNullOrEmpty(fileData.FileLinkData.LinkFilePath))
+			{
+				LocaleEditorCommands.RefreshLinkedData(fileData);
+			}
+		}
+
+		public void RemoveLinkedData(ILocaleFileData fileData)
+		{
+			var lastLinkData = fileData.FileLinkData;
+
+			void onConfirm(bool confirmed)
+			{
+				if (confirmed)
+				{
+					var containingLists = LinkedLocaleData.Where(x => x.Links.Contains(fileData.FileLinkData));
+
+					void undo()
+					{
+						fileData.FileLinkData = lastLinkData;
+						foreach(var pdata in containingLists)
+						{
+							pdata.Links.Add(fileData.FileLinkData);
+						}
+					}
+
+					void redo()
+					{
+						var removed = false;
+						foreach (var pdata in containingLists)
+						{
+							pdata.Links.Remove(fileData.FileLinkData);
+							removed = true;
+						}
+
+						if (removed)
+						{
+							fileData.ChangesUnsaved = true;
+						}
+					}
+
+					CreateSnapshot(undo, redo);
+					redo();
+				}
+			}
+
+			FileCommands.OpenConfirmationDialog(view, "Remove Link", 
+				$"Remove external link '{fileData.FileLinkData.LinkFilePath}' from {fileData.FileLinkData.TargetLocaleFileName}?", "", onConfirm);
 		}
 
 		public void OnViewLoaded(LocaleEditorWindow v, DOS2DEModuleData moduleData, CompositeDisposable disposables)
 		{
 			view = v;
 			ModuleData = moduleData;
+
+			//this.WhenAnyValue(vm => vm.SelectedGroup.SelectedFile).BindTo(this, vm => vm.SelectedFile).DisposeWith(disposables);
+
+			FileSelectedObservable = this.WhenAnyValue(vm => vm.SelectedGroup, vm => vm.SelectedFile, (g, f) => f != null && g != null && f != g.CombinedEntries);
+			FileSelectedObservable.BindTo(this, vm => vm.AnyFileSelected).DisposeWith(disposables);
+			FileSelectedObservable.Subscribe((b) =>
+			{
+				Log.Here().Activity($"AnyFileSelected? Subscribe: {b} AnyFileSelected: {AnyFileSelected}");
+			}).DisposeWith(disposables);
 
 			ImportFileCommand = ReactiveCommand.Create(() =>
 			{
@@ -1101,15 +1246,14 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 
 			DeleteKeysCommand = ReactiveCommand.Create(() =>
 			{
-				Log.Here().Activity("Deleting keys?");
 				FileCommands.OpenConfirmationDialog(view, "Delete Keys", "Delete selected keys?", "Changes will be lost.", DeleteSelectedKeys);
-			}, AnySelectedObservable).DisposeWith(disposables);
+			}, AnySelectedEntryObservable).DisposeWith(disposables);
 
 			//var selectedGroupObservable = this.WhenAny(vm => vm.SelectedGroup, x => x.Value);
 
 			//var selectedFileObservable = this.WhenAny(vm => vm.SelectedGroup.SelectedFile, x => x.Value);
 			//selectedFileObservable.Subscribe();
-			//selectedFileObservable.ToProperty(this, vm => vm.SelectedItem, _selectedItem).DisposeWith(disposables);
+			//selectedFileObservable.ToProperty(this, vm => vm.SelectedFile, _selectedItem).DisposeWith(disposables);
 
 			this.WhenAny(vm => vm.SelectedEntry.EntryContent, vm => vm.Value).Subscribe((o) => {
 				this.RaisePropertyChanged("SelectedEntryContent");
@@ -1126,7 +1270,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 				}
 			}
 
-			this.WhenAnyValue(vm => vm.SelectedItem, vm => vm.SelectedGroup).Subscribe((o) => clearSelectedEntry()).DisposeWith(disposables);
+			this.WhenAnyValue(vm => vm.SelectedFile, vm => vm.SelectedGroup).Subscribe((o) => clearSelectedEntry()).DisposeWith(disposables);
 
 			CanExecutePopoutContentCommand = this.WhenAny(vm => vm.SelectedEntry, e => e.Value != null);
 
@@ -1134,7 +1278,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 
 			UpdateCombinedGroup(true);
 
-			ExportXMLCommand = ReactiveCommand.Create(OpenExportWindow, AnySelectedObservable).DisposeWith(disposables);
+			ExportXMLCommand = ReactiveCommand.Create(OpenExportWindow, AnySelectedEntryObservable).DisposeWith(disposables);
 			AddFileToGroupCommand = ReactiveCommand.Create<CustomLocaleTabGroup>(AddCustomFileToGroup, CanImportFilesObservable).DisposeWith(disposables);
 
 			var canConfirmAddFile = this.WhenAny(vm => vm.NewFileTabName, e => !String.IsNullOrWhiteSpace(e.Value));
@@ -1169,10 +1313,10 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 
 			SaveAllCommand = ReactiveCommand.CreateFromTask(SaveAll, GlobalCommandEnabled).DisposeWith(disposables);
 			SaveCurrentCommand = ReactiveCommand.CreateFromTask(SaveCurrent, GlobalCommandEnabled).DisposeWith(disposables);
-			GenerateHandlesCommand = ReactiveCommand.Create(GenerateHandles, AnySelectedObservable).DisposeWith(disposables);
+			GenerateHandlesCommand = ReactiveCommand.Create(GenerateHandles, AnySelectedEntryObservable).DisposeWith(disposables);
 			AddNewKeyCommand = ReactiveCommand.Create(AddNewKey, CanImportKeysObservable).DisposeWith(disposables);
 
-			AddFontTagCommand = ReactiveCommand.Create(AddFontTag, AnySelectedObservable).DisposeWith(disposables);
+			AddFontTagCommand = ReactiveCommand.Create(AddFontTag, AnySelectedEntryObservable).DisposeWith(disposables);
 
 			ToggleContentLightModeCommand = ReactiveCommand.Create(() => ContentLightMode = !ContentLightMode, GlobalCommandEnabled).DisposeWith(disposables);
 			ChangeContentFontSizeCommand = ReactiveCommand.Create<string>((fontSizeStr) => {
@@ -1226,12 +1370,11 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 				{
 					LocaleEditorCommands.RefreshFileData(nodeFile);
 				}
-			}, FileSelectedObservable);
+			}, FileSelectedObservable).DisposeWith(disposables);
 
-			LoadFileLinkDataCommand = ReactiveCommand.Create<ILocaleFileData>((ILocaleFileData fileData) =>
-			{
-				LocaleEditorCommands.RefreshLinkedData(fileData);
-			}, FileSelectedObservable);
+			ReloadFileLinkDataCommand = ReactiveCommand.Create<ILocaleFileData>(RefreshLinkedData, FileSelectedObservable).DisposeWith(disposables);
+			SetFileLinkDataCommand = ReactiveCommand.Create<ILocaleFileData>(SetLinkedData, FileSelectedObservable).DisposeWith(disposables);
+			RemoveFileLinkDataCommand = ReactiveCommand.Create<ILocaleFileData>(RemoveLinkedData, FileSelectedObservable).DisposeWith(disposables);
 
 			var SaveCurrentMenuData = new MenuData("SaveCurrent", "Save", SaveCurrentCommand, Key.S, ModifierKeys.Control);
 
@@ -1255,8 +1398,8 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			MenuData.Edit.Add(UndoMenuData);
 			MenuData.Edit.Add(RedoMenuData);
 
-			var SelectAllEntriesCommand = ReactiveCommand.Create(() => { SelectedItem?.SelectAll(); });
-			var DeselectAllEntriesCommand = ReactiveCommand.Create(() => { SelectedItem?.SelectNone(); });
+			var SelectAllEntriesCommand = ReactiveCommand.Create(() => { SelectedFile?.SelectAll(); });
+			var DeselectAllEntriesCommand = ReactiveCommand.Create(() => { SelectedFile?.SelectNone(); });
 
 			MenuData.Edit.Add(new MenuData("Edit.SelectAll", "Select All", SelectAllEntriesCommand, Key.A, ModifierKeys.Control));
 			MenuData.Edit.Add(new MenuData("Edit.SelectNone", "Select None", DeselectAllEntriesCommand, Key.D, ModifierKeys.Control));
@@ -1277,7 +1420,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			MenuData.RegisterShortcuts(view.InputBindings);
 
 			//The window starts with the All/All selected.
-			CanSave = AnySelected = CanAddFile = CanAddKeys = false;
+			CanSave = AnyEntrySelected = CanAddFile = CanAddKeys = false;
 		}
 
 		public MenuData UndoMenuData { get; private set; }
@@ -1309,8 +1452,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			}
 
 			GlobalCommandEnabled = this.WhenAny(vm => vm.IsAddingNewFileTab, e => e.Value == false);
-			AnySelectedObservable = this.WhenAnyValue(vm => vm.AnySelected);
-			FileSelectedObservable = this.WhenAny(vm => vm.SelectedGroup.SelectedFile, e => e.Value != null);
+			AnySelectedEntryObservable = this.WhenAnyValue(vm => vm.AnyEntrySelected);
 			CanImportFilesObservable = this.WhenAnyValue(vm => vm.CanAddFile);
 			CanImportKeysObservable = this.WhenAnyValue(vm => vm.CanAddKeys);
 		}

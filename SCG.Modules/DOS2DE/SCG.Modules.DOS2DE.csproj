@@ -170,7 +170,7 @@
   <ItemGroup>
     <Compile Include="Core\DOS2DEFileFilters.cs" />
     <Compile Include="Data\Savable\LocaleEditorSettingsData.cs" />
-    <Compile Include="Data\Savable\LocaleFileLinkData.cs" />
+    <Compile Include="Data\Savable\LocaleProjectLinkData.cs" />
     <Compile Include="Data\View\DOS2DEDebugData.cs" />
     <Compile Include="Data\View\Locale\BaseLocaleFileData.cs" />
     <Compile Include="Data\View\Locale\BaseLocaleKeyEntry.cs" />

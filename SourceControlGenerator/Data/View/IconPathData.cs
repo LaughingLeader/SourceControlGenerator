@@ -20,6 +20,7 @@ namespace SCG.Data.View
 		public static readonly string AddRow = @"pack://application:,,,/SourceControlGenerator;component/Resources/Icons/AddRow_16x.png";
 		public static readonly string AddTextFile = @"pack://application:,,,/SourceControlGenerator;component/Resources/Icons/AddTextFile_16x.png";
 		public static readonly string Archive = @"pack://application:,,,/SourceControlGenerator;component/Resources/Icons/Archive.png";
+		public static readonly string ASX_Link_blue = @"pack://application:,,,/SourceControlGenerator;component/Resources/Icons/ASX_Link_blue_16x.png";
 		public static readonly string Close1 = @"pack://application:,,,/SourceControlGenerator;component/Resources/Icons/Close1_16x.png";
 		public static readonly string Close2_Red = @"pack://application:,,,/SourceControlGenerator;component/Resources/Icons/Close2_Red_16x.png";
 		public static readonly string ColorPicker = @"pack://application:,,,/SourceControlGenerator;component/Resources/Icons/ColorPicker_16x.png";
@@ -35,6 +36,9 @@ namespace SCG.Data.View
 		public static readonly string GitLogo_Disabled = @"pack://application:,,,/SourceControlGenerator;component/Resources/Icons/GitLogo_Disabled.png";
 		public static readonly string Import = @"pack://application:,,,/SourceControlGenerator;component/Resources/Icons/Import_16x.png";
 		public static readonly string ImportFile = @"pack://application:,,,/SourceControlGenerator;component/Resources/Icons/ImportFile_16x.png";
+		public static readonly string LinkFile = @"pack://application:,,,/SourceControlGenerator;component/Resources/Icons/LinkFile_16x.png";
+		public static readonly string LinkRemoved = @"pack://application:,,,/SourceControlGenerator;component/Resources/Icons/LinkRemoved_16x.png";
+		public static readonly string LinkVertical = @"pack://application:,,,/SourceControlGenerator;component/Resources/Icons/LinkVertical_16x.png";
 		public static readonly string Log_MouseOver = @"pack://application:,,,/SourceControlGenerator;component/Resources/Icons/Log_MouseOver.png";
 		public static readonly string Log_Normal = @"pack://application:,,,/SourceControlGenerator;component/Resources/Icons/Log_Normal.png";
 		public static readonly string OpenFile = @"pack://application:,,,/SourceControlGenerator;component/Resources/Icons/OpenFile_16x.png";
