@@ -115,7 +115,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			set { this.RaiseAndSetIfChanged(ref canClose, value); }
 		}
 
-		private bool canRename = false;
+		private bool canRename = true;
 
 		public bool CanRename
 		{
@@ -124,7 +124,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 		}
 
 
-		private bool isRenaming;
+		private bool isRenaming = false;
 
 		public bool IsRenaming
 		{

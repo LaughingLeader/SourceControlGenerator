@@ -889,6 +889,49 @@ body {
 					</Setter.Value>
 				</Setter>
 			</Style>
+			<Style TargetType="Grid" x:Key="LocaleFileTabGrid">
+				<Style.Triggers>
+					<MultiDataTrigger>
+						<MultiDataTrigger.Conditions>
+							<Condition Binding="{Binding CanRename}" Value="True" />
+							<Condition Binding="{Binding IsRenaming}" Value="False" />
+						</MultiDataTrigger.Conditions>
+						<MultiDataTrigger.Setters>
+							<Setter Property="ContextMenu">
+								<Setter.Value>
+									<ContextMenu>
+										<MenuItem Header="Copy Name" Command="{Binding Path=PlacementTarget.Tag.CopyToClipboardCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}" CommandParameter="{Binding Name}" />
+										<MenuItem Header="Copy Full Path" Command="{Binding Path=PlacementTarget.Tag.CopyToClipboardCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}" CommandParameter="{Binding SourcePath}" />
+										<MenuItem Header="Rename" Command="{Binding Path=PlacementTarget.Tag.ToggleRenameFileTabCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}" CommandParameter="{Binding}" 
+											Visibility="{Binding CanRename, Converter={StaticResource BoolToVisibilityConverter}, FallbackValue=Collapsed}"
+										/>
+									</ContextMenu>
+								</Setter.Value>
+							</Setter>
+						</MultiDataTrigger.Setters>
+					</MultiDataTrigger>
+					<MultiDataTrigger>
+						<MultiDataTrigger.Conditions>
+							<Condition Binding="{Binding CanRename}" Value="True" />
+							<Condition Binding="{Binding IsRenaming}" Value="True" />
+						</MultiDataTrigger.Conditions>
+						<MultiDataTrigger.Setters>
+							<Setter Property="ContextMenu">
+								<Setter.Value>
+									<ContextMenu>
+										<MenuItem Header="Confirm Rename" 
+												  Command="{Binding Path=PlacementTarget.Tag.ConfirmRenameFileTabCommand, 
+											RelativeSource={RelativeSource AncestorType=ContextMenu}}" CommandParameter="{Binding}"/>
+										<MenuItem Header="Cancel Renaming" 
+												  Command="{Binding Path=PlacementTarget.Tag.CancelRenamingFileTabCommand, 
+											RelativeSource={RelativeSource AncestorType=ContextMenu}}" CommandParameter="{Binding}"/>
+									</ContextMenu>
+								</Setter.Value>
+							</Setter>
+						</MultiDataTrigger.Setters>
+					</MultiDataTrigger>
+				</Style.Triggers>
+			</Style>
 
 			<DataTemplate x:Key="LocaleFileTabs">
 				<Grid>
@@ -903,10 +946,11 @@ body {
 					>
 						<TabControl.Resources>
 							<Style TargetType="TabItem" BasedOn="{StaticResource TabItemFileDataStyle}">
+								<EventSetter Event="LostFocus" Handler="FileDataTab_LostFocus" />
 								<Setter Property="HeaderTemplate">
 									<Setter.Value>
 										<DataTemplate>
-											<Grid>
+											<Grid Tag="{Binding Path=DataContext, RelativeSource={RelativeSource AncestorType={x:Type Window}}}">
 												<Grid.Resources>
 													<Style TargetType="TextBlock" x:Key="TabTextBlockStyle">
 														<Setter Property="Text" Value="{Binding DisplayName}" />
@@ -920,6 +964,7 @@ body {
 																<ContextMenu>
 																	<MenuItem Header="Copy Name" Command="{Binding Path=PlacementTarget.Tag.CopyToClipboardCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}" CommandParameter="{Binding Name}" />
 																	<MenuItem Header="Copy Full Path" Command="{Binding Path=PlacementTarget.Tag.CopyToClipboardCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}" CommandParameter="{Binding SourcePath}" />
+																	<MenuItem Header="Rename" Command="{Binding Path=PlacementTarget.Tag.ToggleRenameFileTabCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}" CommandParameter="{Binding}" />
 																</ContextMenu>
 															</Setter.Value>
 														</Setter>
@@ -970,7 +1015,7 @@ body {
 													<DataTemplate x:Key="EditingTabText">
 														<TextBox Text="{Binding RenameText, Mode=TwoWay}"
 																DataContext="{Binding}"
-																ToolTip="Renaming this Tab"
+																ToolTip="Renaming"
 																TextAlignment="Left"
 																Margin="4,0,0,0"
 																HorizontalAlignment="Left"
@@ -1042,6 +1087,23 @@ body {
 													MaxSize="10"
 												/>
 												<ContentPresenter Grid.Column="0" Style="{StaticResource FileTabContentStyle}" Content="{Binding}" />
+												<Grid.ContextMenu>
+													<ContextMenu>
+														<MenuItem Header="Copy Name" Command="{Binding Path=PlacementTarget.Tag.CopyToClipboardCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}" CommandParameter="{Binding Name}" />
+														<MenuItem Header="Copy Full Path" Command="{Binding Path=PlacementTarget.Tag.CopyToClipboardCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}" CommandParameter="{Binding SourcePath}" />
+														<MenuItem Header="Rename" Command="{Binding Path=PlacementTarget.Tag.ToggleRenameFileTabCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}" CommandParameter="{Binding}" 
+																  Visibility="{Binding CanRename, Converter={StaticResource BoolToVisibilityConverter}, FallbackValue=Collapsed}"
+														/>
+													</ContextMenu>
+												</Grid.ContextMenu>
+												<i:Interaction.Triggers>
+													<i:EventTrigger EventName="LostFocus">
+														<i:InvokeCommandAction 
+															Command="{Binding Path=DataContext.CancelRenamingFileTabCommand, RelativeSource={RelativeSource AncestorType={x:Type Window}}}"
+															CommandParameter="{Binding}"
+														/>
+													</i:EventTrigger>
+												</i:Interaction.Triggers>
 											</Grid>
 										</DataTemplate>
 									</Setter.Value>
@@ -1123,10 +1185,10 @@ body {
 			<StackPanel x:Name="ShortcutsButtonPanel" Grid.Column="0" VerticalAlignment="Center" Margin="2" MinHeight="16">
 				<c:ImageButton
 					x:Name="AddFileButton"
+					Command="{Binding AddFileCommand}"
 					ToolTip_Enabled="{x:Static core:DOS2DETooltips.Button_Locale_AddFile}"
 					ToolTip_Disabled="{x:Static core:DOS2DETooltips.Button_Locale_AddFile_Disabled}"
 					Source="{x:Static vdata:IconPathData.AddFile}" 
-					IsEnabled="{Binding RelativeSource={RelativeSource AncestorType={x:Type Window}}, Path=DataContext.CanAddFile}"
 					cb:ImageButtonHoverOnDisabled.Enable="True"
 				/>
 				<c:ImageButton
@@ -1135,9 +1197,8 @@ body {
 					ToolTip_Enabled="{x:Static core:DOS2DETooltips.Button_Locale_ImportFile}"
 					ToolTip_Disabled="{x:Static core:DOS2DETooltips.Button_Locale_ImportFile_Disabled}"
 					Source="{x:Static vdata:IconPathData.ImportFile}"
-					IsEnabled="{Binding CanAddFile}"
 					cb:ImageButtonHoverOnDisabled.Enable="True"
-					/>
+				/>
 				<c:ImageButton
 					x:Name="SaveButton"
 					Command="{Binding SaveCurrentCommand}" 

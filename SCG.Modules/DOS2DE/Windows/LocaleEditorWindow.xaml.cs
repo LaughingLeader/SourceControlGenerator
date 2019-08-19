@@ -79,6 +79,7 @@ namespace SCG.Modules.DOS2DE.Windows
 
 				this.OneWayBind(this.ViewModel, vm => vm.SaveCurrentCommand, view => view.SaveButton.Command).DisposeWith(d);
 				this.OneWayBind(this.ViewModel, vm => vm.SaveAllCommand, view => view.SaveAllButton.Command).DisposeWith(d);
+				this.OneWayBind(this.ViewModel, vm => vm.AddFileCommand, view => view.AddFileButton.Command).DisposeWith(d);
 				this.OneWayBind(this.ViewModel, vm => vm.ImportFileCommand, view => view.ImportFileButton.Command).DisposeWith(d);
 
 				this.OneWayBind(this.ViewModel, vm => vm.SelectedEntryHtmlContent, view => view.EntryContentPreviewHtmlPanel.Text).DisposeWith(d);
@@ -361,6 +362,23 @@ namespace SCG.Modules.DOS2DE.Windows
 					{
 						tb.MoveFocus(new TraversalRequest(FocusNavigationDirection.Next));
 					}
+				}
+			}
+		}
+
+		public void FocusGroupTabItem()
+		{
+
+		}
+
+		private void FileDataTab_LostFocus(object sender, RoutedEventArgs e)
+		{
+			if(sender is TabItem tb)
+			{
+				if(tb.DataContext is ILocaleFileData fileData)
+				{
+					fileData.IsRenaming = false;
+					e.Handled = true;
 				}
 			}
 		}

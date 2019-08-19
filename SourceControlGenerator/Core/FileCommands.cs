@@ -27,6 +27,14 @@ namespace SCG
 		public static LoadCommands Load => loadCommands;
 		public static SaveCommands Save => saveCommands;
 
+		public static string EnsureExtension(string filePath, string extension)
+		{
+			if(!FileExtensionFound(filePath, extension))
+			{
+				return Path.ChangeExtension(filePath, extension);
+			}
+			return filePath;
+		}
 		public static string ReadFile(string filePath)
 		{
 			var contents = "";
@@ -46,6 +54,32 @@ namespace SCG
 				Log.Here().Error("Error reading file at {0} - {1}", filePath, e.ToString());
 			}
 			return contents;
+		}
+
+		public static bool RenameFile(string filePath, string nextFilePath)
+		{
+			try
+			{
+				if (File.Exists(filePath))
+				{
+					var result = File.Copy(filePath, nextFilePath, CopyOptions.FailIfExists);
+					if(!result.IsCanceled && result.IsFile)
+					{
+						Microsoft.VisualBasic.FileIO.FileSystem.DeleteFile(filePath, 
+							Microsoft.VisualBasic.FileIO.UIOption.OnlyErrorDialogs, Microsoft.VisualBasic.FileIO.RecycleOption.SendToRecycleBin);
+						return true;
+					}
+				}
+				else
+				{
+					Log.Here().Warning("File \"{0}\" does not exist.", filePath);
+				}
+			}
+			catch (Exception e)
+			{
+				Log.Here().Error("Error reading file at {0} - {1}", filePath, e.ToString());
+			}
+			return false;
 		}
 
 		public static async Task<string> ReadFileAsync(string filePath)

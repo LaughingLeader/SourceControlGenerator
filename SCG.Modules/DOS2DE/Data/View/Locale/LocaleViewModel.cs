@@ -213,6 +213,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			get => selectedFile;
 			set
 			{
+				if (selectedFile != null && selectedFile != value && selectedFile.IsRenaming) selectedFile.IsRenaming = false;
 				this.RaiseAndSetIfChanged(ref selectedFile, value);
 			}
 		}
@@ -883,6 +884,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 		public ICommand PopoutContentCommand { get; set; }
 		public ICommand CopyToClipboardCommand { get; private set; }
 		public ICommand ToggleRenameFileTabCommand { get; private set; }
+		public ICommand ConfirmRenameFileTabCommand { get; private set; }
 		public ICommand CancelRenamingFileTabCommand { get; private set; }
 		public ICommand SelectNoneCommand { get; private set; }
 		public ICommand ExportFileAsTextualCommand { get; private set; }
@@ -891,6 +893,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 		public IObservable<bool> SubWindowOpenedObservable { get; private set; }
 		public IObservable<bool> CanExecutePopoutContentCommand { get; private set; }
 		public IObservable<bool> FileSelectedObservable { get; private set; }
+		public IObservable<bool> CanAddFileObservable { get; private set; }
 		public IObservable<bool> CanImportFilesObservable { get; private set; }
 		public IObservable<bool> CanImportKeysObservable { get; private set; }
 		public IObservable<bool> AnySelectedEntryObservable { get; private set; }
@@ -1369,6 +1372,44 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 
 			var onCancel = new Action<string, FileDialogResult>((s, r) => IsSubWindowOpen = false);
 
+			AddFileCommand = ReactiveCommand.Create(() =>
+			{
+				Log.Here().Activity("Adding new file to group.");
+				if(SelectedGroup != null)
+				{
+					var currentGroup = Groups.Where(g => g == SelectedGroup).First();
+					string futurePath = Path.Combine(currentGroup.SourceDirectories.First(), "NewFile.lsb");
+					var newFile = LocaleEditorCommands.CreateFileData(currentGroup, futurePath, "NewFile.lsb");
+					bool lastChangesUnsaved = currentGroup.ChangesUnsaved;
+
+					void undo()
+					{
+						var list = currentGroup.DataFiles.ToList();
+						list.Remove(newFile);
+						currentGroup.DataFiles = new ObservableCollectionExtended<ILocaleFileData>(list);
+
+						SelectedGroup.ChangesUnsaved = lastChangesUnsaved;
+						SelectedGroup.UpdateCombinedData();
+						SelectedGroup.SelectLast();
+					}
+
+					void redo()
+					{
+						currentGroup.DataFiles.Add(newFile);
+
+						SelectedGroup.ChangesUnsaved = true;
+						SelectedGroup.UpdateCombinedData();
+						SelectedGroup.SelectLast();
+
+						newFile.ChangesUnsaved = true;
+						newFile.IsRenaming = true;
+					}
+
+					CreateSnapshot(undo, redo);
+					redo();
+				}
+			}, CanImportFilesObservable).DisposeWith(disposables);
+
 			ImportFileCommand = ReactiveCommand.Create(() =>
 			{
 				IsSubWindowOpen = true;
@@ -1438,8 +1479,13 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			}).DisposeWith(disposables);
 
 			CloseFileCommand = ReactiveCommand.Create<ILocaleFileData>(CloseFileInGroup, GlobalCanActObservable).DisposeWith(disposables);
-			ToggleRenameFileTabCommand = ReactiveCommand.Create<ILocaleFileData>((ILocaleFileData fileData) => {
+			ToggleRenameFileTabCommand = ReactiveCommand.Create<ILocaleFileData>((ILocaleFileData fileData) => 
+			{
 				fileData.IsRenaming = !fileData.IsRenaming;
+				if(fileData.IsRenaming)
+				{
+					SelectedGroup.SelectedFileIndex = SelectedGroup.Tabs.IndexOf(fileData);
+				}
 			}, GlobalCanActObservable).DisposeWith(disposables);
 
 			async Task<Unit> cancelRenamingFileTab(ILocaleFileData fileData)
@@ -1453,6 +1499,37 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 				return Unit.Default;
 			}
 
+			ConfirmRenameFileTabCommand = ReactiveCommand.Create<ILocaleFileData>((ILocaleFileData fileData) =>
+			{
+				string lastName = fileData.Name;
+				string nextName = fileData.RenameText;
+				string nextFilePath = Path.Combine(Path.GetDirectoryName(fileData.SourcePath), FileCommands.EnsureExtension(nextName, ".lsb"));
+
+				Log.Here().Activity($"Next file path {fileData.SourcePath} => {nextFilePath}");
+				return;
+
+				void undo()
+				{
+					fileData.Name = lastName;
+				}
+				void redo()
+				{
+					if(File.Exists(fileData.SourcePath))
+					{
+						FileCommands.RenameFile(fileData.SourcePath, nextFilePath);
+
+						fileData.Name = fileData.RenameText;
+						fileData.IsRenaming = false;
+					}
+					else
+					{
+						fileData.Name = fileData.RenameText;
+						fileData.IsRenaming = false;
+					}
+				}
+				CreateSnapshot(undo, redo);
+				redo();
+			}).DisposeWith(disposables);
 			CancelRenamingFileTabCommand = ReactiveCommand.CreateFromTask<ILocaleFileData>(cancelRenamingFileTab).DisposeWith(disposables);
 
 			SaveAllCommand = ReactiveCommand.CreateFromTask(SaveAll, GlobalCanActObservable).DisposeWith(disposables);
