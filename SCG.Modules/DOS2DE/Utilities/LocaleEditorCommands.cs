@@ -343,7 +343,7 @@ namespace SCG.Modules.DOS2DE.Utilities
 
 					var resource = LSLib.LS.ResourceUtils.LoadResource(path, resourceFormat);
 
-					var data = new LocaleNodeFileData(groupData, resourceFormat, resource, path, Path.GetFileName(path));
+					var data = new LocaleNodeFileData(groupData, resourceFormat, resource, path, Path.GetFileNameWithoutExtension(path));
 					var entries = LoadFromResource(resource, resourceFormat);
 					foreach (var entry in entries)
 					{
@@ -1088,8 +1088,8 @@ namespace SCG.Modules.DOS2DE.Utilities
 		private static LocaleNodeFileData CreateNodeFileDataFromTextual(LocaleTabGroup groupData, System.IO.StreamReader stream, string sourceDirectory, string filePath, char delimiter)
 		{
 			//For exporting to lsb later
-			string name = Path.GetFileNameWithoutExtension(filePath) + ".lsb";
-			string futureSourcePath = Path.Combine(sourceDirectory, name);
+			string name = Path.GetFileNameWithoutExtension(filePath);
+			string futureSourcePath = FileCommands.EnsureExtension(Path.Combine(sourceDirectory, name), ".lsb");
 
 			LocaleNodeFileData fileData = CreateFileData(groupData, futureSourcePath, name);
 			//Remove the empty default new key

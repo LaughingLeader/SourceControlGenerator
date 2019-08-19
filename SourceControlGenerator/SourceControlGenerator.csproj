@@ -271,6 +271,7 @@
     <Compile Include="Controls\LoadingSpinner.xaml.cs">
       <DependentUpon>LoadingSpinner.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Controls\MonitoredContentPresenter.cs" />
     <Compile Include="Converters\BindingFallbackConverter.cs" />
     <Compile Include="Converters\ColorToBrushConverter.cs" />
     <Compile Include="Converters\GrayscaleTintImageConverter.cs" />

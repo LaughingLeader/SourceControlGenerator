@@ -349,16 +349,22 @@ namespace SCG.Modules.DOS2DE.Windows
 
 		private void TextBox_KeyDown_MoveFocus(object sender, KeyEventArgs e)
 		{
-			if(e.Key == Key.Enter || e.Key == Key.Return)
+			if (sender is TextBox tb)
 			{
-				if(sender is TextBox tb)
+				if (tb.DataContext is ILocaleFileData fileData)
 				{
-					if (tb.DataContext is ILocaleFileData fileData)
+					if (e.Key == Key.Enter || e.Key == Key.Return)
 					{
-						fileData.Name = fileData.RenameText;
-						fileData.IsRenaming = false;
+						ViewModel.ConfirmRenaming(fileData);
 					}
-					else
+					else if (e.Key == Key.Escape)
+					{
+						ViewModel.CancelRenaming(fileData);
+					}
+				}
+				else
+				{
+					if (e.Key == Key.Enter || e.Key == Key.Return)
 					{
 						tb.MoveFocus(new TraversalRequest(FocusNavigationDirection.Next));
 					}
@@ -380,6 +386,45 @@ namespace SCG.Modules.DOS2DE.Windows
 					fileData.IsRenaming = false;
 					e.Handled = true;
 				}
+			}
+		}
+
+		private TabControl fileTabControl;
+
+		public void FocusSelectedTab()
+		{
+			if(fileTabControl != null)
+			{
+				Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Background, new Action(async () =>
+				{
+					await Task.Delay(50);
+
+					var tabs = fileTabControl.FindVisualChildren<TabItem>();
+					var tab = tabs.FirstOrDefault(x => x.DataContext == ViewModel.SelectedFile);
+					if (tab != null)
+					{
+						tab.BringIntoView();
+						tab.MoveFocus(new TraversalRequest(FocusNavigationDirection.Next));
+						var tb = tab.FindVisualChildren<TextBox>().FirstOrDefault();
+						if (tb != null)
+						{
+							tb.Focus();
+							tb.SelectAll();
+						}
+						else
+						{
+							Log.Here().Activity("Couldn't find textbox");
+						}
+					}
+				}));
+			}
+		}
+
+		private void LocaleFileTabControl_SelectionChanged(object sender, SelectionChangedEventArgs e)
+		{
+			if (sender is TabControl tc)
+			{
+				fileTabControl = tc;
 			}
 		}
 	}

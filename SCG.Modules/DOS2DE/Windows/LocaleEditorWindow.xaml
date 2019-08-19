@@ -890,7 +890,28 @@ body {
 				</Setter>
 			</Style>
 			<Style TargetType="Grid" x:Key="LocaleFileTabGrid">
+				<Setter Property="Background" Value="Transparent" />
 				<Style.Triggers>
+					<MultiDataTrigger>
+						<MultiDataTrigger.Conditions>
+							<Condition Binding="{Binding CanRename}" Value="False" />
+							<Condition Binding="{Binding IsRenaming}" Value="False" />
+						</MultiDataTrigger.Conditions>
+						<MultiDataTrigger.Setters>
+							<Setter Property="ContextMenu">
+								<Setter.Value>
+									<ContextMenu>
+										<MenuItem Header="Copy Name" 
+												  Command="{Binding Path=PlacementTarget.Tag.CopyToClipboardCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}" 
+												  CommandParameter="{Binding Name}" />
+										<MenuItem Header="Copy Full Path" 
+												  Command="{Binding Path=PlacementTarget.Tag.CopyToClipboardCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}" 
+												  CommandParameter="{Binding SourcePath}" />
+									</ContextMenu>
+								</Setter.Value>
+							</Setter>
+						</MultiDataTrigger.Setters>
+					</MultiDataTrigger>
 					<MultiDataTrigger>
 						<MultiDataTrigger.Conditions>
 							<Condition Binding="{Binding CanRename}" Value="True" />
@@ -936,6 +957,7 @@ body {
 			<DataTemplate x:Key="LocaleFileTabs">
 				<Grid>
 					<TabControl
+						x:Name="LocaleFileTabControl"
 						ItemsSource="{Binding Tabs}"
 						TabStripPlacement="Left" 
 						ContentTemplate="{Binding Source={StaticResource LocaleEntryGrid}}" 
@@ -943,6 +965,7 @@ body {
 						BorderThickness="1" Margin="0" Padding="0"
 						Style="{StaticResource TabControlFileData}"
 						HorizontalContentAlignment="Stretch"
+						SelectionChanged="LocaleFileTabControl_SelectionChanged"
 					>
 						<TabControl.Resources>
 							<Style TargetType="TabItem" BasedOn="{StaticResource TabItemFileDataStyle}">
@@ -950,7 +973,8 @@ body {
 								<Setter Property="HeaderTemplate">
 									<Setter.Value>
 										<DataTemplate>
-											<Grid Tag="{Binding Path=DataContext, RelativeSource={RelativeSource AncestorType={x:Type Window}}}">
+											<Grid Tag="{Binding Path=DataContext, RelativeSource={RelativeSource AncestorType={x:Type Window}}}" 
+												  Style="{StaticResource LocaleFileTabGrid}">
 												<Grid.Resources>
 													<Style TargetType="TextBlock" x:Key="TabTextBlockStyle">
 														<Setter Property="Text" Value="{Binding DisplayName}" />
@@ -959,15 +983,6 @@ body {
 														<Setter Property="Margin" Value="4,0,0,0" />
 														<Setter Property="HorizontalAlignment" Value="Left" />
 														<Setter Property="Tag" Value="{Binding Path=DataContext, RelativeSource={RelativeSource AncestorType={x:Type Window}}}" />
-														<Setter Property="ContextMenu">
-															<Setter.Value>
-																<ContextMenu>
-																	<MenuItem Header="Copy Name" Command="{Binding Path=PlacementTarget.Tag.CopyToClipboardCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}" CommandParameter="{Binding Name}" />
-																	<MenuItem Header="Copy Full Path" Command="{Binding Path=PlacementTarget.Tag.CopyToClipboardCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}" CommandParameter="{Binding SourcePath}" />
-																	<MenuItem Header="Rename" Command="{Binding Path=PlacementTarget.Tag.ToggleRenameFileTabCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}" CommandParameter="{Binding}" />
-																</ContextMenu>
-															</Setter.Value>
-														</Setter>
 													</Style>
 													<DataTemplate x:Key="DefaultTabText">
 														<TextBlock
@@ -991,19 +1006,12 @@ body {
 														<TextBlock
 															x:Name="headerText"
 															Style="{StaticResource TabTextBlockStyle}">
-																<TextBlock.Resources>
-																	<Style TargetType="ToolTip">
-																		<Setter Property="Visibility" Value="{Binding SourcePath, Converter={StaticResource EmptyStringVisibilityConverter}}" />
-																	</Style>
-																</TextBlock.Resources>
-																<TextBlock.ContextMenu>
-																	<ContextMenu>
-																		<MenuItem Header="Copy Name" Command="{Binding Path=PlacementTarget.Tag.CopyToClipboardCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}" CommandParameter="{Binding Name}" />
-																		<MenuItem Header="Copy Full Path" Command="{Binding Path=PlacementTarget.Tag.CopyToClipboardCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}" CommandParameter="{Binding SourcePath}" />
-																		<MenuItem Header="Rename" Command="{Binding Path=PlacementTarget.Tag.ToggleRenameFileTabCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}" CommandParameter="{Binding}" />
-																	</ContextMenu>
-																</TextBlock.ContextMenu
-															></TextBlock>
+															<TextBlock.Resources>
+																<Style TargetType="ToolTip">
+																	<Setter Property="Visibility" Value="{Binding SourcePath, Converter={StaticResource EmptyStringVisibilityConverter}}" />
+																</Style>
+															</TextBlock.Resources>
+														</TextBlock>
 														<DataTemplate.Triggers>
 															<DataTrigger Binding="{Binding ChangesUnsaved}" Value="True">
 																<Setter TargetName="headerText" Property="Foreground" Value="#FF459727"/>
@@ -1013,14 +1021,16 @@ body {
 														</DataTemplate.Triggers>
 													</DataTemplate>
 													<DataTemplate x:Key="EditingTabText">
-														<TextBox Text="{Binding RenameText, Mode=TwoWay}"
-																DataContext="{Binding}"
-																ToolTip="Renaming"
-																TextAlignment="Left"
-																Margin="4,0,0,0"
-																HorizontalAlignment="Left"
-																Tag="{Binding Path=DataContext, RelativeSource={RelativeSource AncestorType={x:Type Window}}}"
-																KeyDown="TextBox_KeyDown_MoveFocus"
+														<TextBox 
+															x:Name="FileTabRenamingTextBox"
+															Text="{Binding RenameText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+															DataContext="{Binding}"
+															ToolTip="Renaming"
+															TextAlignment="Left"
+															Margin="4,0,0,0"
+															HorizontalAlignment="Left"
+															Tag="{Binding Path=DataContext, RelativeSource={RelativeSource AncestorType={x:Type Window}}}"
+															KeyDown="TextBox_KeyDown_MoveFocus"
 															>
 															<TextBox.ContextMenu>
 																<ContextMenu>
@@ -1028,24 +1038,11 @@ body {
 																	<MenuItem Command="ApplicationCommands.Copy" />
 																	<MenuItem Command="ApplicationCommands.Paste" />
 																	<MenuItem Command="ApplicationCommands.SelectAll" />
-																	<MenuItem Header="Select None" Command="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.Tag.SelectNoneCommand}" 
-																				CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget}" />
-																	<MenuItem Header="Stop Renaming"
-																			  Command="{Binding Path=PlacementTarget.Tag.ToggleRenameFileTabCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
-																			  CommandParameter="{Binding}" />
 																</ContextMenu>
 															</TextBox.ContextMenu>
-															<i:Interaction.Triggers>
-																<i:EventTrigger EventName="LostFocus">
-																	<i:InvokeCommandAction 
-																		Command="{Binding Path=DataContext.CancelRenamingFileTabCommand, RelativeSource={RelativeSource AncestorType={x:Type Window}}}"
-																		CommandParameter="{Binding}"
-																	/>
-																</i:EventTrigger>
-															</i:Interaction.Triggers>
 														</TextBox>
 													</DataTemplate>
-													<Style x:Key="FileTabContentStyle" TargetType="ContentPresenter">
+													<Style x:Key="FileTabContentStyle" TargetType="{x:Type ContentPresenter}">
 														<Setter Property="ContentTemplate" Value="{StaticResource DefaultTabText}"/>
 														<Style.Triggers>
 															<MultiDataTrigger>
@@ -1063,7 +1060,7 @@ body {
 																	<Condition Binding="{Binding IsRenaming}" Value="True" />
 																</MultiDataTrigger.Conditions>
 																<MultiDataTrigger.Setters>
-																	<Setter Property="ContentTemplate" Value="{StaticResource EditingTabText}"/>
+																	<Setter Property="ContentTemplate" Value="{StaticResource EditingTabText}" />
 																</MultiDataTrigger.Setters>
 															</MultiDataTrigger>
 														</Style.Triggers>
@@ -1086,16 +1083,8 @@ body {
 													Panel.ZIndex="2"
 													MaxSize="10"
 												/>
-												<ContentPresenter Grid.Column="0" Style="{StaticResource FileTabContentStyle}" Content="{Binding}" />
-												<Grid.ContextMenu>
-													<ContextMenu>
-														<MenuItem Header="Copy Name" Command="{Binding Path=PlacementTarget.Tag.CopyToClipboardCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}" CommandParameter="{Binding Name}" />
-														<MenuItem Header="Copy Full Path" Command="{Binding Path=PlacementTarget.Tag.CopyToClipboardCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}" CommandParameter="{Binding SourcePath}" />
-														<MenuItem Header="Rename" Command="{Binding Path=PlacementTarget.Tag.ToggleRenameFileTabCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}" CommandParameter="{Binding}" 
-																  Visibility="{Binding CanRename, Converter={StaticResource BoolToVisibilityConverter}, FallbackValue=Collapsed}"
-														/>
-													</ContextMenu>
-												</Grid.ContextMenu>
+												<ContentPresenter x:Name="FileTabContentPresenter" 
+													Grid.Column="0" Style="{StaticResource FileTabContentStyle}" Content="{Binding}"  />
 												<i:Interaction.Triggers>
 													<i:EventTrigger EventName="LostFocus">
 														<i:InvokeCommandAction 

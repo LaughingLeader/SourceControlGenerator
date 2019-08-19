@@ -62,6 +62,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 		{
 			//var str = $"<font size='8' align='left'>{Name}</font>";
 			//DisplayName = !ChangesUnsaved ? str : "<font color='#FF0000'>*</font>" + str;
+			//string name = Alphaleonis.Win32.Filesystem.Path.GetFileNameWithoutExtension(Name);
 			DisplayName = !ChangesUnsaved ? Name : "*" + Name;
 		}
 
