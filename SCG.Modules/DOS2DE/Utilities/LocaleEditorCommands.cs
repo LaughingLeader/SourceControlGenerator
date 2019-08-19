@@ -996,6 +996,7 @@ namespace SCG.Modules.DOS2DE.Utilities
 									{
 										Log.Here().Activity($"Updated entry: {existingEntry.Content} => {entry.Content}");
 										existingEntry.Content = entry.Content;
+										existingEntry.ChangesUnsaved = true;
 										changesUnsaved = true;
 									}
 								}
@@ -1005,6 +1006,7 @@ namespace SCG.Modules.DOS2DE.Utilities
 									{
 										var newEntry = CreateNewLocaleEntry(nodeFileData, entry.Key, entry.Content);
 										nodeFileData.Entries.Add(newEntry);
+										newEntry.ChangesUnsaved = true;
 										changesUnsaved = true;
 										Log.Here().Activity($"Added new entry: {newEntry.Key} | {newEntry.Content}");
 									}
@@ -1092,7 +1094,8 @@ namespace SCG.Modules.DOS2DE.Utilities
 			LocaleNodeFileData fileData = CreateFileData(groupData, futureSourcePath, name);
 			//Remove the empty default new key
 			fileData.Entries.Clear();
-			fileData.RootRegion.Children.Values.First().First().Children.Clear();
+			//fileData.RootRegion.Children.Values.First().First().Children.Clear();
+			fileData.RootRegion.Children.Values.First().Clear();
 
 			int lineNum = 0;
 			string line = String.Empty;

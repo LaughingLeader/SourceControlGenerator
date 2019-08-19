@@ -358,18 +358,18 @@
 													Template="{StaticResource ImageButtonTemplate}"
 													cb:ImageButtonHoverOnDisabled.Enable="True"
 												/>
-												<c:ImageButton x:Name="Btn_OpenLocaleEditor" 
-													ToolTip="{x:Static core:DOS2DETooltips.Button_OpenLocaleEditor}" 
-													Command="{Binding Path=DataContext.OpenInLocalizationEditorCommand, RelativeSource={RelativeSource AncestorType={x:Type local:DOS2DEProjectsView}}}"
-													CommandParameter="{Binding}" 
-													Source="{x:Static vdata:IconPathData.OpenLocalizationEditor}"
-												/>
 												<c:ImageButton x:Name="Btn_OpenMarkdown" 
 													ToolTip="{x:Static core:DOS2DETooltips.Button_MarkdownConverter}" 
 													IsEnabled="{Binding GitGenerated}" Visibility="{Binding GitGenerated, Converter={StaticResource BoolToVisibilityConverter}}"
 													Command="{Binding Path=Data.OpenProjectReadmeInMarkdownConverterCommand, Source={StaticResource AppControllerProxy}}"
 													CommandParameter="{Binding}"
 													Source="{x:Static vdata:IconPathData.Convert}"
+												/>
+												<c:ImageButton x:Name="Btn_OpenLocaleEditor" 
+													ToolTip="{x:Static core:DOS2DETooltips.Button_OpenLocaleEditor}" 
+													Command="{Binding Path=DataContext.OpenInLocalizationEditorCommand, RelativeSource={RelativeSource AncestorType={x:Type local:DOS2DEProjectsView}}}"
+													CommandParameter="{Binding}" 
+													Source="{x:Static vdata:IconPathData.OpenLocalizationEditor}"
 												/>
 												<!--<Button x:Name="Btn_PackageMod" ToolTip="{x:Static core:DOS2DETooltips.Button_PackageMod}" IsEnabled="{Binding DataContext.Settings.DivinePathSet, ElementName=ProjectView}" Command="{Binding DataContext.PackageProjectCommand, ElementName=ProjectView}"
 														CommandParameter="{Binding}" >

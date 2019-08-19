@@ -605,6 +605,7 @@ body {
 												SelectionChanged="EntryContent_SelectionChanged"
 												Tag="{Binding Path=DataContext, RelativeSource={RelativeSource AncestorType={x:Type Window}}}"
 												IsUndoEnabled="False"
+												Background="Transparent"
 												>
 												<TextBox.ContextMenu>
 													<ContextMenu>
