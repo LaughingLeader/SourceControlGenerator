@@ -20,6 +20,7 @@ using SCG.Modules.DOS2DE.Views;
 using ReactiveUI;
 using System.Reactive;
 using System.Reactive.Concurrency;
+using System.Text.RegularExpressions;
 
 namespace SCG.Modules.DOS2DE.Data.View
 {
@@ -401,7 +402,13 @@ namespace SCG.Modules.DOS2DE.Data.View
 				}
 			};
 
-			var thumbnail = Directory.EnumerateFiles(projectDirectory, DirectoryEnumerationOptions.Files, filter, PathFormat.FullPath).FirstOrDefault();
+			string thumbnail = null;
+
+			if(Directory.Exists(projectDirectory))
+			{
+				thumbnail = Directory.EnumerateFiles(projectDirectory, DirectoryEnumerationOptions.Files, filter, PathFormat.FullPath).FirstOrDefault();
+			}
+
 			if (!String.IsNullOrWhiteSpace(thumbnail))
 			{
 				ThumbnailPath = Path.GetFullPath(thumbnail);
@@ -489,6 +496,35 @@ namespace SCG.Modules.DOS2DE.Data.View
 					else
 					{
 						Log.Here().Error($"Project directory not found for {ModuleInfo.Name} at {Path.Combine(projectsFolderPath, ProjectName)} and {projectDirectory}.");
+						Log.Here().Important($"Checking for meta.lsx files in '{projectsFolderPath}'.");
+						var projectMetaFiles = Directory.EnumerateFiles(projectsFolderPath, DirectoryEnumerationOptions.Recursive | DirectoryEnumerationOptions.Files, new DirectoryEnumerationFilters
+						{
+							InclusionFilter = (f) =>
+							{
+								return f.FileName.Equals("meta.lsx", StringComparison.OrdinalIgnoreCase);
+							}
+						});
+
+						if(projectMetaFiles.Count() > 0)
+						{
+							Regex regex = new Regex("^.*Module.*value=\"([^\"]+)\".* $", RegexOptions.IgnoreCase | RegexOptions.Multiline);
+
+							foreach (var f in projectMetaFiles)
+							{
+								string contents = await FileCommands.ReadFileAsync(f);
+								var match = regex.Match(contents);
+								if(match.Success)
+								{
+									string modUUID = match.Groups[1].Value;
+									if(modUUID.Equals(this.UUID, StringComparison.OrdinalIgnoreCase))
+									{
+										projectDirectory = Path.GetDirectoryName(f);
+										Log.Here().Important($"Found project folder by UUID {this.UUID} at {projectDirectory}.");
+										break;
+									}
+								}
+							}
+						}
 					}
 				}
 				else
@@ -496,20 +532,27 @@ namespace SCG.Modules.DOS2DE.Data.View
 					ProjectFolder = ProjectName;
 				}
 
-				string projectMetaFilePath = Path.ChangeExtension(Path.Combine(projectDirectory, "meta"), "lsx");
-				ProjectMetaFilePath = Path.GetFullPath(projectMetaFilePath);
-
-				Log.Here().Activity("Attempting to load project meta.lsx at {0}", projectMetaFilePath);
-				string projectMetaFileContents = await FileCommands.ReadFileAsync(projectMetaFilePath);
-
-				if (!String.IsNullOrWhiteSpace(projectMetaFileContents))
+				if(Directory.Exists(projectDirectory))
 				{
-					var projectMetaXml = XDocument.Parse(projectMetaFileContents);
-					this.ProjectInfo.LoadFromXml(projectMetaXml);
-					ProjectInfo.CreationDate = File.GetCreationTime(projectMetaFilePath);
-				}
+					string projectMetaFilePath = Path.ChangeExtension(Path.Combine(projectDirectory, "meta"), "lsx");
+					ProjectMetaFilePath = Path.GetFullPath(projectMetaFilePath);
 
-				LoadThumbnail(projectDirectory);
+					Log.Here().Activity("Attempting to load project meta.lsx at {0}", projectMetaFilePath);
+					string projectMetaFileContents = await FileCommands.ReadFileAsync(projectMetaFilePath);
+
+					if (!String.IsNullOrWhiteSpace(projectMetaFileContents))
+					{
+						var projectMetaXml = XDocument.Parse(projectMetaFileContents);
+						this.ProjectInfo.LoadFromXml(projectMetaXml);
+						ProjectInfo.CreationDate = File.GetCreationTime(projectMetaFilePath);
+					}
+
+					LoadThumbnail(projectDirectory);
+				}
+				else
+				{
+					Log.Here().Error($"Project directory not found for {ModuleInfo.Name} at '{projectDirectory}'.");
+				}
 			}
 			catch (Exception ex)
 			{
@@ -639,6 +682,35 @@ namespace SCG.Modules.DOS2DE.Data.View
 					else
 					{
 						Log.Here().Error($"Project directory not found for {ModuleInfo.Name} at {Path.Combine(projectsFolderPath, ProjectName)} and {projectDirectory}.");
+						Log.Here().Important($"Checking for meta.lsx files in '{projectsFolderPath}'.");
+						var projectMetaFiles = Directory.EnumerateFiles(projectsFolderPath, DirectoryEnumerationOptions.Recursive | DirectoryEnumerationOptions.Files, new DirectoryEnumerationFilters
+						{
+							InclusionFilter = (f) =>
+							{
+								return f.FileName.Equals("meta.lsx", StringComparison.OrdinalIgnoreCase);
+							}
+						});
+
+						if (projectMetaFiles.Count() > 0)
+						{
+							Regex regex = new Regex("^.*Module.*value=\"([^\"]+)\".* $", RegexOptions.IgnoreCase | RegexOptions.Multiline);
+
+							foreach (var f in projectMetaFiles)
+							{
+								string contents = FileCommands.ReadFile(f);
+								var match = regex.Match(contents);
+								if (match.Success)
+								{
+									string modUUID = match.Groups[1].Value;
+									if (modUUID.Equals(this.UUID, StringComparison.OrdinalIgnoreCase))
+									{
+										projectDirectory = Path.GetDirectoryName(f);
+										Log.Here().Important($"Found project folder by UUID {this.UUID} at {projectDirectory}.");
+										break;
+									}
+								}
+							}
+						}
 					}
 				}
 				else
@@ -646,24 +718,30 @@ namespace SCG.Modules.DOS2DE.Data.View
 					ProjectFolder = ProjectName;
 				}
 
-				string projectMetaFilePath = Path.ChangeExtension(Path.Combine(projectDirectory, "meta"), "lsx");
-				ProjectMetaFilePath = Path.GetFullPath(projectMetaFilePath);
-
-				Log.Here().Activity("Attempting to load project meta.lsx at {0}", projectMetaFilePath);
-				string projectMetaFileContents = FileCommands.ReadFile(projectMetaFilePath);
-
-				if (!String.IsNullOrWhiteSpace(projectMetaFileContents))
+				if (Directory.Exists(projectDirectory))
 				{
-					var projectMetaXml = XDocument.Parse(projectMetaFileContents);
-					this.ProjectInfo.LoadFromXml(projectMetaXml);
-					ProjectInfo.CreationDate = File.GetCreationTime(projectMetaFilePath);
+					string projectMetaFilePath = Path.ChangeExtension(Path.Combine(projectDirectory, "meta"), "lsx");
+					ProjectMetaFilePath = Path.GetFullPath(projectMetaFilePath);
+
+					Log.Here().Activity("Attempting to load project meta.lsx at {0}", projectMetaFilePath);
+					string projectMetaFileContents = FileCommands.ReadFile(projectMetaFilePath);
+
+					if (!String.IsNullOrWhiteSpace(projectMetaFileContents))
+					{
+						var projectMetaXml = XDocument.Parse(projectMetaFileContents);
+						this.ProjectInfo.LoadFromXml(projectMetaXml);
+						ProjectInfo.CreationDate = File.GetCreationTime(projectMetaFilePath);
+					}
+
+					RxApp.MainThreadScheduler.Schedule(() =>
+					{
+						LoadThumbnail(projectDirectory);
+					});
 				}
-
-				RxApp.MainThreadScheduler.Schedule(() =>
+				else
 				{
-					LoadThumbnail(projectDirectory);
-				});
-				
+					Log.Here().Error($"Project directory not found for {ModuleInfo.Name} at '{projectDirectory}'.");
+				}
 			}
 			catch (Exception ex)
 			{
