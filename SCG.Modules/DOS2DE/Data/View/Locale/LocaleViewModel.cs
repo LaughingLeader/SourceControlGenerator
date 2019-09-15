@@ -1205,58 +1205,64 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			}
 		}
 
-		private bool openRemovedEntriesWindowOnLoad = false;
-		private List<ILocaleKeyEntry> removedEntriesOnLoad = null;
+		private bool openMissingEntriesViewOnLoad = false;
+		private List<ILocaleKeyEntry> addMissingEntriesOnLoad = null;
 
-		public ObservableCollectionExtended<ILocaleKeyEntry> RemovedEntries { get; set; }
+		public ObservableCollectionExtended<ILocaleKeyEntry> MissingEntries { get; set; } = new ObservableCollectionExtended<ILocaleKeyEntry>();
 
-		private Visibility removedEntriesVisible = Visibility.Collapsed;
+		private Visibility missingEntriesViewVisible = Visibility.Collapsed;
 
-		public Visibility RemovedEntriesVisible
+		public Visibility MissingEntriesViewVisible
 		{
-			get => removedEntriesVisible;
-			set { this.RaiseAndSetIfChanged(ref removedEntriesVisible, value); }
+			get => missingEntriesViewVisible;
+			set { this.RaiseAndSetIfChanged(ref missingEntriesViewVisible, value); }
 		}
 
-		public ICommand ConfirmRemovedEntriesCommand { get; set; }
-		public ICommand CancelRemovedEntriesCommand { get; set; }
+		public ICommand RemoveSelectedMissingEntriesCommand { get; set; }
+		public ICommand CloseMissingEntriesCommand { get; set; }
+		public ICommand CopySimpleMissingEntriesCommand { get; set; }
+		public ICommand CopyAllMissingEntriesCommand { get; set; }
 
-		public void OpenRemovedEntryWindow(List<ILocaleKeyEntry> removedEntries)
+		public void ShowMissingEntriesView(List<ILocaleKeyEntry> missingEntries)
 		{
-			if(removedEntries.Count > 0)
+			if(missingEntries.Count > 0)
 			{
 				if(view != null && view.IsVisible)
 				{
-					openRemovedEntriesWindowOnLoad = false;
-
-					if(RemovedEntries == null)
+					openMissingEntriesViewOnLoad = false;
+					foreach (var entry in missingEntries)
 					{
-						RemovedEntries = new ObservableCollectionExtended<ILocaleKeyEntry>(removedEntries);
-					}
-					else
-					{
-						RemovedEntries.AddRange(removedEntries);
+						//Log.Here().Activity($"Checking for key: {entry.Key} | {RemovedEntries.Any(x => x.Key == entry.Key)}");
+						if (!MissingEntries.Any(x => x.Key == entry.Key))
+						{
+							MissingEntries.Add(entry);
+							entry.Selected = true;
+						}
 					}
 
-					RemovedEntriesVisible = Visibility.Visible;
+					MissingEntriesViewVisible = Visibility.Visible;
+
+					Log.Here().Important($"Total missing entries: '{MissingEntries.Count}'.");
+					//Log.Here().Important($"Removed entries:{String.Join(Environment.NewLine, RemovedEntries.Select(x => x.EntryKey))}");
 				}
 				else
 				{
-					openRemovedEntriesWindowOnLoad = true;
-					if(removedEntriesOnLoad == null)
+					openMissingEntriesViewOnLoad = true;
+					if(addMissingEntriesOnLoad == null)
 					{
-						removedEntriesOnLoad = new List<ILocaleKeyEntry>();
+						addMissingEntriesOnLoad = new List<ILocaleKeyEntry>();
 					}
-					removedEntriesOnLoad.AddRange(removedEntries);
+					addMissingEntriesOnLoad.AddRange(missingEntries);
 				}
 			}
 		}
 
-		public void ConfirmRemoveSelectedRemovedEntries()
+		public void ConfirmRemoveSelectedMissingEntries()
 		{
-			if (RemovedEntries != null && RemovedEntries.Any(x => x.Selected))
+			if (MissingEntries != null && MissingEntries.Any(x => x.Selected))
 			{
-				var selectedRemovedEntries = RemovedEntries.Where(x => x.Selected).ToList();
+				var lastRemovedEntries = MissingEntries.ToList();
+				var selectedRemovedEntries = lastRemovedEntries.Where(x => x.Selected).ToList();
 
 				List<LocaleEntryHistory> lastState = new List<LocaleEntryHistory>();
 
@@ -1289,6 +1295,14 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 						}
 					}
 					SelectedGroup?.UpdateCombinedData();
+
+					MissingEntries.Clear();
+					MissingEntries.AddRange(lastRemovedEntries);
+					foreach(var entry in MissingEntries)
+					{
+						entry.Selected = selectedRemovedEntries.Contains(entry);
+					}
+					MissingEntriesViewVisible = Visibility.Visible;
 				}
 
 				void redo()
@@ -1316,14 +1330,14 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 				this.CreateSnapshot(undo, redo);
 				redo();
 			}
-			RemovedEntriesVisible = Visibility.Collapsed;
-			RemovedEntries = null;
+			MissingEntriesViewVisible = Visibility.Collapsed;
+			MissingEntries.Clear();
 		}
 
-		public void CancelRemovedEntries()
+		public void CloseMissingEntriesView()
 		{
-			RemovedEntriesVisible = Visibility.Collapsed;
-			RemovedEntries = null;
+			MissingEntriesViewVisible = Visibility.Collapsed;
+			MissingEntries.Clear();
 		}
 
 		public void SetLinkedData(ILocaleFileData fileData)
@@ -1385,7 +1399,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 							}
 						}
 
-						OpenRemovedEntryWindow(removed);
+						ShowMissingEntriesView(removed);
 					}
 
 					CreateSnapshot(undo, redo);
@@ -1417,7 +1431,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 				void redo()
 				{
 					var removed = LocaleEditorCommands.RefreshLinkedData(fileData);
-					OpenRemovedEntryWindow(removed);
+					ShowMissingEntriesView(removed);
 				}
 				CreateSnapshot(undo, redo);
 				redo();
@@ -1795,13 +1809,13 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 
 			//var anyRemovedEntriesSelected = this.WhenAnyValue(vm => vm.RemovedEntries);
 
-			if(openRemovedEntriesWindowOnLoad)
+			if (openMissingEntriesViewOnLoad)
 			{
 				view.Dispatcher.Invoke(new Action(() =>
 				{
-					openRemovedEntriesWindowOnLoad = false;
-					OpenRemovedEntryWindow(removedEntriesOnLoad);
-					removedEntriesOnLoad = null;
+					openMissingEntriesViewOnLoad = false;
+					ShowMissingEntriesView(addMissingEntriesOnLoad);
+					addMissingEntriesOnLoad = null;
 				}), System.Windows.Threading.DispatcherPriority.Loaded);
 			}
 		}
@@ -1820,9 +1834,6 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			DialogGroup = new LocaleTabGroup(this, "Dialog");
 			CustomGroup = new CustomLocaleTabGroup(this, "Custom");
 
-			ConfirmRemovedEntriesCommand = ReactiveCommand.Create(ConfirmRemoveSelectedRemovedEntries);
-			CancelRemovedEntriesCommand = ReactiveCommand.Create(CancelRemovedEntries);
-
 			Groups = new ObservableCollectionExtended<LocaleTabGroup>
 			{
 				CombinedGroup,
@@ -1836,6 +1847,55 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			{
 				g.SelectedFileChanged = SelectedFileChanged;
 			}
+
+			RemoveSelectedMissingEntriesCommand = ReactiveCommand.Create(ConfirmRemoveSelectedMissingEntries);
+			CloseMissingEntriesCommand = ReactiveCommand.Create(CloseMissingEntriesView);
+			CopySimpleMissingEntriesCommand = ReactiveCommand.Create(() => {
+				if (MissingEntries.Count > 0)
+				{
+					string current = Clipboard.GetText(TextDataFormat.Text);
+					string removedEntriesStr = String.Join(Environment.NewLine, MissingEntries.Select(x => $"{x.EntryKey}\t{x.EntryContent}"));
+
+					void undo()
+					{
+						Clipboard.SetText(current);
+						OutputText = $"Reverted clipboard text.";
+						OutputType = LogType.Important;
+					};
+					void redo()
+					{
+						Clipboard.SetText(removedEntriesStr, TextDataFormat.Text);
+						OutputText = $"Copied removed entries to clipboard.";
+						OutputType = LogType.Activity;
+					}
+
+					CreateSnapshot(undo, redo);
+					redo();
+				}
+			});
+			CopyAllMissingEntriesCommand = ReactiveCommand.Create(() => {
+				if (MissingEntries.Count > 0)
+				{
+					string current = Clipboard.GetText(TextDataFormat.Text);
+					string removedEntriesStr = String.Join(Environment.NewLine, MissingEntries.Select(x => $"{x.EntryKey}\t{x.EntryContent}\t{x.EntryHandle}\t{x.Parent?.SourcePath}"));
+
+					void undo()
+					{
+						Clipboard.SetText(current);
+						OutputText = $"Reverted clipboard text.";
+						OutputType = LogType.Important;
+					};
+					void redo()
+					{
+						Clipboard.SetText(removedEntriesStr, TextDataFormat.Text);
+						OutputText = $"Copied removed entries to clipboard.";
+						OutputType = LogType.Activity;
+					}
+
+					CreateSnapshot(undo, redo);
+					redo();
+				}
+			});
 		}
 	}
 

@@ -25,14 +25,51 @@ using System.Reactive.Disposables;
 using SCG.Controls;
 using SCG.Modules.DOS2DE.Core;
 using TheArtOfDev.HtmlRenderer.WPF;
+using DynamicData.Binding;
 
 namespace SCG.Modules.DOS2DE.Windows
 {
+	public class LocaleEditorDebugViewModel : ReactiveObject
+	{
+		private string test = "Count";
+
+		public string Test
+		{
+			get => test;
+			set { this.RaiseAndSetIfChanged(ref test, value); }
+		}
+
+
+		private List<ILocaleKeyEntry> getTestRemovedEntries()
+		{
+			var list = new List<ILocaleKeyEntry>();
+			var parent = new LocaleCustomFileData(null, "Test.lsb");
+			for (var i = 0; i < 20; i++)
+			{
+				list.Add(new LocaleCustomKeyEntry(parent)
+				{
+					Key = "TestKey" + i,
+					Content = "TestContentBlahblahblahblahblahblahblahblahblah",
+					Handle = "NoHandle"
+				});
+			}
+			return list;
+		}
+		public ObservableCollectionExtended<ILocaleKeyEntry> RemovedEntries { get; set; }
+
+		public LocaleEditorDebugViewModel()
+		{
+			RemovedEntries = new ObservableCollectionExtended<ILocaleKeyEntry>(getTestRemovedEntries());
+
+			Test = "Count:" + RemovedEntries.Count;
+		}
+	}
 	/// <summary>
 	/// Interaction logic for LocaleEditorWindow.xaml
 	/// </summary>
 	public partial class LocaleEditorWindow : ReactiveWindow<LocaleViewModel>
 	{
+		
 		/*
 		public LocaleViewData ViewModel
 		{
@@ -71,12 +108,14 @@ namespace SCG.Modules.DOS2DE.Windows
 
 				disposables = d;
 
-				this.OneWayBind(this.ViewModel, vm => vm.ConfirmRemovedEntriesCommand, view => view.ConfirmRemovedEntriesButton.Command).DisposeWith(d);
-				this.OneWayBind(this.ViewModel, vm => vm.CancelRemovedEntriesCommand, view => view.CancelRemovedEntriesButton.Command).DisposeWith(d);
-				this.OneWayBind(this.ViewModel, vm => vm.RemovedEntries, view => view.RemovedEntriesListView.ItemsSource).DisposeWith(d);
-				this.OneWayBind(this.ViewModel, vm => vm.RemovedEntriesVisible, view => view.RemovedEntriesGrid.Visibility).DisposeWith(d);
-
 				ViewModel.OnViewLoaded(this, ModuleData, disposables);
+
+				this.OneWayBind(this.ViewModel, vm => vm.RemoveSelectedMissingEntriesCommand, view => view.ConfirmRemovedEntriesButton.Command).DisposeWith(d);
+				this.OneWayBind(this.ViewModel, vm => vm.CloseMissingEntriesCommand, view => view.CancelRemovedEntriesButton.Command).DisposeWith(d);
+				this.OneWayBind(this.ViewModel, vm => vm.CopySimpleMissingEntriesCommand, view => view.CopySimpleMissingEntriesButton.Command).DisposeWith(d);
+				this.OneWayBind(this.ViewModel, vm => vm.CopyAllMissingEntriesCommand, view => view.CopyAllDataMissingEntriesButton.Command).DisposeWith(d);
+				this.OneWayBind(this.ViewModel, vm => vm.MissingEntries, view => view.RemovedEntriesListView.ItemsSource).DisposeWith(d);
+				this.OneWayBind(this.ViewModel, vm => vm.MissingEntriesViewVisible, view => view.RemovedEntriesGrid.Visibility).DisposeWith(d);
 
 				ViewModel.PopoutContentCommand = ReactiveCommand.Create(() => PopoutContentWindow(ViewModel.SelectedEntry), ViewModel.CanExecutePopoutContentCommand).DisposeWith(d);
 
@@ -85,8 +124,7 @@ namespace SCG.Modules.DOS2DE.Windows
 				this.OneWayBind(this.ViewModel, vm => vm.SaveCurrentCommand, view => view.SaveButton.Command).DisposeWith(d);
 				this.OneWayBind(this.ViewModel, vm => vm.SaveAllCommand, view => view.SaveAllButton.Command).DisposeWith(d);
 				this.OneWayBind(this.ViewModel, vm => vm.AddFileCommand, view => view.AddFileButton.Command).DisposeWith(d);
-				this.OneWayBind(this.ViewModel, vm => vm.ImportFileCommand, view => view.ConfirmRemovedEntriesButton.Command).DisposeWith(d);
-				this.OneWayBind(this.ViewModel, vm => vm.ImportFileCommand, view => view.CancelRemovedEntriesButton.Command).DisposeWith(d);
+				this.OneWayBind(this.ViewModel, vm => vm.ImportFileCommand, view => view.ImportFileButton.Command).DisposeWith(d);
 
 				this.OneWayBind(this.ViewModel, vm => vm.SelectedEntryHtmlContent, view => view.EntryContentPreviewHtmlPanel.Text).DisposeWith(d);
 			});
@@ -437,13 +475,87 @@ namespace SCG.Modules.DOS2DE.Windows
 		//RemovedEntriesListViewCheckboxHeader
 		private void RemovedEntriesListViewCheckboxHeader_Checked(object sender, RoutedEventArgs e)
 		{
-			if(ViewModel.RemovedEntries != null)
+			if(ViewModel.MissingEntries != null)
 			{
-				foreach (var entry in ViewModel.RemovedEntries)
+				foreach (var entry in ViewModel.MissingEntries)
 				{
 					entry.Selected = (bool)((CheckBox)sender).IsChecked;
 				}
 			}
+		}
+
+		GridViewColumnHeader _lastHeaderClicked = null;
+		ListSortDirection _lastDirection = ListSortDirection.Ascending;
+
+		private void RemovedEntriesListView_Click(object sender, RoutedEventArgs e)
+		{
+			GridViewColumnHeader headerClicked = e.OriginalSource as GridViewColumnHeader;
+			ListSortDirection direction;
+
+			if (headerClicked != null)
+			{
+				if (headerClicked.Role != GridViewColumnHeaderRole.Padding)
+				{
+					if (headerClicked != _lastHeaderClicked)
+					{
+						direction = ListSortDirection.Ascending;
+					}
+					else
+					{
+						if (_lastDirection == ListSortDirection.Ascending)
+						{
+							direction = ListSortDirection.Descending;
+						}
+						else
+						{
+							direction = ListSortDirection.Ascending;
+						}
+					}
+
+					string header = "";
+
+					if (headerClicked.Column.Header is TextBlock textBlock)
+					{
+						header = textBlock.Text;
+					}
+					else if (headerClicked.Column.Header is string gridHeader)
+					{
+						header = gridHeader;
+					}
+
+					string sortHeader = header;
+
+					switch(header)
+					{
+						case "File":
+							sortHeader = "Parent.Name";
+							break;
+						case "Key":
+							sortHeader = "EntryKey";
+							break;
+						case "Content":
+							sortHeader = "EntryContent";
+							break;
+					}
+
+					if(sortHeader != "") RemovedEntriesListView_Sort(sortHeader, direction, sender);
+
+					_lastHeaderClicked = headerClicked;
+					_lastDirection = direction;
+				}
+			}
+		}
+
+		private void RemovedEntriesListView_Sort(string sortBy, ListSortDirection direction, object sender)
+		{
+			ListView lv = sender as ListView;
+			ICollectionView dataView =
+			  CollectionViewSource.GetDefaultView(lv.ItemsSource);
+
+			dataView.SortDescriptions.Clear();
+			SortDescription sd = new SortDescription(sortBy, direction);
+			dataView.SortDescriptions.Add(sd);
+			dataView.Refresh();
 		}
 	}
 }

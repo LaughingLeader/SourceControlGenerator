@@ -63,7 +63,7 @@ namespace SCG.Modules.DOS2DE.Utilities
 			List<ILocaleKeyEntry> removedEntries = new List<ILocaleKeyEntry>();
 
 			await LoadLinkedFilesAsync(vm, modProject, localizationData, removedEntries);
-			localizationData.OpenRemovedEntryWindow(removedEntries);
+			localizationData.ShowMissingEntriesView(removedEntries);
 
 			return localizationData;
 		}
@@ -96,7 +96,7 @@ namespace SCG.Modules.DOS2DE.Utilities
 				await LoadLinkedFilesAsync(vm, project, localizationData, removedEntries);
 			}
 
-			localizationData.OpenRemovedEntryWindow(removedEntries);
+			localizationData.ShowMissingEntriesView(removedEntries);
 
 			return localizationData;
 		}
@@ -997,7 +997,7 @@ namespace SCG.Modules.DOS2DE.Utilities
 							bool changesUnsaved = false;
 							foreach(var entry in entries)
 							{
-								var existingEntry = fileData.Entries.FirstOrDefault(x => x.Key == entry.Key);
+								var existingEntry = fileData.Entries.FirstOrDefault(x => x.Key.Equals(entry.Key, StringComparison.OrdinalIgnoreCase));
 								if (existingEntry != null)
 								{
 									if (!String.IsNullOrWhiteSpace(entry.Content) && !entry.Content.Equals(existingEntry.Content))
@@ -1021,7 +1021,9 @@ namespace SCG.Modules.DOS2DE.Utilities
 								}
 							}
 
-							removedEntries.AddRange(fileData.Entries.Where(x => !entries.Any(e => e.Key.Equals(x.EntryKey, StringComparison.OrdinalIgnoreCase))));
+							var missingEntries = fileData.Entries.Where(x => !entries.Any(e => e.Key.Equals(x.Key, StringComparison.OrdinalIgnoreCase)));
+							Log.Here().Important($"Missing entries:{String.Join(Environment.NewLine, missingEntries.Select(x => x.EntryKey))}");
+							removedEntries.AddRange(missingEntries);
 
 							if (!fileData.ChangesUnsaved) fileData.ChangesUnsaved = changesUnsaved;
 						}

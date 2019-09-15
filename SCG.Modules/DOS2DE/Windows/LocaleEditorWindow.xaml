@@ -41,7 +41,7 @@ body {
   font-size: 18;
 }
 </clr:String>
-
+			<local:LocaleEditorDebugViewModel x:Key="DebugData" />
 			<Style x:Key="ShortcutButton" TargetType="Button">
 				<Setter Property="MinHeight" Value="16" />
 				<Setter Property="MinWidth" Value="16" />
@@ -1203,30 +1203,41 @@ body {
 				<!--<Rectangle Style="{StaticResource VerticalSeparator}" />-->
 			</StackPanel>
 		</Grid>
-		<Grid x:Name="RemovedEntriesGrid" Grid.Row="2" Panel.ZIndex="99" Visibility="{Binding RemovedEntriesVisible}">
+		<Grid x:Name="RemovedEntriesGrid" Grid.Row="2" Panel.ZIndex="99" 
+			  d:DataContext="{d:DesignInstance local:LocaleEditorDebugViewModel, IsDesignTimeCreatable=true}"
+			  Visibility="{Binding RemovedEntriesVisible, FallbackValue=Visible}">
 			<Grid.RowDefinitions>
+				<RowDefinition Height="Auto" />
 				<RowDefinition Height="*" />
 				<RowDefinition Height="Auto" />
 			</Grid.RowDefinitions>
-			<Rectangle Grid.RowSpan="2">
+			<Rectangle Grid.RowSpan="3">
 				<Rectangle.Fill>
-					<SolidColorBrush Color="#CCA8A8A8" />
+					<SolidColorBrush Color="#F2FFFFFF" />
 				</Rectangle.Fill>
 			</Rectangle>
-			<ListView Grid.Row="0" x:Name="RemovedEntriesListView"
+			<Rectangle Grid.Row="0" Fill="#FFFFDDDD" />
+			<StackPanel Orientation="Vertical" HorizontalAlignment="Center" Margin="8" Background="Transparent">
+				<TextBlock Text="Missing Source Keys" FontSize="18" TextAlignment="Center" FontWeight="Bold" FontFamily="Arial" Foreground="#FFFF3232">
+					<TextBlock.Effect>
+						<DropShadowEffect BlurRadius="4" Direction="-50" RenderingBias="Quality" ShadowDepth="4" Opacity="0.45"/>
+					</TextBlock.Effect>
+				</TextBlock>
+				<TextBlock Text="These keys exist in a source file, but are missing from linked files." TextAlignment="Center" />
+				<TextBlock Text="Select which keys, if any, to remove from source files, or copy them to the clipboard." TextAlignment="Center" />
+			</StackPanel>
+			
+			<ListView Grid.Row="1" x:Name="RemovedEntriesListView"
 				ItemsSource="{Binding RemovedEntries}"
 				SelectionMode="Extended" Background="Transparent" 
-				BorderThickness="0"
+				BorderThickness="0" GridViewColumnHeader.Click="RemovedEntriesListView_Click"
 			>
 				<ListView.Resources>
 					<Style TargetType="TextBlock">
 						<Setter Property="TextAlignment" Value="Left" />
 					</Style>
-					<Style TargetType="GridViewColumnHeader">
-						<Setter Property="HorizontalAlignment" Value="Left" />
-						<Setter Property="Background" Value="Transparent" />
-						<Setter Property="BorderBrush" Value="Gray" />
-						<Setter Property="Padding" Value="10,0" />
+					<Style TargetType="TextBox">
+						<Setter Property="TextAlignment" Value="Left" />
 					</Style>
 				</ListView.Resources>
 				<ListView.ItemContainerStyle>
@@ -1236,7 +1247,14 @@ body {
 				</ListView.ItemContainerStyle>
 				<ListView.View>
 					<GridView>
-						<GridViewColumn Width="20">
+						<GridView.ColumnHeaderContainerStyle>
+							<Style TargetType="{x:Type GridViewColumnHeader}">
+								<Setter Property="HorizontalContentAlignment" Value="Left" />
+								<Setter Property="Padding" Value="10,0" />
+								<Setter Property="BorderThickness" Value="0" />
+							</Style>
+						</GridView.ColumnHeaderContainerStyle>
+						<GridViewColumn Width="Auto">
 							<GridViewColumn.Header>
 								<CheckBox x:Name="RemovedEntriesListViewCheckboxHeader" 
 									Checked="RemovedEntriesListViewCheckboxHeader_Checked" Unchecked="RemovedEntriesListViewCheckboxHeader_Checked"/>
@@ -1247,25 +1265,43 @@ body {
 								</DataTemplate>
 							</GridViewColumn.CellTemplate>
 						</GridViewColumn>
-						<GridViewColumn DisplayMemberBinding="{Binding EntryKey}" Header="Key" />
-						<GridViewColumn DisplayMemberBinding="{Binding EntryContent}" Header="Content" />
+						<GridViewColumn Header="File" Width="Auto">
+							<GridViewColumn.CellTemplate>
+								<DataTemplate>
+									<TextBlock Text="{Binding Parent.Name}" ToolTip="{Binding Parent.SourcePath}" />
+								</DataTemplate>
+							</GridViewColumn.CellTemplate>
+						</GridViewColumn>
+						<GridViewColumn DisplayMemberBinding="{Binding EntryKey, FallbackValue='Test'}" Header="Key" Width="Auto" />
+						<GridViewColumn DisplayMemberBinding="{Binding EntryContent}" Header="Content"/>
 						<GridViewColumn DisplayMemberBinding="{Binding EntryHandle}" Header="Handle" />
-						<GridViewColumn DisplayMemberBinding="{Binding Parent.Name}" Header="File"/>
 					</GridView>
 				</ListView.View>
 			</ListView>
-			<StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Center">
-				<StackPanel.Resources>
+			<Rectangle Grid.Row="2" Fill="WhiteSmoke" />
+			<Grid Grid.Row="2" HorizontalAlignment="Left" Margin="4,0">
+				<Grid.ColumnDefinitions>
+					<ColumnDefinition/>
+					<ColumnDefinition Width="80"/>
+					<ColumnDefinition/>
+				</Grid.ColumnDefinitions>
+				<Grid.Resources>
 					<Style TargetType="Button">
 						<Setter Property="Margin" Value="2" />
 						<Setter Property="Padding" Value="8,2,8,2" />
 					</Style>
-				</StackPanel.Resources>
-				<Button x:Name="ConfirmRemovedEntriesButton" Content="Removed Selected" Command="{Binding ConfirmRemovedEntriesCommand}" />
-				<Button x:Name="CancelRemovedEntriesButton" Content="Cancel" Command="{Binding CancelRemovedEntriesCommand}" />
-			</StackPanel>
+				</Grid.Resources>
+				<StackPanel Grid.Column="0" Orientation="Horizontal">
+					<Button x:Name="CopySimpleMissingEntriesButton" Content="Copy Key &#38; Content" />
+					<Button x:Name="CopyAllDataMissingEntriesButton" Content="Copy All"/>
+				</StackPanel>
+				<StackPanel Grid.Column="2" Orientation="Horizontal">
+					<Button x:Name="ConfirmRemovedEntriesButton" Content="Removed Selected" />
+					<Button x:Name="CancelRemovedEntriesButton" Content="Cancel &#38; Close" />
+				</StackPanel>
+			</Grid>
+			
 		</Grid>
-		
 		<TabControl Grid.Row="2" ItemsSource="{Binding Groups}" ContentTemplate="{Binding Source={StaticResource LocaleFileTabs}}"
 					SelectedIndex="{Binding SelectedGroupIndex}" Style="{StaticResource LocaleGroupTabControl}"
 			>
