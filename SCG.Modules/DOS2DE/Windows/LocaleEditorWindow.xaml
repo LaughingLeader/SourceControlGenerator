@@ -1203,24 +1203,69 @@ body {
 				<!--<Rectangle Style="{StaticResource VerticalSeparator}" />-->
 			</StackPanel>
 		</Grid>
-		<ListView Grid.Row="2" x:Name="RemovedEntriesListView" Panel.ZIndex="99"
-				  ItemsSource="{Binding RemovedEntries}" Visibility="{Binding RemovedEntriesVisible, FallbackValue=Collapsed}">
-			<ListView.View>
-				<GridView>
-					<GridViewColumn>
-						<GridViewColumn.CellTemplate>
-							<DataTemplate>
-								<CheckBox IsChecked="{Binding Selected}" />
-							</DataTemplate>
-						</GridViewColumn.CellTemplate>
-					</GridViewColumn>
-					<GridViewColumn DisplayMemberBinding="{Binding Parent.Name}" Header="File" />
-					<GridViewColumn DisplayMemberBinding="{Binding EntryKey}" Header="Key" />
-					<GridViewColumn DisplayMemberBinding="{Binding EntryContent}" Header="Content" />
-					<GridViewColumn DisplayMemberBinding="{Binding EntryHandle}" Header="Handle" />
-				</GridView>
-			</ListView.View>
-		</ListView>
+		<Grid x:Name="RemovedEntriesGrid" Grid.Row="2" Panel.ZIndex="99" Visibility="{Binding RemovedEntriesVisible}">
+			<Grid.RowDefinitions>
+				<RowDefinition Height="*" />
+				<RowDefinition Height="Auto" />
+			</Grid.RowDefinitions>
+			<Rectangle Grid.RowSpan="2">
+				<Rectangle.Fill>
+					<SolidColorBrush Color="#CCA8A8A8" />
+				</Rectangle.Fill>
+			</Rectangle>
+			<ListView Grid.Row="0" x:Name="RemovedEntriesListView"
+				ItemsSource="{Binding RemovedEntries}"
+				SelectionMode="Extended" Background="Transparent" 
+				BorderThickness="0"
+			>
+				<ListView.Resources>
+					<Style TargetType="TextBlock">
+						<Setter Property="TextAlignment" Value="Left" />
+					</Style>
+					<Style TargetType="GridViewColumnHeader">
+						<Setter Property="HorizontalAlignment" Value="Left" />
+						<Setter Property="Background" Value="Transparent" />
+						<Setter Property="BorderBrush" Value="Gray" />
+						<Setter Property="Padding" Value="10,0" />
+					</Style>
+				</ListView.Resources>
+				<ListView.ItemContainerStyle>
+					<Style TargetType="ListViewItem">
+						<Setter Property="IsSelected" Value="{Binding Selected}"/>
+					</Style>
+				</ListView.ItemContainerStyle>
+				<ListView.View>
+					<GridView>
+						<GridViewColumn Width="20">
+							<GridViewColumn.Header>
+								<CheckBox x:Name="RemovedEntriesListViewCheckboxHeader" 
+									Checked="RemovedEntriesListViewCheckboxHeader_Checked" Unchecked="RemovedEntriesListViewCheckboxHeader_Checked"/>
+							</GridViewColumn.Header>
+							<GridViewColumn.CellTemplate>
+								<DataTemplate>
+									<CheckBox IsChecked="{Binding Selected}" />
+								</DataTemplate>
+							</GridViewColumn.CellTemplate>
+						</GridViewColumn>
+						<GridViewColumn DisplayMemberBinding="{Binding EntryKey}" Header="Key" />
+						<GridViewColumn DisplayMemberBinding="{Binding EntryContent}" Header="Content" />
+						<GridViewColumn DisplayMemberBinding="{Binding EntryHandle}" Header="Handle" />
+						<GridViewColumn DisplayMemberBinding="{Binding Parent.Name}" Header="File"/>
+					</GridView>
+				</ListView.View>
+			</ListView>
+			<StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Center">
+				<StackPanel.Resources>
+					<Style TargetType="Button">
+						<Setter Property="Margin" Value="2" />
+						<Setter Property="Padding" Value="8,2,8,2" />
+					</Style>
+				</StackPanel.Resources>
+				<Button x:Name="ConfirmRemovedEntriesButton" Content="Removed Selected" Command="{Binding ConfirmRemovedEntriesCommand}" />
+				<Button x:Name="CancelRemovedEntriesButton" Content="Cancel" Command="{Binding CancelRemovedEntriesCommand}" />
+			</StackPanel>
+		</Grid>
+		
 		<TabControl Grid.Row="2" ItemsSource="{Binding Groups}" ContentTemplate="{Binding Source={StaticResource LocaleFileTabs}}"
 					SelectedIndex="{Binding SelectedGroupIndex}" Style="{StaticResource LocaleGroupTabControl}"
 			>

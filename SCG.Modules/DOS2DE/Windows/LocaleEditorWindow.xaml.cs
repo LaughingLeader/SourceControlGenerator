@@ -71,6 +71,11 @@ namespace SCG.Modules.DOS2DE.Windows
 
 				disposables = d;
 
+				this.OneWayBind(this.ViewModel, vm => vm.ConfirmRemovedEntriesCommand, view => view.ConfirmRemovedEntriesButton.Command).DisposeWith(d);
+				this.OneWayBind(this.ViewModel, vm => vm.CancelRemovedEntriesCommand, view => view.CancelRemovedEntriesButton.Command).DisposeWith(d);
+				this.OneWayBind(this.ViewModel, vm => vm.RemovedEntries, view => view.RemovedEntriesListView.ItemsSource).DisposeWith(d);
+				this.OneWayBind(this.ViewModel, vm => vm.RemovedEntriesVisible, view => view.RemovedEntriesGrid.Visibility).DisposeWith(d);
+
 				ViewModel.OnViewLoaded(this, ModuleData, disposables);
 
 				ViewModel.PopoutContentCommand = ReactiveCommand.Create(() => PopoutContentWindow(ViewModel.SelectedEntry), ViewModel.CanExecutePopoutContentCommand).DisposeWith(d);
@@ -80,7 +85,8 @@ namespace SCG.Modules.DOS2DE.Windows
 				this.OneWayBind(this.ViewModel, vm => vm.SaveCurrentCommand, view => view.SaveButton.Command).DisposeWith(d);
 				this.OneWayBind(this.ViewModel, vm => vm.SaveAllCommand, view => view.SaveAllButton.Command).DisposeWith(d);
 				this.OneWayBind(this.ViewModel, vm => vm.AddFileCommand, view => view.AddFileButton.Command).DisposeWith(d);
-				this.OneWayBind(this.ViewModel, vm => vm.ImportFileCommand, view => view.ImportFileButton.Command).DisposeWith(d);
+				this.OneWayBind(this.ViewModel, vm => vm.ImportFileCommand, view => view.ConfirmRemovedEntriesButton.Command).DisposeWith(d);
+				this.OneWayBind(this.ViewModel, vm => vm.ImportFileCommand, view => view.CancelRemovedEntriesButton.Command).DisposeWith(d);
 
 				this.OneWayBind(this.ViewModel, vm => vm.SelectedEntryHtmlContent, view => view.EntryContentPreviewHtmlPanel.Text).DisposeWith(d);
 			});
@@ -425,6 +431,18 @@ namespace SCG.Modules.DOS2DE.Windows
 			if (sender is TabControl tc)
 			{
 				fileTabControl = tc;
+			}
+		}
+
+		//RemovedEntriesListViewCheckboxHeader
+		private void RemovedEntriesListViewCheckboxHeader_Checked(object sender, RoutedEventArgs e)
+		{
+			if(ViewModel.RemovedEntries != null)
+			{
+				foreach (var entry in ViewModel.RemovedEntries)
+				{
+					entry.Selected = (bool)((CheckBox)sender).IsChecked;
+				}
 			}
 		}
 	}

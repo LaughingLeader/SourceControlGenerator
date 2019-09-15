@@ -944,6 +944,8 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 						var selectedEntries = SelectedGroup.DataFiles.SelectMany(f => f.Entries.Where(x => x.Selected)).ToList();
 						Log.Here().Important($"Deleting {selectedEntries.Count} keys.");
 						List<LocaleEntryHistory> lastState = new List<LocaleEntryHistory>();
+
+						var lastSelectedGroup = SelectedGroup;
 						
 						foreach(var entry in selectedEntries)
 						{
@@ -973,7 +975,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 									}
 								}
 							}
-							SelectedGroup.UpdateCombinedData();
+							lastSelectedGroup.UpdateCombinedData();
 						}
 
 						void redo()
@@ -993,14 +995,15 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 								}
 								entry.Parent.ChangesUnsaved = true;
 							}
-							SelectedGroup.UpdateCombinedData();
+							lastSelectedGroup.UpdateCombinedData();
 						}
 						this.CreateSnapshot(undo, redo);
 						redo();
 					}
 					else
 					{
-						var selectedFile = SelectedGroup.SelectedFile;
+						var lastSelectedGroup = SelectedGroup;
+						var selectedFile = lastSelectedGroup.SelectedFile;
 
 						var last = selectedFile.Entries.ToList();
 						var deleteEntries = selectedFile.Entries.Where(x => x.Selected).ToList();
@@ -1008,7 +1011,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 						void undo()
 						{
 							selectedFile.Entries = new ObservableCollectionExtended<ILocaleKeyEntry>(last);
-							SelectedGroup.UpdateCombinedData();
+							lastSelectedGroup.UpdateCombinedData();
 							selectedFile.ChangesUnsaved = lastChangesUnsaved;
 						}
 						void redo()
@@ -1030,7 +1033,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 									}
 								}
 							}
-							SelectedGroup.UpdateCombinedData();
+							lastSelectedGroup.UpdateCombinedData();
 							selectedFile.ChangesUnsaved = true;
 							//Log.Here().Activity($"Entries {selectedFile.Entries.Count} | {next.Count()}.");
 						}
@@ -1215,6 +1218,9 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			set { this.RaiseAndSetIfChanged(ref removedEntriesVisible, value); }
 		}
 
+		public ICommand ConfirmRemovedEntriesCommand { get; set; }
+		public ICommand CancelRemovedEntriesCommand { get; set; }
+
 		public void OpenRemovedEntryWindow(List<ILocaleKeyEntry> removedEntries)
 		{
 			if(removedEntries.Count > 0)
@@ -1244,6 +1250,80 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 					removedEntriesOnLoad.AddRange(removedEntries);
 				}
 			}
+		}
+
+		public void ConfirmRemoveSelectedRemovedEntries()
+		{
+			if (RemovedEntries != null && RemovedEntries.Any(x => x.Selected))
+			{
+				var selectedRemovedEntries = RemovedEntries.Where(x => x.Selected).ToList();
+
+				List<LocaleEntryHistory> lastState = new List<LocaleEntryHistory>();
+
+				foreach (var entry in selectedRemovedEntries)
+				{
+					lastState.Add(new LocaleEntryHistory
+					{
+						ParentFile = entry.Parent,
+						Entry = entry,
+						Index = entry.Parent.Entries.IndexOf(entry),
+						ChangesUnsaved = entry.ChangesUnsaved,
+						ParentChangesUnsaved = entry.Parent.ChangesUnsaved
+					});
+				}
+
+				void undo()
+				{
+					foreach (var x in lastState)
+					{
+						var fileEntries = Groups.Select(g => g.DataFiles.FirstOrDefault(f => f.SourcePath == x.ParentFile.SourcePath));
+						foreach (var fileEntry in fileEntries)
+						{
+							if (x.ChangesUnsaved) fileEntry.ChangesUnsaved = x.ChangesUnsaved;
+							fileEntry.Entries.Insert(x.Index, x.Entry);
+							fileEntry.ChangesUnsaved = x.ParentChangesUnsaved;
+							if (fileEntry is LocaleNodeFileData nodeFileData && x.Entry is LocaleNodeKeyEntry nodeKeyEntry)
+							{
+								nodeFileData.RootRegion.AppendChild(nodeKeyEntry.Node);
+							}
+						}
+					}
+					SelectedGroup?.UpdateCombinedData();
+				}
+
+				void redo()
+				{
+					foreach (var entry in selectedRemovedEntries)
+					{
+						var parent = entry.Parent;
+						if (parent != null)
+						{
+							parent.Entries.Remove(entry);
+
+							if (entry is LocaleNodeKeyEntry nodeKeyEntry && parent is LocaleNodeFileData nodeFileData)
+							{
+								var nodeContainer = nodeFileData.RootRegion.Children.Values.Where(l => l.Contains(nodeKeyEntry.Node));
+								foreach (var list in nodeContainer)
+								{
+									list.Remove(nodeKeyEntry.Node);
+								}
+							}
+							parent.ChangesUnsaved = true;
+						}
+					}
+					SelectedGroup?.UpdateCombinedData();
+				}
+				this.CreateSnapshot(undo, redo);
+				redo();
+			}
+			RemovedEntriesVisible = Visibility.Collapsed;
+			RemovedEntries = null;
+		}
+
+		public void CancelRemovedEntries()
+		{
+			RemovedEntriesVisible = Visibility.Collapsed;
+			RemovedEntries = null;
 		}
 
 		public void SetLinkedData(ILocaleFileData fileData)
@@ -1713,6 +1793,8 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			//The window starts with the All/All selected.
 			CanSave = AnyEntrySelected = CanAddFile = CanAddKeys = false;
 
+			//var anyRemovedEntriesSelected = this.WhenAnyValue(vm => vm.RemovedEntries);
+
 			if(openRemovedEntriesWindowOnLoad)
 			{
 				view.Dispatcher.Invoke(new Action(() =>
@@ -1737,6 +1819,9 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			PublicGroup = new LocaleTabGroup(this, "Locale (Public)");
 			DialogGroup = new LocaleTabGroup(this, "Dialog");
 			CustomGroup = new CustomLocaleTabGroup(this, "Custom");
+
+			ConfirmRemovedEntriesCommand = ReactiveCommand.Create(ConfirmRemoveSelectedRemovedEntries);
+			CancelRemovedEntriesCommand = ReactiveCommand.Create(CancelRemovedEntries);
 
 			Groups = new ObservableCollectionExtended<LocaleTabGroup>
 			{
