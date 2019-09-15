@@ -1202,6 +1202,50 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			}
 		}
 
+		private bool openRemovedEntriesWindowOnLoad = false;
+		private List<ILocaleKeyEntry> removedEntriesOnLoad = null;
+
+		public ObservableCollectionExtended<ILocaleKeyEntry> RemovedEntries { get; set; }
+
+		private Visibility removedEntriesVisible = Visibility.Collapsed;
+
+		public Visibility RemovedEntriesVisible
+		{
+			get => removedEntriesVisible;
+			set { this.RaiseAndSetIfChanged(ref removedEntriesVisible, value); }
+		}
+
+		public void OpenRemovedEntryWindow(List<ILocaleKeyEntry> removedEntries)
+		{
+			if(removedEntries.Count > 0)
+			{
+				if(view != null && view.IsVisible)
+				{
+					openRemovedEntriesWindowOnLoad = false;
+
+					if(RemovedEntries == null)
+					{
+						RemovedEntries = new ObservableCollectionExtended<ILocaleKeyEntry>(removedEntries);
+					}
+					else
+					{
+						RemovedEntries.AddRange(removedEntries);
+					}
+
+					RemovedEntriesVisible = Visibility.Visible;
+				}
+				else
+				{
+					openRemovedEntriesWindowOnLoad = true;
+					if(removedEntriesOnLoad == null)
+					{
+						removedEntriesOnLoad = new List<ILocaleKeyEntry>();
+					}
+					removedEntriesOnLoad.AddRange(removedEntries);
+				}
+			}
+		}
+
 		public void SetLinkedData(ILocaleFileData fileData)
 		{
 			void OnFileSelected(string filePath)
@@ -1237,7 +1281,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 						};
 
 						Log.Here().Activity($"Loading data for '{fileData.SourcePath}' from linked file '{filePath}'.");
-						LocaleEditorCommands.RefreshLinkedData(fileData);
+						var removed = LocaleEditorCommands.RefreshLinkedData(fileData);
 
 						if (fileData is LocaleNodeFileData nodeFileData)
 						{
@@ -1260,6 +1304,8 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 								LocaleEditorCommands.SaveLinkedData(ModuleData, linkedList);
 							}
 						}
+
+						OpenRemovedEntryWindow(removed);
 					}
 
 					CreateSnapshot(undo, redo);
@@ -1290,7 +1336,8 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 				}
 				void redo()
 				{
-					LocaleEditorCommands.RefreshLinkedData(fileData);
+					var removed = LocaleEditorCommands.RefreshLinkedData(fileData);
+					OpenRemovedEntryWindow(removed);
 				}
 				CreateSnapshot(undo, redo);
 				redo();
@@ -1665,6 +1712,16 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 
 			//The window starts with the All/All selected.
 			CanSave = AnyEntrySelected = CanAddFile = CanAddKeys = false;
+
+			if(openRemovedEntriesWindowOnLoad)
+			{
+				view.Dispatcher.Invoke(new Action(() =>
+				{
+					openRemovedEntriesWindowOnLoad = false;
+					OpenRemovedEntryWindow(removedEntriesOnLoad);
+					removedEntriesOnLoad = null;
+				}), System.Windows.Threading.DispatcherPriority.Loaded);
+			}
 		}
 
 		public MenuData UndoMenuData { get; private set; }

@@ -1203,6 +1203,24 @@ body {
 				<!--<Rectangle Style="{StaticResource VerticalSeparator}" />-->
 			</StackPanel>
 		</Grid>
+		<ListView Grid.Row="2" x:Name="RemovedEntriesListView" Panel.ZIndex="99"
+				  ItemsSource="{Binding RemovedEntries}" Visibility="{Binding RemovedEntriesVisible, FallbackValue=Collapsed}">
+			<ListView.View>
+				<GridView>
+					<GridViewColumn>
+						<GridViewColumn.CellTemplate>
+							<DataTemplate>
+								<CheckBox IsChecked="{Binding Selected}" />
+							</DataTemplate>
+						</GridViewColumn.CellTemplate>
+					</GridViewColumn>
+					<GridViewColumn DisplayMemberBinding="{Binding Parent.Name}" Header="File" />
+					<GridViewColumn DisplayMemberBinding="{Binding EntryKey}" Header="Key" />
+					<GridViewColumn DisplayMemberBinding="{Binding EntryContent}" Header="Content" />
+					<GridViewColumn DisplayMemberBinding="{Binding EntryHandle}" Header="Handle" />
+				</GridView>
+			</ListView.View>
+		</ListView>
 		<TabControl Grid.Row="2" ItemsSource="{Binding Groups}" ContentTemplate="{Binding Source={StaticResource LocaleFileTabs}}"
 					SelectedIndex="{Binding SelectedGroupIndex}" Style="{StaticResource LocaleGroupTabControl}"
 			>

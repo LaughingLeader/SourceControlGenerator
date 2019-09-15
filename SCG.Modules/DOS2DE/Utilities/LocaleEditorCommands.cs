@@ -60,7 +60,10 @@ namespace SCG.Modules.DOS2DE.Utilities
 				}
 			}
 
-			await LoadLinkedFilesAsync(vm, modProject, localizationData);
+			List<ILocaleKeyEntry> removedEntries = new List<ILocaleKeyEntry>();
+
+			await LoadLinkedFilesAsync(vm, modProject, localizationData, removedEntries);
+			localizationData.OpenRemovedEntryWindow(removedEntries);
 
 			return localizationData;
 		}
@@ -86,10 +89,14 @@ namespace SCG.Modules.DOS2DE.Utilities
 				}
 			}
 
-			foreach(var project in modProjects)
+			List<ILocaleKeyEntry> removedEntries = new List<ILocaleKeyEntry>();
+
+			foreach (var project in modProjects)
 			{
-				await LoadLinkedFilesAsync(vm, project, localizationData);
+				await LoadLinkedFilesAsync(vm, project, localizationData, removedEntries);
 			}
+
+			localizationData.OpenRemovedEntryWindow(removedEntries);
 
 			return localizationData;
 		}
@@ -834,7 +841,7 @@ namespace SCG.Modules.DOS2DE.Utilities
 			fileData.ChangesUnsaved = entries.Count > 0;
 		}
 
-		public static async Task<bool> LoadLinkedFilesAsync(DOS2DEModuleData vm, ModProjectData modProject, LocaleViewModel localizationData)
+		public static async Task<bool> LoadLinkedFilesAsync(DOS2DEModuleData vm, ModProjectData modProject, LocaleViewModel localizationData, List<ILocaleKeyEntry> removedEntries)
 		{
 			string linkFolder = DOS2DEDefaultPaths.LocalizationEditorLinkFolder(vm);
 			if (Directory.Exists(linkFolder))
@@ -872,7 +879,7 @@ namespace SCG.Modules.DOS2DE.Utilities
 								{
 									fileData.FileLinkData = link;
 									Log.Here().Activity($"Set linked data for '{fileData.SourcePath}' to '{link.ReadFrom}'. Loading entries from linked file.");
-									RefreshLinkedData(fileData);
+									removedEntries.AddRange(RefreshLinkedData(fileData));
 								}
 							}
 
@@ -940,8 +947,9 @@ namespace SCG.Modules.DOS2DE.Utilities
 			}
 		}
 
-		public static void RefreshLinkedData(ILocaleFileData fileData)
+		public static List<ILocaleKeyEntry> RefreshLinkedData(ILocaleFileData fileData)
 		{
+			List<ILocaleKeyEntry> removedEntries = new List<ILocaleKeyEntry>();
 			if (File.Exists(fileData.FileLinkData.ReadFrom))
 			{
 				Log.Here().Activity($"Loading linked file data from {fileData.FileLinkData.ReadFrom}");
@@ -1013,12 +1021,15 @@ namespace SCG.Modules.DOS2DE.Utilities
 								}
 							}
 
+							removedEntries.AddRange(fileData.Entries.Where(x => !entries.Any(e => e.Key.Equals(x.EntryKey, StringComparison.OrdinalIgnoreCase))));
+
 							if (!fileData.ChangesUnsaved) fileData.ChangesUnsaved = changesUnsaved;
 						}
 					}
 				}
 				
 			}
+			return removedEntries;
 		}
 
 		public static string EscapeXml(string s)
