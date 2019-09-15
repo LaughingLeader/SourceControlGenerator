@@ -1220,7 +1220,7 @@ body {
 			<StackPanel Orientation="Vertical" HorizontalAlignment="Center" Margin="8" Background="Transparent">
 				<TextBlock Text="Missing Source Keys" FontSize="18" TextAlignment="Center" FontWeight="Bold" FontFamily="Arial" Foreground="#FFFF3232">
 					<TextBlock.Effect>
-						<DropShadowEffect BlurRadius="4" Direction="-50" RenderingBias="Quality" ShadowDepth="4" Opacity="0.45"/>
+						<DropShadowEffect BlurRadius="4" Direction="-50" RenderingBias="Quality" ShadowDepth="4" Opacity="0.25"/>
 					</TextBlock.Effect>
 				</TextBlock>
 				<TextBlock Text="These keys exist in a source file, but are missing from linked files." TextAlignment="Center" />
