@@ -46,7 +46,7 @@ namespace SCG.Modules.DOS2DE.Core
 		//Localization Editor
 		public static string Button_OpenLocaleEditor = "Open Project in the Localization Editor...";
 		public static string Button_Locale_GenerateHandles = "Generate Handles for Selected Entries...\nOnly unset handles will be replaced.";
-		public static string Button_Locale_ExportToXML = "Generate Language LSX from Selected...";
+		public static string Button_Locale_ExportToXML = "Generate Language XML from Selected...";
 		public static string Button_Locale_SaveAll = "Save All Localization Files";
 		public static string Button_Locale_SaveCurrent = "Save";
 		public static string Button_Locale_SaveCurrent_Disabled = "Save (Disabled - Select a File Tab)";

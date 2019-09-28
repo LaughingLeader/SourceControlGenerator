@@ -1205,7 +1205,7 @@ body {
 		</Grid>
 		<Grid x:Name="RemovedEntriesGrid" Grid.Row="2" Panel.ZIndex="99" 
 			  d:DataContext="{d:DesignInstance local:LocaleEditorDebugViewModel, IsDesignTimeCreatable=true}"
-			  Visibility="{Binding RemovedEntriesVisible, FallbackValue=Visible}">
+			  Visibility="{Binding RemovedEntriesVisible, FallbackValue=Collapsed}">
 			<Grid.RowDefinitions>
 				<RowDefinition Height="Auto" />
 				<RowDefinition Height="*" />
