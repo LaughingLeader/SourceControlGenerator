@@ -69,7 +69,7 @@
 				Source="{Binding Source, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource StringToCachedImageConverter}}"
 				ToolTipService.ShowOnDisabled="True"
 				Stretch="UniformToFill"
-				RenderOptions.BitmapScalingMode="HighQuality"
+				RenderOptions.BitmapScalingMode="NearestNeighbor"
 			/>
 			<Rectangle x:Name="TintRect"
 				Width="{Binding MaxSize, RelativeSource={RelativeSource TemplatedParent}}"

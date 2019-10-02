@@ -219,7 +219,7 @@ body {
 						Command="{Binding Path=DataContext.ReloadFileLinkDataCommand, RelativeSource={RelativeSource AncestorType={x:Type Window}}}"
 						CommandParameter="{Binding}"
 						ToolTip="{x:Static core:DOS2DETooltips.Button_Locale_RefreshLinkedData}"
-						Source="{x:Static vdata:IconPathData.RowUpdating}"
+						Source="{x:Static vdata:IconPathData.LinkVertical}"
 						cb:ImageButtonHoverOnDisabled.Enable="True"
 						Visibility="{Binding HasFileLink, Converter={StaticResource BoolToVisibilityConverter}}"
 					/>
