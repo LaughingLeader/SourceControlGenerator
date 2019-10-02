@@ -1205,7 +1205,7 @@ body {
 		</Grid>
 		<Grid x:Name="RemovedEntriesGrid" Grid.Row="2" Panel.ZIndex="99" 
 			  d:DataContext="{d:DesignInstance local:LocaleEditorDebugViewModel, IsDesignTimeCreatable=true}"
-			  Visibility="{Binding RemovedEntriesVisible, FallbackValue=Collapsed}">
+			  Visibility="{Binding MissingEntriesViewVisible, FallbackValue=Collapsed}">
 			<Grid.RowDefinitions>
 				<RowDefinition Height="Auto" />
 				<RowDefinition Height="*" />
@@ -1228,7 +1228,7 @@ body {
 			</StackPanel>
 			
 			<ListView Grid.Row="1" x:Name="RemovedEntriesListView"
-				ItemsSource="{Binding RemovedEntries}"
+				ItemsSource="{Binding MissingEntries}"
 				SelectionMode="Extended" Background="Transparent" 
 				BorderThickness="0" GridViewColumnHeader.Click="RemovedEntriesListView_Click"
 			>
