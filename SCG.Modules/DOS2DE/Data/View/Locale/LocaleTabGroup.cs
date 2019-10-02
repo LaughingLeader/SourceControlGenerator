@@ -143,7 +143,8 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 
 		public void UpdateUnsavedChanges()
 		{
-			ChangesUnsaved = DataFiles.Any(f => f.ChangesUnsaved == true);
+			ChangesUnsaved = Tabs.Any(f => f.ChangesUnsaved == true);
+			Parent?.UpdateUnsavedChanges();
 		}
 
 		public LocaleTabGroup(LocaleViewModel parent, string name = "")

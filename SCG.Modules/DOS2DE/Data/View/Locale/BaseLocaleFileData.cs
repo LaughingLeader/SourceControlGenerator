@@ -95,6 +95,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			get { return changesUnsaved; }
 			set
 			{
+				/*
 				if(changesUnsaved == true && value == false)
 				{
 					foreach(var entry in Entries)
@@ -102,9 +103,12 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 						entry.ChangesUnsaved = false;
 					}
 				}
+				*/
 
-				this.RaiseAndSetIfChanged(ref changesUnsaved, value);
-				UpdateDisplayName();
+				if(this.RaiseAndSetIfChanged(ref changesUnsaved, value))
+				{
+					UpdateDisplayName();
+				}
 			}
 		}
 
@@ -188,26 +192,37 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 					SelectNone();
 			}
 		}
-		public void AddUnsavedChange(LocaleUnsavedChangesData unsavedChange)
+
+		private bool LocaleUnsavedChangeMatch(LocaleUnsavedChangesData a, LocaleUnsavedChangesData b)
+		{
+			return a.KeyEntry == b.KeyEntry && a.ChangeType == b.ChangeType && a.NewValue == b.LastValue;
+		}
+
+		public void AddUnsavedChange(ILocaleKeyEntry entry, LocaleUnsavedChangesData unsavedChange)
 		{
 			// Remove this unsaved change if it matches a previous one
-			var matchedChange = UnsavedChanges.FirstOrDefault(x => x.Equals(unsavedChange));
-			if(matchedChange.ChangeType != LocaleChangedField.None)
+			var matchedChange = UnsavedChanges.FirstOrDefault(x => LocaleUnsavedChangeMatch(x, unsavedChange));
+			if(matchedChange != null)
 			{
+				//Log.Here().Activity($"Removing unsaved change as it matches a previous value '{matchedChange.ChangeType} | {matchedChange.LastValue} => {matchedChange.NewValue}'.");
 				RemoveUnsavedChange(matchedChange);
+				entry.ChangesUnsaved = false;
 			}
 			else
 			{
+				//Log.Here().Activity($"Added unsaved change '{unsavedChange.ChangeType} | {unsavedChange.LastValue} => {unsavedChange.NewValue}'.");
 				UnsavedChanges.Add(unsavedChange);
-				ChangesUnsaved = Parent.ChangesUnsaved = true;
+				entry.ChangesUnsaved = ChangesUnsaved = Parent.ChangesUnsaved = true;
 			}
 		}
 
-		public void RemoveUnsavedChange(LocaleUnsavedChangesData unsavedChange)
+		public void RemoveUnsavedChange(LocaleUnsavedChangesData change)
 		{
-			UnsavedChanges.Remove(unsavedChange);
-			ChangesUnsaved = UnsavedChanges.Count > 0;
-			Parent.UpdateUnsavedChanges();
+			if(UnsavedChanges.Remove(change))
+			{
+				Parent?.UpdateUnsavedChanges();
+				ChangesUnsaved = UnsavedChanges.Count > 0;
+			}
 		}
 
 		public BaseLocaleFileData(LocaleTabGroup parent, string name = "")

@@ -671,6 +671,8 @@ namespace SCG.Modules.DOS2DE.Utilities
 					Log.Here().Activity($"Saving '{dataFile.Name}' to '{dataFile.SourcePath}'.");
 					await Task.Run(() => LSLib.LS.ResourceUtils.SaveResource(dataFile.Source, dataFile.SourcePath, saveFormat));
 					Log.Here().Important($"Saved '{dataFile.SourcePath}'.");
+					dataFile.UnsavedChanges.Clear();
+					dataFile.ChangesUnsaved = false;
 					return 1;
 				}
 				else
@@ -949,7 +951,7 @@ namespace SCG.Modules.DOS2DE.Utilities
 
 		public static List<ILocaleKeyEntry> RefreshLinkedData(ILocaleFileData fileData)
 		{
-			List<ILocaleKeyEntry> removedEntries = new List<ILocaleKeyEntry>();
+			List<ILocaleKeyEntry> allMissingEntries = new List<ILocaleKeyEntry>();
 			if (File.Exists(fileData.FileLinkData.ReadFrom))
 			{
 				Log.Here().Activity($"Loading linked file data from {fileData.FileLinkData.ReadFrom}");
@@ -1022,8 +1024,8 @@ namespace SCG.Modules.DOS2DE.Utilities
 							}
 
 							var missingEntries = fileData.Entries.Where(x => !entries.Any(e => e.Key.Equals(x.Key, StringComparison.OrdinalIgnoreCase)));
-							Log.Here().Important($"Missing entries:{String.Join(Environment.NewLine, missingEntries.Select(x => x.EntryKey))}");
-							removedEntries.AddRange(missingEntries);
+							//Log.Here().Important($"Missing entries:{String.Join(Environment.NewLine, missingEntries.Select(x => x.EntryKey))}");
+							allMissingEntries.AddRange(missingEntries);
 
 							if (!fileData.ChangesUnsaved) fileData.ChangesUnsaved = changesUnsaved;
 						}
@@ -1031,7 +1033,7 @@ namespace SCG.Modules.DOS2DE.Utilities
 				}
 				
 			}
-			return removedEntries;
+			return allMissingEntries;
 		}
 
 		public static string EscapeXml(string s)

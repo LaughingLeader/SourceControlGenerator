@@ -650,6 +650,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 						}
 						OutputDate = DateTime.Now.ToShortTimeString();
 
+						keyFileData.UnsavedChanges.Clear();
 						keyFileData.ChangesUnsaved = false;
 						ChangesUnsaved = false;
 					}
@@ -1528,6 +1529,10 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			CreateSnapshot(undo, redo);
 			redo();
 		}
+		public void UpdateUnsavedChanges()
+		{
+			ChangesUnsaved = Groups.Any(g => g.ChangesUnsaved == true);
+		}
 
 		public void OnViewLoaded(LocaleEditorWindow v, DOS2DEModuleData moduleData, CompositeDisposable disposables)
 		{
@@ -1816,6 +1821,9 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 					addMissingEntriesOnLoad = null;
 				}), System.Windows.Threading.DispatcherPriority.Loaded);
 			}
+
+			//this.WhenAnyValue(x => x.Groups.WhenAnyValue(c => c.Select(g => g.ChangesUnsaved));
+
 		}
 
 		public MenuData UndoMenuData { get; private set; }

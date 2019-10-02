@@ -55,13 +55,13 @@ namespace SCG.Modules.DOS2DE.Windows
 			}
 			return list;
 		}
-		public ObservableCollectionExtended<ILocaleKeyEntry> RemovedEntries { get; set; }
+		public ObservableCollectionExtended<ILocaleKeyEntry> MissingEntries { get; set; }
 
 		public LocaleEditorDebugViewModel()
 		{
-			RemovedEntries = new ObservableCollectionExtended<ILocaleKeyEntry>(getTestRemovedEntries());
+			MissingEntries = new ObservableCollectionExtended<ILocaleKeyEntry>(getTestRemovedEntries());
 
-			Test = "Count:" + RemovedEntries.Count;
+			Test = "Count:" + MissingEntries.Count;
 		}
 	}
 	/// <summary>
@@ -556,6 +556,25 @@ namespace SCG.Modules.DOS2DE.Windows
 			SortDescription sd = new SortDescription(sortBy, direction);
 			dataView.SortDescriptions.Add(sd);
 			dataView.Refresh();
+		}
+
+		private void FileDataEntryTextBox_KeyDown(object sender, KeyEventArgs e)
+		{
+			if(e.Key == Key.Enter)
+			{
+				Keyboard.ClearFocus();
+				e.Handled = true;
+			}
+		}
+
+		private void LostKeyboardFocus_UpdateSource(object sender, KeyboardFocusChangedEventArgs e)
+		{
+			if (sender is TextBox tb)
+			{
+				BindingExpression be = tb.GetBindingExpression(TextBox.TextProperty);
+				be.UpdateSource();
+				Keyboard.ClearFocus();
+			}
 		}
 	}
 }

@@ -558,9 +558,33 @@ body {
 								VirtualizingPanel.IsVirtualizingWhenGrouping="True"
 								EnableRowVirtualization="True"
 								Style="{StaticResource LocaleDataGridStyle}"
+								CellStyle="{StaticResource CellNoHighlightChangesUnsaved}"
 						>
 							<DataGrid.Resources>
 								<cb:DataContextSpy x:Key="FileData" DataContext="{Binding}" />
+								<Style TargetType="TextBox">
+									<Setter Property="IsReadOnly" Value="False" />
+									<Setter Property="Background" Value="Transparent" />
+									<Setter Property="BorderThickness" Value="0" />
+									<Setter Property="BorderBrush" Value="{x:Null}" />
+									<Setter Property="FontSize" Value="12" />
+									<Setter Property="IsUndoEnabled" Value="False" />
+									<Setter Property="Tag" Value="{Binding Path=DataContext, RelativeSource={RelativeSource AncestorType={x:Type Window}}}" />
+									<Setter Property="ContextMenu">
+										<Setter.Value>
+											<ContextMenu>
+												<MenuItem Command="ApplicationCommands.Cut" />
+												<MenuItem Command="ApplicationCommands.Copy" />
+												<MenuItem Command="ApplicationCommands.Paste" />
+												<MenuItem Command="ApplicationCommands.SelectAll" />
+												<MenuItem Header="Select None" Command="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.Tag.SelectNoneCommand}" 
+															CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget}" />
+											</ContextMenu>
+										</Setter.Value>
+									</Setter>
+									<EventSetter Event="KeyDown" Handler="FileDataEntryTextBox_KeyDown" />
+									<EventSetter Event="LostKeyboardFocus" Handler="LostKeyboardFocus_UpdateSource" />
+								</Style>
 							</DataGrid.Resources>
 							<DataGrid.RowStyle>
 								<Style TargetType="{x:Type DataGridRow}" BasedOn="{StaticResource {x:Type DataGridRow}}">
@@ -585,39 +609,33 @@ body {
 										</DataTemplate>
 									</DataGridTemplateColumn.CellTemplate>
 								</DataGridTemplateColumn>
-								<DataGridTextColumn Header="Key" Binding="{Binding EntryKey}" MinWidth="50" Width="Auto">
-									<DataGridTextColumn.CellStyle>
+								<DataGridTemplateColumn Header="Key" MinWidth="50" Width="Auto">
+									<DataGridTemplateColumn.CellStyle>
 										<Style TargetType="DataGridCell" BasedOn="{StaticResource CellNoHighlightChangesUnsaved}">
 											<Setter Property="IsEnabled" Value="{Binding KeyIsEditable}" />
 										</Style>
-									</DataGridTextColumn.CellStyle>
-								</DataGridTextColumn>
-								<DataGridTemplateColumn Header="Content" Width="*" CellStyle="{StaticResource CellNoHighlightChangesUnsaved}">
+									</DataGridTemplateColumn.CellStyle>
+									<DataGridTemplateColumn.CellTemplate>
+										<DataTemplate>
+											<TextBox
+												x:Name="EntryKeyTextBox"
+												Text="{Binding EntryKey, UpdateSourceTrigger=Explicit}"
+												Tag="{Binding Path=DataContext, RelativeSource={RelativeSource AncestorType={x:Type Window}}}"
+												/>
+										</DataTemplate>
+									</DataGridTemplateColumn.CellTemplate>
+								</DataGridTemplateColumn>
+								<DataGridTemplateColumn Header="Content" Width="*">
 									<DataGridTemplateColumn.CellTemplate>
 										<DataTemplate>
 											<TextBox
 												x:Name="EntryContentTextBox"
-												Text="{Binding EntryContent, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
-												IsReadOnly="False"
-												BorderThickness="0" BorderBrush="{x:Null}" FontSize="12"
+												Text="{Binding EntryContent, UpdateSourceTrigger=Explicit}"
 												GotFocus="EntryContent_GotFocus"
 												LostFocus="EntryContent_LostFocus"
 												SelectionChanged="EntryContent_SelectionChanged"
 												Tag="{Binding Path=DataContext, RelativeSource={RelativeSource AncestorType={x:Type Window}}}"
-												IsUndoEnabled="False"
-												Background="Transparent"
-												>
-												<TextBox.ContextMenu>
-													<ContextMenu>
-														<MenuItem Command="ApplicationCommands.Cut" />
-														<MenuItem Command="ApplicationCommands.Copy" />
-														<MenuItem Command="ApplicationCommands.Paste" />
-														<MenuItem Command="ApplicationCommands.SelectAll" />
-														<MenuItem Header="Select None" Command="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.Tag.SelectNoneCommand}" 
-															CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget}" />
-													</ContextMenu>
-												</TextBox.ContextMenu>
-											</TextBox>
+											/>
 											<!--<Grid>
 												<Grid.ColumnDefinitions>
 													<ColumnDefinition Width="*" />
@@ -635,7 +653,17 @@ body {
 										</DataTemplate>
 									</DataGridTemplateColumn.CellTemplate>
 								</DataGridTemplateColumn>
-								<DataGridTextColumn Header="Handle" Binding="{Binding EntryHandle}" Width="150" CellStyle="{StaticResource CellNoHighlightChangesUnsaved}"/>
+								<DataGridTemplateColumn Header="Handle" Width="150">
+									<DataGridTemplateColumn.CellTemplate>
+										<DataTemplate>
+											<TextBox
+												x:Name="EntryHandleTextBox"
+												Text="{Binding EntryHandle, UpdateSourceTrigger=Explicit}"
+												Tag="{Binding Path=DataContext, RelativeSource={RelativeSource AncestorType={x:Type Window}}}"
+												/>
+										</DataTemplate>
+									</DataGridTemplateColumn.CellTemplate>
+								</DataGridTemplateColumn>
 							</DataGrid.Columns>
 						</DataGrid>
 						<GridSplitter Grid.Row="1" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Height="3" Background="{Binding ElementName=LocaleEntryDataGrid, Path=BorderBrush}" />
@@ -1272,7 +1300,7 @@ body {
 								</DataTemplate>
 							</GridViewColumn.CellTemplate>
 						</GridViewColumn>
-						<GridViewColumn DisplayMemberBinding="{Binding EntryKey, FallbackValue='Test'}" Header="Key" Width="Auto" />
+						<GridViewColumn DisplayMemberBinding="{Binding EntryKey}" Header="Key" Width="Auto" />
 						<GridViewColumn DisplayMemberBinding="{Binding EntryContent}" Header="Content"/>
 						<GridViewColumn DisplayMemberBinding="{Binding EntryHandle}" Header="Handle" />
 					</GridView>

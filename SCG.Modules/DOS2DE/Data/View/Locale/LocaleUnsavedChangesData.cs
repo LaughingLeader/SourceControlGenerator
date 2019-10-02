@@ -13,7 +13,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 		Content,
 		Handle
 	}
-	public struct LocaleUnsavedChangesData : IEquatable<LocaleUnsavedChangesData>
+	public class LocaleUnsavedChangesData
 	{
 		public LocaleChangedField ChangeType { get; set; }
 		public string LastValue { get; set; }
@@ -21,10 +21,12 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 
 		public ILocaleKeyEntry KeyEntry { get; set; }
 
+		/*
 		public bool Equals(LocaleUnsavedChangesData other)
 		{
 			return other.KeyEntry == this.KeyEntry && other.ChangeType == this.ChangeType && other.NewValue == this.LastValue;
 		}
+		*/
 
 		public static LocaleUnsavedChangesData Create(ILocaleKeyEntry entry, LocaleChangedField changedField, string lastValue, string newValue)
 		{

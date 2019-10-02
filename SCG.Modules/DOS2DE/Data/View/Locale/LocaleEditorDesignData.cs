@@ -48,6 +48,8 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			foreach (var d in PublicGroup.DataFiles)
 			{
 				LocaleEditorCommands.Debug_CreateEntries(d, d.Entries);
+				d.ChangesUnsaved = true;
+				d.Entries.First().ChangesUnsaved = true;
 			}
 
 			foreach (var d in CustomGroup.DataFiles)
@@ -63,7 +65,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 
 			System.Diagnostics.Trace.WriteLine("Design data test");
 
-			SelectedGroupIndex = Groups.IndexOf(CustomGroup);
+			SelectedGroupIndex = Groups.IndexOf(PublicGroup);
 			SelectedEntry = CombinedGroup.Tabs.First().Entries.First();
 
 			LinkedProjects.Add(new ModProjectData() { DisplayName = "TestMod1" });

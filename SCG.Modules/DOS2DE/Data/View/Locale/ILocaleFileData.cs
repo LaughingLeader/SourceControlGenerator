@@ -32,6 +32,6 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 		void SelectNone();
 		void OnSelectedKeyChanged(ILocaleKeyEntry key, bool selected);
 
-		void AddUnsavedChange(LocaleUnsavedChangesData unsavedChange);
+		void AddUnsavedChange(ILocaleKeyEntry key, LocaleUnsavedChangesData unsavedChange);
 	}
 }
