@@ -101,9 +101,11 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			get { return key; }
 			set
 			{
+				var last = key;
 				if (this.UpdateWithHistory(ref key, value, "Key"))
 				{
 					this.RaisePropertyChanged("EntryKey");
+					Parent.AddUnsavedChange(LocaleUnsavedChangesData.Create(this, LocaleChangedField.Key, last, value));
 				}
 
 				if (KeyAttribute != null)
@@ -125,6 +127,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 					{
 						//Log.Here().Activity($"Saving history for EntryContent| {last} => {value}");
 						this.RaisePropertyChanged("EntryContent");
+						Parent.AddUnsavedChange(LocaleUnsavedChangesData.Create(this, LocaleChangedField.Content, last, value));
 					}
 				}
 			}
@@ -137,9 +140,11 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			{
 				if (TranslatedString != null)
 				{
-					if(this.UpdateWithHistory(ref TranslatedString.Handle, value, "Handle"))
+					var last = TranslatedString.Handle;
+					if (this.UpdateWithHistory(ref TranslatedString.Handle, value, "Handle"))
 					{
 						this.RaisePropertyChanged("EntryHandle");
+						Parent.AddUnsavedChange(LocaleUnsavedChangesData.Create(this, LocaleChangedField.Handle, last, value));
 					}
 				}
 			}

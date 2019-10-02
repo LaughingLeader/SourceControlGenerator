@@ -170,6 +170,7 @@ namespace SCG.Modules.DOS2DE.Views
 
 		public static async Task<Unit> OpenLocalizationEditorForProject(ModProjectData modData)
 		{
+			Log.Here().Activity($"Opening locale editor for project {modData.DisplayName}");
 			var data = await LocaleEditorCommands.LoadLocalizationDataAsync(_instance.ViewModel, modData);
 			_instance.MainWindow.Dispatcher.Invoke(new Action(() => {
 				_instance.OpenLocalizationEditorWithData(data);

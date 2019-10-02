@@ -157,6 +157,8 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			set { this.RaiseAndSetIfChanged(ref canCreateFileLink, value); }
 		}
 
+		public List<LocaleUnsavedChangesData> UnsavedChanges = new List<LocaleUnsavedChangesData>();
+
 		public void SelectAll()
 		{
 			foreach (var entry in Entries) { entry.Selected = true; }
@@ -185,6 +187,27 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 				else
 					SelectNone();
 			}
+		}
+		public void AddUnsavedChange(LocaleUnsavedChangesData unsavedChange)
+		{
+			// Remove this unsaved change if it matches a previous one
+			var matchedChange = UnsavedChanges.FirstOrDefault(x => x.Equals(unsavedChange));
+			if(matchedChange.ChangeType != LocaleChangedField.None)
+			{
+				RemoveUnsavedChange(matchedChange);
+			}
+			else
+			{
+				UnsavedChanges.Add(unsavedChange);
+				ChangesUnsaved = Parent.ChangesUnsaved = true;
+			}
+		}
+
+		public void RemoveUnsavedChange(LocaleUnsavedChangesData unsavedChange)
+		{
+			UnsavedChanges.Remove(unsavedChange);
+			ChangesUnsaved = UnsavedChanges.Count > 0;
+			Parent.UpdateUnsavedChanges();
 		}
 
 		public BaseLocaleFileData(LocaleTabGroup parent, string name = "")

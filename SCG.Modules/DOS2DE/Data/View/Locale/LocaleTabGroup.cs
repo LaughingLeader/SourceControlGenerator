@@ -141,6 +141,11 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			Parent.KeyEntrySelected(keyEntry, selected);
 		}
 
+		public void UpdateUnsavedChanges()
+		{
+			ChangesUnsaved = DataFiles.Any(f => f.ChangesUnsaved == true);
+		}
+
 		public LocaleTabGroup(LocaleViewModel parent, string name = "")
 		{
 			Parent = parent;

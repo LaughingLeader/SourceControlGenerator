@@ -762,8 +762,6 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 				view.SaveSettings();
 
 				ChangesUnsaved = true;
-
-				
 			}
 		}
 
