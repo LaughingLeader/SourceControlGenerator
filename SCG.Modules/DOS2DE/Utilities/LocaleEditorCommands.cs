@@ -852,7 +852,7 @@ namespace SCG.Modules.DOS2DE.Utilities
 				{
 					InclusionFilter = (f) =>
 					{
-						Log.Here().Activity($"File: {f.FileName} | {FileCommands.FileExtensionFound(f.FileName, ".json")}");
+						//Log.Here().Activity($"File: {f.FileName} | {FileCommands.FileExtensionFound(f.FileName, ".json")}");
 						return FileCommands.FileExtensionFound(f.FileName, ".json");
 					}
 				});
@@ -867,7 +867,7 @@ namespace SCG.Modules.DOS2DE.Utilities
 					try
 					{
 						LocaleProjectLinkData data = await JsonInterface.DeserializeObjectAsync<LocaleProjectLinkData>(filePath);
-						if (data != null && data.Links.Count > 0)
+						if (data != null && data.Links.Count > 0 && data.ProjectUUID.Equals(modProject.UUID))
 						{
 							Log.Here().Activity($"Line file loaded: '{filePath}' => {data.ProjectUUID}.");
 
@@ -1166,6 +1166,12 @@ namespace SCG.Modules.DOS2DE.Utilities
 						foreach (var sourceDir in groupData.SourceDirectories)
 						{
 							var fileData = CreateNodeFileDataFromTextual(groupData, stream, sourceDir, path, delimiter);
+							// Automatically create linked data
+							fileData.FileLinkData = new LocaleFileLinkData()
+							{
+								ReadFrom = path,
+								TargetFile = fileData.SourcePath
+							};
 							newFileDataList.Add(fileData);
 						}
 					}
