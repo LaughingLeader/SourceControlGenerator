@@ -904,14 +904,15 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 		{
 			if (SelectedGroup != null && SelectedGroup.SelectedFile != null)
 			{
-				if (SelectedGroup.SelectedFile is LocaleNodeFileData fileData && fileData.Format == LSLib.LS.Enums.ResourceFormat.LSB)
+				if (SelectedGroup.SelectedFile is LocaleNodeFileData fileData)
 				{
+					Log.Here().Activity($"File format is '{fileData.Format}'");
 					LocaleNodeKeyEntry localeEntry = LocaleEditorCommands.CreateNewLocaleEntry(fileData);
 					localeEntry.SetHistoryFromObject(this);
 					AddWithHistory(fileData.Entries, localeEntry);
 					SelectedGroup.UpdateCombinedData();
 				}
-				else if(SelectedGroup.SelectedFile is LocaleCustomFileData customFileData)
+				else if (SelectedGroup.SelectedFile is LocaleCustomFileData customFileData)
 				{
 					LocaleCustomKeyEntry localeEntry = new LocaleCustomKeyEntry(SelectedGroup.SelectedFile)
 					{
@@ -922,6 +923,10 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 					localeEntry.SetHistoryFromObject(this);
 					AddWithHistory(customFileData.Entries, localeEntry);
 					SelectedGroup.UpdateCombinedData();
+				}
+				else
+				{
+					Log.Here().Error($"Can't add to file type '{SelectedGroup.SelectedFile.GetType()}'");
 				}
 			}
 			else

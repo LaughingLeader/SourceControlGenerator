@@ -1060,7 +1060,8 @@ namespace SCG.Modules.DOS2DE.Utilities
 			{
 				parent = nodeFileData.RootRegion;
 			}
-			else
+
+			if (parent == null)
 			{
 				parent = new Region();
 				parent.Name = "root";
