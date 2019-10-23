@@ -224,6 +224,8 @@ namespace SCG.Core
 					}
 				}
 
+				mainWindow.OnModuleSet(CurrentModule);
+
 				Data.MergeKeyLists();
 
 				Data.WindowTitle = "Source Control Generator - " + CurrentModule.ModuleData.ModuleName;
@@ -240,8 +242,18 @@ namespace SCG.Core
 		private void OnSetupComplete()
 		{
 			Data.LockScreenVisibility = Visibility.Collapsed;
-			CurrentModule.ModuleData.ModuleSettings.FirstTimeSetup = false;
-			FileCommands.Save.SaveModuleSettings(CurrentModule.ModuleData);
+			if(CurrentModule != null)
+			{
+				if(CurrentModule.ModuleData != null)
+				{
+					if (CurrentModule.ModuleData.ModuleSettings != null)
+					{
+						CurrentModule.ModuleData.ModuleSettings.FirstTimeSetup = false;
+					}
+				}
+
+				FileCommands.Save.SaveModuleSettings(CurrentModule.ModuleData);
+			}
 		}
 
 		public void UnloadCurrentModule()

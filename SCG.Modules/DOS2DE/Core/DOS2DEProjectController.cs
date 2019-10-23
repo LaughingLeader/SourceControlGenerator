@@ -925,19 +925,27 @@ namespace SCG.Core
 			{
 				Data.CanClickRefresh = false;
 
-				this.projectViewControl.FadeLoadingPanel(false);
+				if (projectViewControl != null)
+				{
+					this.projectViewControl.FadeLoadingPanel(false);
 
-				this.projectViewControl.Dispatcher.Invoke(new Action(() => {
-					Data.ModProjects.Clear();
-				}));
+					this.projectViewControl.Dispatcher.Invoke(new Action(() => {
+						Data.ModProjects.Clear();
+					}));
 
-				await this.projectViewControl.Dispatcher.BeginInvoke(DispatcherPriority.Background, new Action(async () => {
-					var newMods = await DOS2DECommands.LoadAllAsync(projectViewControl.Dispatcher, Data);
-					Data.ModProjects.AddRange(newMods);
-					Data.CanClickRefresh = true;
+					await this.projectViewControl.Dispatcher.BeginInvoke(DispatcherPriority.Background, new Action(async () => {
+						var newMods = await DOS2DECommands.LoadAllAsync(projectViewControl.Dispatcher, Data);
+						Data.ModProjects.AddRange(newMods);
+						Data.CanClickRefresh = true;
 
+						HideLoadingPanel();
+					}));
+				}
+				else
+				{
 					HideLoadingPanel();
-				}));
+				}
+				
 			}
 			else
 			{

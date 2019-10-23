@@ -150,45 +150,47 @@ namespace SCG.Windows
 
 			this.WhenActivated((disposables) =>
 			{
-				this.WhenAnyValue(v => v.Controller.CurrentModule).Subscribe((m) =>
-				{
-					if(m != null)
-					{
-						var view = m.GetProjectView(this);
-						var viewGrid = (Grid)FindName("ProjectsViewGrid");
-
-						if (view != null && viewGrid != null)
-						{
-							if (lastModuleView != null)
-							{
-								viewGrid.Children.Remove(lastModuleView);
-								lastModuleView = null;
-							}
-
-							viewGrid.Children.Add(view);
-							lastModuleView = view;
-
-							Log.Here().Activity("Loaded project view for module.");
-
-							DataContext = null;
-							DataContext = Controller.Data;
-
-							Controller.Data.ModuleSelectionVisibility = Visibility.Collapsed;
-						}
-					}
-					else
-					{
-						var viewGrid = (Grid)FindName("ProjectsViewGrid");
-						if (viewGrid != null && lastModuleView != null)
-						{
-							viewGrid.Children.Remove(lastModuleView);
-							lastModuleView = null;
-						}
-
-						Controller.Data.ModuleSelectionVisibility = Visibility.Visible;
-					}
-				}).DisposeWith(disposables);
+				
 			});
+		}
+
+		public void OnModuleSet(IProjectController module)
+		{
+			if (module != null)
+			{
+				var view = module.GetProjectView(this);
+				var viewGrid = (Grid)FindName("ProjectsViewGrid");
+
+				if (view != null && viewGrid != null)
+				{
+					if (lastModuleView != null)
+					{
+						viewGrid.Children.Remove(lastModuleView);
+						lastModuleView = null;
+					}
+
+					viewGrid.Children.Add(view);
+					lastModuleView = view;
+
+					Log.Here().Activity("Loaded project view for module.");
+
+					DataContext = null;
+					DataContext = Controller.Data;
+
+					Controller.Data.ModuleSelectionVisibility = Visibility.Collapsed;
+				}
+			}
+			else
+			{
+				var viewGrid = (Grid)FindName("ProjectsViewGrid");
+				if (viewGrid != null && lastModuleView != null)
+				{
+					viewGrid.Children.Remove(lastModuleView);
+					lastModuleView = null;
+				}
+
+				Controller.Data.ModuleSelectionVisibility = Visibility.Visible;
+			}
 		}
 
 		protected override void OnClipboardUpdate()

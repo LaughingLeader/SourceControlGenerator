@@ -207,22 +207,25 @@ namespace SCG.Commands
 
 		private void SaveTemplates(IModuleData Data)
 		{
-			if (Data.ModuleSettings.TemplateFiles != null)
+			if (Data.ModuleSettings != null && Data.Templates != null)
 			{
-				Data.ModuleSettings.TemplateFiles.Clear();
-			}
-			else
-			{
-				Data.ModuleSettings.TemplateFiles = new ObservableCollection<TemplateFileData>();
-			}
-
-			foreach (var templateData in Data.Templates)
-			{
-				Data.ModuleSettings.TemplateFiles.Add(new TemplateFileData()
+				if (Data.ModuleSettings.TemplateFiles != null)
 				{
-					ID = templateData.ID,
-					FilePath = templateData.FilePath
-				});
+					Data.ModuleSettings.TemplateFiles.Clear();
+				}
+				else
+				{
+					Data.ModuleSettings.TemplateFiles = new ObservableCollection<TemplateFileData>();
+				}
+
+				foreach (var templateData in Data.Templates)
+				{
+					Data.ModuleSettings.TemplateFiles.Add(new TemplateFileData()
+					{
+						ID = templateData.ID,
+						FilePath = templateData.FilePath
+					});
+				}
 			}
 		}
 
