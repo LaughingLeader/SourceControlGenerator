@@ -449,16 +449,23 @@ namespace SCG.Modules.DOS2DE.Windows
 					{
 						tab.BringIntoView();
 						tab.MoveFocus(new TraversalRequest(FocusNavigationDirection.Next));
-						var tb = tab.FindVisualChildren<TextBox>().FirstOrDefault();
-						if (tb != null)
+						foreach (var dg in tab.FindVisualChildren<DataGrid>())
 						{
-							tb.Focus();
-							tb.SelectAll();
+							if (dg.Name == "LocaleEntryDataGrid")
+							{
+								var tb = dg.FindVisualChildren<TextBox>().FirstOrDefault();
+								if (tb != null)
+								{
+									tb.Focus();
+									tb.SelectAll();
+								}
+								else
+								{
+									Log.Here().Activity("Couldn't find textbox");
+								}
+							}
 						}
-						else
-						{
-							Log.Here().Activity("Couldn't find textbox");
-						}
+						
 					}
 				}));
 			}
@@ -574,6 +581,23 @@ namespace SCG.Modules.DOS2DE.Windows
 				BindingExpression be = tb.GetBindingExpression(TextBox.TextProperty);
 				be.UpdateSource();
 				Keyboard.ClearFocus();
+			}
+		}
+
+		public void ResizeEntryKeyColumn()
+		{
+			foreach (var dg in this.MainTabControl.FindVisualChildren<DataGrid>())
+			{
+				if (dg.Name == "LocaleEntryDataGrid")
+				{
+					DataGridColumn col = dg.Columns.Where(x => x.Header.Equals("Key")).FirstOrDefault();
+					if (col != null)
+					{
+						col.Width = 0;
+						dg.UpdateLayout();
+						col.Width = new DataGridLength(1, DataGridLengthUnitType.Auto);
+					}
+				}
 			}
 		}
 	}

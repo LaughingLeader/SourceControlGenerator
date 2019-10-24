@@ -501,10 +501,6 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 				{
 					return Settings.LastFileImportPath;
 				}
-				else
-				{
-					Log.Here().Activity($"Setting: {Settings} | {Settings?.LastFileImportPath}");
-				}
 				return CurrentImportPath;
 			}
 		}
@@ -738,13 +734,20 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 				var currentGroup = Groups.Where(g => g == SelectedGroup).First();
 				var newFileDataList = LocaleEditorCommands.ImportFilesAsData(files, SelectedGroup);
 
+				var lastChangesUnsaved = currentGroup.ChangesUnsaved;
+
+				var lastFiles = currentGroup.DataFiles.ToList();
+
 				CreateSnapshot(() => {
-					var list = currentGroup.DataFiles.ToList();
 					foreach (var entry in newFileDataList)
 					{
-						if (list.Contains(entry)) list.Remove(entry);
+						if (lastFiles.Contains(entry)) lastFiles.Remove(entry);
 					}
-					currentGroup.DataFiles = new ObservableCollectionExtended<ILocaleFileData>(list);
+					currentGroup.DataFiles = new ObservableCollectionExtended<ILocaleFileData>(lastFiles);
+					currentGroup.UpdateCombinedData();
+					currentGroup.SelectLast();
+					currentGroup.ChangesUnsaved = lastChangesUnsaved;
+					view.FocusSelectedTab();
 				}, () => {
 					currentGroup.DataFiles.AddRange(newFileDataList);
 				});
@@ -757,6 +760,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 				view.FocusSelectedTab();
 
 				Settings.LastFileImportPath = Path.GetDirectoryName(files.FirstOrDefault());
+				Settings.LastEntryImportPath = Path.GetDirectoryName(files.FirstOrDefault());
 				this.RaisePropertyChanged("CurrentImportPath");
 				this.RaisePropertyChanged("CurrentFileImportPath");
 
@@ -1628,6 +1632,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 				IsSubWindowOpen = true;
 				FileCommands.Load.OpenMultiFileDialog(view, DOS2DETooltips.Button_Locale_ImportFile, 
 					CurrentEntryImportPath, ImportFilesAsFileData, "", onCancel, DOS2DEFileFilters.AllLocaleFilesList.ToArray());
+				this.view.ResizeEntryKeyColumn();
 			}, CanImportFilesObservable).DisposeWith(disposables);
 
 			ImportKeysCommand = ReactiveCommand.Create(() =>

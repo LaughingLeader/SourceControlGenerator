@@ -1330,7 +1330,7 @@ body {
 			</Grid>
 			
 		</Grid>
-		<TabControl Grid.Row="2" ItemsSource="{Binding Groups}" ContentTemplate="{Binding Source={StaticResource LocaleFileTabs}}"
+		<TabControl x:Name="MainTabControl" Grid.Row="2" ItemsSource="{Binding Groups}" ContentTemplate="{Binding Source={StaticResource LocaleFileTabs}}"
 					SelectedIndex="{Binding SelectedGroupIndex}" Style="{StaticResource LocaleGroupTabControl}"
 			>
 			<TabControl.ItemContainerStyle>
