@@ -563,7 +563,8 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			CombinedGroup.DataFiles.AddRange(PublicGroup.DataFiles);
 			CombinedGroup.DataFiles.AddRange(DialogGroup.DataFiles);
 			CombinedGroup.DataFiles.AddRange(CustomGroup.DataFiles);
-			CombinedGroup.Visibility = MultipleGroupsEntriesFilled();
+			//CombinedGroup.Visibility = MultipleGroupsEntriesFilled();
+			CombinedGroup.Visibility = true;
 
 			if (!CombinedGroup.Visibility)
 			{
