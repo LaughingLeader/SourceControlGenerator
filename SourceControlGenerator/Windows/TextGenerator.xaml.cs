@@ -32,13 +32,13 @@ namespace SCG.Windows
 			{
 				if (item is ITextGeneratorInputData keywordData)
 				{
-					if (keywordData.InputType == TextGeneratorInputType.Text)
-					{
-						return frameworkElement.FindResource("InputTextBox") as DataTemplate;
-					}
-					else if (keywordData.InputType == TextGeneratorInputType.Incremental || keywordData.InputType == TextGeneratorInputType.Decremental)
+					if (keywordData.InputType == TextGeneratorInputType.Incremental || keywordData.InputType == TextGeneratorInputType.Decremental)
 					{
 						return frameworkElement.FindResource("InputNumericUpDown") as DataTemplate;
+					}
+					else if (keywordData.InputType == TextGeneratorInputType.Text)
+					{
+						return frameworkElement.FindResource("InputTextBox") as DataTemplate;
 					}
 				}
 			}
@@ -52,7 +52,7 @@ namespace SCG.Windows
 	/// </summary>
 	public partial class TextGenerator : HideWindowBase
 	{
-		public TextGeneratorData Data { get; set; }
+		public TextGeneratorViewModel Data { get; set; }
 
 		public TextGenerator()
 		{
@@ -61,24 +61,26 @@ namespace SCG.Windows
 
 		public void InitData()
 		{
-			Data = new TextGeneratorData();
-			Data.Keywords = new ObservableCollection<ITextGeneratorInputData>();
+			Data = new TextGeneratorViewModel();
 		}
 
 		public void OnDataLoaded()
 		{
 			DataContext = Data;
 
+			Data.Init(this);
+
 			Data.GenerateCommand = new ActionCommand(Generate);
 			Data.AddCommand = new ActionCommand(AddSelectedKeywordType);
 			Data.RemoveCommand = new ParameterCommand(RemoveKeyword);
 
-			Data.Init();
 			Data.OnFileLoaded = SaveDataIfPathChanged;
 			Data.SaveDataEvent += OnSaveData;
 
-			Data.InputData.TargetWindow = this;
-			Data.OutputData.TargetWindow = this;
+			if(Data.GeneratorPresets.Count == 0)
+			{
+				Data.AddPreset();
+			}
 		}
 
 		private void OnSaveData(object sender, EventArgs e)
@@ -97,46 +99,51 @@ namespace SCG.Windows
 
 		public void AddSelectedKeywordType()
 		{
-			AddKeyword(Data.NextKeywordType);
+			if(Data.ActiveData != null)
+			{
+				AddKeyword(Data.ActiveData.NextKeywordType);
+			}
 		}
 
 		public void AddKeyword(TextGeneratorInputType inputType)
 		{
-			var nextKeywordName = "Keyword" + (Data.Keywords.Count() + 1);
-
-			if(inputType == TextGeneratorInputType.Text)
+			if (Data.ActiveData != null)
 			{
-				Data.Keywords.Add(new TextGeneratorInputTextData(nextKeywordName));
-			}
-			else if (inputType == TextGeneratorInputType.Incremental || inputType == TextGeneratorInputType.Decremental)
-			{
-				Data.Keywords.Add(new TextGeneratorInputNumberData(inputType, nextKeywordName));
-			}
+				var nextKeywordName = "Keyword" + (Data.ActiveData.Keywords.Count() + 1);
 
+				if (inputType == TextGeneratorInputType.Text)
+				{
+					Data.ActiveData.Keywords.Add(new TextGeneratorInputTextData(nextKeywordName));
+				}
+				else if (inputType == TextGeneratorInputType.Incremental || inputType == TextGeneratorInputType.Decremental)
+				{
+					Data.ActiveData.Keywords.Add(new TextGeneratorInputNumberData(inputType, nextKeywordName));
+				}
+			}
 			//AppController.Main.SaveTextGeneratorData();
 		}
 
 		public void RemoveKeyword(object obj)
 		{
-			if(obj is ITextGeneratorInputData keyword)
+			if(obj is ITextGeneratorInputData keyword && Data.ActiveData != null)
 			{
-				if (Data.Keywords.Contains(keyword))
+				if (Data.ActiveData.Keywords.Contains(keyword))
 				{
-					Data.Keywords.Remove(keyword);
+					Data.ActiveData.Keywords.Remove(keyword);
 				}
 			}
 		}
 
 		public void Generate()
 		{
-			if (!String.IsNullOrWhiteSpace(Data.InputText) && Data.Keywords.Count > 0 && Data.GenerationAmount > 0)
+			if (Data.ActiveData != null && !String.IsNullOrWhiteSpace(Data.ActiveData.InputText) && Data.ActiveData.Keywords.Count > 0 && Data.ActiveData.GenerationAmount > 0)
 			{
-				Data.OutputText = "";
+				Data.ActiveData.OutputText = "";
 
-				for (var i = 0; i < Data.GenerationAmount; i++)
+				for (var i = 0; i < Data.ActiveData.GenerationAmount; i++)
 				{
-					var resultText = Data.InputText;
-					foreach (var k in Data.Keywords)
+					var resultText = Data.ActiveData.InputText;
+					foreach (var k in Data.ActiveData.Keywords)
 					{
 						if (k.InputType != TextGeneratorInputType.Text)
 						{
@@ -156,11 +163,11 @@ namespace SCG.Windows
 						resultText = k.GetOutput(resultText);
 					}
 
-					Data.OutputText += resultText;
-					if (i < Data.GenerationAmount) Data.OutputText += Environment.NewLine;
+					Data.ActiveData.OutputText += resultText;
+					if (i < Data.ActiveData.GenerationAmount) Data.ActiveData.OutputText += Environment.NewLine;
 				}
 
-				foreach (var k in Data.Keywords) k.Reset();
+				foreach (var k in Data.ActiveData.Keywords) k.Reset();
 
 				SaveData();
 			}
@@ -171,10 +178,10 @@ namespace SCG.Windows
 
 		private void SaveDataIfPathChanged()
 		{
-			if(LastInputPath != Data.InputData.FilePath || LastOutputPath != Data.OutputData.FilePath)
+			if(Data.ActiveData != null && (LastInputPath != Data.ActiveData.InputData.FilePath || LastOutputPath != Data.ActiveData.OutputData.FilePath))
 			{
-				LastInputPath = Data.InputData.FilePath;
-				LastOutputPath = Data.OutputData.FilePath;
+				LastInputPath = Data.ActiveData.InputData.FilePath;
+				LastOutputPath = Data.ActiveData.OutputData.FilePath;
 
 				SaveData();
 			}
@@ -183,7 +190,7 @@ namespace SCG.Windows
 		private void SaveData()
 		{
 			RxApp.MainThreadScheduler.Schedule(() => {
-				AppController.Main.SaveTextGeneratorData();
+				Data.FooterText = AppController.Main.SaveTextGeneratorData();
 			});
 
 			//Activate();

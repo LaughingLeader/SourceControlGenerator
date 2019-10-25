@@ -31,39 +31,53 @@ namespace SCG.Converters.Json
 			if (reader.TokenType == JsonToken.Null) return null;
 
 			var obj = JObject.Load(reader);
-
 			string inputTypeString = (string)obj.SelectToken("InputType");
 
 			if (!String.IsNullOrWhiteSpace(inputTypeString))
 			{
 				TextGeneratorInputType inputType = (TextGeneratorInputType)Enum.Parse(typeof(TextGeneratorInputType), inputTypeString);
+				//Log.Here().Activity($"inputType: {inputType.ToString()}");
 
-				if (inputType == TextGeneratorInputType.Text)
-				{
-					TextGeneratorInputTextData target = new TextGeneratorInputTextData();
-
-					var jObjectReader = CreateNewReader(reader, obj);
-					serializer.Populate(jObjectReader, target);
-
-					return target;
-				}
-				else if (inputType == TextGeneratorInputType.Incremental || inputType == TextGeneratorInputType.Decremental)
+				if (inputType == TextGeneratorInputType.Incremental || inputType == TextGeneratorInputType.Decremental)
 				{
 					TextGeneratorInputNumberData target = new TextGeneratorInputNumberData();
 
 					var jObjectReader = CreateNewReader(reader, obj);
 					serializer.Populate(jObjectReader, target);
+					target.InputType = inputType;
+
+					//Log.Here().Activity($"Created input: {target.GetType().ToString()} | {target.Keyword} | {target.IncrementBy}");
 
 					return target;
 				}
-			}
+				else if (inputType == TextGeneratorInputType.Text)
+				{
+					TextGeneratorInputTextData target = new TextGeneratorInputTextData();
 
-			return null;
+					var jObjectReader = CreateNewReader(reader, obj);
+					serializer.Populate(jObjectReader, target);
+					target.InputType = inputType;
+
+					return target;
+				}
+				else
+				{
+					return null;
+				}
+			}
+			else
+			{
+				TextGeneratorViewModel vm = new TextGeneratorViewModel();
+				var jObjectReader = CreateNewReader(reader, obj);
+				serializer.Populate(jObjectReader, vm);
+				return vm;
+			}
 		}
 
 		public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
 		{
 			//Avoid self-referencing loops with Expando
+			Log.Here().Activity($"Object: {value.GetType().ToString()}");
 			if (value is TextGeneratorInputTextData inputTextData)
 			{
 				dynamic fake = new System.Dynamic.ExpandoObject();
@@ -79,6 +93,7 @@ namespace SCG.Converters.Json
 				fake.Keyword = inputNumberData.Keyword;
 				fake.StartValue = inputNumberData.StartValue.ToString();
 				fake.IncrementBy = inputNumberData.IncrementBy.ToString();
+				fake.NumberPadding = inputNumberData.NumberPadding.ToString();
 				serializer.Serialize(writer, fake);
 			}
 			else

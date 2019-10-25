@@ -23,16 +23,18 @@
 	<Grid Margin="10">
 		<Grid.Resources>
 			<local:TextGeneratorInputTemplateSelector x:Key="KeywordInputTemplateSelector" />
-			<DataTemplate x:Key="InputTextBox" DataType="local:ITextGeneratorInputData">
-				<TextBox Text="{Binding Path=InputValue}" HorizontalAlignment="Stretch" />
-			</DataTemplate>
-			<DataTemplate x:Key="InputNumericUpDown" DataType="local:ITextGeneratorInputData">
+			<DataTemplate x:Key="InputNumericUpDown" DataType="{x:Type vdata:TextGeneratorInputNumberData}">
 				<StackPanel Orientation="Horizontal">
 					<Label Content="Start:" Width="Auto"/>
-					<c:NumericUpDown MinWidth="33" Minimum="-999999" Maximum="999999" Value="{Binding StartValue, Mode=TwoWay}" />
+					<c:NumericUpDown MinWidth="33" Minimum="-999999" Maximum="999999" Value="{Binding StartValue, Mode=TwoWay}"  />
 					<Label Content="Increment By:" Width="Auto"/>
 					<c:NumericUpDown MinWidth="33" Minimum="-999999" Maximum="999999" Value="{Binding IncrementBy, Mode=TwoWay}" />
+					<Label Content="Padding:" Width="Auto"/>
+					<c:NumericUpDown MinWidth="33" Minimum="0" Maximum="999" Value="{Binding NumberPadding, Mode=TwoWay}" ToolTip="Pad the output with this many zeroes." />
 				</StackPanel>
+			</DataTemplate>
+			<DataTemplate x:Key="InputTextBox" DataType="{x:Type vdata:TextGeneratorInputTextData}">
+				<TextBox Text="{Binding InputValue}" HorizontalAlignment="Stretch" />
 			</DataTemplate>
 		</Grid.Resources>
 		<Grid.RowDefinitions>
@@ -43,24 +45,37 @@
 		</Grid.RowDefinitions>
 		<Grid>
 			<Grid.ColumnDefinitions>
+				<ColumnDefinition Width="Auto"/>
 				<ColumnDefinition Width="Auto" />
 				<ColumnDefinition Width="*" />
 			</Grid.ColumnDefinitions>
-			<StackPanel Orientation="Horizontal" cb:MarginSetter.Margin="2,0,2,0">
+			<StackPanel Orientation="Horizontal" cb:MarginSetter.Margin="2,0,2,0" Grid.Column="0" HorizontalAlignment="Left">
+				<ComboBox ItemsSource="{Binding GeneratorPresets}" SelectedIndex="{Binding ActivePresetIndex}" DisplayMemberPath="Name" IsEditable="True" MinWidth="100" />
+				<Button x:Name="AddSettingsButton" Content="+" Command="{Binding AddSettingsCommand}" />
+				<Button x:Name="RemoveSettingsButton" Content="-" Command="{Binding RemoveSettingsCommand}" />
+				<Button x:Name="SaveSettingsButton" Content="Save" Command="{Binding SaveSettingsCommand}" />
+			</StackPanel>
+			<StackPanel Orientation="Horizontal" cb:MarginSetter.Margin="2,0,2,0" Grid.Column="1" HorizontalAlignment="Center">
 				<Button x:Name="AddKeywordButton" Content="Add Keyword" Command="{Binding AddCommand}" />
-				<ComboBox x:Name="KeywordAddTypeDropdown" ItemsSource="{Binding Source={scg:EnumBindingSource {x:Type vdata:TextGeneratorInputType}}}" SelectedValue="{Binding Path=NextKeywordType, Mode=TwoWay}">
+				<ComboBox x:Name="KeywordAddTypeDropdown"
+						  ItemsSource="{Binding Source={scg:EnumBindingSource {x:Type vdata:TextGeneratorInputType}}}" 
+						  SelectedValue="{Binding ActiveData.NextKeywordType, Mode=TwoWay}"
+				>
 					<ComboBox.ToolTip>
-						<TextBlock Text="{Binding NextKeywordType, Converter={StaticResource EnumDescriptionConverter}, FallbackValue={x:Null}}" TextWrapping="Wrap" MaxWidth="200" Visibility="{Binding Path=Text, RelativeSource={RelativeSource Self}, Converter={StaticResource EmptyStringVisibilityConverter}}" />
+						<TextBlock Text="{Binding ActiveData.NextKeywordType,
+								Converter={StaticResource EnumDescriptionConverter}, FallbackValue={x:Null}}" TextWrapping="Wrap" MaxWidth="200" 
+								   Visibility="{Binding Path=Text, RelativeSource={RelativeSource Self}, Converter={StaticResource EmptyStringVisibilityConverter}}" />
 					</ComboBox.ToolTip>
 				</ComboBox>
 			</StackPanel>
-			<StackPanel Grid.Column="1" Orientation="Horizontal" cb:MarginSetter.Margin="2,0,2,0" HorizontalAlignment="Right">
+			<StackPanel Grid.Column="2" Orientation="Horizontal" cb:MarginSetter.Margin="2,0,2,0" HorizontalAlignment="Right">
 				<TextBlock Text="Text Generation Amount: " VerticalAlignment="Center" />
-				<c:NumericUpDown x:Name="TextGenerationAmountControl" MinWidth="50" Minimum="1" Maximum="999999" Value="{Binding GenerationAmount, Mode=TwoWay}" />
+				<c:NumericUpDown x:Name="TextGenerationAmountControl" MinWidth="50" Minimum="1" Maximum="999999" Value="{Binding ActiveData.GenerationAmount, Mode=TwoWay}" />
 				<Button x:Name="GenerateButton" Content="Generate Text" Command="{Binding GenerateCommand}"/>
 			</StackPanel>
 		</Grid>
-		<ListView Grid.Row="1" ScrollViewer.VerticalScrollBarVisibility="Auto" AllowDrop="False" listview:ListViewLayoutManager.Enabled="True" ItemsSource="{Binding Keywords}" Margin="0,10,0,10">
+		<ListView Grid.Row="1" ScrollViewer.VerticalScrollBarVisibility="Auto" AllowDrop="False" listview:ListViewLayoutManager.Enabled="True" Margin="0,10,0,10"
+				  DataContext="{Binding ActiveData}" ItemsSource="{Binding Keywords}" >
 			<ListView.Resources>
 				<Style TargetType="ListViewItem">
 					<Setter Property="HorizontalContentAlignment" Value="Stretch" />
@@ -103,7 +118,7 @@
 				</GridView>
 			</ListView.View>
 		</ListView>
-		<Grid Grid.Row="2">
+		<Grid Grid.Row="2" DataContext="{Binding DataContext.ActiveData, RelativeSource={RelativeSource AncestorType=Window}}">
 			<Grid.RowDefinitions>
 				<RowDefinition Height="1*" />
 				<RowDefinition Height="3*" />
@@ -141,7 +156,7 @@
 						 ToolTip="{Binding Source={x:Static core:TooltipText.TextGeneratorRemoveKeywordButton}}"
 						 />
 			</Grid>
-			<Grid Grid.Row="1" >
+			<Grid Grid.Row="1" DataContext="{Binding DataContext.ActiveData, RelativeSource={RelativeSource AncestorType=Window}}">
 				<Grid.RowDefinitions>
 					<RowDefinition Height="Auto"/>
 					<RowDefinition Height="*"/>
@@ -172,8 +187,8 @@
 				</Grid>
 				<TextBox x:Name="OutputTextBox" Grid.Row="1" Text="{Binding OutputText, Mode=TwoWay}" VerticalScrollBarVisibility="Auto" AllowDrop="True" AcceptsReturn="True" AcceptsTab="True" />
 			</Grid>
-			
 		</Grid>
-		
+		<TextBlock Grid.Row="3" Text="{Binding FooterText}" Margin="2,10" HorizontalAlignment="Center" />
+		<Border Grid.Row="3" BorderThickness="1" BorderBrush="Gray" />
 	</Grid>
 </local:HideWindowBase>

@@ -26,6 +26,7 @@ using System.Windows.Threading;
 using SCG.Controls;
 using ReactiveUI;
 using System.Reactive.Concurrency;
+using SCG.Converters.Json;
 
 namespace SCG.Core
 {
@@ -786,12 +787,13 @@ namespace SCG.Core
 			bool loaded = false;
 			try
 			{
+				//TextGeneratorJsonKeywordConverter converter = new TextGeneratorJsonKeywordConverter();
 				if (CurrentModule != null)
 				{
 					var dataFilePath = DefaultPaths.ModuleTextGeneratorDataFile(CurrentModule.ModuleData);
 					if (File.Exists(dataFilePath))
 					{
-						MainWindow.TextGeneratorWindow.Data = JsonConvert.DeserializeObject<TextGeneratorData>(File.ReadAllText(dataFilePath));
+						MainWindow.TextGeneratorWindow.Data = JsonConvert.DeserializeObject<TextGeneratorViewModel>(File.ReadAllText(dataFilePath));
 						loaded = true;
 					}
 				}
@@ -800,7 +802,7 @@ namespace SCG.Core
 					string defaultDataFile = Path.Combine(DefaultPaths.RootFolder, "Default", "TextGenerator", "TextGenerator.json");
 					if (File.Exists(defaultDataFile))
 					{
-						MainWindow.TextGeneratorWindow.Data = JsonConvert.DeserializeObject<TextGeneratorData>(File.ReadAllText(defaultDataFile));
+						MainWindow.TextGeneratorWindow.Data = JsonConvert.DeserializeObject<TextGeneratorViewModel>(File.ReadAllText(defaultDataFile));
 						loaded = true;
 					}
 				}
@@ -819,12 +821,12 @@ namespace SCG.Core
 			MainWindow.TextGeneratorWindow.OnDataLoaded();
 		}
 
-		public void SaveTextGeneratorData()
+		public string SaveTextGeneratorData()
 		{
+			var outputDataPath = Path.Combine(DefaultPaths.RootFolder, "Default", "TextGenerator", "TextGenerator.json");
 			try
 			{
 				var json = JsonConvert.SerializeObject(MainWindow.TextGeneratorWindow.Data, Newtonsoft.Json.Formatting.Indented);
-				var outputDataPath = Path.Combine(DefaultPaths.RootFolder, "Default", "TextGenerator", "TextGenerator.json");
 
 				if (CurrentModule != null)
 				{
@@ -834,16 +836,21 @@ namespace SCG.Core
 
 				if (FileCommands.WriteToFile(outputDataPath, json))
 				{
-					//Log.Here().Activity($"TextGenerator settings were saved.");
+					string msg = $"TextGenerator settings were saved to '{outputDataPath}'.";
+					Log.Here().Activity(msg);
+					return msg;
 				}
 				else
 				{
-					Log.Here().Error($"Error saving TextGenerator settings to {outputDataPath}.");
+					string msg = $"Error saving TextGenerator settings to '{outputDataPath}'.";
+					Log.Here().Error(msg);
+					return msg;
 				}
 			}
 			catch (Exception ex)
 			{
 				Log.Here().Error($"Error loading TextGenerator data file: {ex.ToString()}");
+				return $"Error saving TextGenerator settings to '{outputDataPath}'. Check the log.";
 			}
 		}
 

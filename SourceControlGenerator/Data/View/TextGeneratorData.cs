@@ -16,6 +16,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using ReactiveUI;
+using SCG.Windows;
 
 namespace SCG.Data.View
 {
@@ -31,8 +32,137 @@ namespace SCG.Data.View
 	}
 
 	[DataContract]
+	public class TextGeneratorViewModel : ReactiveObject
+	{
+		[DataMember]
+		public ObservableCollection<TextGeneratorData> GeneratorPresets { get; set; }
+
+		private int textGeneratorActiveSettingsIndex = 0;
+
+		[DataMember]
+		public int ActivePresetIndex
+		{
+			get { return textGeneratorActiveSettingsIndex; }
+			set
+			{
+				bool bSaveData = textGeneratorActiveSettingsIndex != value;
+				this.RaiseAndSetIfChanged(ref textGeneratorActiveSettingsIndex, value);
+				this.RaisePropertyChanged("ActiveData");
+			}
+		}
+
+		public TextGeneratorData ActiveData
+		{
+			get
+			{
+				if(ActivePresetIndex < GeneratorPresets.Count)
+				{
+					return GeneratorPresets[ActivePresetIndex];
+				}
+				return null;
+			}
+		}
+
+		private string footerText = "";
+
+		public string FooterText
+		{
+			get => footerText;
+			set { this.RaiseAndSetIfChanged(ref footerText, value); }
+		}
+
+		public ICommand AddCommand { get; set; }
+		public ICommand RemoveCommand { get; set; }
+		public ICommand GenerateCommand { get; set; }
+		public ICommand AddSettingsCommand { get; set; }
+		public ICommand SaveSettingsCommand { get; set; }
+		public ICommand RemoveSettingsCommand { get; set; }
+
+		public Window TargetWindow { get; set; }
+
+		public Action OnFileLoaded { get; set; }
+
+		public event EventHandler SaveDataEvent;
+
+		public void SaveData(TextGeneratorData data)
+		{
+			SaveDataEvent.Invoke(data, new EventArgs());
+		}
+
+		public void AddPreset()
+		{
+			var data = new TextGeneratorData(this);
+			if (GeneratorPresets.Count == 0)
+			{
+				data.Name = "Default";
+			}
+			else
+			{
+				data.Name = "Preset" + (GeneratorPresets.Count + 1);
+			}
+			data.Init();
+			GeneratorPresets.Add(data);
+			ActivePresetIndex = GeneratorPresets.Count - 1;
+		}
+
+		public void RemoveCurrentPreset()
+		{
+			var lastIndex = ActivePresetIndex;
+			var presets = GeneratorPresets.ToList();
+			presets.Remove(ActiveData);
+			GeneratorPresets = new ObservableCollection<TextGeneratorData>(presets);
+
+			if (lastIndex > 0)
+			{
+				ActivePresetIndex = lastIndex - 1;
+			}
+			else
+			{
+				ActivePresetIndex = 0;
+			}
+		}
+
+		public void Init(Window parentWindow)
+		{
+			TargetWindow = parentWindow;
+
+			AddSettingsCommand = ReactiveCommand.Create(AddPreset);
+
+			RemoveSettingsCommand = ReactiveCommand.Create(() =>
+			{
+				FileCommands.OpenConfirmationDialog(TargetWindow, "Delete Preset", $"Delete {ActiveData.Name}?", "Changes will be lost.", new Action<bool>((b) =>
+				{
+					if(b)
+					{
+						RemoveCurrentPreset();
+					}
+				}));
+			});
+
+			SaveSettingsCommand = ReactiveCommand.Create(() =>
+			{
+				try
+				{
+					SaveData(ActiveData);
+				}
+				catch (Exception ex)
+				{
+					Log.Here().Error("Error saving text generator data: " + ex.ToString());
+				}
+			});
+		}
+
+		public TextGeneratorViewModel()
+		{
+			GeneratorPresets = new ObservableCollection<TextGeneratorData>();
+		}
+	}
+
+	[DataContract]
 	public class TextGeneratorData : ReactiveObject
 	{
+		public TextGeneratorViewModel Parent { get; private set; }
+
 		public string InputText
 		{
 			get { return inputData != null ? inputData.Content : ""; }
@@ -59,6 +189,16 @@ namespace SCG.Data.View
 			}
 		}
 
+		private string name;
+
+		[DataMember]
+		public string Name
+		{
+			get => name;
+			set { this.RaiseAndSetIfChanged(ref name, value); }
+		}
+
+
 		private int generationAmount = 1;
 
 		[DataMember]
@@ -70,22 +210,7 @@ namespace SCG.Data.View
 				bool bSaveData = generationAmount != value;
 				this.RaiseAndSetIfChanged(ref generationAmount, value);
 
-				if (bSaveData) SaveDataEvent?.Invoke(this, new EventArgs());
-			}
-		}
-
-		private TextGeneratorInputType nextKeywordType = TextGeneratorInputType.Incremental;
-
-		[DataMember]
-		public TextGeneratorInputType NextKeywordType
-		{
-			get { return nextKeywordType; }
-			set
-			{
-				bool bSaveData = nextKeywordType != value;
-				this.RaiseAndSetIfChanged(ref nextKeywordType, value);
-
-				if(bSaveData) SaveDataEvent?.Invoke(this, new EventArgs());
+				if (bSaveData) Parent?.SaveData(this);
 			}
 		}
 
@@ -113,18 +238,24 @@ namespace SCG.Data.View
 			}
 		}
 
-		public ICommand AddCommand { get; set; }
-
-		public ICommand RemoveCommand { get; set; }
-
-		public ICommand GenerateCommand { get; set; }
-
 		[DataMember]
 		public ObservableCollection<ITextGeneratorInputData> Keywords { get; set; }
 
-		public Action OnFileLoaded { get; set; }
 
-		public event EventHandler SaveDataEvent;
+		private TextGeneratorInputType nextKeywordType = TextGeneratorInputType.Incremental;
+
+		[DataMember]
+		public TextGeneratorInputType NextKeywordType
+		{
+			get { return nextKeywordType; }
+			set
+			{
+				bool bSaveData = nextKeywordType != value;
+				this.RaiseAndSetIfChanged(ref nextKeywordType, value);
+
+				if (bSaveData) Parent?.SaveData(this);
+			}
+		}
 
 		private void OnInputTextChanged()
 		{
@@ -138,7 +269,7 @@ namespace SCG.Data.View
 
 		private void OnDataFileLoaded()
 		{
-			OnFileLoaded.Invoke();
+			Parent?.OnFileLoaded?.Invoke();
 		}
 
 		public void Init()
@@ -157,6 +288,9 @@ namespace SCG.Data.View
 			InputData.OpenText = "Open Input...";
 			OutputData.SaveAsText = "Save Output As...";
 			OutputData.OpenText = "Open Output...";
+
+			InputData.TargetWindow = Parent.TargetWindow;
+			OutputData.TargetWindow = Parent.TargetWindow;
 
 			InputData.Init(OnInputTextChanged, OnDataFileLoaded);
 			OutputData.Init(OnOutputTextChanged, OnDataFileLoaded);
@@ -184,9 +318,10 @@ namespace SCG.Data.View
 			}
 		}
 
-		public TextGeneratorData()
+		public TextGeneratorData(TextGeneratorViewModel parent)
 		{
-			
+			Keywords = new ObservableCollection<ITextGeneratorInputData>();
+			Parent = parent;
 		}
 	}
 
@@ -346,21 +481,24 @@ namespace SCG.Data.View
 		string GetOutput(string input);
 	}
 
+	[DataContract]
 	public class TextGeneratorInputTextData : ReactiveObject, ITextGeneratorInputData
 	{
 		private TextGeneratorInputType inputType = TextGeneratorInputType.Text;
 
+		[DataMember]
 		public TextGeneratorInputType InputType
 		{
 			get { return inputType; }
 			set
 			{
-				this.RaiseAndSetIfChanged(ref inputType, value);
+				//this.RaiseAndSetIfChanged(ref inputType, value);
 			}
 		}
 
 		private string keyword = "";
 
+		[DataMember]
 		public string Keyword
 		{
 			get { return keyword; }
@@ -372,6 +510,7 @@ namespace SCG.Data.View
 
 		private string inputValue = "";
 
+		[DataMember]
 		public string InputValue
 		{
 			get { return inputValue; }
@@ -396,10 +535,12 @@ namespace SCG.Data.View
 		}
 	}
 
+	[DataContract]
 	public class TextGeneratorInputNumberData : ReactiveObject, ITextGeneratorInputData
 	{
-		private TextGeneratorInputType inputType;
+		private TextGeneratorInputType inputType = TextGeneratorInputType.Incremental;
 
+		[DataMember]
 		public TextGeneratorInputType InputType
 		{
 			get { return inputType; }
@@ -411,6 +552,7 @@ namespace SCG.Data.View
 
 		private string keyword = "";
 
+		[DataMember]
 		public string Keyword
 		{
 			get { return keyword; }
@@ -422,6 +564,7 @@ namespace SCG.Data.View
 
 		private int startValue = 1;
 
+		[DataMember]
 		public int StartValue
 		{
 			get { return startValue; }
@@ -433,6 +576,7 @@ namespace SCG.Data.View
 
 		private int incrementBy = 1;
 
+		[DataMember]
 		public int IncrementBy
 		{
 			get { return incrementBy; }
@@ -442,9 +586,20 @@ namespace SCG.Data.View
 			}
 		}
 
+		private int numberPadding = 0;
 
-		[JsonIgnore] public int InputCount = 0;
-		[JsonIgnore] public int LastValue = 0;
+		[DataMember]
+		public int NumberPadding
+		{
+			get { return incrementBy; }
+			set
+			{
+				this.RaiseAndSetIfChanged(ref numberPadding, value);
+			}
+		}
+
+		public int InputCount = 0;
+		public int LastValue = 0;
 
 		public string GetOutput(string input)
 		{
@@ -458,7 +613,9 @@ namespace SCG.Data.View
 
 			LastValue = result;
 
-			return input.Replace(Keyword, result.ToString());
+			string finalResult = result.ToString().PadLeft(NumberPadding);
+
+			return input.Replace(Keyword, finalResult);
 		}
 
 		public void Reset()
