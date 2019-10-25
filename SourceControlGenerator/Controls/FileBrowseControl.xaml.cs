@@ -211,7 +211,7 @@ namespace SCG.Controls
 		{
 			Window parentWindow = Window.GetWindow(this);
 
-			Log.Here().Activity($"LastFileLocation is {LastFileLocation} FileLocationText: {FileLocationText}");
+			//Log.Here().Activity($"LastFileLocation is {LastFileLocation} FileLocationText: {FileLocationText}");
 
 			if (!String.IsNullOrEmpty(FileLocationText) && FileCommands.IsValidPath(FileLocationText))
 			{
@@ -253,8 +253,6 @@ namespace SCG.Controls
 				// Path.GetFullPath(Assembly.GetExecutingAssembly().Location);
 			}
 
-			
-
 			if (BrowseType == FileBrowseType.File)
 			{
 				CommonFileDialog fileDialog = null;
@@ -277,6 +275,8 @@ namespace SCG.Controls
 				{
 					fileDialog.Title = OpenFileText;
 					fileDialog.InitialDirectory = LastFileLocation;
+					string fileName = Path.GetFileName(LastFileLocation);
+					
 					//if (!String.IsNullOrWhiteSpace(DefaultExt)) fileDialog.DefaultExtension = DefaultExt;
 
 					if (Filters != null)
@@ -311,7 +311,7 @@ namespace SCG.Controls
 							fileDialog.DefaultFileName = DefaultFileName;
 						}
 					}
-
+					//Log.Here().Activity($"DefaultFileName: {fileDialog.DefaultFileName}");
 
 					var result = fileDialog.ShowDialog(parentWindow);
 
@@ -412,6 +412,8 @@ namespace SCG.Controls
 						{
 							path = path.Replace(Directory.GetCurrentDirectory(), "");
 						}
+
+						path = Uri.UnescapeDataString(path); // Get rid of %20
 
 						FileLocationText = path;
 						LastFileLocation = FileLocationText;

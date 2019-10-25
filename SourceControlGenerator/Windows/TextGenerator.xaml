@@ -118,7 +118,7 @@
 				</GridView>
 			</ListView.View>
 		</ListView>
-		<Grid Grid.Row="2" DataContext="{Binding DataContext.ActiveData, RelativeSource={RelativeSource AncestorType=Window}}">
+		<Grid Grid.Row="2" DataContext="{Binding ActiveData}">
 			<Grid.RowDefinitions>
 				<RowDefinition Height="1*" />
 				<RowDefinition Height="3*" />
@@ -147,8 +147,8 @@
 									<Setter Property="Padding" Value="4,2" />
 								</Style>
 							</StackPanel.Resources>
-							<Button x:Name="SaveButton" Content="Save" Command="{Binding SaveCommand}" CommandParameter="{Binding SaveParameters}" Height="{Binding Path=Height, ElementName=InputFileBrowser, FallbackValue=22}" BorderThickness="1" BorderBrush="#FFABADB3" Margin="4,2,0,2" />
-							<Button x:Name="SaveAsButton" Content="Save As..." Command="{Binding SaveAsCommand}" CommandParameter="{Binding SaveParameters}" Height="{Binding Path=Height, ElementName=InputFileBrowser, FallbackValue=20}" BorderThickness="1" BorderBrush="#FFABADB3" Margin="4,0,1,0" />
+							<Button x:Name="SaveButton" Content="Save" Command="{Binding SaveCommand}" CommandParameter="{Binding}" Height="{Binding Path=Height, ElementName=InputFileBrowser, FallbackValue=22}" BorderThickness="1" BorderBrush="#FFABADB3" Margin="4,2,0,2" />
+							<Button x:Name="SaveAsButton" Content="Save As..." Command="{Binding SaveAsCommand}" CommandParameter="{Binding}" Height="{Binding Path=Height, ElementName=InputFileBrowser, FallbackValue=20}" BorderThickness="1" BorderBrush="#FFABADB3" Margin="4,0,1,0" />
 						</StackPanel>
 					</Grid>
 				</Grid>
@@ -180,8 +180,8 @@
 									<Setter Property="Padding" Value="4,2" />
 								</Style>
 							</StackPanel.Resources>
-							<Button Content="Save" Command="{Binding SaveCommand}" CommandParameter="{Binding SaveParameters}" Height="{Binding Path=Height, ElementName=OutputFileBrowser, FallbackValue=22}" BorderThickness="1" BorderBrush="#FFABADB3" Margin="4,2,0,2" />
-							<Button Content="Save As..." Command="{Binding SaveAsCommand}" CommandParameter="{Binding SaveParameters}" Height="{Binding Path=Height, ElementName=OutputFileBrowser, FallbackValue=20}" BorderThickness="1" BorderBrush="#FFABADB3" Margin="4,0,1,0" />
+							<Button Content="Save" Command="{Binding SaveCommand}" CommandParameter="{Binding}" Height="{Binding Path=Height, ElementName=OutputFileBrowser, FallbackValue=22}" BorderThickness="1" BorderBrush="#FFABADB3" Margin="4,2,0,2" />
+							<Button Content="Save As..." Command="{Binding SaveAsCommand}" CommandParameter="{Binding}" Height="{Binding Path=Height, ElementName=OutputFileBrowser, FallbackValue=20}" BorderThickness="1" BorderBrush="#FFABADB3" Margin="4,0,1,0" />
 						</StackPanel>
 					</Grid>
 				</Grid>

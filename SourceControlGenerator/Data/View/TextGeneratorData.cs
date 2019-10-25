@@ -91,7 +91,7 @@ namespace SCG.Data.View
 
 		public void AddPreset()
 		{
-			var data = new TextGeneratorData(this);
+			var data = new TextGeneratorData();
 			if (GeneratorPresets.Count == 0)
 			{
 				data.Name = "Default";
@@ -100,7 +100,7 @@ namespace SCG.Data.View
 			{
 				data.Name = "Preset" + (GeneratorPresets.Count + 1);
 			}
-			data.Init();
+			data.Init(this);
 			GeneratorPresets.Add(data);
 			ActivePresetIndex = GeneratorPresets.Count - 1;
 		}
@@ -150,6 +150,14 @@ namespace SCG.Data.View
 					Log.Here().Error("Error saving text generator data: " + ex.ToString());
 				}
 			});
+
+			if(GeneratorPresets.Count > 0)
+			{
+				foreach(var preset in GeneratorPresets)
+				{
+					preset.Init(this);
+				}
+			}
 		}
 
 		public TextGeneratorViewModel()
@@ -272,8 +280,9 @@ namespace SCG.Data.View
 			Parent?.OnFileLoaded?.Invoke();
 		}
 
-		public void Init()
+		public void Init(TextGeneratorViewModel parent)
 		{
+			Parent = parent;
 			if(InputData == null)
 			{
 				InputData = new TextGeneratorSaveFileData();
@@ -292,8 +301,8 @@ namespace SCG.Data.View
 			InputData.TargetWindow = Parent.TargetWindow;
 			OutputData.TargetWindow = Parent.TargetWindow;
 
-			InputData.Init(OnInputTextChanged, OnDataFileLoaded);
-			OutputData.Init(OnOutputTextChanged, OnDataFileLoaded);
+			InputData.Init(this, OnInputTextChanged, OnDataFileLoaded);
+			OutputData.Init(this, OnOutputTextChanged, OnDataFileLoaded);
 
 			string initialDirectory = AppController.Main.CurrentModule != null ? DefaultPaths.ModuleTextGeneratorFolder(AppController.Main.CurrentModule.ModuleData) : DefaultPaths.RootFolder + @"Default\TextGenerator\";
 
@@ -318,16 +327,17 @@ namespace SCG.Data.View
 			}
 		}
 
-		public TextGeneratorData(TextGeneratorViewModel parent)
+		public TextGeneratorData()
 		{
 			Keywords = new ObservableCollection<ITextGeneratorInputData>();
-			Parent = parent;
 		}
 	}
 
 	[DataContract]
 	public class TextGeneratorSaveFileData : ReactiveObject, ISaveCommandData
 	{
+		public TextGeneratorData Parent { get; private set; }
+
 		private string defaultFileName;
 
 		public string DefaultFileName
@@ -336,6 +346,7 @@ namespace SCG.Data.View
 			set
 			{
 				this.RaiseAndSetIfChanged(ref defaultFileName, value);
+				this.RaisePropertyChanged("SaveParameters");
 			}
 		}
 
@@ -348,6 +359,7 @@ namespace SCG.Data.View
 			set
 			{
 				this.RaiseAndSetIfChanged(ref filepath, value);
+				this.RaisePropertyChanged("SaveParameters");
 			}
 		}
 
@@ -359,6 +371,7 @@ namespace SCG.Data.View
 			set
 			{
 				this.RaiseAndSetIfChanged(ref defaultFilePath, value);
+				this.RaisePropertyChanged("SaveParameters");
 			}
 		}
 
@@ -404,8 +417,6 @@ namespace SCG.Data.View
 
 		public ParameterCommand OpenCommand { get; set; }
 
-		public ISaveCommandData SaveParameters => this;
-
 		public Window TargetWindow { get; set; }
 
 		public Action OnContentChanged;
@@ -425,7 +436,14 @@ namespace SCG.Data.View
 
 		private void OnSave(bool success)
 		{
-			
+			if (success)
+			{
+				Parent.Parent.FooterText = $"Saved preset text to '{FilePath}'.";
+			}
+			else;
+			{
+				Parent.Parent.FooterText = $"Failed to save preset text to '{FilePath}'.";
+			}
 		}
 
 		private void OnSaveAs(bool success, string path)
@@ -434,36 +452,36 @@ namespace SCG.Data.View
 			{
 				FilePath = path;
 				DefaultFileName = Path.GetFileName(FilePath);
+				InitialDirectory = Directory.GetParent(FilePath).FullName;
+				Parent.Parent.FooterText = $"Saved preset text to '{FilePath}'.";
 			}
 			else
 			{
-				
+				Parent.Parent.FooterText = $"Failed to save preset text to '{FilePath}'.";
 			}
 		}
 
-		public void Init(Action OnContentChangedAction, Action OnFileLoadedAction = null)
+		public void Init(TextGeneratorData parent, Action OnContentChangedAction, Action OnFileLoadedAction = null)
 		{
+			Parent = parent;
 			OnContentChanged = OnContentChangedAction;
 
 			if (OnFileLoadedAction != null) OnFileLoaded = OnFileLoadedAction;
-
-			OpenCommand = new ParameterCommand((object param) =>
-			{
-				if (param is string FileLocationText)
-				{
-					FilePath = FileLocationText;
-					Content = FileCommands.ReadFile(FilePath);
-					OnFileLoaded?.Invoke();
-				}
-			});
-
-			SaveCommand = new SaveFileCommand(OnSave, OnSaveAs);
-			SaveAsCommand = new SaveFileAsCommand(OnSaveAs);
 		}
 
 		public TextGeneratorSaveFileData()
 		{
-			
+			OpenCommand = new ParameterCommand((object param) =>
+			{
+				if (param is string path)
+				{
+					FilePath = path;
+					Content = FileCommands.ReadFile(FilePath);
+					OnFileLoaded?.Invoke();
+				}
+			});
+			SaveCommand = new SaveFileCommand(OnSave, OnSaveAs);
+			SaveAsCommand = new SaveFileAsCommand(OnSaveAs);
 		}
 	}
 
@@ -591,7 +609,7 @@ namespace SCG.Data.View
 		[DataMember]
 		public int NumberPadding
 		{
-			get { return incrementBy; }
+			get { return numberPadding; }
 			set
 			{
 				this.RaiseAndSetIfChanged(ref numberPadding, value);
@@ -613,7 +631,7 @@ namespace SCG.Data.View
 
 			LastValue = result;
 
-			string finalResult = result.ToString().PadLeft(NumberPadding);
+			string finalResult = result.ToString($"D{NumberPadding}");
 
 			return input.Replace(Keyword, finalResult);
 		}

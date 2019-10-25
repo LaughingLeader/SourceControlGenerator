@@ -815,7 +815,6 @@ namespace SCG.Core
 			if (!loaded)
 			{
 				MainWindow.TextGeneratorWindow.InitData();
-				loaded = true;
 			}
 
 			MainWindow.TextGeneratorWindow.OnDataLoaded();

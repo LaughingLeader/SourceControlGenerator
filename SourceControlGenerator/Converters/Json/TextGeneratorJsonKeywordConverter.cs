@@ -77,7 +77,7 @@ namespace SCG.Converters.Json
 		public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
 		{
 			//Avoid self-referencing loops with Expando
-			Log.Here().Activity($"Object: {value.GetType().ToString()}");
+			//Log.Here().Activity($"Object: {value.GetType().ToString()}");
 			if (value is TextGeneratorInputTextData inputTextData)
 			{
 				dynamic fake = new System.Dynamic.ExpandoObject();
