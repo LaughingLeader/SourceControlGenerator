@@ -35,6 +35,16 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 				this.RaiseAndSetIfChanged(ref editMenu, value);
 			}
 		}
+		private MenuData toolsMenu;
+
+		public MenuData Tools
+		{
+			get { return toolsMenu; }
+			set
+			{
+				this.RaiseAndSetIfChanged(ref toolsMenu, value);
+			}
+		}
 
 		private MenuData settingsMenu;
 
@@ -90,6 +100,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 		{
 			File = new MenuData("Base.File", "File");
 			Edit = new MenuData("Base.Edit", "Edit");
+			Tools = new MenuData("Base.Tools", "Tools");
 			Settings = new MenuData("Base.Settings", "Settings");
 			Help = new MenuData("Base.Help", "Help");
 
@@ -97,6 +108,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			{
 				File,
 				Edit,
+				Tools,
 				Settings,
 				Help
 			};

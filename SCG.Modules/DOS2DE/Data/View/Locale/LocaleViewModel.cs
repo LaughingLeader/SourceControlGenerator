@@ -867,6 +867,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 		public ICommand ImportFileCommand { get; internal set; }
 		public ICommand ImportKeysCommand { get; internal set; }
 		public ICommand ExportXMLCommand { get; private set; }
+		public ICommand CheckForDuplicateKeysCommand { get; private set; }
 
 		public ICommand SaveAllCommand { get; private set; }
 		public ICommand SaveCurrentCommand { get; private set; }
@@ -1232,8 +1233,45 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 		public ICommand CopySimpleMissingEntriesCommand { get; set; }
 		public ICommand CopyAllMissingEntriesCommand { get; set; }
 
-		public void ShowMissingEntriesView(List<ILocaleKeyEntry> missingEntries)
+		private string problemEntriesViewHeaderText;
+
+		public string ProblemEntriesViewHeaderText
 		{
+			get => problemEntriesViewHeaderText;
+			set { this.RaiseAndSetIfChanged(ref problemEntriesViewHeaderText, value); }
+		}
+
+		private string problemEntriesViewInfoText1;
+
+		public string ProblemEntriesViewInfoText1
+		{
+			get => problemEntriesViewInfoText1;
+			set { this.RaiseAndSetIfChanged(ref problemEntriesViewInfoText1, value); }
+		}
+
+		private string problemEntriesViewInfoText2;
+
+		public string ProblemEntriesViewInfoText2
+		{
+			get => problemEntriesViewInfoText1;
+			set { this.RaiseAndSetIfChanged(ref problemEntriesViewInfoText1, value); }
+		}
+
+		public void ShowMissingEntriesView(List<ILocaleKeyEntry> missingEntries, bool IsDuplicate = false)
+		{
+			if (!IsDuplicate)
+			{
+				ProblemEntriesViewHeaderText = "Missing Source Keys";
+				ProblemEntriesViewInfoText1 = "These keys exist in a source file, but are missing from linked files.";
+				ProblemEntriesViewInfoText2 = "Select which keys, if any, to remove from source files, or copy them to the clipboard.";
+			}
+			else
+			{
+				ProblemEntriesViewHeaderText = "Duplicate Keys";
+				ProblemEntriesViewInfoText1 = "Duplicate keys in the same file result in an error in the Divinity Engine.";
+				ProblemEntriesViewInfoText2 = "Select which keys, if any, to remove from source files, or copy them to the clipboard.";
+			}
+
 			if(missingEntries.Count > 0)
 			{
 				if(view != null && view.IsVisible)
@@ -1242,16 +1280,25 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 					foreach (var entry in missingEntries)
 					{
 						//Log.Here().Activity($"Checking for key: {entry.Key} | {RemovedEntries.Any(x => x.Key == entry.Key)}");
-						if (!MissingEntries.Any(x => x.Key == entry.Key))
+						//if (!MissingEntries.Any(x => x.Key == entry.Key))
+						if (!MissingEntries.Contains(entry))
 						{
 							MissingEntries.Add(entry);
-							entry.Selected = true;
+							entry.Selected = !IsDuplicate;
 						}
 					}
 
 					MissingEntriesViewVisible = Visibility.Visible;
 
-					Log.Here().Important($"Total missing entries: '{MissingEntries.Count}'.");
+					if (!IsDuplicate)
+					{
+						Log.Here().Important($"Total missing entries: '{MissingEntries.Count}'.");
+					}
+					else
+					{
+						Log.Here().Important($"Total duplicate entries: '{MissingEntries.Count}'.");
+					}
+					
 					//Log.Here().Important($"Removed entries:{String.Join(Environment.NewLine, RemovedEntries.Select(x => x.EntryKey))}");
 				}
 				else
@@ -1775,6 +1822,41 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			SetFileLinkDataCommand = ReactiveCommand.Create<ILocaleFileData>(SetLinkedData, FileSelectedObservable).DisposeWith(disposables);
 			RemoveFileLinkDataCommand = ReactiveCommand.Create<ILocaleFileData>(RemoveLinkedData, FileSelectedObservable).DisposeWith(disposables);
 
+			CheckForDuplicateKeysCommand = ReactiveCommand.Create(() =>
+			{
+				List<ILocaleKeyEntry> duplicateEntries = new List<ILocaleKeyEntry>();
+				Dictionary<string, ILocaleKeyEntry> keys = new Dictionary<string, ILocaleKeyEntry>();
+				foreach(var g in Groups)
+				{
+					foreach(var f in g.DataFiles)
+					{
+						foreach(var entry in f.Entries)
+						{
+							if(!String.IsNullOrEmpty(entry.Key) && entry.KeyIsEditable) // Ignore dialog keys
+							{
+								if(keys.ContainsKey(entry.Key))
+								{
+									if(!keys.ContainsValue(entry))
+									{
+										var otherEntry = keys[entry.Key];
+										duplicateEntries.Add(otherEntry);
+										duplicateEntries.Add(entry);
+									}
+								}
+								else
+								{
+									keys.Add(entry.Key, entry);
+								}
+							}
+						}
+					}
+				}
+				if(duplicateEntries.Count > 0)
+				{
+					ShowMissingEntriesView(duplicateEntries, true);
+				}
+			}).DisposeWith(disposables);
+
 			var SaveCurrentMenuData = new MenuData("SaveCurrent", "Save", SaveCurrentCommand, Key.S, ModifierKeys.Control);
 
 			MenuData.File.Add(SaveCurrentMenuData);
@@ -1805,6 +1887,8 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			MenuData.Edit.Add(new MenuData("Edit.GenerateHandles", "Generate Handles for Selected", GenerateHandlesCommand, Key.G, ModifierKeys.Control | ModifierKeys.Shift));
 			MenuData.Edit.Add(new MenuData("Edit.AddKey", "Add Key", AddNewKeyCommand));
 			MenuData.Edit.Add(new MenuData("Edit.DeleteSelectedKeys", "Delete Selected Keys", DeleteKeysCommand));
+
+			MenuData.Tools.Add(new MenuData("Tools.CheckForDuplicates", "Check for Duplicate Keys", CheckForDuplicateKeysCommand));
 
 			MenuData.Settings.Add(new MenuData("Settings.Preferences", "Preferences", OpenPreferencesCommand));
 
