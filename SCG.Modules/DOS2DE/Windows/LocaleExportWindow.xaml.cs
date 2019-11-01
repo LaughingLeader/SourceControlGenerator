@@ -32,8 +32,11 @@ namespace SCG.Modules.DOS2DE.Windows
 
 		private void LocaleExportWindow_DataContextChanged(object sender, DependencyPropertyChangedEventArgs e)
 		{
-			this.Bind(this.ViewModel, vm => vm.Settings.ExportKeys, view => view.ExportKeysCheckBox.IsChecked);
-			this.Bind(this.ViewModel, vm => vm.Settings.ExportSource, view => view.ExportSourceCheckBox.IsChecked);
+			if(ViewModel != null && ViewModel.ActiveProjectSettings != null)
+			{
+				this.Bind(ViewModel, vm => vm.ActiveProjectSettings.ExportKeys, view => view.ExportKeysCheckBox.IsChecked);
+				this.Bind(ViewModel, vm => vm.ActiveProjectSettings.ExportSource, view => view.ExportSourceCheckBox.IsChecked);
+			}
 		}
 
 		private void CloseButton_Click(object sender, RoutedEventArgs e)

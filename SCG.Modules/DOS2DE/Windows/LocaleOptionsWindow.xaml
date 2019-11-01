@@ -10,7 +10,7 @@
 		xmlns:controls="clr-namespace:SCG.Controls;assembly=SourceControlGenerator"
 		mc:Ignorable="d"
 		d:DataContext="{d:DesignInstance data:LocaleEditorSettingsDesignData, IsDesignTimeCreatable=True}"
-		Title="Localization Editor Settings" Height="200" Width="500">
+		Title="Localization Editor Settings" Height="300" Width="600">
 	<win:HideWindowBase.Resources>
 		<ResourceDictionary>
 			<ResourceDictionary.MergedDictionaries>
@@ -19,38 +19,51 @@
 		</ResourceDictionary>
 	</win:HideWindowBase.Resources>
 	<Grid>
-		<TabControl TabStripPlacement="Left">
-			<TabItem Header="General">
-				<TabItem.Resources>
-					<Style TargetType="TextBlock">
-						<Setter Property="TextAlignment" Value="Left" />
-						<Setter Property="VerticalAlignment" Value="Center" />
-						<Setter Property="HorizontalAlignment" Value="Center" />
-					</Style>
-				</TabItem.Resources>
-				<StackPanel Orientation="Vertical" Margin="4">
-					<StackPanel.Resources>
-						<Style TargetType="controls:FileGridBox">
-							<Setter Property="FontSize" Value="12" />
+		<Grid.Resources>
+			<DataTemplate DataType="{x:Type data:LocaleEditorProjectSettingsData}" x:Key="SettingsTemplate">
+				<TabItem Header="{Binding Name}"></TabItem>
+			</DataTemplate>
+			<DataTemplate DataType="{x:Type data:LocaleEditorProjectSettingsData}" x:Key="SettingsContentTemplate">
+				<Grid>
+					<Grid.Resources>
+						<Style TargetType="TextBlock">
+							<Setter Property="TextAlignment" Value="Left" />
+							<Setter Property="VerticalAlignment" Value="Center" />
+							<Setter Property="HorizontalAlignment" Value="Center" />
 						</Style>
-					</StackPanel.Resources>
-					<controls:FileGridBox Header="Last File Import Path" FilePath="{Binding LastFileImportPath}" />
-					<controls:FileGridBox Header="Last Entry Import Path" FilePath="{Binding LastEntryImportPath}" />
-				</StackPanel>
-			</TabItem>
-			<TabItem Header="XML Export">
-				<StackPanel Margin="4">
-					<StackPanel.Resources>
-						<Style TargetType="CheckBox">
-							<Setter Property="Margin" Value="2,3,2,0" />
-						</Style>
-					</StackPanel.Resources>
-					<CheckBox Content="Export Keys" IsChecked="{Binding ExportKeys, Mode=TwoWay}"
+					</Grid.Resources>
+					<Grid.RowDefinitions>
+						<RowDefinition Height="Auto" />
+						<RowDefinition Height="*" />
+					</Grid.RowDefinitions>
+					<StackPanel Orientation="Vertical" Margin="4">
+						<StackPanel.Resources>
+							<Style TargetType="controls:FileGridBox">
+								<Setter Property="FontSize" Value="12" />
+							</Style>
+						</StackPanel.Resources>
+						<controls:FileGridBox Header="Last File Import Path" FilePath="{Binding LastFileImportPath}" />
+						<controls:FileGridBox Header="Last Entry Import Path" FilePath="{Binding LastEntryImportPath}" />
+					</StackPanel>
+					<StackPanel Margin="4" Grid.Row="1">
+						<StackPanel.Resources>
+							<Style TargetType="CheckBox">
+								<Setter Property="Margin" Value="2,3,2,0" />
+							</Style>
+						</StackPanel.Resources>
+						<CheckBox Content="Export Keys" IsChecked="{Binding ExportKeys, Mode=TwoWay}"
 					ToolTip="{x:Static core:DOS2DETooltips.Checkbox_Locale_ExportXML_Keys}" />
-					<CheckBox Content="Export Source" IsChecked="{Binding ExportSource, Mode=TwoWay}"
+						<CheckBox Content="Export Source" IsChecked="{Binding ExportSource, Mode=TwoWay}"
 					ToolTip="{x:Static core:DOS2DETooltips.Checkbox_Locale_ExportXML_Source}" />
-				</StackPanel>
-			</TabItem>
-		</TabControl>
+					</StackPanel>
+				</Grid>
+			</DataTemplate>
+		</Grid.Resources>
+		<Grid.RowDefinitions>
+			<RowDefinition Height="Auto" />
+			<RowDefinition Height="*" />
+		</Grid.RowDefinitions>
+		<TextBlock Text="Test" />
+		<TabControl ItemsSource="{Binding Projects}" TabStripPlacement="Left" ItemTemplate="{StaticResource SettingsTemplate}" ContentTemplate="{StaticResource SettingsContentTemplate}" Grid.Row="1" />
 	</Grid>
 </win:HideWindowBase>

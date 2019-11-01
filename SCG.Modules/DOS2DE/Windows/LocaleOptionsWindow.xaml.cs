@@ -1,4 +1,5 @@
-﻿using SCG.Modules.DOS2DE.Data;
+﻿using ReactiveUI;
+using SCG.Modules.DOS2DE.Data;
 using SCG.Windows;
 using System;
 using System.Collections.Generic;
@@ -19,16 +20,37 @@ namespace SCG.Modules.DOS2DE.Windows
 	/// <summary>
 	/// Interaction logic for LocaleOptionsWindow.xaml
 	/// </summary>
-	public partial class LocaleOptionsWindow : HideWindowBase
+	public partial class LocaleOptionsWindow : HideWindowBase, IViewFor<LocaleEditorSettingsData>
 	{
 		public LocaleOptionsWindow() : base()
 		{
-			
+			InitializeComponent();
+		}
+
+		private LocaleEditorSettingsData viewData;
+
+		public LocaleEditorSettingsData ViewModel
+		{
+			get { return viewData; }
+			set
+			{
+				viewData = value;
+				DataContext = viewData;
+			}
+		}
+
+		object IViewFor.ViewModel
+		{
+			get => ViewModel;
+			set
+			{
+				ViewModel = (LocaleEditorSettingsData)value;
+			}
 		}
 
 		public void LoadData(LocaleEditorSettingsData data)
 		{
-			DataContext = data;
+			ViewModel = data;
 		}
 	}
 }

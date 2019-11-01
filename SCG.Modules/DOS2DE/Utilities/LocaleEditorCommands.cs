@@ -739,14 +739,25 @@ namespace SCG.Modules.DOS2DE.Utilities
 
 						var sourceStr = "";
 
-						if (data.Settings.ExportSource)
+						bool exportSource = false;
+						bool exportKeys = false;
+
+						var settings = data.Settings.GetProjectSettings(data.GetMainProject());
+
+						if (settings != null)
+						{
+							exportSource = settings.ExportSource;
+							exportKeys = settings.ExportKeys;
+						}
+
+						if (exportSource)
 						{
 							sourceStr = $" Source =\"{sourcePath}\"";
 						}
 
 						var keyStr = "";
 
-						if (data.Settings.ExportKeys && !String.IsNullOrWhiteSpace(e.Key) && e.KeyIsEditable)
+						if (exportKeys && !String.IsNullOrWhiteSpace(e.Key) && e.KeyIsEditable)
 						{
 							keyStr = $" Key=\"{e.Key}\"";
 						}
@@ -1273,11 +1284,38 @@ namespace SCG.Modules.DOS2DE.Utilities
 			if(File.Exists(settingsPath))
 			{
 				Log.Here().Activity($"Loading localization editor settings from '{settingsPath}'.");
-				localeData.Settings = JsonInterface.DeserializeObject<LocaleEditorSettingsData>(settingsPath);
+				try
+				{
+					localeData.Settings = JsonInterface.DeserializeObject<LocaleEditorSettingsData>(settingsPath);
+
+					foreach(var entry in localeData.Settings.Projects)
+					{
+						var project = localeData.LinkedProjects.FirstOrDefault(x => x.FolderName == entry.FolderName);
+						if(project != null)
+						{
+							entry.Name = project.DisplayName;
+						}
+					}
+				}
+				catch(Exception ex)
+				{
+					Log.Here().Error($"Error deserializing settings: {ex.ToString()}");
+					localeData.Settings = new LocaleEditorSettingsData();
+				}
 			}
 			else
 			{
 				localeData.Settings = new LocaleEditorSettingsData();
+			}
+
+			foreach(var project in localeData.LinkedProjects)
+			{
+				var settings = localeData.Settings.GetProjectSettings(project);
+				if(String.IsNullOrEmpty(settings.LastEntryImportPath))
+				{
+					settings.LastEntryImportPath = localeData.CurrentImportPath;
+					settings.LastFileImportPath = localeData.CurrentImportPath;
+				}
 			}
 		}
 

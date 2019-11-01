@@ -51,11 +51,28 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 
 		public LocaleEditorSettingsData Settings { get; set; }
 
+		private LocaleEditorProjectSettingsData activeProjectSettings;
+
+		public LocaleEditorProjectSettingsData ActiveProjectSettings
+		{
+			get => activeProjectSettings;
+			set { this.RaiseAndSetIfChanged(ref activeProjectSettings, value); }
+		}
+
 		public DOS2DEModuleData ModuleData { get; set; }
 
 		public List<ModProjectData> LinkedProjects { get; set; } = new List<ModProjectData>();
 
 		public List<LocaleProjectLinkData> LinkedLocaleData { get; set; } = new List<LocaleProjectLinkData>();
+
+		public ModProjectData GetMainProject()
+		{
+			if(LinkedProjects.Count > 0)
+			{
+				return LinkedProjects.FirstOrDefault();
+			}
+			return null;
+		}
 
 		private LocaleMenuData menuData;
 
@@ -493,6 +510,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			}
 		}
 
+		/*
 		public string CurrentFileImportPath
 		{
 			get
@@ -516,6 +534,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 				return CurrentImportPath;
 			}
 		}
+		*/
 
 		public void GenerateHandles()
 		{
@@ -755,17 +774,30 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 
 				SelectedGroup.DataFiles.AddRange(newFileDataList);
 
+				Log.Here().Activity("Saving linked data for new files.");
+				foreach(var file in newFileDataList)
+				{
+					LocaleEditorCommands.SaveLinkedDataForFile(ModuleData, LinkedLocaleData, file);
+				}
+
 				SelectedGroup.ChangesUnsaved = true;
 				SelectedGroup.UpdateCombinedData();
 				SelectedGroup.SelectLast();
 				view.FocusSelectedTab();
 
-				Settings.LastFileImportPath = Path.GetDirectoryName(files.FirstOrDefault());
-				Settings.LastEntryImportPath = Path.GetDirectoryName(files.FirstOrDefault());
+				if(LinkedProjects.Count == 1)
+				{
+					var settings = Settings.GetProjectSettings(LinkedProjects.FirstOrDefault());
+					if (settings != null)
+					{
+						settings.LastFileImportPath = Path.GetDirectoryName(files.FirstOrDefault());
+						settings.LastEntryImportPath = Path.GetDirectoryName(files.FirstOrDefault());
+						view.SaveSettings();
+					}
+				}
+
 				this.RaisePropertyChanged("CurrentImportPath");
 				this.RaisePropertyChanged("CurrentFileImportPath");
-
-				view.SaveSettings();
 
 				ChangesUnsaved = true;
 			}
@@ -810,8 +842,16 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 				}
 			}
 
+			string importPath = CurrentImportPath;
+
+			if (LinkedProjects.Count == 1)
+			{
+				var settings = Settings.GetProjectSettings(LinkedProjects.FirstOrDefault());
+				if (settings != null) importPath = settings.LastEntryImportPath;
+			}
+
 			FileCommands.Save.OpenSaveDialog(view, "Save Locale File As...",
-				writeToFile, exportName, CurrentEntryImportPath, DOS2DEFileFilters.AllLocaleFilesList.ToArray());
+				writeToFile, exportName, importPath, DOS2DEFileFilters.AllLocaleFilesList.ToArray());
 		}
 
 		public void ImportFilesAsKeys(IEnumerable<string> files)
@@ -845,7 +885,14 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 				SelectedFile.ChangesUnsaved = true;
 				SelectedGroup.UpdateCombinedData();
 
-				Settings.LastEntryImportPath = Path.GetDirectoryName(files.FirstOrDefault());
+				//CurrentImportPath = Path.GetDirectoryName(files.FirstOrDefault());
+
+				if (LinkedProjects.Count == 1)
+				{
+					var settings = Settings.GetProjectSettings(LinkedProjects.FirstOrDefault());
+					if (settings != null) settings.LastEntryImportPath = Path.GetDirectoryName(files.FirstOrDefault());
+				}
+
 				this.RaisePropertyChanged("CurrentImportPath");
 				this.RaisePropertyChanged("CurrentEntryImportPath");
 				view.SaveSettings();
@@ -1071,6 +1118,8 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 
 		public void OpenExportWindow()
 		{
+			ActiveProjectSettings = Settings.GetProjectSettings(LinkedProjects.FirstOrDefault());
+
 			ExportText = LocaleEditorCommands.ExportDataAsXML(this);
 
 			if (view != null && view.ExportWindow != null)
@@ -1463,8 +1512,17 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 				}
 			}
 			IsSubWindowOpen = true;
+
+			string entryImportPath = CurrentImportPath;
+
+			if (LinkedProjects.Count == 1)
+			{
+				var settings = Settings.GetProjectSettings(LinkedProjects.FirstOrDefault());
+				if (settings != null) entryImportPath = settings.LastEntryImportPath;
+			}
+
 			FileCommands.Load.OpenFileDialog(view, "Pick localization file to link...",
-					CurrentEntryImportPath, OnFileSelected, "", new Action<string, FileDialogResult>((s,r) => IsSubWindowOpen = false), CommonFileFilters.DelimitedLocaleFiles);
+					entryImportPath, OnFileSelected, "", new Action<string, FileDialogResult>((s,r) => IsSubWindowOpen = false), CommonFileFilters.DelimitedLocaleFiles);
 		}
 
 		public void RefreshLinkedData(ILocaleFileData fileData)
@@ -1677,17 +1735,33 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 
 			ImportFileCommand = ReactiveCommand.Create(() =>
 			{
+				string entryImportPath = CurrentImportPath;
+
+				if (LinkedProjects.Count == 1)
+				{
+					var settings = Settings.GetProjectSettings(LinkedProjects.FirstOrDefault());
+					if (settings != null) entryImportPath = settings.LastEntryImportPath;
+				}
+
 				IsSubWindowOpen = true;
-				FileCommands.Load.OpenMultiFileDialog(view, DOS2DETooltips.Button_Locale_ImportFile, 
-					CurrentEntryImportPath, ImportFilesAsFileData, "", onCancel, DOS2DEFileFilters.AllLocaleFilesList.ToArray());
+				FileCommands.Load.OpenMultiFileDialog(view, DOS2DETooltips.Button_Locale_ImportFile,
+					entryImportPath, ImportFilesAsFileData, "", onCancel, DOS2DEFileFilters.AllLocaleFilesList.ToArray());
 				this.view.ResizeEntryKeyColumn();
 			}, CanImportFilesObservable).DisposeWith(disposables);
 
 			ImportKeysCommand = ReactiveCommand.Create(() =>
 			{
+				string entryImportPath = CurrentImportPath;
+
+				if (LinkedProjects.Count == 1)
+				{
+					var settings = Settings.GetProjectSettings(LinkedProjects.FirstOrDefault());
+					entryImportPath = settings.LastEntryImportPath;
+				}
+
 				IsSubWindowOpen = true;
 				FileCommands.Load.OpenMultiFileDialog(view, DOS2DETooltips.Button_Locale_ImportKeys,
-					CurrentEntryImportPath, ImportFilesAsKeys, "", onCancel, DOS2DEFileFilters.AllLocaleFilesList.ToArray());
+					entryImportPath, ImportFilesAsKeys, "", onCancel, DOS2DEFileFilters.AllLocaleFilesList.ToArray());
 			}, CanImportKeysObservable).DisposeWith(disposables);
 
 			ExportFileAsTextualCommand = ReactiveCommand.Create<ILocaleFileData>(ExportFileAsText, GlobalCanActObservable).DisposeWith(disposables);
