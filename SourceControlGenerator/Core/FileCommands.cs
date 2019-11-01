@@ -27,6 +27,8 @@ namespace SCG
 		public static LoadCommands Load => loadCommands;
 		public static SaveCommands Save => saveCommands;
 
+		public static string AppDirectory = "";
+
 		public static string EnsureExtension(string filePath, string extension)
 		{
 			if(!FileExtensionFound(filePath, extension))
@@ -314,19 +316,8 @@ namespace SCG
 
 		public static bool PathIsRelative(string path)
 		{
-			try
-			{
-				DirectoryInfo appDir = new DirectoryInfo(Directory.GetCurrentDirectory());
-				FileInfo file = new FileInfo(path);
-
-				if (file.FullName.Contains(appDir.FullName)) return true;
-			}
-			catch (Exception ex)
-			{
-				Log.Here().Error("Error in relative path check: {0}", ex.ToString());
-			}
-
-			return false;
+			Uri result;
+			return Uri.TryCreate(path, UriKind.Relative, out result);
 		}
 
 		public static bool IsValidImage(string filename)
@@ -352,8 +343,33 @@ namespace SCG
 			return false;
 		}
 
+		public static bool FileExists(string path)
+		{
+			if(PathIsRelative(path))
+			{
+				return File.Exists(Path.ResolveRelativePath(AppDirectory, path));
+			}
+			else
+			{
+				return File.Exists(path);
+			}
+		}
+
+		public static bool DirectoryExists(string path)
+		{
+			if (PathIsRelative(path))
+			{
+				return Directory.Exists(Path.ResolveRelativePath(AppDirectory, path));
+			}
+			else
+			{
+				return Directory.Exists(path);
+			}
+		}
+
 		public static void Init()
 		{
+			AppDirectory = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
 			loadCommands = new LoadCommands();
 			saveCommands = new SaveCommands();
 		}

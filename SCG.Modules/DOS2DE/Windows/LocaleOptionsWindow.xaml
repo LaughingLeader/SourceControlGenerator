@@ -6,8 +6,10 @@
 		xmlns:local="clr-namespace:SCG.Modules.DOS2DE.Windows"
 		xmlns:win="clr-namespace:SCG.Windows;assembly=SourceControlGenerator"
 		xmlns:data="clr-namespace:SCG.Modules.DOS2DE.Data"
+		xmlns:vdata="clr-namespace:SCG.Data.View;assembly=SourceControlGenerator"
 		xmlns:core="clr-namespace:SCG.Modules.DOS2DE.Core"
-		xmlns:controls="clr-namespace:SCG.Controls;assembly=SourceControlGenerator"
+		xmlns:c="clr-namespace:SCG.Controls;assembly=SourceControlGenerator"
+		xmlns:cb="clr-namespace:SCG.Controls.Behavior;assembly=SourceControlGenerator"
 		mc:Ignorable="d"
 		d:DataContext="{d:DesignInstance data:LocaleEditorSettingsDesignData, IsDesignTimeCreatable=True}"
 		Title="Localization Editor Settings" Height="300" Width="600">
@@ -24,7 +26,7 @@
 				<TabItem Header="{Binding Name}"></TabItem>
 			</DataTemplate>
 			<DataTemplate DataType="{x:Type data:LocaleEditorProjectSettingsData}" x:Key="SettingsContentTemplate">
-				<Grid>
+				<Grid x:Name="ParentGrid" DataContext="{Binding}">
 					<Grid.Resources>
 						<Style TargetType="TextBlock">
 							<Setter Property="TextAlignment" Value="Left" />
@@ -36,15 +38,28 @@
 						<RowDefinition Height="Auto" />
 						<RowDefinition Height="*" />
 					</Grid.RowDefinitions>
-					<StackPanel Orientation="Vertical" Margin="4">
-						<StackPanel.Resources>
-							<Style TargetType="controls:FileGridBox">
-								<Setter Property="FontSize" Value="12" />
-							</Style>
-						</StackPanel.Resources>
-						<controls:FileGridBox Header="Last File Import Path" FilePath="{Binding LastFileImportPath}" />
-						<controls:FileGridBox Header="Last Entry Import Path" FilePath="{Binding LastEntryImportPath}" />
-					</StackPanel>
+					<Border x:Name="GridBorder" BorderThickness="1" BorderBrush="Gray">
+						<Grid Margin="0">
+							<Grid.ColumnDefinitions>
+								<ColumnDefinition Width="Auto" />
+								<ColumnDefinition Width="Auto" />
+								<ColumnDefinition Width="*" SharedSizeGroup="FilePathColumn" />
+							</Grid.ColumnDefinitions>
+							<Grid.RowDefinitions>
+								<RowDefinition />
+								<RowDefinition />
+							</Grid.RowDefinitions>
+							<Rectangle Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="2" Fill="LightBlue" />
+							<Rectangle Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="2" Fill="LightYellow" />
+							<TextBlock Text="Last File Import Path" HorizontalAlignment="Left" Padding="4,0" />
+							<TextBlock Text="Last Entry Import Path" HorizontalAlignment="Left" Padding="4,0" Grid.Row="1" />
+							<Rectangle Grid.Column="1" Grid.RowSpan="2" Style="{StaticResource VerticalSeparator}" Margin="0" />
+							<c:FileBrowseControl Grid.Column="2" FileLocationText="{Binding DataContext.LastFileImportPath, ElementName=ParentGrid, Mode=TwoWay}" BrowseType="Directory"
+								Margin="0" BorderThickness="0" BorderBrush="{Binding BorderBrush, ElementName=GridBorder}"/>
+							<c:FileBrowseControl Grid.Row="1" Grid.Column="2" FileLocationText="{Binding DataContext.LastEntryImportPath, ElementName=ParentGrid, Mode=TwoWay}" BrowseType="Directory"
+								Margin="0" BorderThickness="0" BorderBrush="{Binding BorderBrush, ElementName=GridBorder}"/>
+						</Grid>
+					</Border>
 					<StackPanel Margin="4" Grid.Row="1">
 						<StackPanel.Resources>
 							<Style TargetType="CheckBox">
@@ -58,12 +73,28 @@
 					</StackPanel>
 				</Grid>
 			</DataTemplate>
+			<Style TargetType="StackPanel">
+				<Setter Property="Background" Value="Transparent" />
+				<Setter Property="Orientation" Value="Horizontal" />
+				<Setter Property="HorizontalAlignment" Value="Left" />
+			</Style>
+			<Style TargetType="{x:Type c:ImageButton}" BasedOn="{StaticResource DefaultImageButtonStyle}">
+				<Setter Property="Margin" Value="2" />
+			</Style>
 		</Grid.Resources>
 		<Grid.RowDefinitions>
 			<RowDefinition Height="Auto" />
 			<RowDefinition Height="*" />
 		</Grid.RowDefinitions>
-		<TextBlock Text="Test" />
+		<StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="2" MinHeight="16" >
+			<c:ImageButton
+					x:Name="SaveButton"
+					Command="{Binding SaveCommand}" 
+					Source="{x:Static vdata:IconPathData.Save}"
+					ToolTip_Enabled="{x:Static core:DOS2DETooltips.Button_Locale_SaveSettings}"
+					cb:ImageButtonHoverOnDisabled.Enable="True"
+			/>
+		</StackPanel>
 		<TabControl ItemsSource="{Binding Projects}" TabStripPlacement="Left" ItemTemplate="{StaticResource SettingsTemplate}" ContentTemplate="{StaticResource SettingsContentTemplate}" Grid.Row="1" />
 	</Grid>
 </win:HideWindowBase>

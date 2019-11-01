@@ -32,6 +32,8 @@
 			<ColumnDefinition Width="1" />
 			<ColumnDefinition Width="Auto"/>
 		</Grid.ColumnDefinitions>
+		<Rectangle Fill="{Binding Path=FileValidation, ElementName=FileBrowser, Converter={StaticResource FileValidationColorConverter}, FallbackValue=Wheat}" Grid.Row="0" IsHitTestVisible="False" />
+		<Rectangle Style="{StaticResource VerticalSeparator}" Grid.Column="1" Margin="0" Stroke="{Binding Path=BorderBrush, ElementName=FileBrowser}" IsHitTestVisible="False" />
 		<TextBox x:Name="FilePathDisplay" Grid.Column="0" behavior:TextBoxEnterKeyBehavior.EnterLosesFocus="True" BorderThickness="0" IsReadOnly="False" 
 			VerticalAlignment="Center" TextAlignment="Right" Background="Transparent"
 			Text="{Binding Path=FileLocationText, ElementName=FileBrowser, Mode=TwoWay, FallbackValue='Test'}" 
@@ -49,8 +51,6 @@
 				</ContextMenu>
 			</TextBox.ContextMenu>
 		</TextBox>
-		<Rectangle Fill="{Binding Path=FileValidation, ElementName=FileBrowser, Converter={StaticResource FileValidationColorConverter}, FallbackValue=Wheat}" Grid.Row="0" IsHitTestVisible="False" />
-		<Rectangle Style="{StaticResource VerticalSeparator}" Grid.Column="1" Margin="0" Stroke="{Binding Path=BorderBrush, ElementName=FileBrowser}" IsHitTestVisible="False" />
 		<Button x:Name="FileBrowseButton" Grid.Column="2"
 			Width="Auto" Height="Auto" MinWidth="38"
 			BorderBrush="{x:Null}" BorderThickness="0"

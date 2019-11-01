@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SCG.SCGEnum;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -30,7 +31,6 @@ namespace SCG.Controls
 		public static readonly DependencyProperty HeaderProperty =
 			DependencyProperty.Register("Header", typeof(string), typeof(FileGridBox), new PropertyMetadata(""));
 
-
 		public string FilePath
 		{
 			get { return (string)GetValue(FilePathProperty); }
@@ -39,6 +39,19 @@ namespace SCG.Controls
 
 		public static readonly DependencyProperty FilePathProperty = 
 			DependencyProperty.Register("FilePath", typeof(string), typeof(FileGridBox), new PropertyMetadata(""));
+
+		public FileBrowseType BrowseType
+		{
+			get { return (FileBrowseType)GetValue(FileGridBoxBrowseTypeProperty); }
+			set
+			{
+				SetValue(FileGridBoxBrowseTypeProperty, value);
+			}
+		}
+
+		public static readonly DependencyProperty FileGridBoxBrowseTypeProperty =
+			DependencyProperty.Register("BrowseType", typeof(FileBrowseType),
+			typeof(FileGridBox), new PropertyMetadata(FileBrowseType.File));
 
 		public FileGridBox()
 		{

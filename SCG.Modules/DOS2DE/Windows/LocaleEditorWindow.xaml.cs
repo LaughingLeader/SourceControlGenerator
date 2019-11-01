@@ -252,8 +252,8 @@ namespace SCG.Modules.DOS2DE.Windows
 		{
 			if (sender is RichTextBox richTextBox)
 			{
-				ViewModel.UndoMenuData.UnregisterInputBinding(richTextBox.InputBindings);
-				ViewModel.RedoMenuData.UnregisterInputBinding(richTextBox.InputBindings);
+				if (ViewModel?.UndoMenuData != null) ViewModel.UndoMenuData.UnregisterInputBinding(richTextBox.InputBindings);
+				if (ViewModel?.RedoMenuData != null) ViewModel.RedoMenuData.UnregisterInputBinding(richTextBox.InputBindings);
 			}
 			//var vo = selectedTextObservables.FirstOrDefault(x => x.View == sender);
 			//if(vo.PropertyHelper != null)

@@ -27,7 +27,7 @@
 				<Grid.ColumnDefinitions>
 					<ColumnDefinition Width="*" />
 					<ColumnDefinition Width="Auto" />
-					<ColumnDefinition Width="2*" />
+					<ColumnDefinition Width="2*" SharedSizeGroup="FileGridBoxPathColumn" />
 				</Grid.ColumnDefinitions>
 				<Viewbox StretchDirection="DownOnly" Stretch="Uniform" HorizontalAlignment="Left">
 					<ContentControl Content="{Binding Header, FallbackValue='Test Path'}" FontSize="{Binding FontSize}"
@@ -35,9 +35,9 @@
 					/>
 				</Viewbox>
 				<Rectangle Grid.Column="1" Style="{StaticResource VerticalSeparator}" Margin="0" />
-				<local:FileBrowseControl Grid.Column="2" Margin="0" BorderThickness="0" BorderBrush="{Binding BorderBrush, ElementName=GridBorder}"
-					BrowseMode="Open" CircleSize="2"
-					FileLocationText="{Binding FilePath, FallbackValue='Test'}" />
+				<local:FileBrowseControl x:Name="FileBrowser" Grid.Column="2" Margin="0" BorderThickness="0" BorderBrush="{Binding BorderBrush, ElementName=GridBorder}"
+					BrowseMode="Open" CircleSize="2" BrowseType="{Binding ElementName=ParentFileGridBox, Path=BrowseType}"
+					FileLocationText="{Binding ElementName=ParentFileGridBox, Path=FilePath, FallbackValue='Test'}" />
 			</Grid>
 		</Border>
 	</StackPanel>

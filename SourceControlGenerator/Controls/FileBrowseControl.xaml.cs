@@ -100,7 +100,14 @@ namespace SCG.Controls
 			FileBrowseControl fileBrowseControl = sender as FileBrowseControl;
 			if (fileBrowseControl != null)
 			{
-				fileBrowseControl.OnFileLocationChanged();
+				if(!fileBrowseControl.SkipNext)
+				{
+					fileBrowseControl.OnFileLocationChanged();
+				}
+				else
+				{
+					fileBrowseControl.SkipNext = false;
+				}
 			}
 		}
 
@@ -206,7 +213,9 @@ namespace SCG.Controls
 		{
 			StartBrowse();
 		}
-		
+
+		public bool SkipNext { get; set; } = false;
+
 		public void StartBrowse()
 		{
 			Window parentWindow = Window.GetWindow(this);
@@ -340,7 +349,7 @@ namespace SCG.Controls
 								filename = Path.GetFullPath(filename);
 							}							
 						}
-
+						SkipNext = true;
 						FileLocationText = filename;
 						LastFileLocation = Path.GetDirectoryName(FileLocationText);
 						OnOpen?.Execute(FileLocationText);
@@ -408,13 +417,16 @@ namespace SCG.Controls
 							path = fileDialog.FileName;
 						}
 
+						if(path.Contains("%20"))
+						{
+							path = Uri.UnescapeDataString(path); // Get rid of %20
+						}
+
 						if (FileCommands.PathIsRelative(path))
 						{
 							path = path.Replace(Directory.GetCurrentDirectory(), "");
 						}
-
-						path = Uri.UnescapeDataString(path); // Get rid of %20
-
+						SkipNext = true;
 						FileLocationText = path;
 						LastFileLocation = FileLocationText;
 						OnOpen?.Execute(FileLocationText);
@@ -449,7 +461,6 @@ namespace SCG.Controls
 
 		public void OnFileLocationChanged()
 		{
-
 			FileValidation = FileValidation.None;
 
 			if (!String.IsNullOrWhiteSpace(FileLocationText))
@@ -460,17 +471,16 @@ namespace SCG.Controls
 				}
 				else
 				{
-
 					if (BrowseType == FileBrowseType.Directory)
 					{
-						if (!Directory.Exists(FileLocationText))
+						if (!FileCommands.DirectoryExists(FileLocationText))
 						{
 							FileValidation = FileValidation.Warning;
 						}
 					}
 					else if (BrowseType == FileBrowseType.File)
 					{
-						if (!File.Exists(FileLocationText))
+						if (!FileCommands.FileExists(FileLocationText))
 						{
 							FileValidation = FileValidation.Warning;
 						}

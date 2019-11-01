@@ -51,6 +51,8 @@ namespace SCG.Modules.DOS2DE.Windows
 		public void LoadData(LocaleEditorSettingsData data)
 		{
 			ViewModel = data;
+			this.OneWayBind(this.ViewModel, vm => vm.SaveCommand, view => view.SaveButton.Command);
+			ViewModel.SaveCommand.Execute(null);
 		}
 	}
 }

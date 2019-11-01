@@ -30,7 +30,7 @@ namespace SCG.Modules.DOS2DE.Core
 
 		public static string LocalizationEditorSettings(IModuleData Data)
 		{
-			return LocalizationEditorFolder(Data) + @"LocalizationEditorSettings.txt";
+			return LocalizationEditorFolder(Data) + @"LocalizationEditorSettings.json";
 		}
 
 		public static string CustomLocaleDirectory(DOS2DEModuleData Data, ModProjectData modProject)

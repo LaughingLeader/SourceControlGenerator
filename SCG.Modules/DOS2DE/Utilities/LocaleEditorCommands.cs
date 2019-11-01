@@ -1317,6 +1317,8 @@ namespace SCG.Modules.DOS2DE.Utilities
 					settings.LastFileImportPath = localeData.CurrentImportPath;
 				}
 			}
+
+			localeData.Settings.SaveCommand = localeData.SaveSettingsCommand;
 		}
 
 		public static void SaveSettings(DOS2DEModuleData moduleData, LocaleViewModel localeData)

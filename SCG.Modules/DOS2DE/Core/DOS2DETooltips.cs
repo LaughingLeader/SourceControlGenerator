@@ -50,6 +50,7 @@ namespace SCG.Modules.DOS2DE.Core
 		public static string Button_Locale_SaveAll = "Save All Localization Files";
 		public static string Button_Locale_SaveCurrent = "Save";
 		public static string Button_Locale_SaveCurrent_Disabled = "Save (Disabled - Select a File Tab)";
+		public static string Button_Locale_SaveSettings = "Save Settings";
 
 		public static string Button_Locale_AddFile = "Add Locale File";
 		public static string Button_Locale_AddFile_Disabled = "Add Locale File (Disabled for Tabs All & Dialog)";

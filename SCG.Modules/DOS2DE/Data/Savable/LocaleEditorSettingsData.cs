@@ -10,6 +10,7 @@ using ReactiveUI;
 using SCG.Modules.DOS2DE.Data.View;
 using DynamicData.Binding;
 using DynamicData;
+using System.Windows.Input;
 
 namespace SCG.Modules.DOS2DE.Data
 {
@@ -41,6 +42,8 @@ namespace SCG.Modules.DOS2DE.Data
 			}
 			return null;
 		}
+
+		public ICommand SaveCommand { get; set; }
 
 		public LocaleEditorSettingsData()
 		{

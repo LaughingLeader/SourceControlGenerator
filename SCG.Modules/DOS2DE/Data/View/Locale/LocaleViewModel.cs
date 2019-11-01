@@ -918,6 +918,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 
 		public ICommand SaveAllCommand { get; private set; }
 		public ICommand SaveCurrentCommand { get; private set; }
+		public ICommand SaveSettingsCommand { get; private set; }
 		public ICommand GenerateHandlesCommand { get; private set; }
 
 		public ICommand AddNewKeyCommand { get; private set; }
@@ -1833,6 +1834,10 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 
 			SaveAllCommand = ReactiveCommand.CreateFromTask(SaveAll, GlobalCanActObservable).DisposeWith(disposables);
 			SaveCurrentCommand = ReactiveCommand.CreateFromTask(SaveCurrent, GlobalCanActObservable).DisposeWith(disposables);
+
+			SaveSettingsCommand = ReactiveCommand.Create(view.SaveSettings).DisposeWith(disposables);
+			Settings.SaveCommand = this.SaveSettingsCommand;
+
 			GenerateHandlesCommand = ReactiveCommand.Create(GenerateHandles, AnySelectedEntryObservable).DisposeWith(disposables);
 			AddNewKeyCommand = ReactiveCommand.Create(AddNewKey, CanImportKeysObservable).DisposeWith(disposables);
 
