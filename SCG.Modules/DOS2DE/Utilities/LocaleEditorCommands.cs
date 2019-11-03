@@ -726,7 +726,7 @@ namespace SCG.Modules.DOS2DE.Utilities
 						sourcePath = EscapeXml(Path.GetFileName(keyFileData.SourcePath));
 					}
 
-					foreach (var e in fileData.Entries.Where(fd => fd.Selected))
+					foreach (var e in fileData.Entries.Where(fd => fd.Selected).OrderBy(x => x.EntryKey))
 					{
 						if (findActualSource)
 						{
