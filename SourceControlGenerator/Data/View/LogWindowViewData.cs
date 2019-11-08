@@ -107,7 +107,15 @@ namespace SCG.Data.View
 				var lastVal = searchText;
 				this.RaiseAndSetIfChanged(ref searchText, value);
 
-				if(searchText != lastVal)
+				if (!String.IsNullOrWhiteSpace(value))
+				{
+					foreach (var log in Logs.Items.Where(x => x.IsVisible))
+					{
+						log.IsVisible = log.Message.CaseInsensitiveContains(searchText);
+					}
+				}
+
+				if (searchText != lastVal)
 				{
 					this.RaisePropertyChanged("Logs");
 				}
@@ -269,11 +277,13 @@ namespace SCG.Data.View
 
 		public LogWindowViewData()
 		{
-			//Logs.ToObservableChangeSet().Filter(x => x.IsVisible || (!String.IsNullOrWhiteSpace(searchText) && x.Message.CaseInsensitiveContains(searchText))).AsObservableList();
-			Logs.Connect().Filter(x => CanDisplayLog(x)).Bind(out visibleLogs).Subscribe((x) =>
-			{
-				//Console.WriteLine($"Log added: {x.First().Item.Current?.Message}");
-			});
+			var sortOrder = SortExpressionComparer<LogData>.Ascending(m => m.Index);
+			var connection = Logs.Connect().AutoRefreshOnObservable(x => x.WhenPropertyChanged(p => p.IsVisible))
+			//Buffer(TimeSpan.FromMilliseconds(100)).FlattenBufferResult()
+			.ObserveOn(RxApp.MainThreadScheduler);
+			//connection.Filter(x => CanDisplayLog(x)).Bind(out visibleLogs).Subscribe();
+			connection.Filter(x => x.IsVisible).Sort(sortOrder).Bind(out visibleLogs).Subscribe();
+			//Console.WriteLine($"Log added: {x.First().Item.Current?.Message}");
 			//this.WhenAnyValue(x => x, x => x.Logs, x => x.FilterActivity, x => x.FilterErrors, x => x.FilterImportant, x => x.SearchText).
 		}
 	}
