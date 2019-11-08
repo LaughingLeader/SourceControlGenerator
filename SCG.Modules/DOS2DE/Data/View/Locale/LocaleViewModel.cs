@@ -2048,6 +2048,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			DialogGroup = new LocaleTabGroup(this, "Dialog");
 			CustomGroup = new CustomLocaleTabGroup(this, "Custom");
 
+#if Debug
 			Groups = new ObservableCollectionExtended<LocaleTabGroup>
 			{
 				CombinedGroup,
@@ -2056,7 +2057,15 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 				DialogGroup,
 				CustomGroup
 			};
-
+#else
+			Groups = new ObservableCollectionExtended<LocaleTabGroup>
+			{
+				CombinedGroup,
+				ModsGroup,
+				PublicGroup,
+				DialogGroup
+			};
+#endif
 			foreach (var g in Groups)
 			{
 				g.SelectedFileChanged = SelectedFileChanged;
