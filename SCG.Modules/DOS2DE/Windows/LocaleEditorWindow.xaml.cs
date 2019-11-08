@@ -478,6 +478,10 @@ namespace SCG.Modules.DOS2DE.Windows
 				fileTabControl = tc;
 			}
 		}
+		private void RemovedEntriesListView_SelectionChanged(object sender, SelectionChangedEventArgs e)
+		{
+			ViewModel.MissingKeyEntrySelected = ViewModel.MissingEntries.Any(x => x.Selected == true);
+		}
 
 		//RemovedEntriesListViewCheckboxHeader
 		private void RemovedEntriesListViewCheckboxHeader_Checked(object sender, RoutedEventArgs e)

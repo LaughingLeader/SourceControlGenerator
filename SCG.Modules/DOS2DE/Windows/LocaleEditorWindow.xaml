@@ -1259,6 +1259,7 @@ body {
 				ItemsSource="{Binding MissingEntries}"
 				SelectionMode="Extended" Background="Transparent" 
 				BorderThickness="0" GridViewColumnHeader.Click="RemovedEntriesListView_Click"
+				SelectionChanged="RemovedEntriesListView_SelectionChanged"
 			>
 				<ListView.Resources>
 					<Style TargetType="TextBlock">

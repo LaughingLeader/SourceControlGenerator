@@ -414,6 +414,15 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			}
 		}
 
+		private bool missingKeyEntrySelected = false;
+
+		public bool MissingKeyEntrySelected
+		{
+			get => missingKeyEntrySelected;
+			set { this.RaiseAndSetIfChanged(ref missingKeyEntrySelected, value); }
+		}
+
+
 		private void SelectedFileChanged(LocaleTabGroup group, ILocaleFileData keyFileData)
 		{
 			SelectedFile = keyFileData;
@@ -2027,7 +2036,9 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 				g.SelectedFileChanged = SelectedFileChanged;
 			}
 
-			RemoveSelectedMissingEntriesCommand = ReactiveCommand.Create(ConfirmRemoveSelectedMissingEntries);
+			var canRemoveEntries = this.WhenAnyValue(x => x.MissingKeyEntrySelected);
+
+			RemoveSelectedMissingEntriesCommand = ReactiveCommand.Create(ConfirmRemoveSelectedMissingEntries, canRemoveEntries);
 			CloseMissingEntriesCommand = ReactiveCommand.Create(CloseMissingEntriesView);
 			CopySimpleMissingEntriesCommand = ReactiveCommand.Create(() => {
 				if (MissingEntries.Count > 0)

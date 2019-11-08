@@ -10,7 +10,7 @@ using ReactiveUI;
 
 namespace SCG.Modules.DOS2DE.Data.View.Locale
 {
-	public interface ILocaleKeyEntry
+	public interface ILocaleKeyEntry : INotifyPropertyChanging
 	{
 		ILocaleFileData Parent { get; set; }
 		bool KeyIsEditable { get; set; }
