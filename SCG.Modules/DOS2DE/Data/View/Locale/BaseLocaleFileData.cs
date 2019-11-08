@@ -163,6 +163,20 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 
 		public List<LocaleUnsavedChangesData> UnsavedChanges = new List<LocaleUnsavedChangesData>();
 
+		public void SetChangesUnsaved(bool b, bool clearUnsaved = true)
+		{
+			if(!b && clearUnsaved)
+			{
+				UnsavedChanges.Clear();
+			}
+
+			foreach(var key in Entries)
+			{
+				key.ChangesUnsaved = false;
+			}
+			ChangesUnsaved = b;
+		}
+
 		public void SelectAll()
 		{
 			foreach (var entry in Entries) { entry.Selected = true; }

@@ -629,8 +629,12 @@ namespace SCG.Modules.DOS2DE.Utilities
 			{
 				foreach (LocaleNodeFileData f in data.SelectedGroup.DataFiles.Where(f => f.ChangesUnsaved).Cast<LocaleNodeFileData>())
 				{
-					success += await SaveDataFile(f, token);
-					f.ChangesUnsaved = false;
+					int result = await SaveDataFile(f, token);
+					success += result;
+					if (result > 0)
+					{
+						f.SetChangesUnsaved(false, true);
+					}
 				}
 			}
 			else
@@ -638,8 +642,12 @@ namespace SCG.Modules.DOS2DE.Utilities
 				foreach (var f in data.CustomGroup.DataFiles.Where(f => f.ChangesUnsaved).Cast<LocaleCustomFileData>())
 				{
 					string targetDirectory = DOS2DEDefaultPaths.CustomLocaleDirectory(data.ModuleData, f.Project);
-					success += await SaveDataFile(f, targetDirectory, token);
-					f.ChangesUnsaved = false;
+					int result = await SaveDataFile(f, targetDirectory, token);
+					success += result;
+					if (result > 0)
+					{
+						f.SetChangesUnsaved(false, true);
+					}
 				}
 			}
 			Log.Here().Activity($"Files saved: '{success}'.");

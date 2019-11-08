@@ -658,6 +658,9 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 						{
 							OutputText = $"Saved '{keyFileData.SourcePath}'";
 							OutputType = LogType.Important;
+
+							keyFileData.SetChangesUnsaved(false, true);
+							ChangesUnsaved = false;
 						}
 						else
 						{
@@ -665,10 +668,6 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 							OutputType = LogType.Error;
 						}
 						OutputDate = DateTime.Now.ToShortTimeString();
-
-						keyFileData.UnsavedChanges.Clear();
-						keyFileData.ChangesUnsaved = false;
-						ChangesUnsaved = false;
 					}
 					else
 					{
