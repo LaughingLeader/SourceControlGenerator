@@ -282,7 +282,7 @@ namespace SCG.Data.View
 			//Buffer(TimeSpan.FromMilliseconds(100)).FlattenBufferResult()
 			.ObserveOn(RxApp.MainThreadScheduler);
 			//connection.Filter(x => CanDisplayLog(x)).Bind(out visibleLogs).Subscribe();
-			connection.Filter(x => x.IsVisible).Sort(sortOrder).Bind(out visibleLogs).Subscribe();
+			connection.Filter(x => x.IsVisible).Sort(sortOrder, resetThreshold:50).Bind(out visibleLogs).Subscribe();
 			//Console.WriteLine($"Log added: {x.First().Item.Current?.Message}");
 			//this.WhenAnyValue(x => x, x => x.Logs, x => x.FilterActivity, x => x.FilterErrors, x => x.FilterImportant, x => x.SearchText).
 		}
