@@ -1326,6 +1326,8 @@ namespace SCG.Modules.DOS2DE.Utilities
 				}
 			}
 
+			localeData.Settings.Projects.OrderBy(x => x.Name);
+
 			localeData.Settings.SaveCommand = localeData.SaveSettingsCommand;
 		}
 
@@ -1335,6 +1337,7 @@ namespace SCG.Modules.DOS2DE.Utilities
 
 			if (localeData.Settings != null)
 			{
+				localeData.Settings.Projects.OrderBy(x => x.Name);
 				Log.Here().Activity($"Saving localization editor settings to '{settingsPath}'.");
 				string json = JsonInterface.SerializeObject(localeData.Settings);
 				FileCommands.WriteToFile(settingsPath, json);

@@ -23,7 +23,7 @@
 	<Grid>
 		<Grid.Resources>
 			<DataTemplate DataType="{x:Type data:LocaleEditorProjectSettingsData}" x:Key="SettingsTemplate">
-				<TextBlock Text="{Binding Name}" Background="Transparent"/>
+				<TextBlock Text="{Binding Name, FallbackValue='Project'}" Background="Transparent" MinHeight="10"/>
 			</DataTemplate>
 			<DataTemplate DataType="{x:Type data:LocaleEditorProjectSettingsData}" x:Key="SettingsContentTemplate">
 				<Grid x:Name="ParentGrid" DataContext="{Binding}">
