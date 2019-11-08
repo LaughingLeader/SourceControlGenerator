@@ -95,20 +95,8 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			get { return changesUnsaved; }
 			set
 			{
-				/*
-				if(changesUnsaved == true && value == false)
-				{
-					foreach(var entry in Entries)
-					{
-						entry.ChangesUnsaved = false;
-					}
-				}
-				*/
-
-				if(this.RaiseAndSetIfChanged(ref changesUnsaved, value))
-				{
-					UpdateDisplayName();
-				}
+				this.RaiseAndSetIfChanged(ref changesUnsaved, value);
+				UpdateDisplayName();
 			}
 		}
 
