@@ -14,6 +14,7 @@ using Newtonsoft.Json;
 using SCG.Windows;
 using SCG.Core;
 using ReactiveUI;
+using System.Windows;
 
 namespace SCG.Data.View
 {
@@ -234,6 +235,11 @@ namespace SCG.Data.View
 
 				OnSettingsReverted?.Invoke(this, EventArgs.Empty);
 			}
+		}
+
+		public virtual void OnLockScreenChanged(Visibility visibility, bool isUnlocked)
+		{
+			
 		}
 
 		public ModuleData(string moduleName, string moduleFolderName)

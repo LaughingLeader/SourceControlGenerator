@@ -96,6 +96,26 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			}
 		}
 
+		private bool isUnlocked = true;
+
+		public bool IsUnlocked
+		{
+			get => isUnlocked;
+			set { this.RaiseAndSetIfChanged(ref isUnlocked, value); }
+		}
+
+		private Visibility lockScreenVisibility = Visibility.Collapsed;
+
+		public Visibility LockScreenVisibility
+		{
+			get { return lockScreenVisibility; }
+			set
+			{
+				this.RaiseAndSetIfChanged(ref lockScreenVisibility, value);
+				IsUnlocked = LockScreenVisibility != Visibility.Visible;
+			}
+		}
+
 		public ObservableCollectionExtended<LocaleTabGroup> Groups { get; set; }
 
 		private int selectedGroupIndex = -1;
@@ -1662,6 +1682,12 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 		{
 			view = v;
 			ModuleData = moduleData;
+
+			//AppController.Main.Data.WhenAnyValue(x => x.IsUnlocked).BindTo(this, vm => vm.IsUnlocked).DisposeWith(disposables);
+			AppController.Main.Data.WhenAnyValue(x => x.LockScreenVisibility).Subscribe((visibility) =>
+			{
+				LockScreenVisibility = visibility;
+			}).DisposeWith(disposables);
 
 			SubWindowOpenedObservable = this.WhenAnyValue(vm => vm.IsSubWindowOpen);
 

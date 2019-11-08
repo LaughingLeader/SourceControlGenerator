@@ -253,7 +253,6 @@ namespace SCG.Data.View
 			}
 		}
 
-
 		private Visibility progressVisiblity = Visibility.Collapsed;
 
 		public Visibility ProgressVisiblity
@@ -262,6 +261,11 @@ namespace SCG.Data.View
 			set
 			{
 				this.RaiseAndSetIfChanged(ref progressVisiblity, value);
+				IsUnlocked = value != Visibility.Visible;
+				if (this.ModuleIsLoaded)
+				{
+					CurrentModuleData.OnLockScreenChanged(value, IsUnlocked);
+				}
 			}
 		}
 
@@ -312,6 +316,14 @@ namespace SCG.Data.View
 			}
 		}
 
+		private bool isUnlocked = false;
+
+		public bool IsUnlocked
+		{
+			get => isUnlocked;
+			set { this.RaiseAndSetIfChanged(ref isUnlocked, value); }
+		}
+
 		private Visibility lockScreenVisibility = Visibility.Collapsed;
 
 		public Visibility LockScreenVisibility
@@ -320,6 +332,11 @@ namespace SCG.Data.View
 			set
 			{
 				this.RaiseAndSetIfChanged(ref lockScreenVisibility, value);
+				IsUnlocked = value != Visibility.Visible;
+				if(this.ModuleIsLoaded)
+				{
+					CurrentModuleData.OnLockScreenChanged(value, IsUnlocked);
+				}
 			}
 		}
 

@@ -207,6 +207,13 @@ namespace SCG.Modules.DOS2DE.Data.View
 		public ICommand RefreshAllCommand { get; internal set; }
 		public ReactiveCommand<ModProjectData, Unit> OpenInLocalizationEditorCommand { get; private set; }
 
+		public Action<Visibility,bool> OnLockScreenChangedAction { get; set; }
+		public override void OnLockScreenChanged(Visibility visibility, bool isUnlocked)
+		{
+			base.OnLockScreenChanged(visibility, isUnlocked);
+			OnLockScreenChangedAction?.Invoke(visibility, isUnlocked);
+		}
+
 		public DOS2DEModuleData() : base(DOS2DE_ModuleDisplayName, DOS2DE_ModuleFolderName)
 		{
 			ManageButtonsText = DOS2DETooltips.Button_ManageProjects_None;

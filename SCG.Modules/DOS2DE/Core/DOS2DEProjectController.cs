@@ -1178,6 +1178,18 @@ namespace SCG.Core
 				new SeparatorData(),
 				OpenLocalizationEditorMenuData
 			);
+
+			Data.OnLockScreenChangedAction = new Action<System.Windows.Visibility, bool>((v, b) =>
+			{
+				if(projectViewControl != null && projectViewControl.LocaleEditorWindow != null)
+				{
+					if(projectViewControl.LocaleEditorWindow.ViewModel != null)
+					{
+						projectViewControl.LocaleEditorWindow.ViewModel.LockScreenVisibility = v;
+						Log.Here().Activity("Lock screen changed");
+					}
+				}
+			});
 		}
 
 		private async void HideLoadingPanel()

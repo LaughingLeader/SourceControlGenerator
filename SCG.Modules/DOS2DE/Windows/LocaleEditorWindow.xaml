@@ -23,6 +23,7 @@
 		d:DataContext="{d:DesignInstance data:LocaleEditorDesignData, IsDesignTimeCreatable=True}"
 		Closing="LocaleWindow_Closing"
 		Title="{Binding WindowTitle, FallbackValue='Localization Editor'}" Height="525" Width="960"
+		IsEnabled="{Binding IsUnlocked}"
 >
 	<Window.Resources>
 		<ResourceDictionary>
@@ -1361,5 +1362,15 @@ body {
 				<TextBlock Text="{Binding Source=SelectedEntry, Path=EntryContent, Mode=TwoWay, TargetNullValue='null', FallbackValue='test'}" />
 			</xctk:ChildWindow>
 		</xctk:WindowContainer>-->
+		<Grid Visibility="{Binding LockScreenVisibility,  FallbackValue=Visible}" Grid.RowSpan="4">
+			<Grid.Background>
+				<SolidColorBrush Color="{DynamicResource {x:Static SystemColors.ActiveBorderColorKey}}" Opacity="0.9"/>
+			</Grid.Background>
+			<Rectangle Fill="WhiteSmoke" HorizontalAlignment="Center" VerticalAlignment="Center" Width="400" Height="100" />
+			<StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" >
+				<TextBlock Text="Locked" FontSize="20" Padding="10" HorizontalAlignment="Center" />
+				<TextBlock Text="Please wait while the main window finishes its task." FontSize="12" Padding="10" />
+			</StackPanel>
+		</Grid>
 	</Grid>
 </reactiveui:ReactiveWindow>

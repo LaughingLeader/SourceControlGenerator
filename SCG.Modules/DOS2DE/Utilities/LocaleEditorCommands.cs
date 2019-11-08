@@ -1298,7 +1298,7 @@ namespace SCG.Modules.DOS2DE.Utilities
 
 					foreach(var entry in localeData.Settings.Projects)
 					{
-						var project = localeData.LinkedProjects.FirstOrDefault(x => x.FolderName == entry.FolderName);
+						var project = moduleData.ModProjects.Items.FirstOrDefault(x => x.FolderName == entry.FolderName);
 						if(project != null)
 						{
 							entry.Name = project.DisplayName;

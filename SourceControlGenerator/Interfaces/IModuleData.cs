@@ -5,6 +5,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 using ReactiveUI;
 using SCG.Collections;
 using SCG.Data;
@@ -38,6 +39,8 @@ namespace SCG.Interfaces
 		void CreateNewTemplateData();
 		void HideAddTemplateControl();
 		void AddTemplate();
+
+		void OnLockScreenChanged(Visibility isVisible, bool isUnlocked);
 
 		//Events
 
