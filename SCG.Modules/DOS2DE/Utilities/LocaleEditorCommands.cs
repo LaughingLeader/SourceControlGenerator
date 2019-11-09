@@ -1021,10 +1021,11 @@ namespace SCG.Modules.DOS2DE.Utilities
 								var existingEntry = fileData.Entries.FirstOrDefault(x => x.Key.Equals(entry.Key, StringComparison.OrdinalIgnoreCase));
 								if (existingEntry != null)
 								{
-									if (!String.IsNullOrWhiteSpace(entry.Content) && !entry.Content.Equals(existingEntry.Content))
+									if (!entry.Content.Equals(existingEntry.Content) || !entry.Key.Equals(existingEntry.Key))
 									{
-										Log.Here().Activity($"Updated entry: {existingEntry.Content} => {entry.Content}");
+										Log.Here().Activity($"Updated entry: {existingEntry.Key} => {entry.Key} | {existingEntry.Content} => {entry.Content}");
 										existingEntry.Content = entry.Content;
+										existingEntry.Key = entry.Key;
 										existingEntry.ChangesUnsaved = true;
 										changesUnsaved = true;
 									}
