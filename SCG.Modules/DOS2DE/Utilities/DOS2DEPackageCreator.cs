@@ -15,6 +15,19 @@ namespace SCG.Modules.DOS2DE.Utilities
 {
 	public static class DOS2DEPackageCreator
 	{
+		private static bool IgnoreFile(string targetFilePath, string ignoredFileName)
+		{
+			if (Path.GetFileName(targetFilePath).Equals(ignoredFileName, StringComparison.OrdinalIgnoreCase))
+			{
+				return true;
+			}
+			if (Path.GetExtension(targetFilePath).Equals(ignoredFileName, StringComparison.OrdinalIgnoreCase))
+			{
+				return true;
+			}
+			return false;
+		}
+
 		public static async Task<bool> CreatePackage(string dataRootPath, List<string> inputPaths, string outputPath, List<string> ignoredFiles, CancellationToken? token = null)
 		{
 			try
@@ -81,7 +94,13 @@ namespace SCG.Modules.DOS2DE.Utilities
 
 				AppController.Main.UpdateProgressLog("Enumerating files...");
 
-				Dictionary<string, string> files = Directory.EnumerateFiles(path, "*.*", System.IO.SearchOption.AllDirectories).ToDictionary(k => k.Replace(dataRootPath, String.Empty), v => v);
+				var files = Directory.EnumerateFiles(path, DirectoryEnumerationOptions.Recursive | DirectoryEnumerationOptions.LargeCache, new DirectoryEnumerationFilters()
+				{
+					InclusionFilter = (f) =>
+					{
+						return !ignoredFiles.Any(x => IgnoreFile(f.FullPath, x));
+					}
+				}).ToDictionary(k => k.Replace(dataRootPath, String.Empty), v => v);
 
 				foreach (KeyValuePair<string, string> file in files)
 				{
@@ -90,11 +109,8 @@ namespace SCG.Modules.DOS2DE.Utilities
 						throw new TaskCanceledException(task);
 					}
 
-					if (!ignoredFiles.Contains(Path.GetFileName(file.Value)))
-					{
-						FilesystemFileInfo fileInfo = FilesystemFileInfo.CreateFromEntry(file.Value, file.Key);
-						package.Files.Add(fileInfo);
-					}
+					FilesystemFileInfo fileInfo = FilesystemFileInfo.CreateFromEntry(file.Value, file.Key);
+					package.Files.Add(fileInfo);
 				}
 			}, token);
 

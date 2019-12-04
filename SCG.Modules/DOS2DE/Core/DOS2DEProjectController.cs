@@ -706,7 +706,18 @@ namespace SCG.Core
 			return totalSuccess;
 		}
 
-		public List<string> IgnoredExportFiles { get; set; }
+		public List<string> IgnoredPackageFiles = new List<string>(){
+			"ReConHistory.txt",
+			"dialoglog.txt",
+			"errors.txt",
+			"log.txt",
+			"personallog.txt",
+			"story_orphanqueries_found.txt",
+			".ailog",
+			".log",
+			".debugInfo",
+			".dmp"
+		};
 
 		public async Task<BackupResult> PackageProjectAsync(ModProjectData modProject, string outputDirectory, List<string> exportDirectories)
 		{
@@ -745,7 +756,7 @@ namespace SCG.Core
 				}
 
 				var result = await DOS2DEPackageCreator.CreatePackage(Data.Settings.DOS2DEDataDirectory.Replace("/", "\\"), 
-					sourceFolders, outputPackage, IgnoredExportFiles, cancellationTokenSource.Token);
+					sourceFolders, outputPackage, IgnoredPackageFiles, cancellationTokenSource.Token);
 				if (result)
 				{
 					return BackupResult.Success;
@@ -1062,19 +1073,6 @@ namespace SCG.Core
 			canRefresh = this.WhenAnyValue(vm => vm.Data.CanClickRefresh);
 			anySelected = this.WhenAnyValue(vm => vm.Data.ProjectSelected);
 			Data.RefreshAllCommand = ReactiveCommand.CreateFromTask(RefreshAllProjects, canRefresh);
-
-			IgnoredExportFiles = new List<string>();
-			//IgnoredExportFiles.Add(".ailog");
-			IgnoredExportFiles.Add("ReConHistory.txt");
-			IgnoredExportFiles.Add("dialoglog.txt");
-			IgnoredExportFiles.Add("errors.txt");
-			IgnoredExportFiles.Add("gold.log");
-			IgnoredExportFiles.Add("log.txt");
-			IgnoredExportFiles.Add("network.log");
-			IgnoredExportFiles.Add("osirislog.log");
-			IgnoredExportFiles.Add("personallog.txt");
-			IgnoredExportFiles.Add("story.debugInfo");
-			IgnoredExportFiles.Add("story_orphanqueries_found.txt");
 
 			Log.Here().Activity("DOS2DEProjectController created");
 		}
