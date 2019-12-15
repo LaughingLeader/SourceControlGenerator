@@ -110,6 +110,8 @@ namespace SCG.Windows
 			TextGeneratorWindow = new TextGenerator();
 			GitGenerationWindow = new GitGenerationWindow();
 
+			TaskbarItemInfo.ProgressState = System.Windows.Shell.TaskbarItemProgressState.Normal;
+
 			SubWindows = new List<Window>()
 			{
 				LogWindow,
@@ -150,7 +152,7 @@ namespace SCG.Windows
 
 			this.WhenActivated((disposables) =>
 			{
-				
+				this.OneWayBind(ViewModel, vm => vm.ProgressValueTaskBar, v => v.TaskbarItemInfo.ProgressValue).DisposeWith(disposables);
 			});
 		}
 

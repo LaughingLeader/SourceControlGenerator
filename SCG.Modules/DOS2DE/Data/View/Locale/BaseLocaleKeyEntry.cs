@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using ReactiveUI;
+using System.ComponentModel;
 
 namespace SCG.Modules.DOS2DE.Data.View.Locale
 {

@@ -239,6 +239,8 @@ namespace SCG.Data.View
 			set
 			{
 				this.RaiseAndSetIfChanged(ref progressValue, value);
+				ProgressValueTaskBar = ProgressValue > 0 ? ((double)ProgressValue / (double)ProgressValueMax) : 0d;
+				Log.Here().Activity($"Progress Taskbar: {ProgressValueTaskBar}");
 			}
 		}
 
@@ -250,6 +252,19 @@ namespace SCG.Data.View
 			set
 			{
 				this.RaiseAndSetIfChanged(ref progressValueMax, value);
+				ProgressValueTaskBar = ProgressValue > 0 ? ((double)ProgressValue / (double)ProgressValueMax) : 0d;
+				Log.Here().Activity($"Progress Taskbar: {ProgressValueTaskBar}");
+			}
+		}
+
+		private double progressValueTaskBar = 0d;
+
+		public double ProgressValueTaskBar
+		{
+			get => progressValueTaskBar;
+			set
+			{
+				this.RaiseAndSetIfChanged(ref progressValueTaskBar, value);
 			}
 		}
 

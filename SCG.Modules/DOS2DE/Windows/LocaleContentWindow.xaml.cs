@@ -128,7 +128,7 @@ namespace SCG.Modules.DOS2DE.Windows
 	/// <summary>
 	/// Interaction logic for LocaleContentWindow.xaml
 	/// </summary>
-	public partial class LocaleContentWindow : HideWindowBase, IViewFor<LocaleContentWindowViewModel>, IActivatable
+	public partial class LocaleContentWindow : HideWindowBase, IViewFor<LocaleContentWindowViewModel>
     {
         public LocaleContentWindow()
         {
