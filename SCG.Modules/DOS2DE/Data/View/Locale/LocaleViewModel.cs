@@ -576,12 +576,16 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 
 				foreach (var entry in SelectedGroup.SelectedFile.Entries.Where(e => e.Selected))
 				{
-					//entry.Handle.Equals("ls::TranslatedStringRepository::s_HandleUnknown", StringComparison.OrdinalIgnoreCase)
-					lastHandles.Add(new LocaleHandleHistory(entry, entry.Handle));
-					entry.Handle = LocaleEditorCommands.CreateHandle();
-					newHandles.Add(new LocaleHandleHistory(entry, entry.Handle));
-					Log.Here().Activity($"[{entry.Key}] New handle generated. [{entry.Handle}]");
-					entry.Parent.ChangesUnsaved = true;
+					bool handleIsEmpty = (entry.Handle.Equals("ls::TranslatedStringRepository::s_HandleUnknown", StringComparison.OrdinalIgnoreCase) | 
+						String.IsNullOrWhiteSpace(entry.Handle));
+					if (handleIsEmpty)
+					{
+						lastHandles.Add(new LocaleHandleHistory(entry, entry.Handle));
+						entry.Handle = LocaleEditorCommands.CreateHandle();
+						newHandles.Add(new LocaleHandleHistory(entry, entry.Handle));
+						Log.Here().Activity($"[{entry.Key}] New handle generated. [{entry.Handle}]");
+						entry.Parent.ChangesUnsaved = true;
+					}
 				}
 
 				CreateSnapshot(() => {
@@ -811,9 +815,9 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 				SelectedGroup.SelectLast();
 				view.FocusSelectedTab();
 
-				if(LinkedProjects.Count == 1)
+				foreach(var p in LinkedProjects)
 				{
-					var settings = Settings.GetProjectSettings(LinkedProjects.FirstOrDefault());
+					var settings = Settings.GetProjectSettings(p);
 					if (settings != null)
 					{
 						settings.LastFileImportPath = Path.GetDirectoryName(files.FirstOrDefault());
