@@ -576,14 +576,12 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 
 				foreach (var entry in SelectedGroup.SelectedFile.Entries.Where(e => e.Selected))
 				{
-					if (entry.Handle.Equals("ls::TranslatedStringRepository::s_HandleUnknown", StringComparison.OrdinalIgnoreCase))
-					{
-						lastHandles.Add(new LocaleHandleHistory(entry, entry.Handle));
-						entry.Handle = LocaleEditorCommands.CreateHandle();
-						newHandles.Add(new LocaleHandleHistory(entry, entry.Handle));
-						Log.Here().Activity($"[{entry.Key}] New handle generated. [{entry.Handle}]");
-						entry.Parent.ChangesUnsaved = true;
-					}
+					//entry.Handle.Equals("ls::TranslatedStringRepository::s_HandleUnknown", StringComparison.OrdinalIgnoreCase)
+					lastHandles.Add(new LocaleHandleHistory(entry, entry.Handle));
+					entry.Handle = LocaleEditorCommands.CreateHandle();
+					newHandles.Add(new LocaleHandleHistory(entry, entry.Handle));
+					Log.Here().Activity($"[{entry.Key}] New handle generated. [{entry.Handle}]");
+					entry.Parent.ChangesUnsaved = true;
 				}
 
 				CreateSnapshot(() => {
@@ -1722,7 +1720,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			FileSelectedObservable.BindTo(this, vm => vm.AnyFileSelected).DisposeWith(disposables);
 			FileSelectedObservable.Subscribe((b) =>
 			{
-				Log.Here().Activity($"AnyFileSelected? Subscribe: {b} AnyFileSelected: {AnyFileSelected}");
+				//Log.Here().Activity($"AnyFileSelected? Subscribe: {b} AnyFileSelected: {AnyFileSelected}");
 			}).DisposeWith(disposables);
 
 			var onCancel = new Action<string, FileDialogResult>((s, r) => IsSubWindowOpen = false);
