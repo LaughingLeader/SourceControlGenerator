@@ -139,17 +139,20 @@ namespace SCG.Modules.DOS2DE.Utilities
 					string modsLocalePath = Path.Combine(modsRoot, "Localization");
 					string dialogLocalePath = Path.Combine(modsRoot, "Story", "Dialogs");
 
+					localizationData.ModsGroup.SourceDirectories.Add(modsLocalePath);
+					localizationData.DialogGroup.SourceDirectories.Add(dialogLocalePath);
+
 					if (Directory.Exists(modsLocalePath))
 					{
 						Log.Here().Activity($"Loading localization data from '{modsLocalePath}'.");
 						var modsLocaleData = await LoadFilesAsync(localizationData.ModsGroup, modsLocalePath, modProjectData, token, ".lsb");
-						localizationData.ModsGroup.SourceDirectories.Add(modsLocalePath);
+						
 						localizationData.ModsGroup.DataFiles.AddRange(modsLocaleData);
 					}
 					else
 					{
 						Log.Here().Warning($"Failed to find locale folder for {modProjectData.DisplayName} at path '{modsLocalePath}'.");
-						localizationData.ModsGroup.Visibility = false;
+						//localizationData.ModsGroup.Visibility = false;
 					}
 
 					if (Directory.Exists(dialogLocalePath))
@@ -161,42 +164,41 @@ namespace SCG.Modules.DOS2DE.Utilities
 							f.Locked = true;
 							f.CanCreateFileLink = false;
 						});
-						localizationData.DialogGroup.SourceDirectories.Add(dialogLocalePath);
 						localizationData.DialogGroup.DataFiles.AddRange(dialogLocaleData);
 					}
 					else
 					{
 						Log.Here().Warning($"Failed to find dialog folder for {modProjectData.DisplayName} at path '{dialogLocalePath}'.");
-						localizationData.DialogGroup.Visibility = false;
+						//localizationData.DialogGroup.Visibility = false;
 					}
 				}
 				else
 				{
-					localizationData.ModsGroup.Visibility = false;
-					localizationData.DialogGroup.Visibility = false;
+					//localizationData.ModsGroup.Visibility = false;
+					//localizationData.DialogGroup.Visibility = false;
 				}
 
 				if (publicExists)
 				{
 					string publicLocalePath = Path.Combine(publicRoot, "Localization");
+					localizationData.PublicGroup.SourceDirectories.Add(publicLocalePath);
 
 					if (Directory.Exists(publicLocalePath))
 					{
 						Log.Here().Activity($"Loading localization data from '{publicLocalePath}'.");
 						var publicLocaleData = await LoadFilesAsync(localizationData.PublicGroup, publicLocalePath, modProjectData, token, ".lsb");
-						localizationData.PublicGroup.SourceDirectories.Add(publicLocalePath);
 						localizationData.PublicGroup.DataFiles.AddRange(publicLocaleData);
 					}
 					else
 					{
-						localizationData.PublicGroup.Visibility = false;
+						//localizationData.PublicGroup.Visibility = false;
 
 						Log.Here().Warning($"Failed to find locale folder for {modProjectData.DisplayName} at path '{publicLocalePath}'.");
 					}
 				}
 				else
 				{
-					localizationData.PublicGroup.Visibility = false;
+					//localizationData.PublicGroup.Visibility = false;
 				}
 
 				if(customExists)
@@ -624,6 +626,14 @@ namespace SCG.Modules.DOS2DE.Utilities
 		{
 			if (data.SelectedGroup == null) return -1;
 
+			foreach(var dir in data.SelectedGroup.SourceDirectories)
+			{
+				if (!Directory.Exists(dir))
+				{
+					Directory.CreateDirectory(dir);
+				}
+			}
+
 			int success = 0;
 			if (data.SelectedGroup != data.CustomGroup)
 			{
@@ -671,6 +681,11 @@ namespace SCG.Modules.DOS2DE.Utilities
 			{
 				if (dataFile.Source != null)
 				{
+					var parentDir = Directory.GetParent(dataFile.SourcePath)?.FullName;
+					if (!String.IsNullOrEmpty(parentDir) && !Directory.Exists(parentDir))
+					{
+						Directory.CreateDirectory(parentDir);
+					}
 					var saveFormat = dataFile.Format;
 					if (saveFormat == ResourceFormat.LSX && FileCommands.FileExtensionFound(dataFile.SourcePath, ".lsb"))
 					{
