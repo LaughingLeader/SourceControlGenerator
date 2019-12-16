@@ -1,30 +1,33 @@
-﻿<reactiveui:ReactiveWindow 
-		xmlns:reactiveui="http://reactiveui.net"
-		x:Class="SCG.Modules.DOS2DE.Windows.LocaleEditorWindow"
-		x:TypeArguments="data:LocaleViewModel"
-		xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-		xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-		xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-		xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-		xmlns:local="clr-namespace:SCG.Modules.DOS2DE.Windows"
-		xmlns:data="clr-namespace:SCG.Modules.DOS2DE.Data.View.Locale"
-		xmlns:vdata="clr-namespace:SCG.Data.View;assembly=SourceControlGenerator"
-		xmlns:core="clr-namespace:SCG.Modules.DOS2DE.Core"
-		xmlns:util="clr-namespace:SCG.Modules.DOS2DE.Utilities"
-		xmlns:conv="clr-namespace:SCG.Converters;assembly=SourceControlGenerator"
-		xmlns:win="clr-namespace:SCG.Windows;assembly=SourceControlGenerator"
-		xmlns:c="clr-namespace:SCG.Controls;assembly=SourceControlGenerator"
-		xmlns:cb="clr-namespace:SCG.Controls.Behavior;assembly=SourceControlGenerator"
-		xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
-		xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
-		xmlns:html="clr-namespace:TheArtOfDev.HtmlRenderer.WPF;assembly=HtmlRenderer.WPF"
-		mc:Ignorable="d"
-		xmlns:clr="clr-namespace:System;assembly=mscorlib"
-		d:DataContext="{d:DesignInstance data:LocaleEditorDesignData, IsDesignTimeCreatable=True}"
-		Closing="LocaleWindow_Closing"
-		Title="{Binding WindowTitle, FallbackValue='Localization Editor'}" Height="525" Width="960"
-		IsEnabled="{Binding IsUnlocked}"
->
+﻿<reactiveui:ReactiveWindow
+	x:Class="SCG.Modules.DOS2DE.Windows.LocaleEditorWindow"
+	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:c="clr-namespace:SCG.Controls;assembly=SourceControlGenerator"
+	xmlns:cb="clr-namespace:SCG.Controls.Behavior;assembly=SourceControlGenerator"
+	xmlns:clr="clr-namespace:System;assembly=mscorlib"
+	xmlns:conv="clr-namespace:SCG.Converters;assembly=SourceControlGenerator"
+	xmlns:core="clr-namespace:SCG.Modules.DOS2DE.Core"
+	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+	xmlns:data="clr-namespace:SCG.Modules.DOS2DE.Data.View.Locale"
+	xmlns:html="clr-namespace:TheArtOfDev.HtmlRenderer.WPF;assembly=HtmlRenderer.WPF"
+	xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
+	xmlns:local="clr-namespace:SCG.Modules.DOS2DE.Windows"
+	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+	xmlns:reactiveui="http://reactiveui.net"
+	xmlns:util="clr-namespace:SCG.Modules.DOS2DE.Utilities"
+	xmlns:vdata="clr-namespace:SCG.Data.View;assembly=SourceControlGenerator"
+	xmlns:win="clr-namespace:SCG.Windows;assembly=SourceControlGenerator"
+	xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
+	Title="{Binding WindowTitle, FallbackValue='Localization Editor'}"
+	Width="960"
+	Height="525"
+	cb:InputBindingsBehavior.TakesInputBindingPrecedence="True"
+	d:DataContext="{d:DesignInstance data:LocaleEditorDesignData,
+	                                 IsDesignTimeCreatable=True}"
+	x:TypeArguments="data:LocaleViewModel"
+	Closing="LocaleWindow_Closing"
+	IsEnabled="{Binding IsUnlocked}"
+	mc:Ignorable="d">
 	<Window.Resources>
 		<ResourceDictionary>
 			<ResourceDictionary.MergedDictionaries>
@@ -33,24 +36,24 @@
 			</ResourceDictionary.MergedDictionaries>
 			<util:LocalizationTextFormatter x:Key="LocalizationTextFormatter" />
 			<clr:String x:Key="HtmlPreviewStyleSheet">
-body {
-  color: #a49d97;
-  margin-top: 4px;
-  margin-bottom: 4px;
-  margin-right: 4px;
-  margin-left: 4px;
-  font-size: 18;
-}
-</clr:String>
+				body {
+				color: #a49d97;
+				margin-top: 4px;
+				margin-bottom: 4px;
+				margin-right: 4px;
+				margin-left: 4px;
+				font-size: 18;
+				}
+			</clr:String>
 			<local:LocaleEditorDebugViewModel x:Key="DebugData" />
 			<Style x:Key="ShortcutButton" TargetType="Button">
 				<Setter Property="MinHeight" Value="16" />
 				<Setter Property="MinWidth" Value="16" />
 				<Setter Property="MaxHeight" Value="16" />
 				<Setter Property="MaxWidth" Value="16" />
-				<Setter Property="BorderBrush" Value="{x:Null}"/>
-				<Setter Property="BorderThickness" Value="0"/>
-				<Setter Property="Background" Value="Transparent"/>
+				<Setter Property="BorderBrush" Value="{x:Null}" />
+				<Setter Property="BorderThickness" Value="0" />
+				<Setter Property="Background" Value="Transparent" />
 
 				<Setter Property="Content">
 					<Setter.Value>
@@ -75,10 +78,10 @@ body {
 
 				<Style.Triggers>
 					<Trigger Property="IsEnabled" Value="False">
-						<Setter Property="Foreground" Value="Transparent"/>
-						<Setter Property="Background" Value="Transparent"/>
-						<Setter Property="BorderBrush" Value="{x:Null}"/>
-						<Setter Property="BorderThickness" Value="0"/>
+						<Setter Property="Foreground" Value="Transparent" />
+						<Setter Property="Background" Value="Transparent" />
+						<Setter Property="BorderBrush" Value="{x:Null}" />
+						<Setter Property="BorderThickness" Value="0" />
 					</Trigger>
 				</Style.Triggers>
 			</Style>
@@ -111,7 +114,7 @@ body {
 					<DataTrigger Binding="{Binding ChangesUnsaved}" Value="True">
 						<Setter Property="Background">
 							<Setter.Value>
-								<SolidColorBrush Color="Lime" Opacity="0.35" />
+								<SolidColorBrush Opacity="0.35" Color="Lime" />
 							</Setter.Value>
 						</Setter>
 					</DataTrigger>
@@ -120,130 +123,140 @@ body {
 					</DataTrigger>
 				</Style.Triggers>
 			</Style>
-			<Style x:Key="ProjectsHeaderStyle" TargetType="{x:Type DataGridColumnHeader}" BasedOn="{StaticResource {x:Type DataGridColumnHeader}}">
+			<Style
+				x:Key="ProjectsHeaderStyle"
+				BasedOn="{StaticResource {x:Type DataGridColumnHeader}}"
+				TargetType="{x:Type DataGridColumnHeader}">
 				<Setter Property="HorizontalContentAlignment" Value="Center" />
 			</Style>
-			<SolidColorBrush x:Key="TabItem.Selected.Background" Color="#FFFFFF"/>
-			<SolidColorBrush x:Key="TabItem.Selected.Border" Color="#ACACAC"/>
-			<Grid x:Key="KeyActionsGrid" Background="#FFD0FFD0" >
+			<SolidColorBrush x:Key="TabItem.Selected.Background" Color="#FFFFFF" />
+			<SolidColorBrush x:Key="TabItem.Selected.Border" Color="#ACACAC" />
+			<Grid x:Key="KeyActionsGrid" Background="#FFD0FFD0">
 				<Grid.ColumnDefinitions>
 					<ColumnDefinition Width="*" />
 					<ColumnDefinition Width="Auto" />
 				</Grid.ColumnDefinitions>
-				<StackPanel Orientation="Horizontal" Grid.Column="1" Margin="2">
+				<StackPanel
+					Grid.Column="1"
+					Margin="2"
+					Orientation="Horizontal">
 					<StackPanel.Resources>
 						<Style TargetType="{x:Type Button}">
 							<Setter Property="Focusable" Value="False" />
 						</Style>
 					</StackPanel.Resources>
-					<Button Padding="0" Margin="2"
-						ToolTip="{x:Static core:DOS2DETooltips.Button_Locale_InsertFontText}"
+					<Button
+						Margin="2"
+						Padding="0"
 						Command="{Binding Path=DataContext.AddFontTagCommand, RelativeSource={RelativeSource AncestorType={x:Type Window}}}"
 						IsEnabled="{Binding Path=DataContext.ContentFocused, RelativeSource={RelativeSource AncestorType={x:Type Window}}}"
-					>
+						ToolTip="{x:Static core:DOS2DETooltips.Button_Locale_InsertFontText}">
 						<Button.Content>
-							<Label Content="&lt;font&gt;" FontSize="8" Margin="0" />
+							<Label
+								Margin="0"
+								Content="&lt;font&gt;"
+								FontSize="8" />
 						</Button.Content>
 					</Button>
-					<xctk:ColorPicker x:Name="FontColorPicker" Margin="2" Width="50" Loaded="FontColorPicker_Loaded" 
-						SelectedColor="{Binding Path=DataContext.SelectedColor, RelativeSource={RelativeSource AncestorType={x:Type Window}}}"/>
+					<xctk:ColorPicker
+						x:Name="FontColorPicker"
+						Width="50"
+						Margin="2"
+						Loaded="FontColorPicker_Loaded"
+						SelectedColor="{Binding Path=DataContext.SelectedColor, RelativeSource={RelativeSource AncestorType={x:Type Window}}}" />
 				</StackPanel>
-				<StackPanel Orientation="Horizontal" Margin="2">
+				<StackPanel Margin="2" Orientation="Horizontal">
 					<StackPanel.Resources>
-						<Style TargetType="{x:Type c:ImageButton}" BasedOn="{StaticResource DefaultImageButtonStyle}">
+						<Style BasedOn="{StaticResource DefaultImageButtonStyle}" TargetType="{x:Type c:ImageButton}">
 							<Setter Property="TintColor" Value="Lime" />
 							<Setter Property="Margin" Value="2" />
 						</Style>
 					</StackPanel.Resources>
-					<TextBlock Text="Actions:" VerticalAlignment="Center" Margin="4,0,2,0" />
+					<TextBlock
+						Margin="4,0,2,0"
+						VerticalAlignment="Center"
+						Text="Actions:" />
 					<c:ImageButton
-						Command="{Binding Path=DataContext.AddNewKeyCommand, RelativeSource={RelativeSource AncestorType={x:Type Window}}}" 
-						ToolTip_Enabled="{x:Static core:DOS2DETooltips.Button_Locale_AddKey}"
-						ToolTip_Disabled="{x:Static core:DOS2DETooltips.Button_Locale_AddKey_Disabled}"
+						cb:ImageButtonHoverOnDisabled.Enable="True"
+						Command="{Binding Path=DataContext.AddNewKeyCommand, RelativeSource={RelativeSource AncestorType={x:Type Window}}}"
+						IsEnabled="{Binding Path=DataContext.CanAddKeys, RelativeSource={RelativeSource AncestorType={x:Type Window}}}"
 						Source="{x:Static vdata:IconPathData.AddRow}"
-						IsEnabled="{Binding Path=DataContext.CanAddKeys, RelativeSource={RelativeSource AncestorType={x:Type Window}}}"
+						ToolTip_Disabled="{x:Static core:DOS2DETooltips.Button_Locale_AddKey_Disabled}"
+						ToolTip_Enabled="{x:Static core:DOS2DETooltips.Button_Locale_AddKey}" />
+					<c:ImageButton
 						cb:ImageButtonHoverOnDisabled.Enable="True"
-					/>
-					<c:ImageButton 
-						Command="{Binding Path=DataContext.DeleteKeysCommand, RelativeSource={RelativeSource AncestorType={x:Type Window}}}" 
-						ToolTip="{x:Static core:DOS2DETooltips.Button_Locale_DeleteKeys}"
+						Command="{Binding Path=DataContext.DeleteKeysCommand, RelativeSource={RelativeSource AncestorType={x:Type Window}}}"
 						Source="{x:Static vdata:IconPathData.DeleteTableRow}"
-						cb:ImageButtonHoverOnDisabled.Enable="True"
-					/>
+						ToolTip="{x:Static core:DOS2DETooltips.Button_Locale_DeleteKeys}" />
 					<Rectangle Style="{StaticResource VerticalSeparator}" />
-					<c:ImageButton 
-						Command="{Binding Path=DataContext.GenerateHandlesCommand, RelativeSource={RelativeSource AncestorType={x:Type Window}}}" 
-						ToolTip="{x:Static core:DOS2DETooltips.Button_Locale_GenerateHandles}"
+					<c:ImageButton
+						Command="{Binding Path=DataContext.GenerateHandlesCommand, RelativeSource={RelativeSource AncestorType={x:Type Window}}}"
 						Source="{x:Static vdata:IconPathData.RowUpdating}"
-					/>
+						ToolTip="{x:Static core:DOS2DETooltips.Button_Locale_GenerateHandles}" />
 					<Rectangle Style="{StaticResource VerticalSeparator}" />
-					<c:ImageButton 
+					<c:ImageButton
+						cb:ImageButtonHoverOnDisabled.Enable="True"
 						Command="{Binding Path=DataContext.ImportKeysCommand, RelativeSource={RelativeSource AncestorType={x:Type Window}}}"
-						ToolTip_Enabled="{x:Static core:DOS2DETooltips.Button_Locale_ImportKeys}"
-						ToolTip_Disabled="{x:Static core:DOS2DETooltips.Button_Locale_ImportKeys_Disabled}"
-						Source="{x:Static vdata:IconPathData.ImportFile}"
 						IsEnabled="{Binding Path=DataContext.CanAddKeys, RelativeSource={RelativeSource AncestorType={x:Type Window}}}"
-						cb:ImageButtonHoverOnDisabled.Enable="True"
-					/>
+						Source="{x:Static vdata:IconPathData.ImportFile}"
+						ToolTip_Disabled="{x:Static core:DOS2DETooltips.Button_Locale_ImportKeys_Disabled}"
+						ToolTip_Enabled="{x:Static core:DOS2DETooltips.Button_Locale_ImportKeys}" />
 					<Rectangle Style="{StaticResource VerticalSeparator}" />
-					<c:ImageButton 
+					<c:ImageButton
+						cb:ImageButtonHoverOnDisabled.Enable="True"
 						Command="{Binding Path=DataContext.RefreshFileCommand, RelativeSource={RelativeSource AncestorType={x:Type Window}}}"
-						ToolTip="{x:Static core:DOS2DETooltips.Button_Locale_RefreshFile}"
 						Source="{x:Static vdata:IconPathData.Refresh}"
-						cb:ImageButtonHoverOnDisabled.Enable="True"
-					/>
+						ToolTip="{x:Static core:DOS2DETooltips.Button_Locale_RefreshFile}" />
 					<Rectangle Style="{StaticResource VerticalSeparator}" />
-					<c:ImageButton x:Name="ExportButton" 
+					<c:ImageButton
+						x:Name="ExportButton"
+						cb:ImageButtonHoverOnDisabled.Enable="True"
 						Command="{Binding Path=DataContext.ExportXMLCommand, RelativeSource={RelativeSource AncestorType={x:Type Window}}}"
-						ToolTip="{x:Static core:DOS2DETooltips.Button_Locale_ExportToXML}" 
-						Source="{x:Static vdata:IconPathData.XSLTTemplate}" 
-						cb:ImageButtonHoverOnDisabled.Enable="True"
-					/>
+						Source="{x:Static vdata:IconPathData.XSLTTemplate}"
+						ToolTip="{x:Static core:DOS2DETooltips.Button_Locale_ExportToXML}" />
 					<Rectangle Style="{StaticResource VerticalSeparator}" />
-					<c:ImageButton 
+					<c:ImageButton
+						cb:ImageButtonHoverOnDisabled.Enable="True"
 						Command="{Binding Path=DataContext.SetFileLinkDataCommand, RelativeSource={RelativeSource AncestorType={x:Type Window}}}"
 						CommandParameter="{Binding}"
-						ToolTip="{x:Static core:DOS2DETooltips.Button_Locale_SetLinkedData}"
 						Source="{x:Static vdata:IconPathData.LinkFile}"
+						ToolTip="{x:Static core:DOS2DETooltips.Button_Locale_SetLinkedData}"
+						Visibility="{Binding CanCreateFileLink, Converter={StaticResource BoolToVisibilityConverter}}" />
+					<c:ImageButton
 						cb:ImageButtonHoverOnDisabled.Enable="True"
-						Visibility="{Binding CanCreateFileLink, Converter={StaticResource BoolToVisibilityConverter}}"
-					/>
-					<c:ImageButton 
 						Command="{Binding Path=DataContext.RemoveFileLinkDataCommand, RelativeSource={RelativeSource AncestorType={x:Type Window}}}"
 						CommandParameter="{Binding}"
-						ToolTip="{x:Static core:DOS2DETooltips.Button_Locale_RemoveLinkedData}"
 						Source="{x:Static vdata:IconPathData.LinkRemoved}"
+						ToolTip="{x:Static core:DOS2DETooltips.Button_Locale_RemoveLinkedData}"
+						Visibility="{Binding HasFileLink, Converter={StaticResource BoolToVisibilityConverter}}" />
+					<c:ImageButton
 						cb:ImageButtonHoverOnDisabled.Enable="True"
-						Visibility="{Binding HasFileLink, Converter={StaticResource BoolToVisibilityConverter}}"
-					/>
-					<c:ImageButton 
 						Command="{Binding Path=DataContext.ReloadFileLinkDataCommand, RelativeSource={RelativeSource AncestorType={x:Type Window}}}"
 						CommandParameter="{Binding}"
-						ToolTip="{x:Static core:DOS2DETooltips.Button_Locale_RefreshLinkedData}"
 						Source="{x:Static vdata:IconPathData.LinkVertical}"
-						cb:ImageButtonHoverOnDisabled.Enable="True"
-						Visibility="{Binding HasFileLink, Converter={StaticResource BoolToVisibilityConverter}}"
-					/>
+						ToolTip="{x:Static core:DOS2DETooltips.Button_Locale_RefreshLinkedData}"
+						Visibility="{Binding HasFileLink, Converter={StaticResource BoolToVisibilityConverter}}" />
 				</StackPanel>
 			</Grid>
 			<html:HtmlPanel
-				x:Key="EntryContentPreview" 
-				x:Name="EntryContentPreviewHtmlPanel" 
-				Text="{Binding Path=DataContext.SelectedEntryHtmlContent, UpdateSourceTrigger=PropertyChanged, Mode=OneWay, RelativeSource={RelativeSource AncestorType={x:Type Window}}}"
-				BorderThickness="0" BorderBrush="{x:Null}"
-				Block.LineHeight="2"
-				Background="#BF020202"
+				x:Key="EntryContentPreview"
+				x:Name="EntryContentPreviewHtmlPanel"
 				Padding="6"
+				Background="#BF020202"
 				BaseStylesheet="{StaticResource HtmlPreviewStyleSheet}"
-			>
+				Block.LineHeight="2"
+				BorderBrush="{x:Null}"
+				BorderThickness="0"
+				Text="{Binding Path=DataContext.SelectedEntryHtmlContent, UpdateSourceTrigger=PropertyChanged, Mode=OneWay, RelativeSource={RelativeSource AncestorType={x:Type Window}}}">
 				<html:HtmlPanel.Resources>
 					<Style TargetType="TextBlock">
 						<Setter Property="TextAlignment" Value="Center" />
 					</Style>
-				</html:HtmlPanel.Resources></html:HtmlPanel>
-			<!--<xctk:RichTextBox 
-				x:Key="EntryContentPreview" 
-				x:Name="EntryContentPreviewRichTextBox" 
+				</html:HtmlPanel.Resources>
+			</html:HtmlPanel>
+			<!--<xctk:RichTextBox
+				x:Key="EntryContentPreview"
+				x:Name="EntryContentPreviewRichTextBox"
 				Text="{Binding Path=DataContext.SelectedEntryContent, UpdateSourceTrigger=PropertyChanged, RelativeSource={RelativeSource AncestorType={x:Type Window}}}"
 				TextFormatter="{StaticResource LocalizationPreviewTextFormatter}"
 				BorderThickness="0" BorderBrush="{x:Null}"
@@ -254,25 +267,27 @@ body {
 				Background="Transparent"
 				IsUndoEnabled="False"
 			/>-->
-			<xctk:RichTextBox 
-					x:Name="EntryContentRichTextBox"
-					x:Key="EntryContentRichTextBox"
-					Text="{Binding Path=DataContext.SelectedEntryContent, UpdateSourceTrigger=PropertyChanged,
-						RelativeSource={RelativeSource AncestorType={x:Type Window}}}"
-					TextFormatter="{StaticResource LocalizationTextFormatter}"
-					GotFocus="EntryContent_GotFocus"
-					LostFocus="EntryContent_LostFocus"
-					SelectionChanged="EntryContent_SelectionChanged"
-					Loaded="EntryContentRichTextBox_Loaded" Unloaded="EntryContentRichTextBox_Unloaded"
-					BorderThickness="0" BorderBrush="{x:Null}"
-					Margin="1" Block.LineHeight="2"
-					Background="Transparent"
-					Tag="{Binding Path=DataContext, RelativeSource={RelativeSource AncestorType={x:Type Window}}}"
-					FontSize="{Binding Path=DataContext.ContentFontSize, RelativeSource={RelativeSource AncestorType={x:Type Window}}, FallbackValue=12, TargetNullValue=12}"
-					AcceptsReturn="True" AcceptsTab="True"
-					IsUndoEnabled="False"
-					IsReadOnly="{Binding Path=DataContext.CanEditContentPreview, RelativeSource={RelativeSource AncestorType={x:Type Window}}}"
-				>
+			<xctk:RichTextBox
+				x:Key="EntryContentRichTextBox"
+				x:Name="EntryContentRichTextBox"
+				Margin="1"
+				AcceptsReturn="True"
+				AcceptsTab="True"
+				Background="Transparent"
+				Block.LineHeight="2"
+				BorderBrush="{x:Null}"
+				BorderThickness="0"
+				FontSize="{Binding Path=DataContext.ContentFontSize, RelativeSource={RelativeSource AncestorType={x:Type Window}}, FallbackValue=12, TargetNullValue=12}"
+				GotFocus="EntryContent_GotFocus"
+				IsReadOnly="{Binding Path=DataContext.CanEditContentPreview, RelativeSource={RelativeSource AncestorType={x:Type Window}}}"
+				IsUndoEnabled="False"
+				Loaded="EntryContentRichTextBox_Loaded"
+				LostFocus="EntryContent_LostFocus"
+				SelectionChanged="EntryContent_SelectionChanged"
+				Tag="{Binding Path=DataContext, RelativeSource={RelativeSource AncestorType={x:Type Window}}}"
+				Text="{Binding Path=DataContext.SelectedEntryContent, UpdateSourceTrigger=PropertyChanged, RelativeSource={RelativeSource AncestorType={x:Type Window}}}"
+				TextFormatter="{StaticResource LocalizationTextFormatter}"
+				Unloaded="EntryContentRichTextBox_Unloaded">
 				<i:Interaction.Behaviors>
 					<cb:RichTextBoxSelectionBehavior SelectedText="{Binding Path=DataContext.SelectedText, Mode=OneWayToSource, RelativeSource={RelativeSource AncestorType={x:Type Window}}}" />
 				</i:Interaction.Behaviors>
@@ -282,218 +297,325 @@ body {
 						<MenuItem Command="ApplicationCommands.Copy" />
 						<MenuItem Command="ApplicationCommands.Paste" />
 						<MenuItem Command="ApplicationCommands.SelectAll" />
-						<MenuItem Header="Select None" Command="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.Tag.SelectNoneCommand}" 
-								  CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget}" />
+						<MenuItem
+							Command="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.Tag.SelectNoneCommand}"
+							CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget}"
+							Header="Select None" />
 						<!--<MenuItem Header="Display Content in Separate Window" Command="{Binding Path=PlacementTarget.Tag.PopoutContentCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>-->
-						<MenuItem Header="Toggle Light/Dark Mode" Command="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.Tag.ToggleContentLightModeCommand}" />
+						<MenuItem Command="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.Tag.ToggleContentLightModeCommand}" Header="Toggle Light/Dark Mode" />
 						<MenuItem Header="Font Size">
-							<MenuItem Header="12" CommandParameter="12" Command="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.Tag.ChangeContentFontSizeCommand}" />
-							<MenuItem Header="16" CommandParameter="16" Command="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.Tag.ChangeContentFontSizeCommand}" />
-							<MenuItem Header="24" CommandParameter="24" Command="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.Tag.ChangeContentFontSizeCommand}" />
-							<MenuItem Header="32" CommandParameter="32" Command="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.Tag.ChangeContentFontSizeCommand}" />
+							<MenuItem
+								Command="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.Tag.ChangeContentFontSizeCommand}"
+								CommandParameter="12"
+								Header="12" />
+							<MenuItem
+								Command="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.Tag.ChangeContentFontSizeCommand}"
+								CommandParameter="16"
+								Header="16" />
+							<MenuItem
+								Command="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.Tag.ChangeContentFontSizeCommand}"
+								CommandParameter="24"
+								Header="24" />
+							<MenuItem
+								Command="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.Tag.ChangeContentFontSizeCommand}"
+								CommandParameter="32"
+								Header="32" />
 						</MenuItem>
 					</ContextMenu>
 				</xctk:RichTextBox.ContextMenu>
 			</xctk:RichTextBox>
 
 			<Style x:Key="LocaleGroupTabControl" TargetType="{x:Type TabControl}">
-				<Setter Property="Padding" Value="0"/>
-				<Setter Property="HorizontalContentAlignment" Value="Center"/>
-				<Setter Property="VerticalContentAlignment" Value="Center"/>
-				<Setter Property="Background" Value="{StaticResource TabItem.Selected.Background}"/>
-				<Setter Property="BorderBrush" Value="{StaticResource TabItem.Selected.Border}"/>
-				<Setter Property="BorderThickness" Value="0"/>
-				<Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}"/>
+				<Setter Property="Padding" Value="0" />
+				<Setter Property="HorizontalContentAlignment" Value="Center" />
+				<Setter Property="VerticalContentAlignment" Value="Center" />
+				<Setter Property="Background" Value="{StaticResource TabItem.Selected.Background}" />
+				<Setter Property="BorderBrush" Value="{StaticResource TabItem.Selected.Border}" />
+				<Setter Property="BorderThickness" Value="0" />
+				<Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}" />
 				<Setter Property="Template">
 					<Setter.Value>
 						<ControlTemplate TargetType="{x:Type TabControl}">
-							<Grid x:Name="templateRoot" ClipToBounds="true" SnapsToDevicePixels="true" KeyboardNavigation.TabNavigation="Local">
+							<Grid
+								x:Name="templateRoot"
+								ClipToBounds="true"
+								KeyboardNavigation.TabNavigation="Local"
+								SnapsToDevicePixels="true">
 								<Grid.ColumnDefinitions>
-									<ColumnDefinition x:Name="ColumnDefinition0"/>
-									<ColumnDefinition x:Name="ColumnDefinition1" Width="0"/>
+									<ColumnDefinition x:Name="ColumnDefinition0" />
+									<ColumnDefinition x:Name="ColumnDefinition1" Width="0" />
 								</Grid.ColumnDefinitions>
 								<Grid.RowDefinitions>
-									<RowDefinition x:Name="RowDefinition0" Height="Auto"/>
-									<RowDefinition x:Name="RowDefinition1" Height="*"/>
+									<RowDefinition x:Name="RowDefinition0" Height="Auto" />
+									<RowDefinition x:Name="RowDefinition1" Height="*" />
 								</Grid.RowDefinitions>
-								<TabPanel x:Name="headerPanel" Grid.Column="0" Grid.Row="0"
-										  Background="Transparent" IsItemsHost="true" KeyboardNavigation.TabIndex="1" Panel.ZIndex="1"/>
-								<Border x:Name="groupContentPanel" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{TemplateBinding Background}" 
-										Grid.Column="0" Grid.Row="1" KeyboardNavigation.DirectionalNavigation="Contained" KeyboardNavigation.TabIndex="2" KeyboardNavigation.TabNavigation="Local">
-									<ContentPresenter x:Name="PART_SelectedContentHost" ContentSource="SelectedContent" Margin="{TemplateBinding Padding}" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
+								<TabPanel
+									x:Name="headerPanel"
+									Grid.Row="0"
+									Grid.Column="0"
+									Panel.ZIndex="1"
+									Background="Transparent"
+									IsItemsHost="true"
+									KeyboardNavigation.TabIndex="1" />
+								<Border
+									x:Name="groupContentPanel"
+									Grid.Row="1"
+									Grid.Column="0"
+									Background="{TemplateBinding Background}"
+									BorderBrush="{TemplateBinding BorderBrush}"
+									BorderThickness="{TemplateBinding BorderThickness}"
+									KeyboardNavigation.DirectionalNavigation="Contained"
+									KeyboardNavigation.TabIndex="2"
+									KeyboardNavigation.TabNavigation="Local">
+									<ContentPresenter
+										x:Name="PART_SelectedContentHost"
+										Margin="{TemplateBinding Padding}"
+										ContentSource="SelectedContent"
+										SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" />
 								</Border>
 							</Grid>
 							<ControlTemplate.Triggers>
 								<Trigger Property="TabStripPlacement" Value="Bottom">
-									<Setter Property="Grid.Row" TargetName="headerPanel" Value="1"/>
-									<Setter Property="Grid.Row" TargetName="groupContentPanel" Value="0"/>
-									<Setter Property="Height" TargetName="RowDefinition0" Value="*"/>
-									<Setter Property="Height" TargetName="RowDefinition1" Value="Auto"/>
-									<Setter Property="Margin" TargetName="headerPanel" Value="2,0,2,2"/>
+									<Setter TargetName="headerPanel" Property="Grid.Row" Value="1" />
+									<Setter TargetName="groupContentPanel" Property="Grid.Row" Value="0" />
+									<Setter TargetName="RowDefinition0" Property="Height" Value="*" />
+									<Setter TargetName="RowDefinition1" Property="Height" Value="Auto" />
+									<Setter TargetName="headerPanel" Property="Margin" Value="2,0,2,2" />
 								</Trigger>
 								<Trigger Property="TabStripPlacement" Value="Left">
-									<Setter Property="Grid.Row" TargetName="headerPanel" Value="0"/>
-									<Setter Property="Grid.Row" TargetName="groupContentPanel" Value="0"/>
-									<Setter Property="Grid.Column" TargetName="headerPanel" Value="0"/>
-									<Setter Property="Grid.Column" TargetName="groupContentPanel" Value="1"/>
-									<Setter Property="Width" TargetName="ColumnDefinition0" Value="Auto"/>
-									<Setter Property="Width" TargetName="ColumnDefinition1" Value="*"/>
-									<Setter Property="Height" TargetName="RowDefinition0" Value="*"/>
-									<Setter Property="Height" TargetName="RowDefinition1" Value="0"/>
-									<Setter Property="Margin" TargetName="headerPanel" Value="2,2,0,2"/>
+									<Setter TargetName="headerPanel" Property="Grid.Row" Value="0" />
+									<Setter TargetName="groupContentPanel" Property="Grid.Row" Value="0" />
+									<Setter TargetName="headerPanel" Property="Grid.Column" Value="0" />
+									<Setter TargetName="groupContentPanel" Property="Grid.Column" Value="1" />
+									<Setter TargetName="ColumnDefinition0" Property="Width" Value="Auto" />
+									<Setter TargetName="ColumnDefinition1" Property="Width" Value="*" />
+									<Setter TargetName="RowDefinition0" Property="Height" Value="*" />
+									<Setter TargetName="RowDefinition1" Property="Height" Value="0" />
+									<Setter TargetName="headerPanel" Property="Margin" Value="2,2,0,2" />
 								</Trigger>
 								<Trigger Property="TabStripPlacement" Value="Right">
-									<Setter Property="Grid.Row" TargetName="headerPanel" Value="0"/>
-									<Setter Property="Grid.Row" TargetName="groupContentPanel" Value="0"/>
-									<Setter Property="Grid.Column" TargetName="headerPanel" Value="1"/>
-									<Setter Property="Grid.Column" TargetName="groupContentPanel" Value="0"/>
-									<Setter Property="Width" TargetName="ColumnDefinition0" Value="*"/>
-									<Setter Property="Width" TargetName="ColumnDefinition1" Value="Auto"/>
-									<Setter Property="Height" TargetName="RowDefinition0" Value="*"/>
-									<Setter Property="Height" TargetName="RowDefinition1" Value="0"/>
-									<Setter Property="Margin" TargetName="headerPanel" Value="0,2,2,2"/>
+									<Setter TargetName="headerPanel" Property="Grid.Row" Value="0" />
+									<Setter TargetName="groupContentPanel" Property="Grid.Row" Value="0" />
+									<Setter TargetName="headerPanel" Property="Grid.Column" Value="1" />
+									<Setter TargetName="groupContentPanel" Property="Grid.Column" Value="0" />
+									<Setter TargetName="ColumnDefinition0" Property="Width" Value="*" />
+									<Setter TargetName="ColumnDefinition1" Property="Width" Value="Auto" />
+									<Setter TargetName="RowDefinition0" Property="Height" Value="*" />
+									<Setter TargetName="RowDefinition1" Property="Height" Value="0" />
+									<Setter TargetName="headerPanel" Property="Margin" Value="0,2,2,2" />
 								</Trigger>
 								<Trigger Property="IsEnabled" Value="false">
-									<Setter Property="TextElement.Foreground" TargetName="templateRoot" Value="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}"/>
+									<Setter TargetName="templateRoot" Property="TextElement.Foreground" Value="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}" />
 								</Trigger>
 							</ControlTemplate.Triggers>
 						</ControlTemplate>
 					</Setter.Value>
 				</Setter>
 			</Style>
-			<Style x:Key="TabControlFileData" TargetType="{x:Type TabControl}" BasedOn="{StaticResource LocaleGroupTabControl}">
+			<Style
+				x:Key="TabControlFileData"
+				BasedOn="{StaticResource LocaleGroupTabControl}"
+				TargetType="{x:Type TabControl}">
 				<Setter Property="Template">
 					<Setter.Value>
 						<ControlTemplate TargetType="{x:Type TabControl}">
-							<Grid x:Name="templateRoot" ClipToBounds="true" 
-								  SnapsToDevicePixels="true" KeyboardNavigation.TabNavigation="Local" ScrollViewer.VerticalScrollBarVisibility="Auto">
+							<Grid
+								x:Name="templateRoot"
+								ClipToBounds="true"
+								KeyboardNavigation.TabNavigation="Local"
+								ScrollViewer.VerticalScrollBarVisibility="Auto"
+								SnapsToDevicePixels="true">
 								<Grid.ColumnDefinitions>
-									<ColumnDefinition x:Name="ColumnDefinition0"/>
-									<ColumnDefinition x:Name="GridSplitter" Width="0"/>
-									<ColumnDefinition x:Name="ColumnDefinition1" Width="0"/>
+									<ColumnDefinition x:Name="ColumnDefinition0" />
+									<ColumnDefinition x:Name="GridSplitter" Width="0" />
+									<ColumnDefinition x:Name="ColumnDefinition1" Width="0" />
 								</Grid.ColumnDefinitions>
 								<Grid.RowDefinitions>
-									<RowDefinition x:Name="RowDefinition0" Height="Auto"/>
-									<RowDefinition x:Name="RowDefinition1" Height="*"/>
+									<RowDefinition x:Name="RowDefinition0" Height="Auto" />
+									<RowDefinition x:Name="RowDefinition1" Height="*" />
 								</Grid.RowDefinitions>
-								<GridSplitter 
-									Background="LightGray"
-									Grid.Column="1"
+								<GridSplitter
 									Grid.RowSpan="3"
-									VerticalAlignment="Stretch" HorizontalAlignment="Stretch"
+									Grid.Column="1"
 									Height="Auto"
+									HorizontalAlignment="Stretch"
+									VerticalAlignment="Stretch"
+									Background="LightGray"
 									ResizeDirection="Columns" />
-								<Grid Grid.Column="0" Grid.Row="0" x:Name="headerGrid">
+								<Grid
+									x:Name="headerGrid"
+									Grid.Row="0"
+									Grid.Column="0">
 									<Grid.RowDefinitions>
 										<RowDefinition Height="Auto" />
 										<RowDefinition Height="*" />
 									</Grid.RowDefinitions>
-									<Button x:Name="AddFileToGroupButton" Content="Add Tab" Grid.Row="0" Background="Beige" BorderBrush="Bisque" BorderThickness="1,1,0,1"
-										Command="{Binding Path=DataContext.AddFileToGroupCommand, RelativeSource={RelativeSource AncestorType={x:Type Window}}}" 
+									<Button
+										x:Name="AddFileToGroupButton"
+										Grid.Row="0"
+										Background="Beige"
+										BorderBrush="Bisque"
+										BorderThickness="1,1,0,1"
+										Command="{Binding Path=DataContext.AddFileToGroupCommand, RelativeSource={RelativeSource AncestorType={x:Type Window}}}"
 										CommandParameter="{Binding}"
+										Content="Add Tab"
 										Visibility="{Binding CanAddFiles, Converter={StaticResource BoolToVisibilityConverter}, FallbackValue=Visible}" />
-									<ScrollViewer Grid.Row="1"
-										ScrollViewer.CanContentScroll="True" VerticalAlignment="Top"
-										ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+									<ScrollViewer
+										Grid.Row="1"
+										VerticalAlignment="Top"
+										ScrollViewer.CanContentScroll="True"
+										ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+										ScrollViewer.VerticalScrollBarVisibility="Auto">
 										<ScrollViewer.Resources>
-											<Style TargetType="{x:Type ScrollBar}" BasedOn="{StaticResource SkinnyScrollbarStyle}">
-												<Setter Property="SnapsToDevicePixels" Value="True"/>
-												<Setter Property="OverridesDefaultStyle" Value="true"/>
+											<Style BasedOn="{StaticResource SkinnyScrollbarStyle}" TargetType="{x:Type ScrollBar}">
+												<Setter Property="SnapsToDevicePixels" Value="True" />
+												<Setter Property="OverridesDefaultStyle" Value="true" />
 											</Style>
 										</ScrollViewer.Resources>
-										<UniformGrid Columns="1" x:Name="headerPanel" Background="Transparent"
-											IsItemsHost="true" KeyboardNavigation.TabIndex="1" Panel.ZIndex="1"
-										/>
+										<UniformGrid
+											x:Name="headerPanel"
+											Panel.ZIndex="1"
+											Background="Transparent"
+											Columns="1"
+											IsItemsHost="true"
+											KeyboardNavigation.TabIndex="1" />
 									</ScrollViewer>
 								</Grid>
-								<Border x:Name="contentPanel" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{TemplateBinding Background}" 
-										Grid.Column="0" Grid.Row="1" KeyboardNavigation.DirectionalNavigation="Contained" KeyboardNavigation.TabIndex="2" KeyboardNavigation.TabNavigation="Local">
-									<ContentPresenter x:Name="PART_SelectedContentHost" ContentSource="SelectedContent" Margin="{TemplateBinding Padding}" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
+								<Border
+									x:Name="contentPanel"
+									Grid.Row="1"
+									Grid.Column="0"
+									Background="{TemplateBinding Background}"
+									BorderBrush="{TemplateBinding BorderBrush}"
+									BorderThickness="{TemplateBinding BorderThickness}"
+									KeyboardNavigation.DirectionalNavigation="Contained"
+									KeyboardNavigation.TabIndex="2"
+									KeyboardNavigation.TabNavigation="Local">
+									<ContentPresenter
+										x:Name="PART_SelectedContentHost"
+										Margin="{TemplateBinding Padding}"
+										ContentSource="SelectedContent"
+										SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" />
 								</Border>
 							</Grid>
 							<ControlTemplate.Triggers>
 								<Trigger Property="TabStripPlacement" Value="Bottom">
-									<Setter Property="Grid.Row" TargetName="headerGrid" Value="1"/>
-									<Setter Property="Grid.Row" TargetName="contentPanel" Value="0"/>
-									<Setter Property="Height" TargetName="RowDefinition0" Value="*"/>
-									<Setter Property="Height" TargetName="RowDefinition1" Value="Auto"/>
-									<Setter Property="Margin" TargetName="headerPanel" Value="2,0,2,2"/>
+									<Setter TargetName="headerGrid" Property="Grid.Row" Value="1" />
+									<Setter TargetName="contentPanel" Property="Grid.Row" Value="0" />
+									<Setter TargetName="RowDefinition0" Property="Height" Value="*" />
+									<Setter TargetName="RowDefinition1" Property="Height" Value="Auto" />
+									<Setter TargetName="headerPanel" Property="Margin" Value="2,0,2,2" />
 								</Trigger>
 								<Trigger Property="TabStripPlacement" Value="Left">
-									<Setter Property="Grid.Row" TargetName="headerGrid" Value="0"/>
-									<Setter Property="Grid.Row" TargetName="contentPanel" Value="0"/>
-									<Setter Property="Grid.Column" TargetName="headerPanel" Value="0"/>
-									<Setter Property="Grid.Column" TargetName="contentPanel" Value="2"/>
-									<Setter Property="Width" TargetName="ColumnDefinition0" Value="Auto"/>
-									<Setter Property="Width" TargetName="ColumnDefinition1" Value="*"/>
-									<Setter Property="Width" TargetName="GridSplitter" Value="1"/>
-									<Setter Property="Height" TargetName="RowDefinition0" Value="*"/>
-									<Setter Property="Height" TargetName="RowDefinition1" Value="0"/>
-									<Setter Property="Margin" TargetName="headerPanel" Value="2,2,0,2"/>
+									<Setter TargetName="headerGrid" Property="Grid.Row" Value="0" />
+									<Setter TargetName="contentPanel" Property="Grid.Row" Value="0" />
+									<Setter TargetName="headerPanel" Property="Grid.Column" Value="0" />
+									<Setter TargetName="contentPanel" Property="Grid.Column" Value="2" />
+									<Setter TargetName="ColumnDefinition0" Property="Width" Value="Auto" />
+									<Setter TargetName="ColumnDefinition1" Property="Width" Value="*" />
+									<Setter TargetName="GridSplitter" Property="Width" Value="1" />
+									<Setter TargetName="RowDefinition0" Property="Height" Value="*" />
+									<Setter TargetName="RowDefinition1" Property="Height" Value="0" />
+									<Setter TargetName="headerPanel" Property="Margin" Value="2,2,0,2" />
 								</Trigger>
 								<Trigger Property="TabStripPlacement" Value="Right">
-									<Setter Property="Grid.Row" TargetName="headerGrid" Value="0"/>
-									<Setter Property="Grid.Row" TargetName="contentPanel" Value="0"/>
-									<Setter Property="Grid.Column" TargetName="headerGrid" Value="1"/>
-									<Setter Property="Grid.Column" TargetName="contentPanel" Value="0"/>
-									<Setter Property="Width" TargetName="ColumnDefinition0" Value="*"/>
-									<Setter Property="Width" TargetName="ColumnDefinition1" Value="Auto"/>
-									<Setter Property="Height" TargetName="RowDefinition0" Value="*"/>
-									<Setter Property="Height" TargetName="RowDefinition1" Value="0"/>
-									<Setter Property="Margin" TargetName="headerPanel" Value="0,2,2,2"/>
+									<Setter TargetName="headerGrid" Property="Grid.Row" Value="0" />
+									<Setter TargetName="contentPanel" Property="Grid.Row" Value="0" />
+									<Setter TargetName="headerGrid" Property="Grid.Column" Value="1" />
+									<Setter TargetName="contentPanel" Property="Grid.Column" Value="0" />
+									<Setter TargetName="ColumnDefinition0" Property="Width" Value="*" />
+									<Setter TargetName="ColumnDefinition1" Property="Width" Value="Auto" />
+									<Setter TargetName="RowDefinition0" Property="Height" Value="*" />
+									<Setter TargetName="RowDefinition1" Property="Height" Value="0" />
+									<Setter TargetName="headerPanel" Property="Margin" Value="0,2,2,2" />
 								</Trigger>
 								<Trigger Property="IsEnabled" Value="false">
-									<Setter Property="TextElement.Foreground" TargetName="templateRoot" Value="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}"/>
+									<Setter TargetName="templateRoot" Property="TextElement.Foreground" Value="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}" />
 								</Trigger>
 							</ControlTemplate.Triggers>
 						</ControlTemplate>
 					</Setter.Value>
 				</Setter>
 			</Style>
-			
+
 			<Style x:Key="LocaleDataGridStyle" TargetType="{x:Type DataGrid}">
-				<Setter Property="Background" Value="{DynamicResource {x:Static SystemColors.ControlBrushKey}}"/>
-				<Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}"/>
-				<Setter Property="BorderBrush" Value="#FF688CAF"/>
-				<Setter Property="BorderThickness" Value="1"/>
-				<Setter Property="RowDetailsVisibilityMode" Value="VisibleWhenSelected"/>
-				<Setter Property="ScrollViewer.CanContentScroll" Value="true"/>
-				<Setter Property="ScrollViewer.PanningMode" Value="Both"/>
-				<Setter Property="Stylus.IsFlicksEnabled" Value="False"/>
+				<Setter Property="Background" Value="{DynamicResource {x:Static SystemColors.ControlBrushKey}}" />
+				<Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}" />
+				<Setter Property="BorderBrush" Value="#FF688CAF" />
+				<Setter Property="BorderThickness" Value="1" />
+				<Setter Property="RowDetailsVisibilityMode" Value="VisibleWhenSelected" />
+				<Setter Property="ScrollViewer.CanContentScroll" Value="true" />
+				<Setter Property="ScrollViewer.PanningMode" Value="Both" />
+				<Setter Property="Stylus.IsFlicksEnabled" Value="False" />
 				<Setter Property="Template">
 					<Setter.Value>
 						<ControlTemplate TargetType="{x:Type DataGrid}">
-							<Border BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{TemplateBinding Background}" Padding="{TemplateBinding Padding}" SnapsToDevicePixels="True">
+							<Border
+								Padding="{TemplateBinding Padding}"
+								Background="{TemplateBinding Background}"
+								BorderBrush="{TemplateBinding BorderBrush}"
+								BorderThickness="{TemplateBinding BorderThickness}"
+								SnapsToDevicePixels="True">
 								<ScrollViewer x:Name="DG_ScrollViewer" Focusable="false">
 									<ScrollViewer.Template>
 										<ControlTemplate TargetType="{x:Type ScrollViewer}">
 											<Grid>
 												<Grid.ColumnDefinitions>
-													<ColumnDefinition Width="Auto"/>
-													<ColumnDefinition Width="*"/>
-													<ColumnDefinition Width="Auto"/>
+													<ColumnDefinition Width="Auto" />
+													<ColumnDefinition Width="*" />
+													<ColumnDefinition Width="Auto" />
 												</Grid.ColumnDefinitions>
 												<Grid.RowDefinitions>
-													<RowDefinition Height="Auto"/>
-													<RowDefinition Height="Auto"/>
-													<RowDefinition Height="*"/>
-													<RowDefinition Height="Auto"/>
+													<RowDefinition Height="Auto" />
+													<RowDefinition Height="Auto" />
+													<RowDefinition Height="*" />
+													<RowDefinition Height="Auto" />
 												</Grid.RowDefinitions>
-												<Button Command="{x:Static DataGrid.SelectAllCommand}" Grid.Row="1" Focusable="false" Style="{DynamicResource {ComponentResourceKey ResourceId=DataGridSelectAllButtonStyle, TypeInTargetAssembly={x:Type DataGrid}}}" Visibility="{Binding HeadersVisibility, ConverterParameter={x:Static DataGridHeadersVisibility.All}, Converter={x:Static DataGrid.HeadersVisibilityConverter}, RelativeSource={RelativeSource AncestorType={x:Type DataGrid}}}" Width="{Binding CellsPanelHorizontalOffset, RelativeSource={RelativeSource AncestorType={x:Type DataGrid}}}"/>
-												<DataGridColumnHeadersPresenter x:Name="PART_ColumnHeadersPresenter" Grid.Row="1" Grid.Column="1" Visibility="{Binding HeadersVisibility, ConverterParameter={x:Static DataGridHeadersVisibility.Column}, Converter={x:Static DataGrid.HeadersVisibilityConverter}, RelativeSource={RelativeSource AncestorType={x:Type DataGrid}}}"/>
-												<ScrollContentPresenter x:Name="PART_ScrollContentPresenter" CanContentScroll="{TemplateBinding CanContentScroll}" Grid.ColumnSpan="2" Grid.Row="2"/>
-												<ScrollBar x:Name="PART_VerticalScrollBar" Grid.Column="2" Maximum="{TemplateBinding ScrollableHeight}" Orientation="Vertical" Grid.Row="2" Visibility="{TemplateBinding ComputedVerticalScrollBarVisibility}" Value="{Binding VerticalOffset, Mode=OneWay, RelativeSource={RelativeSource TemplatedParent}}" ViewportSize="{TemplateBinding ViewportHeight}"/>
-												<Grid Grid.Column="1" Grid.Row="3">
+												<Button
+													Grid.Row="1"
+													Width="{Binding CellsPanelHorizontalOffset, RelativeSource={RelativeSource AncestorType={x:Type DataGrid}}}"
+													Command="{x:Static DataGrid.SelectAllCommand}"
+													Focusable="false"
+													Style="{DynamicResource {ComponentResourceKey ResourceId=DataGridSelectAllButtonStyle,
+													                                              TypeInTargetAssembly={x:Type DataGrid}}}"
+													Visibility="{Binding HeadersVisibility, ConverterParameter={x:Static DataGridHeadersVisibility.All}, Converter={x:Static DataGrid.HeadersVisibilityConverter}, RelativeSource={RelativeSource AncestorType={x:Type DataGrid}}}" />
+												<DataGridColumnHeadersPresenter
+													x:Name="PART_ColumnHeadersPresenter"
+													Grid.Row="1"
+													Grid.Column="1"
+													Visibility="{Binding HeadersVisibility, ConverterParameter={x:Static DataGridHeadersVisibility.Column}, Converter={x:Static DataGrid.HeadersVisibilityConverter}, RelativeSource={RelativeSource AncestorType={x:Type DataGrid}}}" />
+												<ScrollContentPresenter
+													x:Name="PART_ScrollContentPresenter"
+													Grid.Row="2"
+													Grid.ColumnSpan="2"
+													CanContentScroll="{TemplateBinding CanContentScroll}" />
+												<ScrollBar
+													x:Name="PART_VerticalScrollBar"
+													Grid.Row="2"
+													Grid.Column="2"
+													Maximum="{TemplateBinding ScrollableHeight}"
+													Orientation="Vertical"
+													ViewportSize="{TemplateBinding ViewportHeight}"
+													Visibility="{TemplateBinding ComputedVerticalScrollBarVisibility}"
+													Value="{Binding VerticalOffset, Mode=OneWay, RelativeSource={RelativeSource TemplatedParent}}" />
+												<Grid Grid.Row="3" Grid.Column="1">
 													<Grid.ColumnDefinitions>
-														<ColumnDefinition Width="{Binding NonFrozenColumnsViewportHorizontalOffset, RelativeSource={RelativeSource AncestorType={x:Type DataGrid}}}"/>
-														<ColumnDefinition Width="*"/>
+														<ColumnDefinition Width="{Binding NonFrozenColumnsViewportHorizontalOffset, RelativeSource={RelativeSource AncestorType={x:Type DataGrid}}}" />
+														<ColumnDefinition Width="*" />
 													</Grid.ColumnDefinitions>
-													<ScrollBar x:Name="PART_HorizontalScrollBar" Grid.Column="1" Maximum="{TemplateBinding ScrollableWidth}" Orientation="Horizontal" Visibility="{TemplateBinding ComputedHorizontalScrollBarVisibility}" Value="{Binding HorizontalOffset, Mode=OneWay, RelativeSource={RelativeSource TemplatedParent}}" ViewportSize="{TemplateBinding ViewportWidth}"/>
+													<ScrollBar
+														x:Name="PART_HorizontalScrollBar"
+														Grid.Column="1"
+														Maximum="{TemplateBinding ScrollableWidth}"
+														Orientation="Horizontal"
+														ViewportSize="{TemplateBinding ViewportWidth}"
+														Visibility="{TemplateBinding ComputedHorizontalScrollBarVisibility}"
+														Value="{Binding HorizontalOffset, Mode=OneWay, RelativeSource={RelativeSource TemplatedParent}}" />
 												</Grid>
 											</Grid>
 										</ControlTemplate>
 									</ScrollViewer.Template>
-									<ItemsPresenter SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
+									<ItemsPresenter SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" />
 								</ScrollViewer>
 							</Border>
 						</ControlTemplate>
@@ -502,10 +624,10 @@ body {
 				<Style.Triggers>
 					<MultiTrigger>
 						<MultiTrigger.Conditions>
-							<Condition Property="IsGrouping" Value="true"/>
-							<Condition Property="VirtualizingPanel.IsVirtualizingWhenGrouping" Value="false"/>
+							<Condition Property="IsGrouping" Value="true" />
+							<Condition Property="VirtualizingPanel.IsVirtualizingWhenGrouping" Value="false" />
 						</MultiTrigger.Conditions>
-						<Setter Property="ScrollViewer.CanContentScroll" Value="false"/>
+						<Setter Property="ScrollViewer.CanContentScroll" Value="false" />
 					</MultiTrigger>
 				</Style.Triggers>
 			</Style>
@@ -513,10 +635,14 @@ body {
 			<DataTemplate x:Key="LocaleEntryGrid">
 				<Grid>
 					<Grid.RowDefinitions>
-						<RowDefinition Height="Auto"/>
-						<RowDefinition Height="*"/>
+						<RowDefinition Height="Auto" />
+						<RowDefinition Height="*" />
 					</Grid.RowDefinitions>
-					<ContentPresenter Content="{StaticResource KeyActionsGrid}" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" />
+					<ContentPresenter
+						Grid.Row="0"
+						Grid.Column="0"
+						Grid.ColumnSpan="2"
+						Content="{StaticResource KeyActionsGrid}" />
 					<Grid Grid.Row="1">
 						<Grid.Resources>
 							<Style TargetType="{x:Type Border}">
@@ -524,7 +650,7 @@ body {
 									<DataTrigger Binding="{Binding Path=DataContext.ContentLightMode, RelativeSource={RelativeSource AncestorType={x:Type Window}}}" Value="False">
 										<Setter Property="Background" Value="DarkGray" />
 									</DataTrigger>
-									<DataTrigger Binding="{Binding Path=DataContext.ContentLightMode,RelativeSource={RelativeSource AncestorType={x:Type Window}}}" Value="True">
+									<DataTrigger Binding="{Binding Path=DataContext.ContentLightMode, RelativeSource={RelativeSource AncestorType={x:Type Window}}}" Value="True">
 										<Setter Property="Background" Value="WhiteSmoke" />
 									</DataTrigger>
 								</Style.Triggers>
@@ -542,25 +668,26 @@ body {
 						</Grid.Resources>
 						<Grid.RowDefinitions>
 							<RowDefinition Height="4*" />
-							<RowDefinition Height="Auto"/>
-							<RowDefinition Height="*"/>
+							<RowDefinition Height="Auto" />
+							<RowDefinition Height="*" />
 						</Grid.RowDefinitions>
 						<!--<Grid.ColumnDefinitions>
 							<ColumnDefinition Width="4*"/>
 							<ColumnDefinition Width="Auto"/>
 							<ColumnDefinition Width="*"/>
 						</Grid.ColumnDefinitions>-->
-						<DataGrid x:Name="LocaleEntryDataGrid"
-								ItemsSource="{Binding Entries}" 
-								BorderThickness="0,1,0,0"
-								AutoGenerateColumns="False" 
-								CanUserAddRows="False" CanUserDeleteRows="False"
-								CanUserResizeRows="True"
-								VirtualizingPanel.IsVirtualizingWhenGrouping="True"
-								EnableRowVirtualization="True"
-								Style="{StaticResource LocaleDataGridStyle}"
-								CellStyle="{StaticResource CellNoHighlightChangesUnsaved}"
-						>
+						<DataGrid
+							x:Name="LocaleEntryDataGrid"
+							AutoGenerateColumns="False"
+							BorderThickness="0,1,0,0"
+							CanUserAddRows="False"
+							CanUserDeleteRows="False"
+							CanUserResizeRows="True"
+							CellStyle="{StaticResource CellNoHighlightChangesUnsaved}"
+							EnableRowVirtualization="True"
+							ItemsSource="{Binding Entries}"
+							Style="{StaticResource LocaleDataGridStyle}"
+							VirtualizingPanel.IsVirtualizingWhenGrouping="True">
 							<DataGrid.Resources>
 								<cb:DataContextSpy x:Key="FileData" DataContext="{Binding}" />
 								<Style TargetType="TextBox">
@@ -578,8 +705,10 @@ body {
 												<MenuItem Command="ApplicationCommands.Copy" />
 												<MenuItem Command="ApplicationCommands.Paste" />
 												<MenuItem Command="ApplicationCommands.SelectAll" />
-												<MenuItem Header="Select None" Command="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.Tag.SelectNoneCommand}" 
-															CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget}" />
+												<MenuItem
+													Command="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.Tag.SelectNoneCommand}"
+													CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget}"
+													Header="Select None" />
 											</ContextMenu>
 										</Setter.Value>
 									</Setter>
@@ -588,31 +717,39 @@ body {
 								</Style>
 							</DataGrid.Resources>
 							<DataGrid.RowStyle>
-								<Style TargetType="{x:Type DataGridRow}" BasedOn="{StaticResource {x:Type DataGridRow}}">
+								<Style BasedOn="{StaticResource {x:Type DataGridRow}}" TargetType="{x:Type DataGridRow}">
 									<Setter Property="IsSelected" Value="{Binding Selected}" />
 								</Style>
 							</DataGrid.RowStyle>
 							<DataGrid.Columns>
-								<DataGridTemplateColumn MinWidth="25" CanUserResize="False" HeaderStyle="{StaticResource ProjectsHeaderStyle}" >
+								<DataGridTemplateColumn
+									MinWidth="25"
+									CanUserResize="False"
+									HeaderStyle="{StaticResource ProjectsHeaderStyle}">
 									<DataGridTemplateColumn.Header>
 										<CheckBox IsChecked="{Binding Source={StaticResource FileData}, Path=DataContext.AllSelected, Mode=TwoWay}" ToolTip="Select/Deselect All" />
 									</DataGridTemplateColumn.Header>
 									<DataGridTemplateColumn.CellStyle>
-										<Style TargetType="{x:Type DataGridCell}" BasedOn="{StaticResource CellNoHighlightChangesUnsaved}">
+										<Style BasedOn="{StaticResource CellNoHighlightChangesUnsaved}" TargetType="{x:Type DataGridCell}">
 											<Setter Property="Margin" Value="0" />
 										</Style>
 									</DataGridTemplateColumn.CellStyle>
 									<DataGridTemplateColumn.CellTemplate>
 										<DataTemplate>
-											<CheckBox IsChecked="{Binding Selected, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Center" VerticalAlignment="Center"
-													  IsEnabled="{Binding RelativeSource={RelativeSource AncestorType={x:Type DataGridRow}},Path=IsSelected,Mode=OneWay}"
-													  />
+											<CheckBox
+												HorizontalAlignment="Center"
+												VerticalAlignment="Center"
+												IsChecked="{Binding Selected, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+												IsEnabled="{Binding RelativeSource={RelativeSource AncestorType={x:Type DataGridRow}}, Path=IsSelected, Mode=OneWay}" />
 										</DataTemplate>
 									</DataGridTemplateColumn.CellTemplate>
 								</DataGridTemplateColumn>
-								<DataGridTemplateColumn Header="Key" MinWidth="50" Width="Auto">
+								<DataGridTemplateColumn
+									Width="Auto"
+									MinWidth="50"
+									Header="Key">
 									<DataGridTemplateColumn.CellStyle>
-										<Style TargetType="DataGridCell" BasedOn="{StaticResource CellNoHighlightChangesUnsaved}">
+										<Style BasedOn="{StaticResource CellNoHighlightChangesUnsaved}" TargetType="DataGridCell">
 											<Setter Property="IsEnabled" Value="{Binding KeyIsEditable}" />
 										</Style>
 									</DataGridTemplateColumn.CellStyle>
@@ -620,23 +757,21 @@ body {
 										<DataTemplate>
 											<TextBox
 												x:Name="EntryKeyTextBox"
-												Text="{Binding EntryKey, UpdateSourceTrigger=Explicit}"
 												Tag="{Binding Path=DataContext, RelativeSource={RelativeSource AncestorType={x:Type Window}}}"
-												/>
+												Text="{Binding EntryKey, UpdateSourceTrigger=Explicit}" />
 										</DataTemplate>
 									</DataGridTemplateColumn.CellTemplate>
 								</DataGridTemplateColumn>
-								<DataGridTemplateColumn Header="Content" Width="*">
+								<DataGridTemplateColumn Width="*" Header="Content">
 									<DataGridTemplateColumn.CellTemplate>
 										<DataTemplate>
 											<TextBox
 												x:Name="EntryContentTextBox"
-												Text="{Binding EntryContent, UpdateSourceTrigger=Explicit}"
 												GotFocus="EntryContent_GotFocus"
 												LostFocus="EntryContent_LostFocus"
 												SelectionChanged="EntryContent_SelectionChanged"
 												Tag="{Binding Path=DataContext, RelativeSource={RelativeSource AncestorType={x:Type Window}}}"
-											/>
+												Text="{Binding EntryContent, UpdateSourceTrigger=Explicit}" />
 											<!--<Grid>
 												<Grid.ColumnDefinitions>
 													<ColumnDefinition Width="*" />
@@ -654,50 +789,71 @@ body {
 										</DataTemplate>
 									</DataGridTemplateColumn.CellTemplate>
 								</DataGridTemplateColumn>
-								<DataGridTemplateColumn Header="Handle" Width="150">
+								<DataGridTemplateColumn Width="150" Header="Handle">
 									<DataGridTemplateColumn.CellTemplate>
 										<DataTemplate>
 											<TextBox
 												x:Name="EntryHandleTextBox"
-												Text="{Binding EntryHandle, UpdateSourceTrigger=Explicit}"
+												AcceptsReturn="False"
+												AcceptsTab="False"
 												Tag="{Binding Path=DataContext, RelativeSource={RelativeSource AncestorType={x:Type Window}}}"
-												/>
+												Text="{Binding EntryHandle, UpdateSourceTrigger=PropertyChanged}">
+												<TextBox.ContextMenu>
+													<ContextMenu>
+														<MenuItem Command="ApplicationCommands.Cut" />
+														<MenuItem Command="ApplicationCommands.Copy" />
+														<MenuItem Command="ApplicationCommands.Paste" />
+														<MenuItem Command="ApplicationCommands.SelectAll" />
+														<MenuItem
+															Command="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.Tag.ResetHandleCommand}"
+															CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget}"
+															Header="Reset" />
+													</ContextMenu>
+												</TextBox.ContextMenu>
+											</TextBox>
 										</DataTemplate>
 									</DataGridTemplateColumn.CellTemplate>
 								</DataGridTemplateColumn>
 							</DataGrid.Columns>
 						</DataGrid>
-						<GridSplitter Grid.Row="1" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Height="3" Background="{Binding ElementName=LocaleEntryDataGrid, Path=BorderBrush}" />
-						<Border Grid.Row="2" 
-							BorderThickness="1,0,1,1" BorderBrush="{Binding ElementName=LocaleEntryDataGrid, Path=BorderBrush}">
+						<GridSplitter
+							Grid.Row="1"
+							Height="3"
+							HorizontalAlignment="Stretch"
+							VerticalAlignment="Stretch"
+							Background="{Binding ElementName=LocaleEntryDataGrid, Path=BorderBrush}" />
+						<Border
+							Grid.Row="2"
+							BorderBrush="{Binding ElementName=LocaleEntryDataGrid, Path=BorderBrush}"
+							BorderThickness="1,0,1,1">
 							<Grid>
 								<Grid.ColumnDefinitions>
 									<ColumnDefinition Width="Auto" />
 									<ColumnDefinition Width="*" />
 								</Grid.ColumnDefinitions>
-								
+
 								<ContentControl Grid.Column="1">
 									<ContentControl.Style>
 										<Style TargetType="{x:Type ContentControl}">
 											<Style.Triggers>
-												<DataTrigger Binding="{Binding Path=DataContext.ContentPreviewModeEnabled, RelativeSource={RelativeSource AncestorType={x:Type Window}}}" Value="True" >
+												<DataTrigger Binding="{Binding Path=DataContext.ContentPreviewModeEnabled, RelativeSource={RelativeSource AncestorType={x:Type Window}}}" Value="True">
 													<Setter Property="Content" Value="{StaticResource EntryContentPreview}" />
 												</DataTrigger>
-												<DataTrigger Binding="{Binding Path=DataContext.ContentPreviewModeEnabled, RelativeSource={RelativeSource AncestorType={x:Type Window}}}" Value="False" >
+												<DataTrigger Binding="{Binding Path=DataContext.ContentPreviewModeEnabled, RelativeSource={RelativeSource AncestorType={x:Type Window}}}" Value="False">
 													<Setter Property="Content" Value="{StaticResource EntryContentRichTextBox}" />
 												</DataTrigger>
 											</Style.Triggers>
 										</Style>
-										</ContentControl.Style>
+									</ContentControl.Style>
 								</ContentControl>
 								<ToggleButton
 									x:Name="PreviewToggleButton"
-									IsChecked="{Binding Path=DataContext.ContentPreviewModeEnabled, RelativeSource={RelativeSource AncestorType={x:Type Window}}}"
+									Margin="0"
+									Padding="4,0,4,2"
 									VerticalAlignment="Stretch"
-									Content="Preview"
-									Margin="0" Padding="4,0,4,2"
 									BorderThickness="0,0,0,1"
-								>
+									Content="Preview"
+									IsChecked="{Binding Path=DataContext.ContentPreviewModeEnabled, RelativeSource={RelativeSource AncestorType={x:Type Window}}}">
 									<ToggleButton.LayoutTransform>
 										<RotateTransform Angle="-90" />
 									</ToggleButton.LayoutTransform>
@@ -712,213 +868,237 @@ body {
 				<Setter Property="Control.Template">
 					<Setter.Value>
 						<ControlTemplate>
-							<Rectangle Margin="2" SnapsToDevicePixels="true" Stroke="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}" StrokeThickness="1" StrokeDashArray="1 2"/>
+							<Rectangle
+								Margin="2"
+								SnapsToDevicePixels="true"
+								Stroke="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}"
+								StrokeDashArray="1 2"
+								StrokeThickness="1" />
 						</ControlTemplate>
 					</Setter.Value>
 				</Setter>
 			</Style>
 
-			<LinearGradientBrush x:Key="TabItem.Static.Background" EndPoint="0,1" StartPoint="0,0">
-				<GradientStop Color="#F0F0F0" Offset="0.0"/>
-				<GradientStop Color="#E5E5E5" Offset="1.0"/>
+			<LinearGradientBrush x:Key="TabItem.Static.Background" StartPoint="0,0" EndPoint="0,1">
+				<GradientStop Offset="0.0" Color="#F0F0F0" />
+				<GradientStop Offset="1.0" Color="#E5E5E5" />
 			</LinearGradientBrush>
-			<SolidColorBrush x:Key="TabItem.Static.Border" Color="#ACACAC"/>
-			<LinearGradientBrush x:Key="TabItem.MouseOver.Background" EndPoint="0,1" StartPoint="0,0">
-				<GradientStop Color="#ECF4FC" Offset="0.0"/>
-				<GradientStop Color="#DCECFC" Offset="1.0"/>
+			<SolidColorBrush x:Key="TabItem.Static.Border" Color="#ACACAC" />
+			<LinearGradientBrush x:Key="TabItem.MouseOver.Background" StartPoint="0,0" EndPoint="0,1">
+				<GradientStop Offset="0.0" Color="#ECF4FC" />
+				<GradientStop Offset="1.0" Color="#DCECFC" />
 			</LinearGradientBrush>
-			<SolidColorBrush x:Key="TabItem.MouseOver.Border" Color="#7EB4EA"/>
-			<SolidColorBrush x:Key="TabItem.Disabled.Background" Color="#F0F0F0"/>
-			<SolidColorBrush x:Key="TabItem.Disabled.Border" Color="#D9D9D9"/>
+			<SolidColorBrush x:Key="TabItem.MouseOver.Border" Color="#7EB4EA" />
+			<SolidColorBrush x:Key="TabItem.Disabled.Background" Color="#F0F0F0" />
+			<SolidColorBrush x:Key="TabItem.Disabled.Border" Color="#D9D9D9" />
 
 			<Style x:Key="TabItemFileDataStyle" TargetType="{x:Type TabItem}">
-				<Setter Property="FocusVisualStyle" Value="{StaticResource FocusVisual}"/>
-				<Setter Property="Foreground" Value="Black"/>
-				<Setter Property="Background" Value="{StaticResource TabItem.Static.Background}"/>
-				<Setter Property="BorderBrush" Value="{StaticResource TabItem.Static.Border}"/>
-				<Setter Property="Margin" Value="0"/>
-				<Setter Property="Padding" Value="6,2,6,2"/>
-				<Setter Property="HorizontalContentAlignment" Value="Stretch"/>
-				<Setter Property="VerticalContentAlignment" Value="Stretch"/>
+				<Setter Property="FocusVisualStyle" Value="{StaticResource FocusVisual}" />
+				<Setter Property="Foreground" Value="Black" />
+				<Setter Property="Background" Value="{StaticResource TabItem.Static.Background}" />
+				<Setter Property="BorderBrush" Value="{StaticResource TabItem.Static.Border}" />
+				<Setter Property="Margin" Value="0" />
+				<Setter Property="Padding" Value="6,2,6,2" />
+				<Setter Property="HorizontalContentAlignment" Value="Stretch" />
+				<Setter Property="VerticalContentAlignment" Value="Stretch" />
 				<Setter Property="Template">
 					<Setter.Value>
 						<ControlTemplate TargetType="{x:Type TabItem}">
 							<Grid x:Name="templateRoot" SnapsToDevicePixels="true">
-								<Border x:Name="mainBorder" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="1,1,1,0" Background="{TemplateBinding Background}" Margin="0">
-									<Border x:Name="innerBorder" BorderBrush="{StaticResource TabItem.Selected.Border}" BorderThickness="1,1,1,0" Background="#FFD7F5BE" Margin="-1" Opacity="0"/>
+								<Border
+									x:Name="mainBorder"
+									Margin="0"
+									Background="{TemplateBinding Background}"
+									BorderBrush="{TemplateBinding BorderBrush}"
+									BorderThickness="1,1,1,0">
+									<Border
+										x:Name="innerBorder"
+										Margin="-1"
+										Background="#FFD7F5BE"
+										BorderBrush="{StaticResource TabItem.Selected.Border}"
+										BorderThickness="1,1,1,0"
+										Opacity="0" />
 								</Border>
-								<ContentPresenter x:Name="contentPresenter" ContentSource="Header" Focusable="False" HorizontalAlignment="{Binding HorizontalContentAlignment, RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}" Margin="{TemplateBinding Padding}" RecognizesAccessKey="True" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" VerticalAlignment="{Binding VerticalContentAlignment, RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}"/>
+								<ContentPresenter
+									x:Name="contentPresenter"
+									Margin="{TemplateBinding Padding}"
+									HorizontalAlignment="{Binding HorizontalContentAlignment, RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}"
+									VerticalAlignment="{Binding VerticalContentAlignment, RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}"
+									ContentSource="Header"
+									Focusable="False"
+									RecognizesAccessKey="True"
+									SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" />
 							</Grid>
 							<ControlTemplate.Triggers>
 								<MultiDataTrigger>
 									<MultiDataTrigger.Conditions>
-										<Condition Binding="{Binding IsMouseOver, RelativeSource={RelativeSource Self}}" Value="true"/>
-										<Condition Binding="{Binding TabStripPlacement, RelativeSource={RelativeSource AncestorType={x:Type TabControl}}}" Value="Left"/>
+										<Condition Binding="{Binding IsMouseOver, RelativeSource={RelativeSource Self}}" Value="true" />
+										<Condition Binding="{Binding TabStripPlacement, RelativeSource={RelativeSource AncestorType={x:Type TabControl}}}" Value="Left" />
 									</MultiDataTrigger.Conditions>
-									<Setter Property="Background" TargetName="mainBorder" Value="{StaticResource TabItem.MouseOver.Background}"/>
-									<Setter Property="BorderBrush" TargetName="mainBorder" Value="{StaticResource TabItem.MouseOver.Border}"/>
-									<Setter Property="BorderThickness" TargetName="innerBorder" Value="1,1,0,1"/>
-									<Setter Property="BorderThickness" TargetName="mainBorder" Value="1,1,0,1"/>
+									<Setter TargetName="mainBorder" Property="Background" Value="{StaticResource TabItem.MouseOver.Background}" />
+									<Setter TargetName="mainBorder" Property="BorderBrush" Value="{StaticResource TabItem.MouseOver.Border}" />
+									<Setter TargetName="innerBorder" Property="BorderThickness" Value="1,1,0,1" />
+									<Setter TargetName="mainBorder" Property="BorderThickness" Value="1,1,0,1" />
 								</MultiDataTrigger>
 								<MultiDataTrigger>
 									<MultiDataTrigger.Conditions>
-										<Condition Binding="{Binding IsMouseOver, RelativeSource={RelativeSource Self}}" Value="true"/>
-										<Condition Binding="{Binding TabStripPlacement, RelativeSource={RelativeSource AncestorType={x:Type TabControl}}}" Value="Bottom"/>
+										<Condition Binding="{Binding IsMouseOver, RelativeSource={RelativeSource Self}}" Value="true" />
+										<Condition Binding="{Binding TabStripPlacement, RelativeSource={RelativeSource AncestorType={x:Type TabControl}}}" Value="Bottom" />
 									</MultiDataTrigger.Conditions>
-									<Setter Property="Background" TargetName="mainBorder" Value="{StaticResource TabItem.MouseOver.Background}"/>
-									<Setter Property="BorderBrush" TargetName="mainBorder" Value="{StaticResource TabItem.MouseOver.Border}"/>
-									<Setter Property="BorderThickness" TargetName="innerBorder" Value="1,0,1,1"/>
-									<Setter Property="BorderThickness" TargetName="mainBorder" Value="1,0,1,1"/>
+									<Setter TargetName="mainBorder" Property="Background" Value="{StaticResource TabItem.MouseOver.Background}" />
+									<Setter TargetName="mainBorder" Property="BorderBrush" Value="{StaticResource TabItem.MouseOver.Border}" />
+									<Setter TargetName="innerBorder" Property="BorderThickness" Value="1,0,1,1" />
+									<Setter TargetName="mainBorder" Property="BorderThickness" Value="1,0,1,1" />
 								</MultiDataTrigger>
 								<MultiDataTrigger>
 									<MultiDataTrigger.Conditions>
-										<Condition Binding="{Binding IsMouseOver, RelativeSource={RelativeSource Self}}" Value="true"/>
-										<Condition Binding="{Binding TabStripPlacement, RelativeSource={RelativeSource AncestorType={x:Type TabControl}}}" Value="Right"/>
+										<Condition Binding="{Binding IsMouseOver, RelativeSource={RelativeSource Self}}" Value="true" />
+										<Condition Binding="{Binding TabStripPlacement, RelativeSource={RelativeSource AncestorType={x:Type TabControl}}}" Value="Right" />
 									</MultiDataTrigger.Conditions>
-									<Setter Property="Background" TargetName="mainBorder" Value="{StaticResource TabItem.MouseOver.Background}"/>
-									<Setter Property="BorderBrush" TargetName="mainBorder" Value="{StaticResource TabItem.MouseOver.Border}"/>
-									<Setter Property="BorderThickness" TargetName="innerBorder" Value="0,1,1,1"/>
-									<Setter Property="BorderThickness" TargetName="mainBorder" Value="0,1,1,1"/>
+									<Setter TargetName="mainBorder" Property="Background" Value="{StaticResource TabItem.MouseOver.Background}" />
+									<Setter TargetName="mainBorder" Property="BorderBrush" Value="{StaticResource TabItem.MouseOver.Border}" />
+									<Setter TargetName="innerBorder" Property="BorderThickness" Value="0,1,1,1" />
+									<Setter TargetName="mainBorder" Property="BorderThickness" Value="0,1,1,1" />
 								</MultiDataTrigger>
 								<MultiDataTrigger>
 									<MultiDataTrigger.Conditions>
-										<Condition Binding="{Binding IsMouseOver, RelativeSource={RelativeSource Self}}" Value="true"/>
-										<Condition Binding="{Binding TabStripPlacement, RelativeSource={RelativeSource AncestorType={x:Type TabControl}}}" Value="Top"/>
+										<Condition Binding="{Binding IsMouseOver, RelativeSource={RelativeSource Self}}" Value="true" />
+										<Condition Binding="{Binding TabStripPlacement, RelativeSource={RelativeSource AncestorType={x:Type TabControl}}}" Value="Top" />
 									</MultiDataTrigger.Conditions>
-									<Setter Property="Background" TargetName="mainBorder" Value="{StaticResource TabItem.MouseOver.Background}"/>
-									<Setter Property="BorderBrush" TargetName="mainBorder" Value="{StaticResource TabItem.MouseOver.Border}"/>
-									<Setter Property="BorderThickness" TargetName="innerBorder" Value="1,1,1,0"/>
-									<Setter Property="BorderThickness" TargetName="mainBorder" Value="1,1,1,0"/>
+									<Setter TargetName="mainBorder" Property="Background" Value="{StaticResource TabItem.MouseOver.Background}" />
+									<Setter TargetName="mainBorder" Property="BorderBrush" Value="{StaticResource TabItem.MouseOver.Border}" />
+									<Setter TargetName="innerBorder" Property="BorderThickness" Value="1,1,1,0" />
+									<Setter TargetName="mainBorder" Property="BorderThickness" Value="1,1,1,0" />
 								</MultiDataTrigger>
 								<MultiDataTrigger>
 									<MultiDataTrigger.Conditions>
-										<Condition Binding="{Binding IsEnabled, RelativeSource={RelativeSource Self}}" Value="false"/>
-										<Condition Binding="{Binding TabStripPlacement, RelativeSource={RelativeSource AncestorType={x:Type TabControl}}}" Value="Left"/>
+										<Condition Binding="{Binding IsEnabled, RelativeSource={RelativeSource Self}}" Value="false" />
+										<Condition Binding="{Binding TabStripPlacement, RelativeSource={RelativeSource AncestorType={x:Type TabControl}}}" Value="Left" />
 									</MultiDataTrigger.Conditions>
-									<Setter Property="Opacity" TargetName="contentPresenter" Value="0.56"/>
-									<Setter Property="Background" TargetName="mainBorder" Value="{StaticResource TabItem.Disabled.Background}"/>
-									<Setter Property="BorderBrush" TargetName="mainBorder" Value="{StaticResource TabItem.Disabled.Border}"/>
-									<Setter Property="BorderThickness" TargetName="innerBorder" Value="1,1,0,1"/>
-									<Setter Property="BorderThickness" TargetName="mainBorder" Value="1,1,0,1"/>
+									<Setter TargetName="contentPresenter" Property="Opacity" Value="0.56" />
+									<Setter TargetName="mainBorder" Property="Background" Value="{StaticResource TabItem.Disabled.Background}" />
+									<Setter TargetName="mainBorder" Property="BorderBrush" Value="{StaticResource TabItem.Disabled.Border}" />
+									<Setter TargetName="innerBorder" Property="BorderThickness" Value="1,1,0,1" />
+									<Setter TargetName="mainBorder" Property="BorderThickness" Value="1,1,0,1" />
 								</MultiDataTrigger>
 								<MultiDataTrigger>
 									<MultiDataTrigger.Conditions>
-										<Condition Binding="{Binding IsEnabled, RelativeSource={RelativeSource Self}}" Value="false"/>
-										<Condition Binding="{Binding TabStripPlacement, RelativeSource={RelativeSource AncestorType={x:Type TabControl}}}" Value="Bottom"/>
+										<Condition Binding="{Binding IsEnabled, RelativeSource={RelativeSource Self}}" Value="false" />
+										<Condition Binding="{Binding TabStripPlacement, RelativeSource={RelativeSource AncestorType={x:Type TabControl}}}" Value="Bottom" />
 									</MultiDataTrigger.Conditions>
-									<Setter Property="Opacity" TargetName="contentPresenter" Value="0.56"/>
-									<Setter Property="Background" TargetName="mainBorder" Value="{StaticResource TabItem.Disabled.Background}"/>
-									<Setter Property="BorderBrush" TargetName="mainBorder" Value="{StaticResource TabItem.Disabled.Border}"/>
-									<Setter Property="BorderThickness" TargetName="innerBorder" Value="1,0,1,1"/>
-									<Setter Property="BorderThickness" TargetName="mainBorder" Value="1,0,1,1"/>
+									<Setter TargetName="contentPresenter" Property="Opacity" Value="0.56" />
+									<Setter TargetName="mainBorder" Property="Background" Value="{StaticResource TabItem.Disabled.Background}" />
+									<Setter TargetName="mainBorder" Property="BorderBrush" Value="{StaticResource TabItem.Disabled.Border}" />
+									<Setter TargetName="innerBorder" Property="BorderThickness" Value="1,0,1,1" />
+									<Setter TargetName="mainBorder" Property="BorderThickness" Value="1,0,1,1" />
 								</MultiDataTrigger>
 								<MultiDataTrigger>
 									<MultiDataTrigger.Conditions>
-										<Condition Binding="{Binding IsEnabled, RelativeSource={RelativeSource Self}}" Value="false"/>
-										<Condition Binding="{Binding TabStripPlacement, RelativeSource={RelativeSource AncestorType={x:Type TabControl}}}" Value="Right"/>
+										<Condition Binding="{Binding IsEnabled, RelativeSource={RelativeSource Self}}" Value="false" />
+										<Condition Binding="{Binding TabStripPlacement, RelativeSource={RelativeSource AncestorType={x:Type TabControl}}}" Value="Right" />
 									</MultiDataTrigger.Conditions>
-									<Setter Property="Opacity" TargetName="contentPresenter" Value="0.56"/>
-									<Setter Property="Background" TargetName="mainBorder" Value="{StaticResource TabItem.Disabled.Background}"/>
-									<Setter Property="BorderBrush" TargetName="mainBorder" Value="{StaticResource TabItem.Disabled.Border}"/>
-									<Setter Property="BorderThickness" TargetName="innerBorder" Value="0,1,1,1"/>
-									<Setter Property="BorderThickness" TargetName="mainBorder" Value="0,1,1,1"/>
+									<Setter TargetName="contentPresenter" Property="Opacity" Value="0.56" />
+									<Setter TargetName="mainBorder" Property="Background" Value="{StaticResource TabItem.Disabled.Background}" />
+									<Setter TargetName="mainBorder" Property="BorderBrush" Value="{StaticResource TabItem.Disabled.Border}" />
+									<Setter TargetName="innerBorder" Property="BorderThickness" Value="0,1,1,1" />
+									<Setter TargetName="mainBorder" Property="BorderThickness" Value="0,1,1,1" />
 								</MultiDataTrigger>
 								<MultiDataTrigger>
 									<MultiDataTrigger.Conditions>
-										<Condition Binding="{Binding IsEnabled, RelativeSource={RelativeSource Self}}" Value="false"/>
-										<Condition Binding="{Binding TabStripPlacement, RelativeSource={RelativeSource AncestorType={x:Type TabControl}}}" Value="Top"/>
+										<Condition Binding="{Binding IsEnabled, RelativeSource={RelativeSource Self}}" Value="false" />
+										<Condition Binding="{Binding TabStripPlacement, RelativeSource={RelativeSource AncestorType={x:Type TabControl}}}" Value="Top" />
 									</MultiDataTrigger.Conditions>
-									<Setter Property="Opacity" TargetName="contentPresenter" Value="0.56"/>
-									<Setter Property="Background" TargetName="mainBorder" Value="{StaticResource TabItem.Disabled.Background}"/>
-									<Setter Property="BorderBrush" TargetName="mainBorder" Value="{StaticResource TabItem.Disabled.Border}"/>
-									<Setter Property="BorderThickness" TargetName="innerBorder" Value="1,1,1,0"/>
-									<Setter Property="BorderThickness" TargetName="mainBorder" Value="1,1,1,0"/>
+									<Setter TargetName="contentPresenter" Property="Opacity" Value="0.56" />
+									<Setter TargetName="mainBorder" Property="Background" Value="{StaticResource TabItem.Disabled.Background}" />
+									<Setter TargetName="mainBorder" Property="BorderBrush" Value="{StaticResource TabItem.Disabled.Border}" />
+									<Setter TargetName="innerBorder" Property="BorderThickness" Value="1,1,1,0" />
+									<Setter TargetName="mainBorder" Property="BorderThickness" Value="1,1,1,0" />
 								</MultiDataTrigger>
 								<MultiDataTrigger>
 									<MultiDataTrigger.Conditions>
-										<Condition Binding="{Binding IsSelected, RelativeSource={RelativeSource Self}}" Value="false"/>
-										<Condition Binding="{Binding TabStripPlacement, RelativeSource={RelativeSource AncestorType={x:Type TabControl}}}" Value="Left"/>
+										<Condition Binding="{Binding IsSelected, RelativeSource={RelativeSource Self}}" Value="false" />
+										<Condition Binding="{Binding TabStripPlacement, RelativeSource={RelativeSource AncestorType={x:Type TabControl}}}" Value="Left" />
 									</MultiDataTrigger.Conditions>
-									<Setter Property="BorderThickness" TargetName="innerBorder" Value="1,1,0,1"/>
-									<Setter Property="BorderThickness" TargetName="mainBorder" Value="1,1,0,1"/>
+									<Setter TargetName="innerBorder" Property="BorderThickness" Value="1,1,0,1" />
+									<Setter TargetName="mainBorder" Property="BorderThickness" Value="1,1,0,1" />
 								</MultiDataTrigger>
 								<MultiDataTrigger>
 									<MultiDataTrigger.Conditions>
-										<Condition Binding="{Binding IsSelected, RelativeSource={RelativeSource Self}}" Value="true"/>
-										<Condition Binding="{Binding TabStripPlacement, RelativeSource={RelativeSource AncestorType={x:Type TabControl}}}" Value="Left"/>
+										<Condition Binding="{Binding IsSelected, RelativeSource={RelativeSource Self}}" Value="true" />
+										<Condition Binding="{Binding TabStripPlacement, RelativeSource={RelativeSource AncestorType={x:Type TabControl}}}" Value="Left" />
 									</MultiDataTrigger.Conditions>
-									<Setter Property="Panel.ZIndex" Value="1"/>
-									<Setter Property="Margin" Value="-2,-2,0,-2"/>
-									<Setter Property="Opacity" TargetName="innerBorder" Value="1"/>
-									<Setter Property="BorderThickness" TargetName="innerBorder" Value="1,1,0,1"/>
-									<Setter Property="BorderThickness" TargetName="mainBorder" Value="1,1,0,1"/>
+									<Setter Property="Panel.ZIndex" Value="1" />
+									<Setter Property="Margin" Value="-2,-2,0,-2" />
+									<Setter TargetName="innerBorder" Property="Opacity" Value="1" />
+									<Setter TargetName="innerBorder" Property="BorderThickness" Value="1,1,0,1" />
+									<Setter TargetName="mainBorder" Property="BorderThickness" Value="1,1,0,1" />
 								</MultiDataTrigger>
 								<MultiDataTrigger>
 									<MultiDataTrigger.Conditions>
-										<Condition Binding="{Binding IsSelected, RelativeSource={RelativeSource Self}}" Value="false"/>
-										<Condition Binding="{Binding TabStripPlacement, RelativeSource={RelativeSource AncestorType={x:Type TabControl}}}" Value="Bottom"/>
+										<Condition Binding="{Binding IsSelected, RelativeSource={RelativeSource Self}}" Value="false" />
+										<Condition Binding="{Binding TabStripPlacement, RelativeSource={RelativeSource AncestorType={x:Type TabControl}}}" Value="Bottom" />
 									</MultiDataTrigger.Conditions>
-									<Setter Property="BorderThickness" TargetName="innerBorder" Value="1,0,1,1"/>
-									<Setter Property="BorderThickness" TargetName="mainBorder" Value="1,0,1,1"/>
+									<Setter TargetName="innerBorder" Property="BorderThickness" Value="1,0,1,1" />
+									<Setter TargetName="mainBorder" Property="BorderThickness" Value="1,0,1,1" />
 								</MultiDataTrigger>
 								<MultiDataTrigger>
 									<MultiDataTrigger.Conditions>
-										<Condition Binding="{Binding IsSelected, RelativeSource={RelativeSource Self}}" Value="true"/>
-										<Condition Binding="{Binding TabStripPlacement, RelativeSource={RelativeSource AncestorType={x:Type TabControl}}}" Value="Bottom"/>
+										<Condition Binding="{Binding IsSelected, RelativeSource={RelativeSource Self}}" Value="true" />
+										<Condition Binding="{Binding TabStripPlacement, RelativeSource={RelativeSource AncestorType={x:Type TabControl}}}" Value="Bottom" />
 									</MultiDataTrigger.Conditions>
-									<Setter Property="Panel.ZIndex" Value="1"/>
-									<Setter Property="Margin" Value="-2,0,-2,-2"/>
-									<Setter Property="Opacity" TargetName="innerBorder" Value="1"/>
-									<Setter Property="BorderThickness" TargetName="innerBorder" Value="1,0,1,1"/>
-									<Setter Property="BorderThickness" TargetName="mainBorder" Value="1,0,1,1"/>
+									<Setter Property="Panel.ZIndex" Value="1" />
+									<Setter Property="Margin" Value="-2,0,-2,-2" />
+									<Setter TargetName="innerBorder" Property="Opacity" Value="1" />
+									<Setter TargetName="innerBorder" Property="BorderThickness" Value="1,0,1,1" />
+									<Setter TargetName="mainBorder" Property="BorderThickness" Value="1,0,1,1" />
 								</MultiDataTrigger>
 								<MultiDataTrigger>
 									<MultiDataTrigger.Conditions>
-										<Condition Binding="{Binding IsSelected, RelativeSource={RelativeSource Self}}" Value="false"/>
-										<Condition Binding="{Binding TabStripPlacement, RelativeSource={RelativeSource AncestorType={x:Type TabControl}}}" Value="Right"/>
+										<Condition Binding="{Binding IsSelected, RelativeSource={RelativeSource Self}}" Value="false" />
+										<Condition Binding="{Binding TabStripPlacement, RelativeSource={RelativeSource AncestorType={x:Type TabControl}}}" Value="Right" />
 									</MultiDataTrigger.Conditions>
-									<Setter Property="BorderThickness" TargetName="innerBorder" Value="0,1,1,1"/>
-									<Setter Property="BorderThickness" TargetName="mainBorder" Value="0,1,1,1"/>
+									<Setter TargetName="innerBorder" Property="BorderThickness" Value="0,1,1,1" />
+									<Setter TargetName="mainBorder" Property="BorderThickness" Value="0,1,1,1" />
 								</MultiDataTrigger>
 								<MultiDataTrigger>
 									<MultiDataTrigger.Conditions>
-										<Condition Binding="{Binding IsSelected, RelativeSource={RelativeSource Self}}" Value="true"/>
-										<Condition Binding="{Binding TabStripPlacement, RelativeSource={RelativeSource AncestorType={x:Type TabControl}}}" Value="Right"/>
+										<Condition Binding="{Binding IsSelected, RelativeSource={RelativeSource Self}}" Value="true" />
+										<Condition Binding="{Binding TabStripPlacement, RelativeSource={RelativeSource AncestorType={x:Type TabControl}}}" Value="Right" />
 									</MultiDataTrigger.Conditions>
-									<Setter Property="Panel.ZIndex" Value="1"/>
-									<Setter Property="Margin" Value="0,-2,-2,-2"/>
-									<Setter Property="Opacity" TargetName="innerBorder" Value="1"/>
-									<Setter Property="BorderThickness" TargetName="innerBorder" Value="0,1,1,1"/>
-									<Setter Property="BorderThickness" TargetName="mainBorder" Value="0,1,1,1"/>
+									<Setter Property="Panel.ZIndex" Value="1" />
+									<Setter Property="Margin" Value="0,-2,-2,-2" />
+									<Setter TargetName="innerBorder" Property="Opacity" Value="1" />
+									<Setter TargetName="innerBorder" Property="BorderThickness" Value="0,1,1,1" />
+									<Setter TargetName="mainBorder" Property="BorderThickness" Value="0,1,1,1" />
 								</MultiDataTrigger>
 								<MultiDataTrigger>
 									<MultiDataTrigger.Conditions>
-										<Condition Binding="{Binding IsSelected, RelativeSource={RelativeSource Self}}" Value="false"/>
-										<Condition Binding="{Binding TabStripPlacement, RelativeSource={RelativeSource AncestorType={x:Type TabControl}}}" Value="Top"/>
+										<Condition Binding="{Binding IsSelected, RelativeSource={RelativeSource Self}}" Value="false" />
+										<Condition Binding="{Binding TabStripPlacement, RelativeSource={RelativeSource AncestorType={x:Type TabControl}}}" Value="Top" />
 									</MultiDataTrigger.Conditions>
-									<Setter Property="BorderThickness" TargetName="innerBorder" Value="1,1,1,0"/>
-									<Setter Property="BorderThickness" TargetName="mainBorder" Value="1,1,1,0"/>
+									<Setter TargetName="innerBorder" Property="BorderThickness" Value="1,1,1,0" />
+									<Setter TargetName="mainBorder" Property="BorderThickness" Value="1,1,1,0" />
 								</MultiDataTrigger>
 								<MultiDataTrigger>
 									<MultiDataTrigger.Conditions>
-										<Condition Binding="{Binding IsSelected, RelativeSource={RelativeSource Self}}" Value="true"/>
-										<Condition Binding="{Binding TabStripPlacement, RelativeSource={RelativeSource AncestorType={x:Type TabControl}}}" Value="Top"/>
+										<Condition Binding="{Binding IsSelected, RelativeSource={RelativeSource Self}}" Value="true" />
+										<Condition Binding="{Binding TabStripPlacement, RelativeSource={RelativeSource AncestorType={x:Type TabControl}}}" Value="Top" />
 									</MultiDataTrigger.Conditions>
-									<Setter Property="Panel.ZIndex" Value="1"/>
-									<Setter Property="Margin" Value="-2,-2,-2,0"/>
-									<Setter Property="Opacity" TargetName="innerBorder" Value="1"/>
-									<Setter Property="BorderThickness" TargetName="innerBorder" Value="1,1,1,0"/>
-									<Setter Property="BorderThickness" TargetName="mainBorder" Value="1,1,1,0"/>
+									<Setter Property="Panel.ZIndex" Value="1" />
+									<Setter Property="Margin" Value="-2,-2,-2,0" />
+									<Setter TargetName="innerBorder" Property="Opacity" Value="1" />
+									<Setter TargetName="innerBorder" Property="BorderThickness" Value="1,1,1,0" />
+									<Setter TargetName="mainBorder" Property="BorderThickness" Value="1,1,1,0" />
 								</MultiDataTrigger>
 								<DataTrigger Binding="{Binding ChangesUnsaved}" Value="True">
-									<Setter TargetName="innerBorder" Property="BorderBrush" Value="#FFFF6565"/>
+									<Setter TargetName="innerBorder" Property="BorderBrush" Value="#FFFF6565" />
 								</DataTrigger>
 							</ControlTemplate.Triggers>
 						</ControlTemplate>
 					</Setter.Value>
 				</Setter>
 			</Style>
-			<Style TargetType="Grid" x:Key="LocaleFileTabGrid">
+			<Style x:Key="LocaleFileTabGrid" TargetType="Grid">
 				<Setter Property="Background" Value="Transparent" />
 				<Style.Triggers>
 					<MultiDataTrigger>
@@ -930,12 +1110,14 @@ body {
 							<Setter Property="ContextMenu">
 								<Setter.Value>
 									<ContextMenu>
-										<MenuItem Header="Copy Name" 
-												  Command="{Binding Path=PlacementTarget.Tag.CopyToClipboardCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}" 
-												  CommandParameter="{Binding Name}" />
-										<MenuItem Header="Copy Full Path" 
-												  Command="{Binding Path=PlacementTarget.Tag.CopyToClipboardCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}" 
-												  CommandParameter="{Binding SourcePath}" />
+										<MenuItem
+											Command="{Binding Path=PlacementTarget.Tag.CopyToClipboardCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
+											CommandParameter="{Binding Name}"
+											Header="Copy Name" />
+										<MenuItem
+											Command="{Binding Path=PlacementTarget.Tag.CopyToClipboardCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
+											CommandParameter="{Binding SourcePath}"
+											Header="Copy Full Path" />
 									</ContextMenu>
 								</Setter.Value>
 							</Setter>
@@ -950,11 +1132,19 @@ body {
 							<Setter Property="ContextMenu">
 								<Setter.Value>
 									<ContextMenu>
-										<MenuItem Header="Copy Name" Command="{Binding Path=PlacementTarget.Tag.CopyToClipboardCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}" CommandParameter="{Binding Name}" />
-										<MenuItem Header="Copy Full Path" Command="{Binding Path=PlacementTarget.Tag.CopyToClipboardCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}" CommandParameter="{Binding SourcePath}" />
-										<MenuItem Header="Rename" Command="{Binding Path=PlacementTarget.Tag.ToggleRenameFileTabCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}" CommandParameter="{Binding}" 
-											Visibility="{Binding CanRename, Converter={StaticResource BoolToVisibilityConverter}, FallbackValue=Collapsed}"
-										/>
+										<MenuItem
+											Command="{Binding Path=PlacementTarget.Tag.CopyToClipboardCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
+											CommandParameter="{Binding Name}"
+											Header="Copy Name" />
+										<MenuItem
+											Command="{Binding Path=PlacementTarget.Tag.CopyToClipboardCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
+											CommandParameter="{Binding SourcePath}"
+											Header="Copy Full Path" />
+										<MenuItem
+											Command="{Binding Path=PlacementTarget.Tag.ToggleRenameFileTabCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
+											CommandParameter="{Binding}"
+											Header="Rename"
+											Visibility="{Binding CanRename, Converter={StaticResource BoolToVisibilityConverter}, FallbackValue=Collapsed}" />
 									</ContextMenu>
 								</Setter.Value>
 							</Setter>
@@ -969,12 +1159,14 @@ body {
 							<Setter Property="ContextMenu">
 								<Setter.Value>
 									<ContextMenu>
-										<MenuItem Header="Confirm Rename" 
-												  Command="{Binding Path=PlacementTarget.Tag.ConfirmRenameFileTabCommand, 
-											RelativeSource={RelativeSource AncestorType=ContextMenu}}" CommandParameter="{Binding}"/>
-										<MenuItem Header="Cancel Renaming" 
-												  Command="{Binding Path=PlacementTarget.Tag.CancelRenamingFileTabCommand, 
-											RelativeSource={RelativeSource AncestorType=ContextMenu}}" CommandParameter="{Binding}"/>
+										<MenuItem
+											Command="{Binding Path=PlacementTarget.Tag.ConfirmRenameFileTabCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
+											CommandParameter="{Binding}"
+											Header="Confirm Rename" />
+										<MenuItem
+											Command="{Binding Path=PlacementTarget.Tag.CancelRenamingFileTabCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
+											CommandParameter="{Binding}"
+											Header="Cancel Renaming" />
 									</ContextMenu>
 								</Setter.Value>
 							</Setter>
@@ -987,25 +1179,25 @@ body {
 				<Grid>
 					<TabControl
 						x:Name="LocaleFileTabControl"
-						ItemsSource="{Binding Tabs}"
-						TabStripPlacement="Left" 
-						ContentTemplate="{Binding Source={StaticResource LocaleEntryGrid}}" 
-						SelectedIndex="{Binding SelectedFileIndex}"
-						BorderThickness="1" Margin="0" Padding="0"
-						Style="{StaticResource TabControlFileData}"
+						Margin="0"
+						Padding="0"
 						HorizontalContentAlignment="Stretch"
+						BorderThickness="1"
+						ContentTemplate="{Binding Source={StaticResource LocaleEntryGrid}}"
+						ItemsSource="{Binding Tabs}"
+						SelectedIndex="{Binding SelectedFileIndex}"
 						SelectionChanged="LocaleFileTabControl_SelectionChanged"
-					>
+						Style="{StaticResource TabControlFileData}"
+						TabStripPlacement="Left">
 						<TabControl.Resources>
-							<Style TargetType="TabItem" BasedOn="{StaticResource TabItemFileDataStyle}">
+							<Style BasedOn="{StaticResource TabItemFileDataStyle}" TargetType="TabItem">
 								<EventSetter Event="LostFocus" Handler="FileDataTab_LostFocus" />
 								<Setter Property="HeaderTemplate">
 									<Setter.Value>
 										<DataTemplate>
-											<Grid Tag="{Binding Path=DataContext, RelativeSource={RelativeSource AncestorType={x:Type Window}}}" 
-												  Style="{StaticResource LocaleFileTabGrid}">
+											<Grid Style="{StaticResource LocaleFileTabGrid}" Tag="{Binding Path=DataContext, RelativeSource={RelativeSource AncestorType={x:Type Window}}}">
 												<Grid.Resources>
-													<Style TargetType="TextBlock" x:Key="TabTextBlockStyle">
+													<Style x:Key="TabTextBlockStyle" TargetType="TextBlock">
 														<Setter Property="Text" Value="{Binding DisplayName}" />
 														<Setter Property="ToolTip" Value="{Binding SourcePath}" />
 														<Setter Property="TextAlignment" Value="Left" />
@@ -1014,9 +1206,7 @@ body {
 														<Setter Property="Tag" Value="{Binding Path=DataContext, RelativeSource={RelativeSource AncestorType={x:Type Window}}}" />
 													</Style>
 													<DataTemplate x:Key="DefaultTabText">
-														<TextBlock
-															x:Name="headerText"
-															Style="{StaticResource TabTextBlockStyle}">
+														<TextBlock x:Name="headerText" Style="{StaticResource TabTextBlockStyle}">
 															<TextBlock.Resources>
 																<Style TargetType="ToolTip">
 																	<Setter Property="Visibility" Value="{Binding SourcePath, Converter={StaticResource EmptyStringVisibilityConverter}}" />
@@ -1025,16 +1215,14 @@ body {
 														</TextBlock>
 														<DataTemplate.Triggers>
 															<DataTrigger Binding="{Binding ChangesUnsaved}" Value="True">
-																<Setter TargetName="headerText" Property="Foreground" Value="#FF459727"/>
-																<Setter TargetName="headerText" Property="FontWeight" Value="Bold"/>
-																<Setter TargetName="headerText" Property="FontStyle" Value="Italic"/>
+																<Setter TargetName="headerText" Property="Foreground" Value="#FF459727" />
+																<Setter TargetName="headerText" Property="FontWeight" Value="Bold" />
+																<Setter TargetName="headerText" Property="FontStyle" Value="Italic" />
 															</DataTrigger>
 														</DataTemplate.Triggers>
 													</DataTemplate>
 													<DataTemplate x:Key="CustomTabText">
-														<TextBlock
-															x:Name="headerText"
-															Style="{StaticResource TabTextBlockStyle}">
+														<TextBlock x:Name="headerText" Style="{StaticResource TabTextBlockStyle}">
 															<TextBlock.Resources>
 																<Style TargetType="ToolTip">
 																	<Setter Property="Visibility" Value="{Binding SourcePath, Converter={StaticResource EmptyStringVisibilityConverter}}" />
@@ -1043,24 +1231,23 @@ body {
 														</TextBlock>
 														<DataTemplate.Triggers>
 															<DataTrigger Binding="{Binding ChangesUnsaved}" Value="True">
-																<Setter TargetName="headerText" Property="Foreground" Value="#FF459727"/>
-																<Setter TargetName="headerText" Property="FontWeight" Value="Bold"/>
-																<Setter TargetName="headerText" Property="FontStyle" Value="Italic"/>
+																<Setter TargetName="headerText" Property="Foreground" Value="#FF459727" />
+																<Setter TargetName="headerText" Property="FontWeight" Value="Bold" />
+																<Setter TargetName="headerText" Property="FontStyle" Value="Italic" />
 															</DataTrigger>
 														</DataTemplate.Triggers>
 													</DataTemplate>
 													<DataTemplate x:Key="EditingTabText">
-														<TextBox 
+														<TextBox
 															x:Name="FileTabRenamingTextBox"
-															Text="{Binding RenameText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-															DataContext="{Binding}"
-															ToolTip="Renaming"
-															TextAlignment="Left"
 															Margin="4,0,0,0"
 															HorizontalAlignment="Left"
-															Tag="{Binding Path=DataContext, RelativeSource={RelativeSource AncestorType={x:Type Window}}}"
+															DataContext="{Binding}"
 															KeyDown="TextBox_KeyDown_MoveFocus"
-															>
+															Tag="{Binding Path=DataContext, RelativeSource={RelativeSource AncestorType={x:Type Window}}}"
+															Text="{Binding RenameText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+															TextAlignment="Left"
+															ToolTip="Renaming">
 															<TextBox.ContextMenu>
 																<ContextMenu>
 																	<MenuItem Command="ApplicationCommands.Cut" />
@@ -1072,7 +1259,7 @@ body {
 														</TextBox>
 													</DataTemplate>
 													<Style x:Key="FileTabContentStyle" TargetType="{x:Type ContentPresenter}">
-														<Setter Property="ContentTemplate" Value="{StaticResource DefaultTabText}"/>
+														<Setter Property="ContentTemplate" Value="{StaticResource DefaultTabText}" />
 														<Style.Triggers>
 															<MultiDataTrigger>
 																<MultiDataTrigger.Conditions>
@@ -1101,25 +1288,24 @@ body {
 												</Grid.ColumnDefinitions>
 												<c:ImageButton
 													x:Name="CloseFileTabButton"
-													ToolTip="{x:Static core:DOS2DETooltips.Button_Locale_CloseFileTab}"
-													Source="{x:Static vdata:IconPathData.Close1}"
-													Visibility="{Binding CanClose, Converter={StaticResource BoolToVisibilityConverter}, FallbackValue=Collapsed}"
+													Grid.Column="1"
+													Margin="4,0,-4,0"
+													HorizontalAlignment="Right"
+													Panel.ZIndex="2"
 													Command="{Binding Path=DataContext.CloseFileCommand, RelativeSource={RelativeSource AncestorType={x:Type Window}}}"
 													CommandParameter="{Binding}"
-													HorizontalAlignment="Right"
-													Margin="4,0,-4,0"
-													Grid.Column="1" 
-													Panel.ZIndex="2"
 													MaxSize="10"
-												/>
-												<ContentPresenter x:Name="FileTabContentPresenter" 
-													Grid.Column="0" Style="{StaticResource FileTabContentStyle}" Content="{Binding}"  />
+													Source="{x:Static vdata:IconPathData.Close1}"
+													ToolTip="{x:Static core:DOS2DETooltips.Button_Locale_CloseFileTab}"
+													Visibility="{Binding CanClose, Converter={StaticResource BoolToVisibilityConverter}, FallbackValue=Collapsed}" />
+												<ContentPresenter
+													x:Name="FileTabContentPresenter"
+													Grid.Column="0"
+													Content="{Binding}"
+													Style="{StaticResource FileTabContentStyle}" />
 												<i:Interaction.Triggers>
 													<i:EventTrigger EventName="LostFocus">
-														<i:InvokeCommandAction 
-															Command="{Binding Path=DataContext.CancelRenamingFileTabCommand, RelativeSource={RelativeSource AncestorType={x:Type Window}}}"
-															CommandParameter="{Binding}"
-														/>
+														<i:InvokeCommandAction Command="{Binding Path=DataContext.CancelRenamingFileTabCommand, RelativeSource={RelativeSource AncestorType={x:Type Window}}}" CommandParameter="{Binding}" />
 													</i:EventTrigger>
 												</i:Interaction.Triggers>
 											</Grid>
@@ -1132,7 +1318,7 @@ body {
 				</Grid>
 			</DataTemplate>
 			<DataTemplate x:Key="LocaleGroupTab">
-				<TabItem Header="{Binding Name}" Visibility="{Binding Visibility, Converter={StaticResource BoolToVisibilityConverter}}"/>
+				<TabItem Header="{Binding Name}" Visibility="{Binding Visibility, Converter={StaticResource BoolToVisibilityConverter}}" />
 			</DataTemplate>
 		</ResourceDictionary>
 	</Window.Resources>
@@ -1143,98 +1329,163 @@ body {
 			<RowDefinition Height="*" />
 			<RowDefinition Height="Auto" />
 		</Grid.RowDefinitions>
-		<Grid x:Name="NameNewFileTabGrid" Grid.Row="0" Grid.RowSpan="4" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Panel.ZIndex="1" 
-			  Visibility="{Binding IsAddingNewFileTab, Converter={StaticResource BoolToVisibilityConverter}, FallbackValue=Collapsed}"
-			  >
+		<Grid
+			x:Name="NameNewFileTabGrid"
+			Grid.Row="0"
+			Grid.RowSpan="4"
+			HorizontalAlignment="Stretch"
+			VerticalAlignment="Stretch"
+			Panel.ZIndex="1"
+			Visibility="{Binding IsAddingNewFileTab, Converter={StaticResource BoolToVisibilityConverter}, FallbackValue=Collapsed}">
 			<Grid.Resources>
 				<Style TargetType="TextBox">
 					<Setter Property="Effect">
 						<Setter.Value>
-							<DropShadowEffect BlurRadius="8" Direction="-20" RenderingBias="Quality" ShadowDepth="4"/>
+							<DropShadowEffect
+								BlurRadius="8"
+								Direction="-20"
+								RenderingBias="Quality"
+								ShadowDepth="4" />
 						</Setter.Value>
 					</Setter>
 				</Style>
 			</Grid.Resources>
 			<Rectangle Fill="DarkGray" Opacity="0.75" />
-			<Border x:Name="NameTabBorder" Padding="32" Margin="4" HorizontalAlignment="Center" VerticalAlignment="Center" Background="#FFD6D9DE" BorderBrush="Gray" BorderThickness="1">
+			<Border
+				x:Name="NameTabBorder"
+				Margin="4"
+				Padding="32"
+				HorizontalAlignment="Center"
+				VerticalAlignment="Center"
+				Background="#FFD6D9DE"
+				BorderBrush="Gray"
+				BorderThickness="1">
 				<StackPanel Width="300" VerticalAlignment="Stretch">
-					<TextBlock Text="Target Project:" VerticalAlignment="Center" Margin="0,0,0,4" />
-					<ComboBox Margin="0" 
-							ItemsSource="{Binding LinkedProjects}" DisplayMemberPath="DisplayName" SelectedIndex="{Binding NewFileTargetProjectIndex, Mode=TwoWay, FallbackValue=0}" 
-					/>
-					<TextBlock Text="Tab Name:" Margin="0,4,0,0" />
-					<TextBox Text="{Binding NewFileTabName, Mode=TwoWay}" AcceptsReturn="False" AcceptsTab="False" Margin="0,4,0,0" MaxLines="1" />
-					<StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="4,8,4,4">
+					<TextBlock
+						Margin="0,0,0,4"
+						VerticalAlignment="Center"
+						Text="Target Project:" />
+					<ComboBox
+						Margin="0"
+						DisplayMemberPath="DisplayName"
+						ItemsSource="{Binding LinkedProjects}"
+						SelectedIndex="{Binding NewFileTargetProjectIndex, Mode=TwoWay, FallbackValue=0}" />
+					<TextBlock Margin="0,4,0,0" Text="Tab Name:" />
+					<TextBox
+						Margin="0,4,0,0"
+						AcceptsReturn="False"
+						AcceptsTab="False"
+						MaxLines="1"
+						Text="{Binding NewFileTabName, Mode=TwoWay}" />
+					<StackPanel
+						Margin="4,8,4,4"
+						HorizontalAlignment="Right"
+						Orientation="Horizontal">
 						<StackPanel.Resources>
 							<Style TargetType="{x:Type Button}">
 								<Setter Property="Margin" Value="6,2,6,2" />
 								<Setter Property="Width" Value="48" />
 								<Setter Property="Effect">
 									<Setter.Value>
-										<DropShadowEffect BlurRadius="10" Direction="-20" RenderingBias="Quality" ShadowDepth="6" Opacity="0.8"/>
+										<DropShadowEffect
+											BlurRadius="10"
+											Direction="-20"
+											Opacity="0.8"
+											RenderingBias="Quality"
+											ShadowDepth="6" />
 									</Setter.Value>
 								</Setter>
 							</Style>
 						</StackPanel.Resources>
-						<Button Content="OK" Command="{Binding ConfirmFileAddToGroupCommand}" Background="#FFC7FBC7" />
-						<Button Content="Cancel" Command="{Binding CancelFileAddToGroupCommand}" Background="#FFF7BEBE" />
+						<Button
+							Background="#FFC7FBC7"
+							Command="{Binding ConfirmFileAddToGroupCommand}"
+							Content="OK" />
+						<Button
+							Background="#FFF7BEBE"
+							Command="{Binding CancelFileAddToGroupCommand}"
+							Content="Cancel" />
 					</StackPanel>
 				</StackPanel>
 				<Border.Effect>
-					<DropShadowEffect BlurRadius="15" Direction="-20" RenderingBias="Quality" ShadowDepth="4"/>
+					<DropShadowEffect
+						BlurRadius="15"
+						Direction="-20"
+						RenderingBias="Quality"
+						ShadowDepth="4" />
 				</Border.Effect>
 			</Border>
 		</Grid>
 		<DockPanel Grid.Row="0" Background="Transparent">
-			<Menu DockPanel.Dock="Top" ItemsSource="{Binding MenuData.Menus}" Background="Transparent" Margin="0" MinHeight="10" Padding="0"
-				  UsesItemContainerTemplate="True" ItemContainerTemplateSelector="{StaticResource MenuItemContainerTemplateSelector}" />
+			<Menu
+				MinHeight="10"
+				Margin="0"
+				Padding="0"
+				Background="Transparent"
+				DockPanel.Dock="Top"
+				ItemContainerTemplateSelector="{StaticResource MenuItemContainerTemplateSelector}"
+				ItemsSource="{Binding MenuData.Menus}"
+				UsesItemContainerTemplate="True" />
 		</DockPanel>
-		<Grid Grid.Column="1" Background="Transparent" Margin="4,2,2,2" Height="Auto" Grid.Row="1" >
+		<Grid
+			Grid.Row="1"
+			Grid.Column="1"
+			Height="Auto"
+			Margin="4,2,2,2"
+			Background="Transparent">
 			<Grid.Resources>
 				<Style TargetType="StackPanel">
 					<Setter Property="Background" Value="Transparent" />
 					<Setter Property="Orientation" Value="Horizontal" />
 					<Setter Property="HorizontalAlignment" Value="Left" />
 				</Style>
-				<Style TargetType="{x:Type c:ImageButton}" BasedOn="{StaticResource DefaultImageButtonStyle}">
+				<Style BasedOn="{StaticResource DefaultImageButtonStyle}" TargetType="{x:Type c:ImageButton}">
 					<Setter Property="Margin" Value="2" />
 				</Style>
 			</Grid.Resources>
-			<StackPanel x:Name="ShortcutsButtonPanel" Grid.Column="0" VerticalAlignment="Center" Margin="2" MinHeight="16">
+			<StackPanel
+				x:Name="ShortcutsButtonPanel"
+				Grid.Column="0"
+				MinHeight="16"
+				Margin="2"
+				VerticalAlignment="Center">
 				<c:ImageButton
 					x:Name="AddFileButton"
-					Command="{Binding AddFileCommand}"
-					ToolTip_Enabled="{x:Static core:DOS2DETooltips.Button_Locale_AddFile}"
-					ToolTip_Disabled="{x:Static core:DOS2DETooltips.Button_Locale_AddFile_Disabled}"
-					Source="{x:Static vdata:IconPathData.AddFile}" 
 					cb:ImageButtonHoverOnDisabled.Enable="True"
-				/>
+					Command="{Binding AddFileCommand}"
+					Source="{x:Static vdata:IconPathData.AddFile}"
+					ToolTip_Disabled="{x:Static core:DOS2DETooltips.Button_Locale_AddFile_Disabled}"
+					ToolTip_Enabled="{x:Static core:DOS2DETooltips.Button_Locale_AddFile}" />
 				<c:ImageButton
 					x:Name="ImportFileButton"
-					Command="{Binding ImportFileCommand}"
-					ToolTip_Enabled="{x:Static core:DOS2DETooltips.Button_Locale_ImportFile}"
-					ToolTip_Disabled="{x:Static core:DOS2DETooltips.Button_Locale_ImportFile_Disabled}"
-					Source="{x:Static vdata:IconPathData.ImportFile}"
 					cb:ImageButtonHoverOnDisabled.Enable="True"
-				/>
+					Command="{Binding ImportFileCommand}"
+					Source="{x:Static vdata:IconPathData.ImportFile}"
+					ToolTip_Disabled="{x:Static core:DOS2DETooltips.Button_Locale_ImportFile_Disabled}"
+					ToolTip_Enabled="{x:Static core:DOS2DETooltips.Button_Locale_ImportFile}" />
 				<c:ImageButton
 					x:Name="SaveButton"
-					Command="{Binding SaveCurrentCommand}" 
-					Source="{x:Static vdata:IconPathData.Save}"
-					ToolTip_Enabled="{x:Static core:DOS2DETooltips.Button_Locale_SaveCurrent}"
-					ToolTip_Disabled="{x:Static core:DOS2DETooltips.Button_Locale_SaveCurrent_Disabled}"
-					IsEnabled="{Binding CanSave}"
 					cb:ImageButtonHoverOnDisabled.Enable="True"
-				/>
+					Command="{Binding SaveCurrentCommand}"
+					IsEnabled="{Binding CanSave}"
+					Source="{x:Static vdata:IconPathData.Save}"
+					ToolTip_Disabled="{x:Static core:DOS2DETooltips.Button_Locale_SaveCurrent_Disabled}"
+					ToolTip_Enabled="{x:Static core:DOS2DETooltips.Button_Locale_SaveCurrent}" />
 				<c:ImageButton
-					x:Name="SaveAllButton" 
-					Command="{Binding SaveAllCommand}" ToolTip="{x:Static core:DOS2DETooltips.Button_Locale_SaveAll}" Source="{x:Static vdata:IconPathData.SaveAll}" />
+					x:Name="SaveAllButton"
+					Command="{Binding SaveAllCommand}"
+					Source="{x:Static vdata:IconPathData.SaveAll}"
+					ToolTip="{x:Static core:DOS2DETooltips.Button_Locale_SaveAll}" />
 				<!--<Rectangle Style="{StaticResource VerticalSeparator}" />-->
 			</StackPanel>
 		</Grid>
-		<Grid x:Name="RemovedEntriesGrid" Grid.Row="2" Panel.ZIndex="99" 
-			  d:DataContext="{d:DesignInstance local:LocaleEditorDebugViewModel, IsDesignTimeCreatable=true}"
-			  Visibility="{Binding MissingEntriesViewVisible, FallbackValue=Collapsed}">
+		<Grid
+			x:Name="RemovedEntriesGrid"
+			Grid.Row="2"
+			Panel.ZIndex="99"
+			d:DataContext="{d:DesignInstance local:LocaleEditorDebugViewModel,
+			                                 IsDesignTimeCreatable=true}"
+			Visibility="{Binding MissingEntriesViewVisible, FallbackValue=Collapsed}">
 			<Grid.RowDefinitions>
 				<RowDefinition Height="Auto" />
 				<RowDefinition Height="*" />
@@ -1246,22 +1497,40 @@ body {
 				</Rectangle.Fill>
 			</Rectangle>
 			<Rectangle Grid.Row="0" Fill="#FFFFDDDD" />
-			<StackPanel Orientation="Vertical" HorizontalAlignment="Center" Margin="8" Background="Transparent">
-				<TextBlock Text="{Binding ProblemEntriesViewHeaderText}" FontSize="18" TextAlignment="Center" FontWeight="Bold" FontFamily="Arial" Foreground="#FFFF3232">
+			<StackPanel
+				Margin="8"
+				HorizontalAlignment="Center"
+				Background="Transparent"
+				Orientation="Vertical">
+				<TextBlock
+					FontFamily="Arial"
+					FontSize="18"
+					FontWeight="Bold"
+					Foreground="#FFFF3232"
+					Text="{Binding ProblemEntriesViewHeaderText}"
+					TextAlignment="Center">
 					<TextBlock.Effect>
-						<DropShadowEffect BlurRadius="4" Direction="-50" RenderingBias="Quality" ShadowDepth="4" Opacity="0.25"/>
+						<DropShadowEffect
+							BlurRadius="4"
+							Direction="-50"
+							Opacity="0.25"
+							RenderingBias="Quality"
+							ShadowDepth="4" />
 					</TextBlock.Effect>
 				</TextBlock>
 				<TextBlock Text="{Binding ProblemEntriesViewInfoText1}" TextAlignment="Center" />
 				<TextBlock Text="{Binding ProblemEntriesViewInfoText2}" TextAlignment="Center" />
 			</StackPanel>
-			
-			<ListView Grid.Row="1" x:Name="RemovedEntriesListView"
+
+			<ListView
+				x:Name="RemovedEntriesListView"
+				Grid.Row="1"
+				Background="Transparent"
+				BorderThickness="0"
+				GridViewColumnHeader.Click="RemovedEntriesListView_Click"
 				ItemsSource="{Binding MissingEntries}"
-				SelectionMode="Extended" Background="Transparent" 
-				BorderThickness="0" GridViewColumnHeader.Click="RemovedEntriesListView_Click"
 				SelectionChanged="RemovedEntriesListView_SelectionChanged"
-			>
+				SelectionMode="Extended">
 				<ListView.Resources>
 					<Style TargetType="TextBlock">
 						<Setter Property="TextAlignment" Value="Left" />
@@ -1272,7 +1541,7 @@ body {
 				</ListView.Resources>
 				<ListView.ItemContainerStyle>
 					<Style TargetType="ListViewItem">
-						<Setter Property="IsSelected" Value="{Binding Selected}"/>
+						<Setter Property="IsSelected" Value="{Binding Selected}" />
 					</Style>
 				</ListView.ItemContainerStyle>
 				<ListView.View>
@@ -1286,8 +1555,10 @@ body {
 						</GridView.ColumnHeaderContainerStyle>
 						<GridViewColumn Width="Auto">
 							<GridViewColumn.Header>
-								<CheckBox x:Name="RemovedEntriesListViewCheckboxHeader" 
-									Checked="RemovedEntriesListViewCheckboxHeader_Checked" Unchecked="RemovedEntriesListViewCheckboxHeader_Checked"/>
+								<CheckBox
+									x:Name="RemovedEntriesListViewCheckboxHeader"
+									Checked="RemovedEntriesListViewCheckboxHeader_Checked"
+									Unchecked="RemovedEntriesListViewCheckboxHeader_Checked" />
 							</GridViewColumn.Header>
 							<GridViewColumn.CellTemplate>
 								<DataTemplate>
@@ -1295,25 +1566,31 @@ body {
 								</DataTemplate>
 							</GridViewColumn.CellTemplate>
 						</GridViewColumn>
-						<GridViewColumn Header="File" Width="Auto">
+						<GridViewColumn Width="Auto" Header="File">
 							<GridViewColumn.CellTemplate>
 								<DataTemplate>
 									<TextBlock Text="{Binding Parent.Name}" ToolTip="{Binding Parent.SourcePath}" />
 								</DataTemplate>
 							</GridViewColumn.CellTemplate>
 						</GridViewColumn>
-						<GridViewColumn DisplayMemberBinding="{Binding EntryKey}" Header="Key" Width="Auto" />
-						<GridViewColumn DisplayMemberBinding="{Binding EntryContent}" Header="Content"/>
+						<GridViewColumn
+							Width="Auto"
+							DisplayMemberBinding="{Binding EntryKey}"
+							Header="Key" />
+						<GridViewColumn DisplayMemberBinding="{Binding EntryContent}" Header="Content" />
 						<GridViewColumn DisplayMemberBinding="{Binding EntryHandle}" Header="Handle" />
 					</GridView>
 				</ListView.View>
 			</ListView>
 			<Rectangle Grid.Row="2" Fill="WhiteSmoke" />
-			<Grid Grid.Row="2" HorizontalAlignment="Left" Margin="4,0">
+			<Grid
+				Grid.Row="2"
+				Margin="4,0"
+				HorizontalAlignment="Left">
 				<Grid.ColumnDefinitions>
-					<ColumnDefinition/>
-					<ColumnDefinition Width="80"/>
-					<ColumnDefinition/>
+					<ColumnDefinition />
+					<ColumnDefinition Width="80" />
+					<ColumnDefinition />
 				</Grid.ColumnDefinitions>
 				<Grid.Resources>
 					<Style TargetType="Button">
@@ -1323,22 +1600,26 @@ body {
 				</Grid.Resources>
 				<StackPanel Grid.Column="0" Orientation="Horizontal">
 					<Button x:Name="CopySimpleMissingEntriesButton" Content="Copy Key &#38; Content" />
-					<Button x:Name="CopyAllDataMissingEntriesButton" Content="Copy All"/>
+					<Button x:Name="CopyAllDataMissingEntriesButton" Content="Copy All" />
 				</StackPanel>
 				<StackPanel Grid.Column="2" Orientation="Horizontal">
 					<Button x:Name="ConfirmRemovedEntriesButton" Content="Removed Selected" />
 					<Button x:Name="CancelRemovedEntriesButton" Content="Cancel &#38; Close" />
 				</StackPanel>
 			</Grid>
-			
+
 		</Grid>
-		<TabControl x:Name="MainTabControl" Grid.Row="2" ItemsSource="{Binding Groups}" ContentTemplate="{Binding Source={StaticResource LocaleFileTabs}}"
-					SelectedIndex="{Binding SelectedGroupIndex}" Style="{StaticResource LocaleGroupTabControl}"
-			>
+		<TabControl
+			x:Name="MainTabControl"
+			Grid.Row="2"
+			ContentTemplate="{Binding Source={StaticResource LocaleFileTabs}}"
+			ItemsSource="{Binding Groups}"
+			SelectedIndex="{Binding SelectedGroupIndex}"
+			Style="{StaticResource LocaleGroupTabControl}">
 			<TabControl.ItemContainerStyle>
 				<Style TargetType="TabItem">
-					<Setter Property="Visibility" Value="{Binding Visibility, Converter={StaticResource BoolToVisibilityConverter}}"/>
-					<Setter Property="Header" Value="{Binding Name}"/>
+					<Setter Property="Visibility" Value="{Binding Visibility, Converter={StaticResource BoolToVisibilityConverter}}" />
+					<Setter Property="Header" Value="{Binding Name}" />
 				</Style>
 			</TabControl.ItemContainerStyle>
 		</TabControl>
@@ -1347,14 +1628,31 @@ body {
 				<ColumnDefinition Width="90" MaxWidth="90" />
 				<ColumnDefinition Width="*" />
 			</Grid.ColumnDefinitions>
-			<Border Grid.Column="0" BorderThickness="1,1,0,1" BorderBrush="{DynamicResource {x:Static SystemColors.ActiveBorderBrushKey}}">
-				<TextBlock x:Name="FooterOuputTextboxDate" Text="{Binding OutputDate}" TextAlignment="Center" Background="{x:Null}" Margin="4,0,4,0" />
+			<Border
+				Grid.Column="0"
+				BorderBrush="{DynamicResource {x:Static SystemColors.ActiveBorderBrushKey}}"
+				BorderThickness="1,1,0,1">
+				<TextBlock
+					x:Name="FooterOuputTextboxDate"
+					Margin="4,0,4,0"
+					Background="{x:Null}"
+					Text="{Binding OutputDate}"
+					TextAlignment="Center" />
 			</Border>
-			<Border Grid.Column="1" BorderThickness="1" BorderBrush="{DynamicResource {x:Static SystemColors.ActiveBorderBrushKey}}">
-				<TextBlock x:Name="FooterOuputTextboxText" Text="{Binding OutputText}" TextTrimming="CharacterEllipsis" ToolTip="{Binding OutputText}" 
-						   TextAlignment="Left" Foreground="{Binding OutputType, Converter={StaticResource FooterOutputColorConverter}}" Background="{x:Null}" 
-						   Padding="0" Margin="4,0,4,0"
-						   />
+			<Border
+				Grid.Column="1"
+				BorderBrush="{DynamicResource {x:Static SystemColors.ActiveBorderBrushKey}}"
+				BorderThickness="1">
+				<TextBlock
+					x:Name="FooterOuputTextboxText"
+					Margin="4,0,4,0"
+					Padding="0"
+					Background="{x:Null}"
+					Foreground="{Binding OutputType, Converter={StaticResource FooterOutputColorConverter}}"
+					Text="{Binding OutputText}"
+					TextAlignment="Left"
+					TextTrimming="CharacterEllipsis"
+					ToolTip="{Binding OutputText}" />
 			</Border>
 		</Grid>
 		<!--<xctk:WindowContainer>
@@ -1362,14 +1660,26 @@ body {
 				<TextBlock Text="{Binding Source=SelectedEntry, Path=EntryContent, Mode=TwoWay, TargetNullValue='null', FallbackValue='test'}" />
 			</xctk:ChildWindow>
 		</xctk:WindowContainer>-->
-		<Grid Visibility="{Binding LockScreenVisibility,  FallbackValue=Visible}" Grid.RowSpan="4">
+		<Grid Grid.RowSpan="4" Visibility="{Binding LockScreenVisibility, FallbackValue=Visible}">
 			<Grid.Background>
-				<SolidColorBrush Color="{DynamicResource {x:Static SystemColors.ActiveBorderColorKey}}" Opacity="0.9"/>
+				<SolidColorBrush Opacity="0.9" Color="{DynamicResource {x:Static SystemColors.ActiveBorderColorKey}}" />
 			</Grid.Background>
-			<Rectangle Fill="WhiteSmoke" HorizontalAlignment="Center" VerticalAlignment="Center" Width="400" Height="100" />
-			<StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" >
-				<TextBlock Text="Locked" FontSize="20" Padding="10" HorizontalAlignment="Center" />
-				<TextBlock Text="Please wait while the main window finishes its task." FontSize="12" Padding="10" />
+			<Rectangle
+				Width="400"
+				Height="100"
+				HorizontalAlignment="Center"
+				VerticalAlignment="Center"
+				Fill="WhiteSmoke" />
+			<StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+				<TextBlock
+					Padding="10"
+					HorizontalAlignment="Center"
+					FontSize="20"
+					Text="Locked" />
+				<TextBlock
+					Padding="10"
+					FontSize="12"
+					Text="Please wait while the main window finishes its task." />
 			</StackPanel>
 		</Grid>
 	</Grid>

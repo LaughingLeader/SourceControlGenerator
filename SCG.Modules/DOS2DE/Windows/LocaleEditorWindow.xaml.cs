@@ -576,6 +576,10 @@ namespace SCG.Modules.DOS2DE.Windows
 				Keyboard.ClearFocus();
 				e.Handled = true;
 			}
+			else
+			{
+				e.Handled = false;
+			}
 		}
 
 		private void LostKeyboardFocus_UpdateSource(object sender, KeyboardFocusChangedEventArgs e)
@@ -584,7 +588,10 @@ namespace SCG.Modules.DOS2DE.Windows
 			{
 				BindingExpression be = tb.GetBindingExpression(TextBox.TextProperty);
 				be.UpdateSource();
-				Keyboard.ClearFocus();
+				if(!tb.ContextMenu.IsOpen)
+				{
+					Keyboard.ClearFocus();
+				}
 			}
 		}
 

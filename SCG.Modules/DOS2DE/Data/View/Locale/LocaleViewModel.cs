@@ -973,6 +973,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 		public ICommand ConfirmRenameFileTabCommand { get; private set; }
 		public ICommand CancelRenamingFileTabCommand { get; private set; }
 		public ICommand SelectNoneCommand { get; private set; }
+		public ICommand ResetHandleCommand { get; private set; }
 		public ICommand ExportFileAsTextualCommand { get; private set; }
 
 		public IObservable<bool> GlobalCanActObservable { get; private set; }
@@ -1901,6 +1902,14 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 					tb.Select(tb.CaretIndex, 0);
 				}
 			}, canSelectNone).DisposeWith(disposables);
+
+			ResetHandleCommand = ReactiveCommand.Create<object>((targetObject) =>
+			{
+				if (targetObject is System.Windows.Controls.TextBox tb)
+				{
+					tb.Text = "ls::TranslatedStringRepository::s_HandleUnknown";
+				}
+			}).DisposeWith(disposables);
 
 			CopyToClipboardCommand = ReactiveCommand.Create<string>((str) =>
 			{

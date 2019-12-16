@@ -272,6 +272,7 @@
     <Compile Include="Controls\AutoScrollingTextbox.cs" />
     <Compile Include="Controls\Behavior\ComboBoxWidthFromItemsBehavior.cs" />
     <Compile Include="Controls\Behavior\ImageButtonDisabledHoverBehavior.cs" />
+    <Compile Include="Controls\Behavior\InputBindingsBehavior.cs" />
     <Compile Include="Controls\Behavior\ListBoxSelectionBehavior.cs" />
     <Compile Include="Controls\Behavior\MarginSetter.cs" />
     <Compile Include="Controls\Behavior\ProgressBarAnimationBehavior.cs" />
