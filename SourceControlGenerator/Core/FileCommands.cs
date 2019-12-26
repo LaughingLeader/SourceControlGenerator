@@ -316,8 +316,13 @@ namespace SCG
 
 		public static bool PathIsRelative(string path)
 		{
-			Uri result;
-			return Uri.TryCreate(path, UriKind.Relative, out result);
+			try
+			{
+				Uri result;
+				return Uri.TryCreate(path, UriKind.Relative, out result);
+			}
+			catch (Exception) { }
+			return false;
 		}
 
 		public static bool IsValidImage(string filename)

@@ -12,6 +12,8 @@ namespace SCG
 {
 	public static class DefaultPaths
 	{
+		public static string AppFolder { get; private set; } = AppDomain.CurrentDomain.BaseDirectory;
+
 		public static string DefaultPortableRootFolder => @"Data\";
 		public static string DefaultMyDocumentsRootFolder => @"Source Control Generator\";
 

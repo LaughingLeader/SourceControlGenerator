@@ -467,10 +467,7 @@ namespace SCG.Data.View
 			OnContentChanged = OnContentChangedAction;
 
 			if (OnFileLoadedAction != null) OnFileLoaded = OnFileLoadedAction;
-		}
 
-		public TextGeneratorSaveFileData()
-		{
 			OpenCommand = new ParameterCommand((object param) =>
 			{
 				if (param is string path)
@@ -482,6 +479,11 @@ namespace SCG.Data.View
 			});
 			SaveCommand = new SaveFileCommand(OnSave, OnSaveAs);
 			SaveAsCommand = new SaveFileAsCommand(OnSaveAs);
+		}
+
+		public TextGeneratorSaveFileData()
+		{
+
 		}
 	}
 

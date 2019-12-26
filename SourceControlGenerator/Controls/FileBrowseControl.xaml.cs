@@ -337,19 +337,20 @@ namespace SCG.Controls
 							filename = saveFileDialog.FileName;
 						}
 
-						if (FileCommands.PathIsRelative(filename))
+						if (!FileCommands.IsValidFilePath(filename))
 						{
-							filename = Common.Functions.GetRelativePath.RelativePathGetter.Relative(Directory.GetCurrentDirectory(), fileDialog.FileName);
+							filename = filename.CleanFileName();
+							filename = Path.GetFullPath(filename);
 						}
-						else
-						{
-							if(!FileCommands.IsValidFilePath(filename))
-							{
-								filename = filename.CleanFileName();
-								filename = Path.GetFullPath(filename);
-							}							
-						}
+
+						filename = filename.Replace(DefaultPaths.AppFolder, "/");
+
 						SkipNext = true;
+						if (filename.Contains("%20"))
+						{
+							filename = Uri.UnescapeDataString(filename); // Get rid of %20
+						}
+
 						FileLocationText = filename;
 						LastFileLocation = Path.GetDirectoryName(FileLocationText);
 						OnOpen?.Execute(FileLocationText);
@@ -422,10 +423,8 @@ namespace SCG.Controls
 							path = Uri.UnescapeDataString(path); // Get rid of %20
 						}
 
-						if (FileCommands.PathIsRelative(path))
-						{
-							path = path.Replace(Directory.GetCurrentDirectory(), "");
-						}
+						path = path.Replace(DefaultPaths.AppFolder, "/");
+
 						SkipNext = true;
 						FileLocationText = path;
 						LastFileLocation = FileLocationText;
