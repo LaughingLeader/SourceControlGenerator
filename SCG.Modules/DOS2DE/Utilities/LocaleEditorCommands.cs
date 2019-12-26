@@ -27,6 +27,7 @@ using ReactiveUI;
 using System.Reactive.Concurrency;
 using System.Text.RegularExpressions;
 using SCG.Modules.DOS2DE.Data.Savable;
+using SCG.Extensions;
 
 namespace SCG.Modules.DOS2DE.Utilities
 {
@@ -731,6 +732,25 @@ namespace SCG.Modules.DOS2DE.Utilities
 			return 0;
 		}
 
+		private static string GetSourceFileName(ILocaleFileData fileData, bool findActualSource, LocaleViewModel data, ILocaleKeyEntry e)
+		{
+			if (!findActualSource && fileData is LocaleNodeFileData keyFileData)
+			{
+				return EscapeXml(Path.GetFileName(keyFileData.SourcePath));
+			}
+
+			if (findActualSource)
+			{
+				var actualSource = data.SelectedGroup.DataFiles.Where(d => d.Entries.Contains(e)).FirstOrDefault();
+				if (actualSource is LocaleNodeFileData sourceFileData)
+				{
+					return EscapeXml(Path.GetFileName(sourceFileData.SourcePath));
+				}
+			}
+
+			return "";
+		}
+
 		public static string ExportDataAsXML(LocaleViewModel data)
 		{
 			string output = "<contentList>\n{0}</contentList>";
@@ -741,37 +761,42 @@ namespace SCG.Modules.DOS2DE.Utilities
 				var fileData = data.SelectedGroup.SelectedFile;
 				if (fileData != null)
 				{
-					string sourcePath = "";
 					bool findActualSource = fileData == data.SelectedGroup.CombinedEntries;
 
-					if (!findActualSource && fileData is LocaleNodeFileData keyFileData)
+					var exportedKeys = fileData.Entries.Where(fd => fd.Selected && fd.Handle != LocaleEditorCommands.UnsetHandle).DistinctBy(x => x.Handle);
+
+					bool exportSource = false;
+					bool exportKeys = false;
+
+					var settings = data.Settings.GetProjectSettings(data.GetMainProject());
+
+					if (settings != null)
 					{
-						sourcePath = EscapeXml(Path.GetFileName(keyFileData.SourcePath));
+						exportSource = settings.ExportSource;
+						exportKeys = settings.ExportKeys;
 					}
 
-					foreach (var e in fileData.Entries.Where(fd => fd.Selected).OrderBy(x => x.EntryKey))
+					if (exportSource && !exportKeys)
 					{
-						if (findActualSource)
-						{
-							var actualSource = data.SelectedGroup.DataFiles.Where(d => d.Entries.Contains(e)).FirstOrDefault();
-							if (actualSource is LocaleNodeFileData sourceFileData)
-							{
-								sourcePath = EscapeXml(Path.GetFileName(sourceFileData.SourcePath));
-							}
-						}
+						exportedKeys = exportedKeys.OrderBy(x => GetSourceFileName(fileData, findActualSource, data, x));
+					}
+					else if (!exportSource && exportKeys)
+					{
+						exportedKeys = exportedKeys.OrderBy(x => x.EntryKey);
+					}
+					else if (exportSource && exportKeys)
+					{
+						exportedKeys = exportedKeys.OrderBy(x => GetSourceFileName(fileData, findActualSource, data, x)).ThenBy(x => x.EntryKey);
+					}
+					else
+					{
+						exportedKeys = exportedKeys.OrderBy(x => x.Handle);
+					}
 
+					foreach (var e in exportedKeys)
+					{
+						string sourcePath = GetSourceFileName(fileData, findActualSource, data, e);
 						var sourceStr = "";
-
-						bool exportSource = false;
-						bool exportKeys = false;
-
-						var settings = data.Settings.GetProjectSettings(data.GetMainProject());
-
-						if (settings != null)
-						{
-							exportSource = settings.ExportSource;
-							exportKeys = settings.ExportKeys;
-						}
 
 						if (exportSource)
 						{
