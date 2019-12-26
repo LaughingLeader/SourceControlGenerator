@@ -92,6 +92,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 		}
 
 		#region UI Properties
+
 		/* 
 		Properties used by the UI interface so we can track user changes with history. 
 		*/

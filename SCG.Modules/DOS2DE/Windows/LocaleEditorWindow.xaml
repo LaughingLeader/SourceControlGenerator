@@ -537,13 +537,12 @@
 					</Setter.Value>
 				</Setter>
 			</Style>
-
-			<Style x:Key="LocaleDataGridStyle" TargetType="{x:Type DataGrid}">
+			<Style x:Key="LocaleDataGridStyle" TargetType="{x:Type c:SortableDataGrid}">
 				<Setter Property="Background" Value="{DynamicResource {x:Static SystemColors.ControlBrushKey}}" />
 				<Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}" />
 				<Setter Property="BorderBrush" Value="#FF688CAF" />
 				<Setter Property="BorderThickness" Value="1" />
-				<Setter Property="RowDetailsVisibilityMode" Value="VisibleWhenSelected" />
+				<Setter Property="RowDetailsVisibilityMode" Value="Collapsed" />
 				<Setter Property="ScrollViewer.CanContentScroll" Value="true" />
 				<Setter Property="ScrollViewer.PanningMode" Value="Both" />
 				<Setter Property="Stylus.IsFlicksEnabled" Value="False" />
@@ -676,7 +675,7 @@
 							<ColumnDefinition Width="Auto"/>
 							<ColumnDefinition Width="*"/>
 						</Grid.ColumnDefinitions>-->
-						<DataGrid
+						<c:SortableDataGrid
 							x:Name="LocaleEntryDataGrid"
 							AutoGenerateColumns="False"
 							BorderThickness="0,1,0,0"
@@ -725,7 +724,9 @@
 								<DataGridTemplateColumn
 									MinWidth="25"
 									CanUserResize="False"
-									HeaderStyle="{StaticResource ProjectsHeaderStyle}">
+									CanUserSort="True"
+									HeaderStyle="{StaticResource ProjectsHeaderStyle}"
+									SortMemberPath="Selected">
 									<DataGridTemplateColumn.Header>
 										<CheckBox IsChecked="{Binding Source={StaticResource FileData}, Path=DataContext.AllSelected, Mode=TwoWay}" ToolTip="Select/Deselect All" />
 									</DataGridTemplateColumn.Header>
@@ -746,8 +747,27 @@
 								</DataGridTemplateColumn>
 								<DataGridTemplateColumn
 									Width="Auto"
+									CanUserSort="True"
+									Header="#"
+									SortMemberPath="Index">
+									<DataGridTemplateColumn.CellStyle>
+										<Style BasedOn="{StaticResource CellNoHighlightChangesUnsaved}" TargetType="DataGridCell">
+											<Setter Property="IsEnabled" Value="False" />
+											<Setter Property="Margin" Value="0" />
+										</Style>
+									</DataGridTemplateColumn.CellStyle>
+									<DataGridTemplateColumn.CellTemplate>
+										<DataTemplate>
+											<TextBlock Text="{Binding Index}" />
+										</DataTemplate>
+									</DataGridTemplateColumn.CellTemplate>
+								</DataGridTemplateColumn>
+								<DataGridTemplateColumn
+									Width="Auto"
 									MinWidth="50"
-									Header="Key">
+									CanUserSort="True"
+									Header="Key"
+									SortMemberPath="EntryKey">
 									<DataGridTemplateColumn.CellStyle>
 										<Style BasedOn="{StaticResource CellNoHighlightChangesUnsaved}" TargetType="DataGridCell">
 											<Setter Property="IsEnabled" Value="{Binding KeyIsEditable}" />
@@ -762,7 +782,12 @@
 										</DataTemplate>
 									</DataGridTemplateColumn.CellTemplate>
 								</DataGridTemplateColumn>
-								<DataGridTemplateColumn Width="*" Header="Content">
+								<DataGridTemplateColumn
+									Width="*"
+									MinWidth="50"
+									CanUserSort="True"
+									Header="Content"
+									SortMemberPath="EntryContent">
 									<DataGridTemplateColumn.CellTemplate>
 										<DataTemplate>
 											<TextBox
@@ -789,7 +814,12 @@
 										</DataTemplate>
 									</DataGridTemplateColumn.CellTemplate>
 								</DataGridTemplateColumn>
-								<DataGridTemplateColumn Width="150" Header="Handle">
+								<DataGridTemplateColumn
+									Width="Auto"
+									MinWidth="200"
+									CanUserSort="True"
+									Header="Handle"
+									SortMemberPath="EntryHandle">
 									<DataGridTemplateColumn.CellTemplate>
 										<DataTemplate>
 											<TextBox
@@ -815,7 +845,7 @@
 									</DataGridTemplateColumn.CellTemplate>
 								</DataGridTemplateColumn>
 							</DataGrid.Columns>
-						</DataGrid>
+						</c:SortableDataGrid>
 						<GridSplitter
 							Grid.Row="1"
 							Height="3"

@@ -8,10 +8,11 @@ using System.Text;
 using System.Threading.Tasks;
 using ReactiveUI;
 using System.ComponentModel;
+using SCG.Interfaces;
 
 namespace SCG.Modules.DOS2DE.Data.View.Locale
 {
-	public interface ILocaleKeyEntry : INotifyPropertyChanging
+	public interface ILocaleKeyEntry : INotifyPropertyChanging, IIndexable
 	{
 		ILocaleFileData Parent { get; set; }
 		bool KeyIsEditable { get; set; }
@@ -27,11 +28,12 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 		string EntryKey { get; set; }
 		string EntryContent { get; set; }
 		string EntryHandle { get; set; }
+		int Index { get; set; }
 
 		void SetHistoryFromObject(IPropertyChangedHistoryBase obj);
 	}
 
-	public class BaseLocaleKeyEntry : PropertyChangedHistoryBase
+	public class BaseLocaleKeyEntry : PropertyChangedHistoryBase, IIndexable
 	{
 		public ILocaleFileData Parent { get; set; }
 
@@ -56,6 +58,14 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 				this.RaiseAndSetIfChanged(ref selected, value);
 				OnSelected(selected);
 			}
+		}
+
+		private int index = -1;
+
+		public int Index
+		{
+			get => index;
+			set { this.RaiseAndSetIfChanged(ref index, value); }
 		}
 
 		public virtual void OnSelected(bool isSelected)

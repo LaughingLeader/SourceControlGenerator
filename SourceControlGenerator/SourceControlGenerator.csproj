@@ -286,6 +286,7 @@
       <DependentUpon>LoadingSpinner.xaml</DependentUpon>
     </Compile>
     <Compile Include="Controls\MonitoredContentPresenter.cs" />
+    <Compile Include="Controls\SortableDataGrid.cs" />
     <Compile Include="Converters\BindingFallbackConverter.cs" />
     <Compile Include="Converters\ColorToBrushConverter.cs" />
     <Compile Include="Converters\GrayscaleTintImageConverter.cs" />
@@ -363,6 +364,7 @@
     <Compile Include="Extensions\ControlExtensions.cs" />
     <Compile Include="Extensions\ListExtensions.cs" />
     <Compile Include="Extensions\StringExtensions.cs" />
+    <Compile Include="Interfaces\IIndexable.cs" />
     <Compile Include="SCGEnum\BackupMode.cs" />
     <Compile Include="SCGEnum\FileValidation.cs" />
     <Compile Include="Extensions\AttributeExtensions.cs" />
