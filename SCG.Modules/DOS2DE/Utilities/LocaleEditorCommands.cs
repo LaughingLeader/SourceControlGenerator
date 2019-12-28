@@ -800,7 +800,7 @@ namespace SCG.Modules.DOS2DE.Utilities
 
 						if (exportSource)
 						{
-							sourceStr = $" Source =\"{sourcePath}\"";
+							sourceStr = $" Source=\"{sourcePath}\"";
 						}
 
 						var keyStr = "";
