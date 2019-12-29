@@ -21,16 +21,9 @@ using System.Threading;
 
 namespace SCG.FileGen
 {
-	public enum BackupResult
-	{
-		Success,
-		Skipped,
-		Error
-	}
-
 	public static class BackupGenerator
 	{
-		public static async Task<BackupResult> CreateArchiveFromRoot(string rootPath, List<JunctionData> sourceFolders, string archiveFilePath, bool updateProgress = false, CancellationToken? token = null, int updateValue = 1)
+		public static async Task<FileCreationTaskResult> CreateArchiveFromRoot(string rootPath, List<JunctionData> sourceFolders, string archiveFilePath, bool updateProgress = false, CancellationToken? token = null, int updateValue = 1)
 		{
 			if (sourceFolders != null && sourceFolders.Count > 0)
 			{
@@ -71,14 +64,14 @@ namespace SCG.FileGen
 								await WriteZipAsync(zipWriter, f.Replace(rootPath, ""), f, token.Value);
 							}
 
-							return BackupResult.Success;
+							return FileCreationTaskResult.Success;
 						}
 					}
 					else
 					{
 						Log.Here().Important("No files found while attempting to back up project.");
 						if (updateProgress) AppController.Main.UpdateProgressLog("No files found. Skipping.");
-						return BackupResult.Skipped; // Gracefully skip
+						return FileCreationTaskResult.Skipped; // Gracefully skip
 					}
 				}
 				catch(Exception ex)
@@ -90,6 +83,7 @@ namespace SCG.FileGen
 					else
 					{
 						Log.Here().Warning($"Cancelled writing archive \"{archiveFilePath}\".");
+						return FileCreationTaskResult.Skipped;
 					}
 				}
 			}
@@ -97,10 +91,10 @@ namespace SCG.FileGen
 			{
 				Log.Here().Error($"Source folders for project are empty.");
 			}
-			return BackupResult.Error;
+			return FileCreationTaskResult.Error;
 		}
 
-		public static async Task<BackupResult> CreateArchiveFromRepo(string repoPath, string rootPath, List<JunctionData> sourceFolders, string archiveFilePath, bool updateProgress = false, CancellationToken? token = null, int updateValue = 1)
+		public static async Task<FileCreationTaskResult> CreateArchiveFromRepo(string repoPath, string rootPath, List<JunctionData> sourceFolders, string archiveFilePath, bool updateProgress = false, CancellationToken? token = null, int updateValue = 1)
 		{
 			if (sourceFolders != null && sourceFolders.Count > 0)
 			{
@@ -135,19 +129,19 @@ namespace SCG.FileGen
 								if (token.Value.IsCancellationRequested)
 								{
 									if (updateProgress) AppController.Main.UpdateProgressLog("Canceling...");
-									return BackupResult.Skipped;
+									return FileCreationTaskResult.Skipped;
 								}
 								//Log.Here().Important($"Adding file {f} to archive.");
 								await WriteZipAsync(zipWriter, f.Replace(rootPath, "").Replace(repoPath, ""), f, token.Value);
 							}
 
-							return BackupResult.Success;
+							return FileCreationTaskResult.Success;
 						}
 					}
 					else
 					{
 						if (updateProgress) AppController.Main.UpdateProgressLog("No files found. Skipping.");
-						return BackupResult.Skipped;
+						return FileCreationTaskResult.Skipped;
 					}
 				}
 				catch (Exception ex)
@@ -159,6 +153,7 @@ namespace SCG.FileGen
 					else
 					{
 						Log.Here().Warning($"Cancelled writing archive \"{archiveFilePath}\".");
+						return FileCreationTaskResult.Skipped;
 					}
 				}
 			}
@@ -166,10 +161,10 @@ namespace SCG.FileGen
 			{
 				Log.Here().Error($"Source folders for project are null or empty.");
 			}
-			return BackupResult.Error;
+			return FileCreationTaskResult.Error;
 		}
 
-		public static async Task<BackupResult> CreateArchiveFromDirectory(string directoryPath, string archiveFilePath, bool updateProgress = true, CancellationToken? token = null, int updateValue = 1)
+		public static async Task<FileCreationTaskResult> CreateArchiveFromDirectory(string directoryPath, string archiveFilePath, bool updateProgress = true, CancellationToken? token = null, int updateValue = 1)
 		{
 			try
 			{
@@ -209,13 +204,13 @@ namespace SCG.FileGen
 							await WriteZipAsync(zipWriter, f.Replace(directoryPath, ""), f, token.Value);
 						}
 
-						return BackupResult.Success;
+						return FileCreationTaskResult.Success;
 					}
 				}
 				else
 				{
 					if (updateProgress) AppController.Main.UpdateProgressLog("No files found. Skipping.");
-					return BackupResult.Skipped;
+					return FileCreationTaskResult.Skipped;
 				}
 			}
 			catch (Exception ex)
@@ -227,12 +222,13 @@ namespace SCG.FileGen
 				else
 				{
 					Log.Here().Warning($"Cancelled writing archive \"{archiveFilePath}\".");
+					return FileCreationTaskResult.Skipped;
 				}
 			}
-			return BackupResult.Error;
+			return FileCreationTaskResult.Error;
 		}
 
-		public static async Task<BackupResult> CreateArchiveFromFiles(List<string> files, string archiveFilePath, IEnumerable<string> trimPath = null, CancellationToken? token = null)
+		public static async Task<FileCreationTaskResult> CreateArchiveFromFiles(List<string> files, string archiveFilePath, IEnumerable<string> trimPath = null, CancellationToken? token = null)
 		{
 			try
 			{
@@ -262,7 +258,7 @@ namespace SCG.FileGen
 							}
 						}
 
-						return BackupResult.Success;
+						return FileCreationTaskResult.Success;
 					}
 				}
 				else
@@ -279,9 +275,39 @@ namespace SCG.FileGen
 				else
 				{
 					Log.Here().Warning($"Cancelled writing archive \"{archiveFilePath}\".");
+					return FileCreationTaskResult.Skipped;
 				}
 			}
-			return BackupResult.Error;
+			return FileCreationTaskResult.Error;
+		}
+
+		public static async Task<FileCreationTaskResult> CreateArchiveFromFile(string file, string archiveFilePath, CancellationToken? token = null)
+		{
+			try
+			{
+				if (token == null) token = CancellationToken.None;
+
+				using (var zip = File.OpenWrite(archiveFilePath))
+				using (var zipWriter = WriterFactory.Open(zip, ArchiveType.Zip, CompressionType.Deflate))
+				{
+					Log.Here().Activity($"Saving {file} to archive at '{archiveFilePath}'.");
+					await WriteZipAsync(zipWriter, Path.GetFileName(file), file, token.Value);
+					return FileCreationTaskResult.Success;
+				}
+			}
+			catch (Exception ex)
+			{
+				if (!token.Value.IsCancellationRequested)
+				{
+					Log.Here().Error($"Error writing archive to '{archiveFilePath}': {ex.ToString()}");
+				}
+				else
+				{
+					Log.Here().Warning($"Cancelled writing archive \"{archiveFilePath}\".");
+					return FileCreationTaskResult.Skipped;
+				}
+			}
+			return FileCreationTaskResult.Error;
 		}
 
 		private static Task CrawlDirectoryAsync(ConcurrentBag<string> outputBag, string baseDirectory, string searchPattern, System.IO.SearchOption searchOptions, CancellationToken token)

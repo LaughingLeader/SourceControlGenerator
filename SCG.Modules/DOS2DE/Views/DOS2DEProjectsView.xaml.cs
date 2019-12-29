@@ -427,6 +427,11 @@ namespace SCG.Modules.DOS2DE.Views
 			Controller.PackageSelectedProjects();
 		}
 
+		private void ReleaseCreateButton_Click(object sender, RoutedEventArgs e)
+		{
+			Controller.CreateReleasesForSelectedProjects();
+		}
+
 		private void GitGenerationButton_Click(object sender, RoutedEventArgs e)
 		{
 			Controller.OpenGitGeneratorWindow();

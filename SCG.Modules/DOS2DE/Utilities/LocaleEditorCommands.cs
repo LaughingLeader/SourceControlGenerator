@@ -573,7 +573,7 @@ namespace SCG.Modules.DOS2DE.Utilities
 				{
 					var result = await BackupGenerator.CreateArchiveFromFiles(sourceFiles, archivePath, replacePaths, token);
 					Log.Here().Activity($"Localization backup result to '{archivePath}': {result.ToString()}");
-					return result != BackupResult.Error;
+					return result != FileCreationTaskResult.Error;
 				}
 				else
 				{
@@ -608,7 +608,7 @@ namespace SCG.Modules.DOS2DE.Utilities
 					List<string> sourceFiles = new List<string>() { sourceFilePath };
 					var result = await BackupGenerator.CreateArchiveFromFiles(sourceFiles, archivePath, replacePaths, token);
 					Log.Here().Activity($"Localization backup result to '{archivePath}': {result.ToString()}");
-					return result != BackupResult.Error;
+					return result != FileCreationTaskResult.Error;
 				}
 				else
 				{

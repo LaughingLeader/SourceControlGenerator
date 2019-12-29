@@ -244,7 +244,7 @@ namespace SCG.Data.View
 			}
 		}
 
-		private int progressValueMax = 1000;
+		private int progressValueMax = 100;
 
 		public int ProgressValueMax
 		{

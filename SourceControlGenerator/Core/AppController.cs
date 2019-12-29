@@ -305,69 +305,70 @@ namespace SCG.Core
 
 		public void UpdateProgress(int Value = 1, string Message = null)
 		{
-			mainWindow.Dispatcher.Invoke(new Action(() =>
+			RxApp.MainThreadScheduler.Schedule(_ =>
 			{
 				if (Message != null) Data.ProgressLog += Environment.NewLine + Message;
 				Data.ProgressValue += Value;
-
-				//Log.Here().Activity($"Updated progress to {Data.ProgressValue}/{Data.ProgressValueMax}.");
-			}), DispatcherPriority.Background);
+			});
 		}
 
 		public void UpdateProgressAndMax(int Value = 1, string Message = null)
 		{
-			mainWindow.Dispatcher.Invoke(new Action(() =>
+			RxApp.MainThreadScheduler.Schedule(_ =>
 			{
 				Data.ProgressValueMax += Value;
 				if (Message != null) Data.ProgressLog += Environment.NewLine + Message;
 				Data.ProgressValue += Value;
 
 				//Log.Here().Activity($"Updated progress to {Value}.");
-			}), DispatcherPriority.Background);
+			});
 		}
 
 		public void SetProgress(int Value = 1, string Message = null)
 		{
-			mainWindow.Dispatcher.Invoke(new Action(() =>
+			RxApp.MainThreadScheduler.Schedule(_ =>
 			{
 				//Log.Here().Activity($"Setting progress to {Value}.");
 				if (Message != null) Data.ProgressMessage = Message;
 				Data.ProgressValue = Value;
-			}), DispatcherPriority.ApplicationIdle);
+			});
 		}
 
 		public void UpdateProgressMessage(string Message)
 		{
-			mainWindow.Dispatcher.Invoke(new Action(() =>
+			RxApp.MainThreadScheduler.Schedule(_ =>
 			{
 				Data.ProgressMessage = Message;
-			}), DispatcherPriority.ApplicationIdle);
+			});
 		}
 
 		public void UpdateProgressLog(string Message)
 		{
-			mainWindow.Dispatcher.Invoke(new Action(() =>
+			RxApp.MainThreadScheduler.Schedule(_ =>
 			{
 				Data.ProgressLog += Environment.NewLine + Message;
-			}), DispatcherPriority.ApplicationIdle);
+			});
 		}
 
 		public void UpdateProgressTitle(string Title)
 		{
-			if(Data.ProgressTitle != Title)
+			if (Data.ProgressTitle != Title)
 			{
-				mainWindow.Dispatcher.Invoke(new Action(() =>
+				RxApp.MainThreadScheduler.Schedule(_ =>
 				{
 					Data.ProgressTitle = Title;
-				}), DispatcherPriority.ContextIdle);
+				});
 			}
 		}
 
 		public async void FinishProgress()
 		{
-			Data.ProgressValue = Data.ProgressValueMax;
+			RxApp.MainThreadScheduler.Schedule(_ =>
+			{
+				Data.ProgressValue = Data.ProgressValueMax;
+			});
 			await Task.Delay(500);
-			RxApp.MainThreadScheduler.Schedule(() =>
+			RxApp.MainThreadScheduler.Schedule(_ =>
 			{
 				Data.ProgressValue = Data.ProgressValueMax;
 				OnProgressComplete();

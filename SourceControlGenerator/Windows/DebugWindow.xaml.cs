@@ -23,6 +23,7 @@ using System.Windows.Shapes;
 using System.Windows.Threading;
 using ReactiveUI;
 using System.Reactive.Concurrency;
+using SCG.Data.App;
 
 namespace SCG.Windows
 {
@@ -159,7 +160,7 @@ namespace SCG.Windows
 			debugWindowData.CanBackupFolder = FileCommands.IsValidDirectoryPath(debugWindowData.BackupFolderPath);
 		}
 
-		private async Task<BackupResult> BackupTest()
+		private async Task<FileCreationTaskResult> BackupTest()
 		{
 			if(Directory.Exists(debugWindowData.BackupFolderPath))
 			{
@@ -170,7 +171,7 @@ namespace SCG.Windows
 				return await BackupGenerator.CreateArchiveFromDirectory(debugWindowData.BackupFolderPath.Replace("/", "\\\\"), outputFilePath, true, Token.Token);
 			}
 
-			return BackupResult.Error;
+			return FileCreationTaskResult.Error;
 		}
 	}
 }

@@ -409,6 +409,9 @@ namespace SCG.Core
 
 			ConcurrentBag<ModProjectData> selectedProjects = new ConcurrentBag<ModProjectData>(sortedProjects);
 
+			//+1 progress when done searching for files, +1 when done.
+			AppController.Main.Data.ProgressValueMax = selectedProjects.Count * 2;
+
 			var totalSuccess = await BackupSelectedProjectsAsync(selectedProjects);
 			if (totalSuccess >= selectedProjects.Count)
 			{
@@ -436,12 +439,6 @@ namespace SCG.Core
 
 		private async Task<int> BackupSelectedProjectsAsync(ConcurrentBag<ModProjectData> selectedProjects)
 		{
-			//+1 progress when done searching for files, +1 when done.
-			AppController.Main.Data.ProgressValueMax = selectedProjects.Count * 2;
-
-			//AppController.Main.Data.IsIndeterminate = true;
-			
-
 			int totalSuccess = 0;
 
 			if (selectedProjects != null)
@@ -461,10 +458,10 @@ namespace SCG.Core
 
 					if (cancellationTokenSource.IsCancellationRequested)
 					{
-						backupSuccess = BackupResult.Skipped;
+						backupSuccess = FileCreationTaskResult.Skipped;
 					}
 
-					if (backupSuccess == BackupResult.Success)
+					if (backupSuccess == FileCreationTaskResult.Success)
 					{
 						totalSuccess += 1;
 						project.LastBackup = DateTime.Now;
@@ -484,7 +481,7 @@ namespace SCG.Core
 
 						AppController.Main.UpdateProgressLog("Archive created.");
 					}
-					else if (backupSuccess == BackupResult.Error)
+					else if (backupSuccess == FileCreationTaskResult.Error)
 					{
 						Log.Here().Error("Failed to create archive for {0}.", project.ProjectName);
 						AppController.Main.UpdateProgressLog("Archive creation failed.");
@@ -518,7 +515,7 @@ namespace SCG.Core
 			return totalSuccess;
 		}
 
-		public async Task<BackupResult> BackupProjectAsync(ModProjectData modProject, string OutputDirectory = "", BackupMode mode = BackupMode.Zip)
+		public async Task<FileCreationTaskResult> BackupProjectAsync(ModProjectData modProject, string OutputDirectory = "", BackupMode mode = BackupMode.Zip)
 		{
 			if (String.IsNullOrWhiteSpace(OutputDirectory))
 			{
@@ -569,7 +566,7 @@ namespace SCG.Core
 				{
 					AppController.Main.UpdateProgressLog("Running git archive command...");
 					var success = await GitGenerator.Archive(gitProjectDirectory, archivePath);
-					return success ? BackupResult.Success : BackupResult.Error;
+					return success ? FileCreationTaskResult.Success : FileCreationTaskResult.Error;
 				}
 				else
 				{
@@ -610,8 +607,12 @@ namespace SCG.Core
 
 			string localModsFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), @"Larian Studios\Divinity Original Sin 2 Definitive Edition\Local Mods");
 
-			var totalSuccess = await PackageSelectedProjectsAsync(selectedProjects, localModsFolder);
-			if (totalSuccess >= selectedProjects.Count)
+			//+1 progress when done searching for files, +1 when done.
+			AppController.Main.Data.ProgressValueMax = selectedProjects.Count * 2;
+
+			var allTaskResults = await PackageSelectedProjectsAsync(selectedProjects, localModsFolder);
+			int successCount = allTaskResults.Where(x => x.Result != FileCreationTaskResult.Error).Count();
+			if (successCount >= selectedProjects.Count)
 			{
 				MainWindow.FooterLog($"Successfully packaged all selected projects to {localModsFolder}");
 			}
@@ -619,51 +620,49 @@ namespace SCG.Core
 			{
 				if (!cancellationTokenSource.IsCancellationRequested)
 				{
-					MainWindow.FooterError($"Problem occured when packaging selected projects. Check the log. {totalSuccess}/{selectedProjects.Count} packages were created.");
+					MainWindow.FooterError($"Problem occured when packaging selected projects. Check the log. {successCount}/{selectedProjects.Count} packages were created.");
 				}
 				else
 				{
-					MainWindow.FooterLog($"Packaging was cancelled. {totalSuccess}/{selectedProjects.Count} packages were created.");
+					MainWindow.FooterLog($"Packaging was cancelled. {successCount}/{selectedProjects.Count} packages were created.");
 				}
 			}
 		}
 
-		private async Task<int> PackageSelectedProjectsAsync(ConcurrentBag<ModProjectData> selectedProjects, string targetFolder)
+		private async Task<List<FileCreationTaskData>> PackageSelectedProjectsAsync(ConcurrentBag<ModProjectData> selectedProjects, string targetFolder, bool finishProgressOnDone = true)
 		{
-			//+1 progress when done searching for files, +1 when done.
-			AppController.Main.Data.ProgressValueMax = selectedProjects.Count * 2;
-
 			//AppController.Main.Data.IsIndeterminate = true;
 
 			List<string> exportDirectories = new List<string>();
 			exportDirectories.Add(Path.Combine(Data.Settings.DOS2DEDataDirectory, @"Mods\ModFolder"));
 			exportDirectories.Add(Path.Combine(Data.Settings.DOS2DEDataDirectory, @"Public\ModFolder"));
 
-			int totalSuccess = 0;
+			List<FileCreationTaskData> taskResults = new List<FileCreationTaskData>();
 
 			if (selectedProjects != null)
 			{
 				int i = 0;
 				foreach (var project in selectedProjects)
 				{
-					if (cancellationTokenSource.IsCancellationRequested) return totalSuccess;
+					if (cancellationTokenSource.IsCancellationRequested) return taskResults;
 
 					AppController.Main.UpdateProgressTitle((selectedProjects.Count > 1 ? "Packaging projects..." : $"Packaging project... ") + $"{i}/{selectedProjects.Count}");
 
 					//Log.Here().Activity($"[Progress-Backup] Target percentage for this backup iteration is {targetPercentage} => {totalPercentageAmount}. Amount per tick is {amountPerTick}.");
 
 					AppController.Main.UpdateProgressMessage($"Creating package for project {project.ProjectName}...");
+					AppController.Main.UpdateProgress();
 
-					var backupSuccess = await PackageProjectAsync(project, targetFolder, exportDirectories);
+					FileCreationTaskData packageTask = await PackageProjectAsync(project, targetFolder, exportDirectories);
+					taskResults.Add(packageTask);
 
 					if (cancellationTokenSource.IsCancellationRequested)
 					{
-						backupSuccess = BackupResult.Skipped;
+						packageTask.Result = FileCreationTaskResult.Skipped;
 					}
 
-					if (backupSuccess == BackupResult.Success)
+					if (packageTask.Result == FileCreationTaskResult.Success)
 					{
-						totalSuccess += 1;
 						Log.Here().Activity("Successfully created package for {0}.", project.ProjectName);
 						project.LastBackup = DateTime.Now;
 						Data.ManagedProjectsData.SavedProjects.AddOrUpdate(new ProjectAppData
@@ -675,14 +674,13 @@ namespace SCG.Core
 
 						AppController.Main.UpdateProgressLog("Package created.");
 					}
-					else if (backupSuccess == BackupResult.Error)
+					else if (packageTask.Result == FileCreationTaskResult.Error)
 					{
 						Log.Here().Error("Failed to create package for {0}.", project.ProjectName);
 						AppController.Main.UpdateProgressLog("Package creation failed.");
 					}
 					else
 					{
-						totalSuccess += 1;
 						Log.Here().Activity("Skipped package creation for {0}.", project.ProjectName);
 					}
 
@@ -703,7 +701,7 @@ namespace SCG.Core
 
 			//if (totalSuccess > 0) DOS2DECommands.SaveManagedProjects(this.Data);
 
-			return totalSuccess;
+			return taskResults;
 		}
 
 		public List<string> IgnoredPackageFiles = new List<string>(){
@@ -719,7 +717,7 @@ namespace SCG.Core
 			".dmp"
 		};
 
-		public async Task<BackupResult> PackageProjectAsync(ModProjectData modProject, string outputDirectory, List<string> exportDirectories)
+		public async Task<FileCreationTaskData> PackageProjectAsync(ModProjectData modProject, string outputDirectory, List<string> exportDirectories)
 		{
 			if (!Directory.Exists(outputDirectory))
 			{
@@ -729,19 +727,29 @@ namespace SCG.Core
 			//string inputDirectory = Path.Combine(Path.GetFullPath(Data.Settings.GitRootDirectory), modProject.ProjectName);
 			//string outputPackage = Path.ChangeExtension(Path.Combine(outputDirectory, modProject.ProjectName + "_" + modProject.ModuleInfo.UUID), "pak");
 			string outputPackage = Path.ChangeExtension(Path.Combine(outputDirectory, modProject.FolderName), "pak");
-
 			//Imported Classic Projects
 			if (!modProject.FolderName.Contains(modProject.ModuleInfo.UUID))
 			{
 				outputPackage = Path.ChangeExtension(Path.Combine(outputDirectory, modProject.FolderName + "_" + modProject.ModuleInfo.UUID), "pak");
 			}
-			
+
+			FileCreationTaskData taskData = new FileCreationTaskData()
+			{
+				TargetPath = outputPackage,
+				Result = FileCreationTaskResult.None,
+				ID = modProject.UUID
+			};
+
 			try
 			{
 				var sourceFolders = new List<string>();
 				foreach (var directoryBaseName in exportDirectories)
 				{
-					if (cancellationTokenSource.IsCancellationRequested) return BackupResult.Skipped;
+					if (cancellationTokenSource.IsCancellationRequested)
+					{
+						taskData.Result = FileCreationTaskResult.Skipped;
+						return taskData;
+					}
 
 					var subdirectoryName = directoryBaseName.Replace("ProjectName", modProject.ProjectName).Replace("ProjectFolder", modProject.ProjectFolder);
 					if (modProject.ModuleInfo != null) subdirectoryName = subdirectoryName.Replace("ModUUID", modProject.ModuleInfo.UUID).Replace("ModFolder", modProject.ModuleInfo.Folder);
@@ -759,12 +767,14 @@ namespace SCG.Core
 					sourceFolders, outputPackage, IgnoredPackageFiles, cancellationTokenSource.Token);
 				if (result)
 				{
-					return BackupResult.Success;
+					taskData.Result = FileCreationTaskResult.Success;
 				}
 				else
 				{
-					return BackupResult.Error;
+					taskData.Result = FileCreationTaskResult.Error;
 				}
+
+				return taskData;
 
 				//await ProcessHelper.RunCommandLineAsync(RepoPath, "git add -A");
 				/*
@@ -783,13 +793,111 @@ namespace SCG.Core
 				if (!cancellationTokenSource.IsCancellationRequested)
 				{
 					Log.Here().Error("Error creating package: {0}", ex.ToString());
-					return BackupResult.Error;
+					taskData.Result = FileCreationTaskResult.Error;
 				}
 				else
 				{
 					Log.Here().Important("Cancelling package creation: {0}", ex.ToString());
-					return BackupResult.Skipped;
+					taskData.Result = FileCreationTaskResult.Skipped;
 				}
+			}
+
+			return taskData;
+		}
+		#endregion
+
+		#region ReleaseCreation
+		private void CancelReleaseProgress()
+		{
+			if (cancellationTokenSource != null)
+			{
+				Log.Here().Warning("Cancelling package creation...");
+				cancellationTokenSource.Cancel();
+				AppController.Main.CancelProgress();
+			}
+		}
+
+		public void CreateReleasesForSelectedProjects()
+		{
+			cancellationTokenSource = new CancellationTokenSource();
+			AppController.Main.StartProgress($"Creating release zips for projects...", StartReleaseSelectedProjectsAsync, "", 0, true, CancelReleaseProgress);
+		}
+
+		public async void StartReleaseSelectedProjectsAsync()
+		{
+			//Order by descending order, since it gets reversed in the bag
+			var sortedProjects = Data.ManagedProjects.Where(p => p.Selected).OrderByDescending(p => p.ProjectName);
+
+			ConcurrentBag<ModProjectData> selectedProjects = new ConcurrentBag<ModProjectData>(sortedProjects);
+
+			string localModsFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), @"Larian Studios\Divinity Original Sin 2 Definitive Edition\Local Mods");
+
+			//+1 progress when done searching for files, +1 when done.
+			AppController.Main.Data.ProgressValueMax = selectedProjects.Count * 4;
+
+			var allTaskResults = await PackageSelectedProjectsAsync(selectedProjects, localModsFolder);
+			int successCount = allTaskResults.Where(x => x.Result != FileCreationTaskResult.Error).Count();
+
+			var targets = allTaskResults.Where(x => x.Result == FileCreationTaskResult.Success);
+			int total = targets.Count();
+			int i = 0;
+
+			foreach (var task in targets)
+			{
+				if (cancellationTokenSource.IsCancellationRequested) break;
+
+				var mod = selectedProjects.FirstOrDefault(x => x.UUID == task.ID);
+				AppController.Main.UpdateProgressMessage($"Creating zip for project package {mod.ProjectName}...");
+
+				string zipName = Path.Combine(localModsFolder, mod.ProjectName + "_v" + mod.Version + ".zip");
+
+				AppController.Main.UpdateProgressTitle((total > 1 ? "Zipping packages..." : "Zipping project... ") + $"{i}/{total}");
+				AppController.Main.UpdateProgress();
+				var result = await BackupGenerator.CreateArchiveFromFile(task.TargetPath, zipName, cancellationTokenSource.Token);
+
+				if (result == FileCreationTaskResult.Success)
+				{
+					Log.Here().Activity("Successfully created zip for {0}.", mod.ProjectName);
+					AppController.Main.UpdateProgressLog("Zip created.");
+				}
+				else if (result == FileCreationTaskResult.Error)
+				{
+					Log.Here().Error("Failed to create zip for {0}.", mod.ProjectName);
+					AppController.Main.UpdateProgressLog("Zip creation failed.");
+				}
+				else
+				{
+					Log.Here().Activity("Skipped package creation for {0}.", mod.ProjectName);
+				}
+
+				AppController.Main.UpdateProgress();
+				AppController.Main.UpdateProgressTitle((total > 1 ? "Zipping packages..." : "Zipping project... ") + $"{i + 1}/{total}");
+				i++;
+			}
+
+			successCount += i;
+
+			if (successCount >= selectedProjects.Count)
+			{
+				MainWindow.FooterLog($"Successfully packaged and zipped all selected projects to {localModsFolder}");
+			}
+			else
+			{
+				if (!cancellationTokenSource.IsCancellationRequested)
+				{
+					MainWindow.FooterError($"Problem occured when releasing selected projects. Check the log. {successCount}/{selectedProjects.Count*4} releases were created.");
+				}
+				else
+				{
+					MainWindow.FooterLog($"Packaging/Zipping was cancelled. {successCount}/{selectedProjects.Count*4} releases were created.");
+				}
+			}
+
+			if (!cancellationTokenSource.IsCancellationRequested)
+			{
+				AppController.Main.UpdateProgressMessage("Finishing up...");
+				AppController.Main.UpdateProgressLog("Packaging/zipping complete. +15 XP");
+				AppController.Main.FinishProgress();
 			}
 		}
 		#endregion

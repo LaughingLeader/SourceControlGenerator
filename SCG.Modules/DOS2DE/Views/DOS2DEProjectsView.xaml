@@ -766,6 +766,12 @@
 							HorizontalAlignment="Right"
 							Orientation="Horizontal">
 							<Button
+								x:Name="ReleaseCreateButton"
+								Click="ReleaseCreateButton_Click"
+								Content="Release..."
+								IsEnabled="{Binding CanCreatePackages, FallbackValue='False'}"
+								ToolTip="{x:Static core:DOS2DETooltips.Button_ReleaseMod}" />
+							<Button
 								x:Name="PackageCreateButton"
 								Click="PackageCreateButton_Click"
 								Content="Create Packages..."
@@ -774,7 +780,7 @@
 							<Button
 								x:Name="GitGenerationButton"
 								Click="GitGenerationButton_Click"
-								Content="Start Git Generator..."
+								Content="Git Generator..."
 								IsEnabled="{Binding CanGenerateGit}"
 								ToolTip="{x:Static core:DOS2DETooltips.Button_StartGitGenerator}" />
 						</StackPanel>
