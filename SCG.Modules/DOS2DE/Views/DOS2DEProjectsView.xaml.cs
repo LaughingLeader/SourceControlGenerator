@@ -171,18 +171,25 @@ namespace SCG.Modules.DOS2DE.Views
 		public static async Task<Unit> OpenLocalizationEditorForProject(ModProjectData modData)
 		{
 			Log.Here().Activity($"Opening locale editor for project {modData.DisplayName}");
-			var data = await LocaleEditorCommands.LoadLocalizationDataAsync(_instance.ViewModel, modData);
-			_instance.MainWindow.Dispatcher.Invoke(new Action(() => {
-				_instance.OpenLocalizationEditorWithData(data);
-			}), DispatcherPriority.Normal);
+			LocaleViewModel localizationData = new LocaleViewModel();
+			LocaleEditorCommands.LoadSettings(_instance.ViewModel, localizationData);
+			await LocaleEditorCommands.LoadLocalizationDataAsync(localizationData, _instance.ViewModel, modData);
+			RxApp.MainThreadScheduler.Schedule(_ =>
+			{
+				_instance.OpenLocalizationEditorWithData(localizationData);
+			});
 			return Unit.Default;
 		}
 
 		private async void OpenLocalizationEditorAsync()
 		{
-			var data = await LocaleEditorCommands.LoadLocalizationDataAsync(ViewModel,
-				ViewModel.ManagedProjects.Where(p => p.Selected));
-			_instance.MainWindow.Dispatcher.Invoke(new Action(() => OpenLocalizationEditorWithData(data)), DispatcherPriority.Normal);
+			LocaleViewModel localizationData = new LocaleViewModel();
+			LocaleEditorCommands.LoadSettings(_instance.ViewModel, localizationData);
+			await LocaleEditorCommands.LoadLocalizationDataAsync(localizationData, ViewModel, ViewModel.ManagedProjects.Where(p => p.Selected));
+			RxApp.MainThreadScheduler.Schedule(_ =>
+			{
+				_instance.OpenLocalizationEditorWithData(localizationData);
+			});
 		}
 
 		private void LocalizationEditorWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)

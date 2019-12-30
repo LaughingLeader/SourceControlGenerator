@@ -835,6 +835,10 @@
 														<MenuItem Command="ApplicationCommands.Paste" />
 														<MenuItem Command="ApplicationCommands.SelectAll" />
 														<MenuItem
+															Command="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.Tag.NewHandleCommand}"
+															CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget}"
+															Header="Generate New" />
+														<MenuItem
 															Command="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.Tag.ResetHandleCommand}"
 															CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget}"
 															Header="Reset" />
@@ -1643,7 +1647,7 @@
 			x:Name="MainTabControl"
 			Grid.Row="2"
 			ContentTemplate="{Binding Source={StaticResource LocaleFileTabs}}"
-			ItemsSource="{Binding Groups}"
+			ItemsSource="{Binding VisibleGroups}"
 			SelectedIndex="{Binding SelectedGroupIndex}"
 			Style="{StaticResource LocaleGroupTabControl}">
 			<TabControl.ItemContainerStyle>

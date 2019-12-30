@@ -11,6 +11,7 @@ using SCG.Modules.DOS2DE.Data.View;
 using DynamicData.Binding;
 using DynamicData;
 using System.Windows.Input;
+using SCG.Modules.DOS2DE.Data.View.Locale;
 
 namespace SCG.Modules.DOS2DE.Data
 {
@@ -19,6 +20,42 @@ namespace SCG.Modules.DOS2DE.Data
 	{
 		[DataMember]
 		public ObservableCollectionExtended<LocaleEditorProjectSettingsData> Projects { get; set; }
+
+		private bool loadRootTemplates = true;
+
+		[DataMember]
+		public bool LoadRootTemplates
+		{
+			get { return loadRootTemplates; }
+			set
+			{
+				this.RaiseAndSetIfChanged(ref loadRootTemplates, value);
+			}
+		}
+
+		private bool loadGlobals = true;
+
+		[DataMember]
+		public bool LoadGlobals
+		{
+			get { return loadGlobals; }
+			set
+			{
+				this.RaiseAndSetIfChanged(ref loadGlobals, value);
+			}
+		}
+
+		private bool loadLevelData = false;
+
+		[DataMember]
+		public bool LoadLevelData
+		{
+			get { return loadLevelData; }
+			set
+			{
+				this.RaiseAndSetIfChanged(ref loadLevelData, value);
+			}
+		}
 
 		public LocaleEditorProjectSettingsData GetProjectSettings(ModProjectData modProjectData)
 		{
@@ -48,80 +85,6 @@ namespace SCG.Modules.DOS2DE.Data
 		public LocaleEditorSettingsData()
 		{
 			Projects = new ObservableCollectionExtended<LocaleEditorProjectSettingsData>();
-		}
-	}
-
-	[DataContract]
-	public class LocaleEditorProjectSettingsData : ReactiveObject
-	{
-		private string name;
-
-		public string Name
-		{
-			get => name;
-			set { this.RaiseAndSetIfChanged(ref name, value); }
-		}
-
-		private string foldername = "";
-
-		[DataMember]
-		public string FolderName
-		{
-			get { return foldername; }
-			set
-			{
-				this.RaiseAndSetIfChanged(ref foldername, value);
-			}
-		}
-
-		private string lastFileImportPath = "";
-
-		[DataMember]
-		public string LastFileImportPath
-		{
-			get { return lastFileImportPath; }
-			set
-			{
-				this.RaiseAndSetIfChanged(ref lastFileImportPath, value);
-			}
-		}
-
-		private string lastEntryimportPath = "";
-
-		[DataMember]
-		public string LastEntryImportPath
-		{
-			get { return lastEntryimportPath; }
-			set
-			{
-				this.RaiseAndSetIfChanged(ref lastEntryimportPath, value);
-			}
-		}
-
-		private bool exportKeys = false;
-
-		[DataMember]
-		public bool ExportKeys
-		{
-			get { return exportKeys; }
-			set
-			{
-				this.RaiseAndSetIfChanged(ref exportKeys, value);
-				Log.Here().Activity($"ExportKeys set to {exportKeys}");
-			}
-		}
-
-		private bool exportSource = false;
-
-		[DataMember]
-		public bool ExportSource
-		{
-			get { return exportSource; }
-			set
-			{
-				this.RaiseAndSetIfChanged(ref exportSource, value);
-				Log.Here().Activity($"ExportSource set to {exportSource}");
-			}
 		}
 	}
 

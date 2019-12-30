@@ -26,6 +26,8 @@ using System.Threading.Tasks;
 using System.Reactive.Disposables;
 using SCG.Modules.DOS2DE.Data.Savable;
 using SCG.FileGen;
+using DynamicData;
+using System.Reactive.Linq;
 
 namespace SCG.Modules.DOS2DE.Data.View.Locale
 {
@@ -50,6 +52,13 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 		}
 
 		public LocaleEditorSettingsData Settings { get; set; }
+
+		public void OnSettingsLoaded()
+		{
+			this.RootTemplatesGroup.Visibility = Settings.LoadRootTemplates;
+			this.GlobalTemplatesGroup.Visibility = Settings.LoadGlobals;
+			this.LevelDataGroup.Visibility = Settings.LoadLevelData;
+		}
 
 		private LocaleEditorProjectSettingsData activeProjectSettings;
 
@@ -117,6 +126,9 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 		}
 
 		public ObservableCollectionExtended<LocaleTabGroup> Groups { get; set; }
+
+		private readonly ReadOnlyObservableCollection<LocaleTabGroup> visibleGroups;
+		public ReadOnlyObservableCollection<LocaleTabGroup> VisibleGroups => visibleGroups;
 
 		private int selectedGroupIndex = -1;
 
@@ -201,6 +213,40 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 				this.RaiseAndSetIfChanged(ref publicGroup, value);
 			}
 		}
+
+		private LocaleTabGroup rootTemplatesGroup;
+
+		public LocaleTabGroup RootTemplatesGroup
+		{
+			get => rootTemplatesGroup;
+			set
+			{
+				this.RaiseAndSetIfChanged(ref rootTemplatesGroup, value);
+			}
+		}
+
+		private LocaleTabGroup globalTemplatesGroup;
+
+		public LocaleTabGroup GlobalTemplatesGroup
+		{
+			get => globalTemplatesGroup;
+			set
+			{
+				this.RaiseAndSetIfChanged(ref globalTemplatesGroup, value);
+			}
+		}
+
+		private LocaleTabGroup levelDataGroup;
+
+		public LocaleTabGroup LevelDataGroup
+		{
+			get => levelDataGroup;
+			set
+			{
+				this.RaiseAndSetIfChanged(ref levelDataGroup, value);
+			}
+		}
+
 		private CustomLocaleTabGroup customGroup;
 
 		public CustomLocaleTabGroup CustomGroup
@@ -565,6 +611,30 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 		}
 		*/
 
+
+
+		public void GenerateHandle(object targetObject)
+		{
+			if (targetObject is System.Windows.Controls.TextBox tb)
+			{
+				tb.Text = LocaleEditorCommands.CreateHandle();
+			}
+			else if (targetObject is ILocaleKeyEntry entry)
+			{
+				var lastHandle = new LocaleHandleHistory(entry, entry.Handle);
+				var nextHandle = new LocaleHandleHistory(entry, entry.Handle);
+				entry.Handle = LocaleEditorCommands.CreateHandle();
+				Log.Here().Activity($"[{entry.Key}] New handle generated. [{entry.Handle}]");
+				entry.Parent.ChangesUnsaved = true;
+
+				CreateSnapshot(() => {
+					lastHandle.Key.Handle = lastHandle.Handle;
+				}, () => {
+					nextHandle.Key.Handle = nextHandle.Handle;
+				});
+			}
+		}
+
 		public void GenerateHandles()
 		{
 			if (SelectedGroup != null && SelectedGroup.SelectedFile != null)
@@ -612,6 +682,9 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			CombinedGroup.DataFiles.AddRange(ModsGroup.DataFiles);
 			CombinedGroup.DataFiles.AddRange(PublicGroup.DataFiles);
 			CombinedGroup.DataFiles.AddRange(DialogGroup.DataFiles);
+			if (Settings.LoadRootTemplates) CombinedGroup.DataFiles.AddRange(RootTemplatesGroup.DataFiles);
+			if (Settings.LoadGlobals) CombinedGroup.DataFiles.AddRange(GlobalTemplatesGroup.DataFiles);
+			if (Settings.LoadLevelData) CombinedGroup.DataFiles.AddRange(LevelDataGroup.DataFiles);
 			CombinedGroup.DataFiles.AddRange(CustomGroup.DataFiles);
 			//CombinedGroup.Visibility = MultipleGroupsEntriesFilled();
 			CombinedGroup.Visibility = true;
@@ -660,9 +733,10 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			var backupSuccess = await LocaleEditorCommands.BackupDataFiles(this, ModuleData.Settings.BackupRootDirectory);
 			if (backupSuccess == true)
 			{
+				int total = SelectedGroup.DataFiles.Where(f => f.ChangesUnsaved).Count();
 				var successes = await LocaleEditorCommands.SaveDataFiles(this);
 				Log.Here().Important($"Saved {successes} localization files.");
-				OutputText = $"Saved {successes}/{TotalFiles} files.";
+				OutputText = $"Saved {successes}/{total} files.";
 				OutputType = LogType.Important;
 			}
 			else
@@ -822,6 +896,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 					{
 						settings.LastFileImportPath = Path.GetDirectoryName(files.FirstOrDefault());
 						settings.LastEntryImportPath = Path.GetDirectoryName(files.FirstOrDefault());
+
 						view.SaveSettings();
 					}
 				}
@@ -973,6 +1048,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 		public ICommand ConfirmRenameFileTabCommand { get; private set; }
 		public ICommand CancelRenamingFileTabCommand { get; private set; }
 		public ICommand SelectNoneCommand { get; private set; }
+		public ICommand NewHandleCommand { get; private set; }
 		public ICommand ResetHandleCommand { get; private set; }
 		public ICommand ExportFileAsTextualCommand { get; private set; }
 
@@ -1837,7 +1913,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 
 			CanExecutePopoutContentCommand = this.WhenAny(vm => vm.SelectedEntry, e => e.Value != null);
 
-			LocaleEditorCommands.LoadSettings(ModuleData, this);
+			LocaleEditorCommands.LoadProjectSettings(ModuleData, this);
 
 			UpdateCombinedGroup(true);
 
@@ -1876,6 +1952,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			Settings.SaveCommand = this.SaveSettingsCommand;
 
 			GenerateHandlesCommand = ReactiveCommand.Create(GenerateHandles, AnySelectedEntryObservable).DisposeWith(disposables);
+			NewHandleCommand = ReactiveCommand.Create<object>(GenerateHandle).DisposeWith(disposables);
 			AddNewKeyCommand = ReactiveCommand.Create(AddNewKey, CanImportKeysObservable).DisposeWith(disposables);
 
 			AddFontTagCommand = ReactiveCommand.Create(AddFontTag, AnySelectedEntryObservable).DisposeWith(disposables);
@@ -2057,6 +2134,13 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			ModsGroup = new LocaleTabGroup(this, "Locale (Mods)");
 			PublicGroup = new LocaleTabGroup(this, "Locale (Public)");
 			DialogGroup = new LocaleTabGroup(this, "Dialog");
+			DialogGroup.CanAddFiles = false;
+			RootTemplatesGroup = new LocaleTabGroup(this, "RootTemplates");
+			RootTemplatesGroup.CanAddFiles = false;
+			GlobalTemplatesGroup = new LocaleTabGroup(this, "Globals");
+			GlobalTemplatesGroup.CanAddFiles = false;
+			LevelDataGroup = new LocaleTabGroup(this, "LevelData");
+			LevelDataGroup.CanAddFiles = false;
 			CustomGroup = new CustomLocaleTabGroup(this, "Custom");
 
 #if Debug
@@ -2066,6 +2150,9 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 				ModsGroup,
 				PublicGroup,
 				DialogGroup,
+				RootTemplatesGroup,
+				GlobalTemplatesGroup,
+				LevelDataGroup
 				CustomGroup
 			};
 #else
@@ -2074,13 +2161,18 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 				CombinedGroup,
 				ModsGroup,
 				PublicGroup,
-				DialogGroup
+				DialogGroup,
+				RootTemplatesGroup,
+				GlobalTemplatesGroup,
+				LevelDataGroup
 			};
 #endif
 			foreach (var g in Groups)
 			{
 				g.SelectedFileChanged = SelectedFileChanged;
 			}
+
+			Groups.ToObservableChangeSet().Filter(x => x.Visibility == true).ObserveOn(RxApp.MainThreadScheduler).Bind(out visibleGroups).Subscribe();
 
 			var canRemoveEntries = this.WhenAnyValue(x => x.MissingKeyEntrySelected);
 
