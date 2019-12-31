@@ -685,6 +685,7 @@
 						</Grid.ColumnDefinitions>-->
 						<c:SortableDataGrid
 							x:Name="LocaleEntryDataGrid"
+							cb:DataGridDefaultSortDirection.Direction="Descending"
 							AutoGenerateColumns="False"
 							BorderThickness="0,1,0,0"
 							CanUserAddRows="False"

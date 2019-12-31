@@ -609,5 +609,6 @@ namespace SCG.Modules.DOS2DE.Views
 			return projects;
 		}
 		#endregion
+
 	}
 }

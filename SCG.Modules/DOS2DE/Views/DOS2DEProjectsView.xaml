@@ -359,6 +359,7 @@
 						</Grid>
 						<DataGrid
 							x:Name="ManagedProjectsDataGrid"
+							cb:DataGridDefaultSortDirection.Direction="Descending"
 							AutoGenerateColumns="False"
 							BorderBrush="{x:Null}"
 							BorderThickness="0"
