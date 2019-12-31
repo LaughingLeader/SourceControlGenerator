@@ -332,7 +332,6 @@
 					</ContextMenu>
 				</xctk:RichTextBox.ContextMenu>
 			</xctk:RichTextBox>
-
 			<Style x:Key="LocaleGroupTabControl" TargetType="{x:Type TabControl}">
 				<Setter Property="Padding" Value="0" />
 				<Setter Property="HorizontalContentAlignment" Value="Center" />
@@ -1234,8 +1233,9 @@
 						Margin="0"
 						Padding="0"
 						HorizontalContentAlignment="Stretch"
+						cb:TabContent.IsCached="True"
+						cb:TabContent.Template="{Binding Source={StaticResource LocaleEntryGrid}}"
 						BorderThickness="1"
-						ContentTemplate="{Binding Source={StaticResource LocaleEntryGrid}}"
 						ItemsSource="{Binding Tabs}"
 						SelectedIndex="{Binding SelectedFileIndex}"
 						SelectionChanged="LocaleFileTabControl_SelectionChanged"
@@ -1366,6 +1366,7 @@
 								</Setter>
 							</Style>
 						</TabControl.Resources>
+
 					</TabControl>
 				</Grid>
 			</DataTemplate>
@@ -1664,7 +1665,8 @@
 		<TabControl
 			x:Name="MainTabControl"
 			Grid.Row="2"
-			ContentTemplate="{Binding Source={StaticResource LocaleFileTabs}}"
+			cb:TabContent.IsCached="True"
+			cb:TabContent.Template="{Binding Source={StaticResource LocaleFileTabs}}"
 			ItemsSource="{Binding VisibleGroups}"
 			SelectedIndex="{Binding SelectedGroupIndex}"
 			SelectionChanged="LocaleGroupTabControl_SelectionChanged"

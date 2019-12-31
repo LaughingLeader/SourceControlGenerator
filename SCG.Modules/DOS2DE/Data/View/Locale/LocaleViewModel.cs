@@ -173,7 +173,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 					}
 				}
 				
-				Log.Here().Activity($"{nextGroup.Name}: {nextGroup.SelectedFileIndex} => {nextIndex}");
+				//Log.Here().Activity($"{nextGroup.Name}: {nextGroup.SelectedFileIndex} => {nextIndex}");
 
 				this.RaiseAndSetIfChanged(ref selectedGroupIndex, value);
 
