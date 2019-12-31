@@ -15,6 +15,7 @@ namespace SCG.Core
 		public static string ToggleDebugWindow => "Base.ToggleDebugWindow";
 		public static string IssuesLink => "Base.IssuesLink";
 		public static string RepoLink => "Base.RepoLink";
+		public static string SupportLink => "Base.SupportLink";
 		public static string About => "Base.About";
 		public static string Markdown => "Base.MarkdownWindowToggle";
 		public static string TextCreator => "Base.TextCreatorToggle";

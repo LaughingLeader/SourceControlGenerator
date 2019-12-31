@@ -603,16 +603,6 @@ namespace SCG.Core
 			}
 		}
 
-		public void MenuAction_OpenIssuesLink()
-		{
-			Helpers.Web.OpenUri(DefaultPaths.IssuesLink);
-		}
-
-		public void MenuAction_OpenReleasesLink()
-		{
-			Helpers.Web.OpenUri(DefaultPaths.ReleasesLink);
-		}
-
 		public void MenuAction_NotImplemented() { }
 
 		#endregion
@@ -917,15 +907,20 @@ namespace SCG.Core
 			);
 
 			Data.MenuBarData.Help.Register("Base",
-				new MenuData(MenuID.IssuesLink)
-				{
-					Header = "Report Bug / Give Feedback (Github)...",
-					ClickCommand = new ActionCommand(MenuAction_OpenIssuesLink)
-				},
 				new MenuData(MenuID.RepoLink)
 				{
 					Header = "Releases (Github)...",
-					ClickCommand = new ActionCommand(MenuAction_OpenReleasesLink)
+					ClickCommand = ReactiveCommand.Create(new Action(() => { Helpers.Web.OpenUri(DefaultPaths.ReleasesLink); }))
+				},
+				new MenuData(MenuID.SupportLink)
+				{
+					Header = "Donate a Coffee...",
+					ClickCommand = ReactiveCommand.Create(new Action(() => { Helpers.Web.OpenUri(DefaultPaths.SupportLink); }))
+				},
+				new MenuData(MenuID.IssuesLink)
+				{
+					Header = "Report Bug / Give Feedback (Github)...",
+					ClickCommand = ReactiveCommand.Create(new Action(() => { Helpers.Web.OpenUri(DefaultPaths.IssuesLink); }))
 				},
 				new MenuData(MenuID.About, "About Source Control Generator", new ActionCommand(MenuAction_OpenAbout), Key.F1)
 			);
