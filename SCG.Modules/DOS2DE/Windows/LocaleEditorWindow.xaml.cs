@@ -591,5 +591,20 @@ namespace SCG.Modules.DOS2DE.Windows
 				}
 			}
 		}
+
+		private void EntryHandleTextBox_GotFocus(object sender, RoutedEventArgs e)
+		{
+			if(sender is TextBox tb)
+			{
+				if(tb.Text == LocaleEditorCommands.UnsetHandle || String.IsNullOrWhiteSpace(tb.Text))
+				{
+					//Delay so the selector can enter the textbox
+					RxApp.MainThreadScheduler.Schedule(TimeSpan.FromMilliseconds(50), _ =>
+					{
+						tb.SelectAll();
+					});
+				}
+			}
+		}
 	}
 }

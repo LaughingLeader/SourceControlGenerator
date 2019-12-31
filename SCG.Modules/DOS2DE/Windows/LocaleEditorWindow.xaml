@@ -724,12 +724,16 @@
 									<!--<EventSetter Event="Loaded" Handler="TextBox_Loaded" />
 									<EventSetter Event="Unloaded" Handler="TextBox_Unloaded" />-->
 								</Style>
-								<Style BasedOn="{StaticResource {x:Type TextBox}}" TargetType="{x:Type c:UnfocusableTextBox}">
+								<Style
+									x:Key="UnfocusableTextBoxGridStyle"
+									BasedOn="{StaticResource {x:Type TextBox}}"
+									TargetType="{x:Type c:UnfocusableTextBox}">
 									<Setter Property="UpdateBindingOnFocusLost" Value="True" />
 									<Setter Property="CanUndoTextOnEscape" Value="True" />
 									<EventSetter Event="GotKeyboardFocus" Handler="OnLocaleTextboxGotKeyboardFocus" />
 									<EventSetter Event="LostKeyboardFocus" Handler="OnLocaleTextboxLostKeyboardFocus" />
 								</Style>
+								<Style BasedOn="{StaticResource UnfocusableTextBoxGridStyle}" TargetType="{x:Type c:UnfocusableTextBox}" />
 							</DataGrid.Resources>
 							<DataGrid.RowStyle>
 								<Style BasedOn="{StaticResource {x:Type DataGridRow}}" TargetType="{x:Type DataGridRow}">
@@ -844,6 +848,7 @@
 													Margin="0,0,12,0"
 													AcceptsReturn="False"
 													AcceptsTab="False"
+													GotFocus="EntryHandleTextBox_GotFocus"
 													Tag="{Binding Path=DataContext, RelativeSource={RelativeSource AncestorType={x:Type Window}}}"
 													Text="{Binding EntryHandle, UpdateSourceTrigger=PropertyChanged}">
 													<c:UnfocusableTextBox.ContextMenu>
@@ -862,26 +867,17 @@
 																Header="Unset Handle" />
 														</ContextMenu>
 													</c:UnfocusableTextBox.ContextMenu>
-												</c:UnfocusableTextBox>
-												<TextBlock
-													Grid.Column="4"
-													Margin="4,0,0,0"
-													HorizontalAlignment="Left"
-													VerticalAlignment="Center"
-													Foreground="Gray"
-													IsHitTestVisible="False"
-													Text="{Binding EntryHandle, UpdateSourceTrigger=PropertyChanged}">
-													<TextBlock.Style>
-														<Style TargetType="{x:Type TextBlock}">
-															<Setter Property="Visibility" Value="Collapsed" />
+													<c:UnfocusableTextBox.Style>
+														<Style BasedOn="{StaticResource UnfocusableTextBoxGridStyle}" TargetType="{x:Type c:UnfocusableTextBox}">
+															<Setter Property="Foreground" Value="Black" />
 															<Style.Triggers>
-																<DataTrigger Binding="{Binding Text, ElementName=EntryHandleTextBox}" Value="ls::TranslatedStringRepository::s_HandleUnknown">
-																	<Setter Property="Visibility" Value="Visible" />
+																<DataTrigger Binding="{Binding Text, RelativeSource={RelativeSource Mode=Self}}" Value="ls::TranslatedStringRepository::s_HandleUnknown">
+																	<Setter Property="Foreground" Value="Gray" />
 																</DataTrigger>
 															</Style.Triggers>
 														</Style>
-													</TextBlock.Style>
-												</TextBlock>
+													</c:UnfocusableTextBox.Style>
+												</c:UnfocusableTextBox>
 											</Grid>
 										</DataTemplate>
 									</DataGridTemplateColumn.CellTemplate>
