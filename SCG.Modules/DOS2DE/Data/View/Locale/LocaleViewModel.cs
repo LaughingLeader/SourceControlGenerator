@@ -2089,7 +2089,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			var SelectAllEntriesCommand = ReactiveCommand.Create(() => { SelectedFile?.SelectAll(); });
 			var DeselectAllEntriesCommand = ReactiveCommand.Create(() => { SelectedFile?.SelectNone(); });
 
-			MenuData.Edit.Add(new MenuData("Edit.SelectAll", "Select All", SelectAllEntriesCommand, Key.A, ModifierKeys.Control));
+			//MenuData.Edit.Add(new MenuData("Edit.SelectAll", "Select All", SelectAllEntriesCommand, Key.A, ModifierKeys.Control));
 			MenuData.Edit.Add(new MenuData("Edit.SelectNone", "Select None", DeselectAllEntriesCommand, Key.D, ModifierKeys.Control));
 			MenuData.Edit.Add(new MenuData("Edit.GenerateHandles", "Generate Handles for Selected", GenerateHandlesCommand, Key.G, ModifierKeys.Control | ModifierKeys.Shift));
 			MenuData.Edit.Add(new MenuData("Edit.AddKey", "Add Key", AddNewKeyCommand));

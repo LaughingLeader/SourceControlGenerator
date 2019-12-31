@@ -281,13 +281,13 @@
 				GotFocus="EntryContent_GotFocus"
 				IsReadOnly="{Binding Path=DataContext.CanEditContentPreview, RelativeSource={RelativeSource AncestorType={x:Type Window}}}"
 				IsUndoEnabled="False"
-				Loaded="EntryContentRichTextBox_Loaded"
+				Loaded="TextBox_Loaded"
 				LostFocus="EntryContent_LostFocus"
 				SelectionChanged="EntryContent_SelectionChanged"
 				Tag="{Binding Path=DataContext, RelativeSource={RelativeSource AncestorType={x:Type Window}}}"
 				Text="{Binding Path=DataContext.SelectedEntryContent, UpdateSourceTrigger=PropertyChanged, RelativeSource={RelativeSource AncestorType={x:Type Window}}}"
 				TextFormatter="{StaticResource LocalizationTextFormatter}"
-				Unloaded="EntryContentRichTextBox_Unloaded">
+				Unloaded="TextBox_Unloaded">
 				<i:Interaction.Behaviors>
 					<cb:RichTextBoxSelectionBehavior SelectedText="{Binding Path=DataContext.SelectedText, Mode=OneWayToSource, RelativeSource={RelativeSource AncestorType={x:Type Window}}}" />
 				</i:Interaction.Behaviors>
@@ -546,6 +546,7 @@
 				<Setter Property="ScrollViewer.CanContentScroll" Value="true" />
 				<Setter Property="ScrollViewer.PanningMode" Value="Both" />
 				<Setter Property="Stylus.IsFlicksEnabled" Value="False" />
+				<Setter Property="Focusable" Value="False" />
 				<Setter Property="Template">
 					<Setter.Value>
 						<ControlTemplate TargetType="{x:Type DataGrid}">
@@ -685,11 +686,12 @@
 							CellStyle="{StaticResource CellNoHighlightChangesUnsaved}"
 							EnableRowVirtualization="True"
 							ItemsSource="{Binding Entries}"
+							Loaded="LocaleEntryDataGrid_Loaded"
 							Style="{StaticResource LocaleDataGridStyle}"
 							VirtualizingPanel.IsVirtualizingWhenGrouping="True">
 							<DataGrid.Resources>
 								<cb:DataContextSpy x:Key="FileData" DataContext="{Binding}" />
-								<Style TargetType="{x:Type c:UnfocusableTextBox}">
+								<Style TargetType="TextBox">
 									<Setter Property="IsReadOnly" Value="False" />
 									<Setter Property="Background" Value="Transparent" />
 									<Setter Property="BorderThickness" Value="0" />
@@ -711,6 +713,11 @@
 											</ContextMenu>
 										</Setter.Value>
 									</Setter>
+									<!--<EventSetter Event="Loaded" Handler="TextBox_Loaded" />
+									<EventSetter Event="Unloaded" Handler="TextBox_Unloaded" />-->
+								</Style>
+								<Style BasedOn="{StaticResource {x:Type TextBox}}" TargetType="{x:Type c:UnfocusableTextBox}">
+									<Setter Property="UpdateBindingOnFocusLost" Value="True" />
 								</Style>
 							</DataGrid.Resources>
 							<DataGrid.RowStyle>

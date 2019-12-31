@@ -225,42 +225,43 @@ namespace SCG.Modules.DOS2DE.Windows
 
 		private List<ViewObservableProperty> selectedTextObservables = new List<ViewObservableProperty>();
 
-		private void EntryContentRichTextBox_Loaded(object sender, RoutedEventArgs e)
+		private void LocaleEntryDataGrid_Loaded(object sender, RoutedEventArgs e)
 		{
-			if(sender is RichTextBox richTextBox)
+			if (sender is DataGrid dg)
 			{
-				/* Undo/Redo is disable in via xaml for this box, as otherwise the TextFormatter gets tracked and
-				 * outputs the internal undo commands to the history of the key entry. 
-				 * Here we're binding the global Undo/Redo as input keys in the RichTextBox.
-				*/
-
-				ViewModel.UndoMenuData.RegisterInputBinding(richTextBox.InputBindings);
-				ViewModel.RedoMenuData.RegisterInputBinding(richTextBox.InputBindings);
+				dg.InputBindings.Clear();
 			}
-			
-			//if (!selectedTextObservables.Any(o => o.View == sender) && sender is RichTextBox richTextBox)
+		}
+
+		private void TextBox_Loaded(object sender, RoutedEventArgs e)
+		{
+			//if(sender is RichTextBox richTextBox)
 			//{
-			//	selectedTextObservables.Add(new ViewObservableProperty {
-			//		View = richTextBox,
-			//		PropertyHelper = richTextBox.WhenAnyValue(v => v.Selection.Text).ToProperty(ViewModel, "SelectedText")
-			//	});
-			//	//Log.Here().Activity("Added new RichTextBox ObservableAsPropertyHelper");
+			//	/* Undo/Redo is disable in via xaml for this box, as otherwise the TextFormatter gets tracked and
+			//	 * outputs the internal undo commands to the history of the key entry. 
+			//	 * Here we're binding the global Undo/Redo as input keys in the RichTextBox.
+			//	*/
+			//	ViewModel.UndoMenuData.RegisterInputBinding(richTextBox.InputBindings);
+			//	ViewModel.RedoMenuData.RegisterInputBinding(richTextBox.InputBindings);
+			//}
+			//else if (sender is TextBox tb)
+			//{
+			//	if (ViewModel?.UndoMenuData != null) ViewModel.UndoMenuData.RegisterInputBinding(tb.InputBindings);
+			//	if (ViewModel?.RedoMenuData != null) ViewModel.RedoMenuData.RegisterInputBinding(tb.InputBindings);
 			//}
 		}
 
-		private void EntryContentRichTextBox_Unloaded(object sender, RoutedEventArgs e)
+		private void TextBox_Unloaded(object sender, RoutedEventArgs e)
 		{
-			if (sender is RichTextBox richTextBox)
-			{
-				if (ViewModel?.UndoMenuData != null) ViewModel.UndoMenuData.UnregisterInputBinding(richTextBox.InputBindings);
-				if (ViewModel?.RedoMenuData != null) ViewModel.RedoMenuData.UnregisterInputBinding(richTextBox.InputBindings);
-			}
-			//var vo = selectedTextObservables.FirstOrDefault(x => x.View == sender);
-			//if(vo.PropertyHelper != null)
+			//if (sender is RichTextBox richTextBox)
 			//{
-			//	vo.PropertyHelper.Dispose();
-			//	selectedTextObservables.Remove(vo);
-			//	//Log.Here().Activity("Removed RichTextBox ObservableAsPropertyHelper");
+			//	if (ViewModel?.UndoMenuData != null) ViewModel.UndoMenuData.UnregisterInputBinding(richTextBox.InputBindings);
+			//	if (ViewModel?.RedoMenuData != null) ViewModel.RedoMenuData.UnregisterInputBinding(richTextBox.InputBindings);
+			//}
+			//else if(sender is TextBox tb)
+			//{
+			//	if (ViewModel?.UndoMenuData != null) ViewModel.UndoMenuData.UnregisterInputBinding(tb.InputBindings);
+			//	if (ViewModel?.RedoMenuData != null) ViewModel.RedoMenuData.UnregisterInputBinding(tb.InputBindings);
 			//}
 		}
 
