@@ -325,6 +325,11 @@ namespace SCG.Data.View
 					OutputData.FilePath = Path.Combine(OutputData.InitialDirectory, OutputData.DefaultFileName);
 				}
 			}
+
+			if((int)this.NextKeywordType > 2)
+			{
+				this.NextKeywordType = TextGeneratorInputType.Incremental;
+			}
 		}
 
 		public TextGeneratorData()
@@ -633,7 +638,8 @@ namespace SCG.Data.View
 
 			LastValue = result;
 
-			string finalResult = result.ToString($"D{NumberPadding}");
+			int finalPadding = NumberPadding > 0 ? NumberPadding + 1 : 0;
+			string finalResult = result.ToString($"D{finalPadding}");
 
 			return input.Replace(Keyword, finalResult);
 		}

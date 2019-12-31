@@ -195,5 +195,22 @@ namespace SCG.Windows
 
 			//Activate();
 		}
+
+		private void PresetComboBox_KeyDown(object sender, KeyEventArgs e)
+		{
+			if(sender is ComboBox cb)
+			{
+				if(e.Key == Key.Enter)
+				{
+					this.Data.ActiveData.Name = cb.Text;
+					Keyboard.ClearFocus();
+				}
+				else if (e.Key == Key.Escape)
+				{
+					cb.Text = this.Data.ActiveData.Name;
+					Keyboard.ClearFocus();
+				}
+			}
+		}
 	}
 }
