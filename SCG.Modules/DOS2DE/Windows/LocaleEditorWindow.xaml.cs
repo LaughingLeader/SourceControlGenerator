@@ -569,32 +569,6 @@ namespace SCG.Modules.DOS2DE.Windows
 			dataView.Refresh();
 		}
 
-		private void FileDataEntryTextBox_KeyDown(object sender, KeyEventArgs e)
-		{
-			if(e.Key == Key.Enter)
-			{
-				Keyboard.ClearFocus();
-				e.Handled = true;
-			}
-			else
-			{
-				e.Handled = false;
-			}
-		}
-
-		private void LostKeyboardFocus_UpdateSource(object sender, KeyboardFocusChangedEventArgs e)
-		{
-			if (sender is TextBox tb)
-			{
-				BindingExpression be = tb.GetBindingExpression(TextBox.TextProperty);
-				be.UpdateSource();
-				if(!tb.ContextMenu.IsOpen)
-				{
-					Keyboard.ClearFocus();
-				}
-			}
-		}
-
 		public void ResizeEntryKeyColumn()
 		{
 			foreach (var dg in this.MainTabControl.FindVisualChildren<DataGrid>())

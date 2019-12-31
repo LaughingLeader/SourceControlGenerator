@@ -689,7 +689,7 @@
 							VirtualizingPanel.IsVirtualizingWhenGrouping="True">
 							<DataGrid.Resources>
 								<cb:DataContextSpy x:Key="FileData" DataContext="{Binding}" />
-								<Style TargetType="TextBox">
+								<Style TargetType="{x:Type c:UnfocusableTextBox}">
 									<Setter Property="IsReadOnly" Value="False" />
 									<Setter Property="Background" Value="Transparent" />
 									<Setter Property="BorderThickness" Value="0" />
@@ -711,8 +711,6 @@
 											</ContextMenu>
 										</Setter.Value>
 									</Setter>
-									<EventSetter Event="KeyDown" Handler="FileDataEntryTextBox_KeyDown" />
-									<EventSetter Event="LostKeyboardFocus" Handler="LostKeyboardFocus_UpdateSource" />
 								</Style>
 							</DataGrid.Resources>
 							<DataGrid.RowStyle>
@@ -775,7 +773,7 @@
 									</DataGridTemplateColumn.CellStyle>
 									<DataGridTemplateColumn.CellTemplate>
 										<DataTemplate>
-											<TextBox
+											<c:UnfocusableTextBox
 												x:Name="EntryKeyTextBox"
 												Tag="{Binding Path=DataContext, RelativeSource={RelativeSource AncestorType={x:Type Window}}}"
 												Text="{Binding EntryKey, UpdateSourceTrigger=Explicit}" />
@@ -790,7 +788,7 @@
 									SortMemberPath="EntryContent">
 									<DataGridTemplateColumn.CellTemplate>
 										<DataTemplate>
-											<TextBox
+											<c:UnfocusableTextBox
 												x:Name="EntryContentTextBox"
 												GotFocus="EntryContent_GotFocus"
 												LostFocus="EntryContent_LostFocus"
@@ -822,13 +820,14 @@
 									SortMemberPath="EntryHandle">
 									<DataGridTemplateColumn.CellTemplate>
 										<DataTemplate>
-											<TextBox
+											<c:UnfocusableTextBox
 												x:Name="EntryHandleTextBox"
+												Margin="0,0,12,0"
 												AcceptsReturn="False"
 												AcceptsTab="False"
 												Tag="{Binding Path=DataContext, RelativeSource={RelativeSource AncestorType={x:Type Window}}}"
 												Text="{Binding EntryHandle, UpdateSourceTrigger=PropertyChanged}">
-												<TextBox.ContextMenu>
+												<c:UnfocusableTextBox.ContextMenu>
 													<ContextMenu>
 														<MenuItem Command="ApplicationCommands.Cut" />
 														<MenuItem Command="ApplicationCommands.Copy" />
@@ -843,11 +842,12 @@
 															CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget}"
 															Header="Reset" />
 													</ContextMenu>
-												</TextBox.ContextMenu>
-											</TextBox>
+												</c:UnfocusableTextBox.ContextMenu>
+											</c:UnfocusableTextBox>
 										</DataTemplate>
 									</DataGridTemplateColumn.CellTemplate>
 								</DataGridTemplateColumn>
+								<!--<DataGridTemplateColumn Width="20" />-->
 							</DataGrid.Columns>
 						</c:SortableDataGrid>
 						<GridSplitter
@@ -1272,7 +1272,7 @@
 														</DataTemplate.Triggers>
 													</DataTemplate>
 													<DataTemplate x:Key="EditingTabText">
-														<TextBox
+														<c:UnfocusableTextBox
 															x:Name="FileTabRenamingTextBox"
 															Margin="4,0,0,0"
 															HorizontalAlignment="Left"
@@ -1282,15 +1282,15 @@
 															Text="{Binding RenameText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
 															TextAlignment="Left"
 															ToolTip="Renaming">
-															<TextBox.ContextMenu>
+															<c:UnfocusableTextBox.ContextMenu>
 																<ContextMenu>
 																	<MenuItem Command="ApplicationCommands.Cut" />
 																	<MenuItem Command="ApplicationCommands.Copy" />
 																	<MenuItem Command="ApplicationCommands.Paste" />
 																	<MenuItem Command="ApplicationCommands.SelectAll" />
 																</ContextMenu>
-															</TextBox.ContextMenu>
-														</TextBox>
+															</c:UnfocusableTextBox.ContextMenu>
+														</c:UnfocusableTextBox>
 													</DataTemplate>
 													<Style x:Key="FileTabContentStyle" TargetType="{x:Type ContentPresenter}">
 														<Setter Property="ContentTemplate" Value="{StaticResource DefaultTabText}" />
@@ -1405,7 +1405,7 @@
 						ItemsSource="{Binding LinkedProjects}"
 						SelectedIndex="{Binding NewFileTargetProjectIndex, Mode=TwoWay, FallbackValue=0}" />
 					<TextBlock Margin="0,4,0,0" Text="Tab Name:" />
-					<TextBox
+					<c:UnfocusableTextBox
 						Margin="0,4,0,0"
 						AcceptsReturn="False"
 						AcceptsTab="False"
