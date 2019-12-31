@@ -13,5 +13,9 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 		public int Index;
 		public bool ChangesUnsaved;
 		public bool ParentChangesUnsaved;
+
+		public string LastKey;
+		public string LastContent;
+		public string LastHandle;
 	}
 }

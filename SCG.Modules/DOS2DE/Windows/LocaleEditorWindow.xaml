@@ -193,6 +193,10 @@
 						Command="{Binding Path=DataContext.GenerateHandlesCommand, RelativeSource={RelativeSource AncestorType={x:Type Window}}}"
 						Source="{x:Static vdata:IconPathData.RowUpdating}"
 						ToolTip="{x:Static core:DOS2DETooltips.Button_Locale_GenerateHandles}" />
+					<c:ImageButton
+						Command="{Binding Path=DataContext.OverrideResHandlesCommand, RelativeSource={RelativeSource AncestorType={x:Type Window}}}"
+						Source="{x:Static vdata:IconPathData.Rename}"
+						ToolTip="{x:Static core:DOS2DETooltips.Button_Locale_ReplaceResHandles}" />
 					<Rectangle Style="{StaticResource VerticalSeparator}" />
 					<c:ImageButton
 						cb:ImageButtonHoverOnDisabled.Enable="True"
@@ -205,6 +209,7 @@
 					<c:ImageButton
 						cb:ImageButtonHoverOnDisabled.Enable="True"
 						Command="{Binding Path=DataContext.RefreshFileCommand, RelativeSource={RelativeSource AncestorType={x:Type Window}}}"
+						CommandParameter="{Binding}"
 						Source="{x:Static vdata:IconPathData.Refresh}"
 						ToolTip="{x:Static core:DOS2DETooltips.Button_Locale_RefreshFile}" />
 					<Rectangle Style="{StaticResource VerticalSeparator}" />
@@ -843,11 +848,11 @@
 														<MenuItem
 															Command="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.Tag.NewHandleCommand}"
 															CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget}"
-															Header="Generate New" />
+															Header="Generate New Handle" />
 														<MenuItem
 															Command="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.Tag.ResetHandleCommand}"
 															CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget}"
-															Header="Reset" />
+															Header="Unset Handle" />
 													</ContextMenu>
 												</c:UnfocusableTextBox.ContextMenu>
 											</c:UnfocusableTextBox>
@@ -1701,7 +1706,7 @@
 				<TextBlock Text="{Binding Source=SelectedEntry, Path=EntryContent, Mode=TwoWay, TargetNullValue='null', FallbackValue='test'}" />
 			</xctk:ChildWindow>
 		</xctk:WindowContainer>-->
-		<Grid Grid.RowSpan="4" Visibility="{Binding LockScreenVisibility, FallbackValue=Visible}">
+		<Grid Grid.RowSpan="4" Visibility="{Binding LockScreenVisibility, FallbackValue=Collapsed}">
 			<Grid.Background>
 				<SolidColorBrush Opacity="0.9" Color="{DynamicResource {x:Static SystemColors.ActiveBorderColorKey}}" />
 			</Grid.Background>

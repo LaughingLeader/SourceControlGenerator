@@ -33,6 +33,15 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 		void SetHistoryFromObject(IPropertyChangedHistoryBase obj);
 	}
 
+	public static class LocaleKeyEntryExtensions
+	{
+		public static bool ValuesMatch(this ILocaleKeyEntry keyEntry1, ILocaleKeyEntry keyEntry2)
+		{
+			return keyEntry1.Key.Equals(keyEntry2.Key) && keyEntry1.Content.Equals(keyEntry2.Content) &&
+				keyEntry1.Handle.Equals(keyEntry2.Handle);
+		}
+	}
+
 	public class BaseLocaleKeyEntry : PropertyChangedHistoryBase, IIndexable
 	{
 		public ILocaleFileData Parent { get; set; }

@@ -30,6 +30,7 @@ using DynamicData;
 using System.Reactive.Linq;
 using SCG.Controls;
 using System.Windows.Controls;
+using LSLib.LS.Enums;
 
 namespace SCG.Modules.DOS2DE.Data.View.Locale
 {
@@ -652,20 +653,27 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			}
 		}
 
-		public void GenerateHandles()
+		private void GenerateHandlesThatMatch(string match, bool equals = true)
 		{
 			if (SelectedGroup != null && SelectedGroup.SelectedFile != null)
 			{
-				Log.Here().Activity("Generating handles...");
-
 				List<LocaleHandleHistory> lastHandles = new List<LocaleHandleHistory>();
 				List<LocaleHandleHistory> newHandles = new List<LocaleHandleHistory>();
 
-				foreach (var entry in SelectedGroup.SelectedFile.Entries.Where(e => e.Selected))
+				List<ILocaleKeyEntry> list;
+
+				if (equals)
 				{
-					bool handleIsEmpty = (entry.Handle.Equals("ls::TranslatedStringRepository::s_HandleUnknown", StringComparison.OrdinalIgnoreCase) | 
-						String.IsNullOrWhiteSpace(entry.Handle));
-					if (handleIsEmpty)
+					list = SelectedGroup.SelectedFile.Entries.Where(e => e.Selected && e.Handle.Equals(match)).ToList();
+				}
+				else
+				{
+					list = SelectedGroup.SelectedFile.Entries.Where(e => e.Selected && e.Handle.Contains(match)).ToList();
+				}
+
+				if(list.Count > 0)
+				{
+					foreach (var entry in list)
 					{
 						lastHandles.Add(new LocaleHandleHistory(entry, entry.Handle));
 						entry.Handle = LocaleEditorCommands.CreateHandle();
@@ -673,24 +681,33 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 						Log.Here().Activity($"[{entry.Key}] New handle generated. [{entry.Handle}]");
 						entry.Parent.ChangesUnsaved = true;
 					}
-				}
 
-				CreateSnapshot(() => {
-					foreach(var e in lastHandles)
-					{
-						e.Key.Handle = e.Handle;
-					}
-				}, () => {
-					foreach (var e in newHandles)
-					{
-						e.Key.Handle = e.Handle;
-					}
-				});
+					CreateSnapshot(() => {
+						foreach (var e in lastHandles)
+						{
+							e.Key.Handle = e.Handle;
+						}
+					}, () => {
+						foreach (var e in newHandles)
+						{
+							e.Key.Handle = e.Handle;
+						}
+					});
+				}
 			}
 			else
 			{
 				Log.Here().Activity("No selected file found. Skipping handle generation.");
 			}
+		}
+
+		public void GenerateHandles()
+		{
+			GenerateHandlesThatMatch(LocaleEditorCommands.UnsetHandle);
+		}
+		public void OverrideResHandles()
+		{
+			GenerateHandlesThatMatch("ResStr_", false);
 		}
 
 		public void UpdateCombinedGroup(bool updateCombinedEntries = false)
@@ -1023,11 +1040,6 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			}
 		}
 
-		//private MenuData SaveCurrentMenuData { get; set; }
-		//private MenuData SelectAllMenuData { get; set; }
-		//private MenuData SelectNoneMenuData { get; set; }
-		//private MenuData GenerateHandlesMenuData { get; set; }
-
 		public ICommand AddFileCommand { get; private set; }
 		public ICommand AddFileToGroupCommand { get; private set; }
 		public ICommand ConfirmFileAddToGroupCommand { get; private set; }
@@ -1042,6 +1054,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 		public ICommand SaveCurrentCommand { get; private set; }
 		public ICommand SaveSettingsCommand { get; private set; }
 		public ICommand GenerateHandlesCommand { get; private set; }
+		public ICommand OverrideResHandlesCommand { get; private set; }
 
 		public ICommand AddNewKeyCommand { get; private set; }
 		public ICommand DeleteKeysCommand { get; private set; }
@@ -1774,6 +1787,162 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			ChangesUnsaved = Groups.Any(g => g.ChangesUnsaved == true);
 		}
 
+		public void RefreshFileData(LocaleNodeFileData fileData)
+		{
+			FileCommands.OpenConfirmationDialog(view, "Refresh Data?", "Refresh data in selected file?", "Unsaved changes will be lost", (b) =>
+			{
+				if (b)
+				{
+					var selectedGroup = SelectedGroup;
+					string lastFileSource = fileData.SourcePath;
+					var entries = LocaleEditorCommands.LoadFromResource(fileData.Source, fileData.Format);
+
+					if (entries.Count > 0)
+					{
+						List<LocaleEntryHistory> lastEntries = new List<LocaleEntryHistory>();
+						List<ILocaleKeyEntry> newEntries = new List<ILocaleKeyEntry>();
+
+						foreach (var entry in entries)
+						{
+							ILocaleKeyEntry existingEntry = null;
+							if (fileData.Format == ResourceFormat.LSJ)
+							{
+								existingEntry = fileData.Entries.FirstOrDefault(x => x.Content == entry.Content || (x.Handle == entry.Handle &&
+									x.Handle != LocaleEditorCommands.UnsetHandle));
+							}
+							else
+							{
+								existingEntry = fileData.Entries.FirstOrDefault(x => x.Key == entry.Key || (x.Handle == entry.Handle &&
+									x.Handle != LocaleEditorCommands.UnsetHandle));
+							}
+
+							if (existingEntry != null)
+							{
+								if(!existingEntry.ValuesMatch(entry))
+								{
+									lastEntries.Add(new LocaleEntryHistory
+									{
+										ParentFile = existingEntry.Parent,
+										Entry = existingEntry,
+										Index = existingEntry.Parent.Entries.IndexOf(existingEntry),
+										ChangesUnsaved = existingEntry.ChangesUnsaved,
+										ParentChangesUnsaved = existingEntry.Parent.ChangesUnsaved,
+										LastKey = entry.Key,
+										LastContent = entry.Content,
+										LastHandle = entry.Handle,
+									});
+								}
+							}
+							else
+							{
+								newEntries.Add(entry);
+							}
+						}
+
+						void undo()
+						{
+							var fileEntry = selectedGroup.DataFiles.FirstOrDefault(f => f.SourcePath == lastFileSource);
+							if (fileEntry != null)
+							{
+								foreach (var x in lastEntries)
+								{
+									if (x.Entry != null)
+									{
+										x.Entry.ChangesUnsaved = x.ChangesUnsaved;
+										x.Entry.Key = x.LastKey;
+										x.Entry.Content = x.LastContent;
+										x.Entry.Handle = x.LastHandle;
+
+										if (!fileEntry.Entries.Contains(x.Entry))
+										{
+											fileEntry.Entries.Insert(x.Index, x.Entry);
+										}
+
+										try
+										{
+											if (fileEntry is LocaleNodeFileData nodeFileData && x.Entry is LocaleNodeKeyEntry nodeKeyEntry
+											&& !nodeFileData.RootRegion.Children.FirstOrDefault().Value.Contains((nodeKeyEntry.Node)))
+											{
+												nodeFileData.RootRegion.AppendChild(nodeKeyEntry.Node);
+											}
+										}
+										catch (Exception ex) { }
+									}
+
+									fileEntry.ChangesUnsaved = x.ParentChangesUnsaved;
+								}
+							}
+						}
+
+						void redo()
+						{
+							if (lastEntries.Count > 0 || newEntries.Count > 0)
+							{
+								int changes = 0;
+								if (lastEntries.Count > 0)
+								{
+									foreach (var entry in entries)
+									{
+										ILocaleKeyEntry existingEntry = null;
+										if (fileData.Format == ResourceFormat.LSJ)
+										{
+											existingEntry = fileData.Entries.FirstOrDefault(x => x.Content == entry.Content || (x.Handle == entry.Handle &&
+												x.Handle != LocaleEditorCommands.UnsetHandle));
+										}
+										else
+										{
+											existingEntry = fileData.Entries.FirstOrDefault(x => x.Key == entry.Key || (x.Handle == entry.Handle &&
+												x.Handle != LocaleEditorCommands.UnsetHandle));
+										}
+
+										if ((fileData.Format == ResourceFormat.LSF || fileData.Format == ResourceFormat.LSJ))
+										{
+											existingEntry.Content = entry.Content;
+										}
+										else
+										{
+											existingEntry.Key = entry.Key;
+											existingEntry.Content = entry.Content;
+										}
+
+										existingEntry.Handle = entry.Handle;
+
+										if (existingEntry.ChangesUnsaved) changes++;
+									}
+								}
+
+								if (newEntries.Count > 0)
+								{
+									foreach (var entry in newEntries)
+									{
+										fileData.Entries.Add(entry);
+										changes++;
+									}
+
+									fileData.Parent.UpdateCombinedData();
+								}
+
+								if(changes > 0)
+								{
+									fileData.ChangesUnsaved = true;
+
+									OutputText = $"Refreshed file. Found {changes} changes.";
+									OutputType = LogType.Important;
+								}
+								else
+								{
+									OutputText = "No changes found.";
+									OutputType = LogType.Activity;
+								}
+							}
+						}
+						this.CreateSnapshot(undo, redo);
+						redo();
+					}
+				}
+			});
+		}
+
 		public void OnViewLoaded(LocaleEditorWindow v, DOS2DEModuleData moduleData, CompositeDisposable disposables)
 		{
 			view = v;
@@ -1969,6 +2138,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			Settings.SaveCommand = this.SaveSettingsCommand;
 
 			GenerateHandlesCommand = ReactiveCommand.Create(GenerateHandles, AnySelectedEntryObservable).DisposeWith(disposables);
+			OverrideResHandlesCommand = ReactiveCommand.Create(OverrideResHandles, AnySelectedEntryObservable).DisposeWith(disposables);
 			NewHandleCommand = ReactiveCommand.Create<object>(GenerateHandle).DisposeWith(disposables);
 			AddNewKeyCommand = ReactiveCommand.Create(AddNewKey, CanImportKeysObservable).DisposeWith(disposables);
 
@@ -2001,7 +2171,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			{
 				if (targetObject is System.Windows.Controls.TextBox tb)
 				{
-					tb.Text = "ls::TranslatedStringRepository::s_HandleUnknown";
+					tb.Text = LocaleEditorCommands.UnsetHandle;
 				}
 			}).DisposeWith(disposables);
 
@@ -2014,13 +2184,14 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 					{
 						Clipboard.SetText(current);
 
-						AppController.Main.SetFooter($"Reverted clipboard text to '{current}'.", LogType.Important);
+						OutputText = $"Reverted clipboard text to '{current}'.";
+						OutputType = LogType.Important;
 					};
 					void redo()
 					{
 						Clipboard.SetText(str, TextDataFormat.Text);
-
-						AppController.Main.SetFooter($"Copied text '{str}' to clipboard.", LogType.Activity);
+						OutputText = $"Copied text '{str}' to clipboard.";
+						OutputType = LogType.Activity;
 					}
 
 					CreateSnapshot(undo, redo);
@@ -2032,7 +2203,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			{
 				if(fileData is LocaleNodeFileData nodeFile)
 				{
-					LocaleEditorCommands.RefreshFileData(nodeFile);
+					RefreshFileData(nodeFile);
 				}
 			}, FileSelectedObservable).DisposeWith(disposables);
 

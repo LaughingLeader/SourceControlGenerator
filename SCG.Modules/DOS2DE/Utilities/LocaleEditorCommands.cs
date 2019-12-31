@@ -417,6 +417,21 @@ namespace SCG.Modules.DOS2DE.Utilities
 			});
 		}
 
+		private static void LoadFromNodeLSF_Recursive(List<LocaleNodeKeyEntry> newEntries, Node node)
+		{
+			newEntries.AddRange(LoadAllFromNodeAttributes(node, ResourceFormat.LSF, false));
+			if(node.Children.Count > 0)
+			{
+				foreach(var nList in node.Children.Values)
+				{
+					foreach(var n in nList)
+					{
+						LoadFromNodeLSF_Recursive(newEntries, n);
+					}
+				}
+			}
+		}
+
 		public static List<LocaleNodeKeyEntry> LoadFromResource(Resource resource, ResourceFormat resourceFormat, bool sort = false)
 		{
 			List<LocaleNodeKeyEntry> newEntries = new List<LocaleNodeKeyEntry>();
@@ -473,20 +488,7 @@ namespace SCG.Modules.DOS2DE.Utilities
 							Node node = nodes.FirstOrDefault();
 							if (node != null)
 							{
-								foreach(var kvp in node.Attributes)
-								{
-									if(kvp.Value.Type == NodeAttribute.DataType.DT_TranslatedString || kvp.Value.Type == NodeAttribute.DataType.DT_TranslatedFSString)
-									{
-										LocaleNodeKeyEntry localeEntry = new LocaleNodeKeyEntry(node);
-										localeEntry.KeyIsEditable = false;
-										localeEntry.Key = kvp.Key;
-
-										localeEntry.TranslatedStringAttribute = kvp.Value;
-										localeEntry.TranslatedString = kvp.Value.Value as TranslatedString;
-
-										newEntries.Add(localeEntry);
-									}
-								}
+								LoadFromNodeLSF_Recursive(newEntries, node);
 							}
 						}
 					}
@@ -506,6 +508,29 @@ namespace SCG.Modules.DOS2DE.Utilities
 			return newEntries;
 		}
 
+		public static List<LocaleNodeKeyEntry> LoadAllFromNodeAttributes(Node node, ResourceFormat resourceFormat, bool generateNewHandle = false)
+		{
+			List<LocaleNodeKeyEntry> newEntries = new List<LocaleNodeKeyEntry>();
+			foreach (var kvp in node.Attributes)
+			{
+				if (kvp.Value.Type == NodeAttribute.DataType.DT_TranslatedString)
+				{
+					// || kvp.Value.Type == NodeAttribute.DataType.DT_TranslatedFSString
+					LocaleNodeKeyEntry localeEntry = new LocaleNodeKeyEntry(node);
+					localeEntry.KeyIsEditable = false;
+					localeEntry.Key = kvp.Key;
+
+					localeEntry.TranslatedStringAttribute = kvp.Value;
+					localeEntry.TranslatedString = kvp.Value.Value as TranslatedString;
+
+					if(generateNewHandle) localeEntry.Handle = CreateHandle();
+
+					newEntries.Add(localeEntry);
+				}
+			}
+
+			return newEntries;
+		}
 		public static LocaleNodeKeyEntry LoadFromNode(Node node, ResourceFormat resourceFormat, bool generateNewHandle = false)
 		{
 			if (resourceFormat == ResourceFormat.LSB)
@@ -939,39 +964,6 @@ namespace SCG.Modules.DOS2DE.Utilities
 			}
 			fileData.ChangesUnsaved = true;
 			return fileData;
-		}
-
-		public static void RefreshFileData(LocaleNodeFileData fileData)
-		{
-			var entries = LoadFromResource(fileData.Source, fileData.Format);
-			foreach (var entry in entries)
-			{
-				var existingEntry = fileData.Entries.FirstOrDefault(x => x.Key == entry.Key || 
-					(x.Handle == entry.Handle && x.Handle != UnsetHandle));
-				if(existingEntry != null)
-				{
-					if(!entry.Key.Equals(String.Empty) && !entry.Key.Equals("None"))
-					{
-						existingEntry.Key = entry.Key;
-					}
-					
-					if(entry.Handle != UnsetHandle)
-					{
-						existingEntry.Handle = entry.Handle;
-					}
-
-					if (!entry.Content.Equals(String.Empty) && !entry.Content.Equals("Content"))
-					{
-						existingEntry.Content = entry.Content;
-					}
-				}
-				else
-				{
-					entry.Parent = fileData;
-					fileData.Entries.Add(entry);
-				}
-			}
-			fileData.ChangesUnsaved = entries.Count > 0;
 		}
 
 		public static async Task<bool> LoadLinkedFilesAsync(DOS2DEModuleData vm, ModProjectData modProject, LocaleViewModel localizationData, List<ILocaleKeyEntry> removedEntries)
