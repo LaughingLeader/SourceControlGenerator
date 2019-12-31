@@ -20,6 +20,7 @@ using SCG.Core;
 using System.ComponentModel;
 using SCG.Commands;
 using ReactiveUI;
+using System.Reactive.Concurrency;
 using SCG.Extensions;
 using System.Reactive.Disposables;
 using SCG.Controls;
@@ -455,6 +456,26 @@ namespace SCG.Modules.DOS2DE.Windows
 			}
 		}
 
+		private void LocaleGroupTabControl_SelectionChanged(object sender, SelectionChangedEventArgs e)
+		{
+			if (sender is TabControl tc)
+			{
+				RxApp.MainThreadScheduler.Schedule(TimeSpan.FromMilliseconds(10), _ =>
+				{
+					var fileTabControl = tc.FindVisualChildren<TabControl>().First();
+					if (fileTabControl != null && fileTabControl.Items.Count > 19)
+					{
+						var tab = fileTabControl.FindVisualChildren<TabItem>().FirstOrDefault(x => x.DataContext == fileTabControl.SelectedItem);
+						//var tab = fileTabControl.SelectedValue as TabItem;
+						if (tab != null)
+						{
+							tab.BringIntoView();
+						}
+					}
+				});
+			}
+		}
+
 		private void LocaleFileTabControl_SelectionChanged(object sender, SelectionChangedEventArgs e)
 		{
 			if (sender is TabControl tc)
@@ -462,6 +483,7 @@ namespace SCG.Modules.DOS2DE.Windows
 				fileTabControl = tc;
 			}
 		}
+
 		private void RemovedEntriesListView_SelectionChanged(object sender, SelectionChangedEventArgs e)
 		{
 			ViewModel.MissingKeyEntrySelected = ViewModel.MissingEntries.Any(x => x.Selected == true);
