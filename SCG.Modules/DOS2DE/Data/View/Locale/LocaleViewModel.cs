@@ -28,6 +28,7 @@ using SCG.Modules.DOS2DE.Data.Savable;
 using SCG.FileGen;
 using DynamicData;
 using System.Reactive.Linq;
+using SCG.Controls;
 
 namespace SCG.Modules.DOS2DE.Data.View.Locale
 {
@@ -618,6 +619,11 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			if (targetObject is System.Windows.Controls.TextBox tb)
 			{
 				tb.Text = LocaleEditorCommands.CreateHandle();
+
+				if(tb is IUnfocusable unfocusable)
+				{
+					unfocusable.Unfocus();
+				}
 			}
 			else if (targetObject is ILocaleKeyEntry entry)
 			{
