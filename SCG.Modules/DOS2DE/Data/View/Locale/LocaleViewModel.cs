@@ -29,6 +29,7 @@ using SCG.FileGen;
 using DynamicData;
 using System.Reactive.Linq;
 using SCG.Controls;
+using System.Windows.Controls;
 
 namespace SCG.Modules.DOS2DE.Data.View.Locale
 {
@@ -423,6 +424,16 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			}
 		}
 
+		private bool anyTextBoxFocused = false;
+
+		public bool AnyTextBoxFocused
+		{
+			get => anyTextBoxFocused;
+			set { this.RaiseAndSetIfChanged(ref anyTextBoxFocused, value); }
+		}
+
+		public TextBox CurrentTextBox { get; set; }
+
 		private bool contentPreviewModeEnabled = false;
 
 		public bool ContentPreviewModeEnabled
@@ -619,11 +630,6 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			if (targetObject is System.Windows.Controls.TextBox tb)
 			{
 				tb.Text = LocaleEditorCommands.CreateHandle();
-
-				if(tb is IUnfocusable unfocusable)
-				{
-					unfocusable.Unfocus();
-				}
 			}
 			else if (targetObject is ILocaleKeyEntry entry)
 			{
@@ -638,6 +644,11 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 				}, () => {
 					nextHandle.Key.Handle = nextHandle.Handle;
 				});
+			}
+
+			if (targetObject is IUnfocusable unfocusable)
+			{
+				unfocusable.Unfocus();
 			}
 		}
 
@@ -2086,10 +2097,45 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			MenuData.Edit.Add(UndoMenuData);
 			MenuData.Edit.Add(RedoMenuData);
 
-			var SelectAllEntriesCommand = ReactiveCommand.Create(() => { SelectedFile?.SelectAll(); });
-			var DeselectAllEntriesCommand = ReactiveCommand.Create(() => { SelectedFile?.SelectNone(); });
+			//var whenTextFocused = this.WhenAnyValue(vm => vm.AnyTextBoxFocused, b => b == false);
 
-			//MenuData.Edit.Add(new MenuData("Edit.SelectAll", "Select All", SelectAllEntriesCommand, Key.A, ModifierKeys.Control));
+			var SelectAllEntriesCommand = ReactiveCommand.Create(() => {
+				if (CurrentTextBox == null)
+				{
+					if(SelectedFile != null)
+					{
+						SelectedFile.SelectAll();
+					}
+					else
+					{
+						this.SelectedGroup?.CombinedEntries.SelectAll();
+					}
+				}
+				else
+				{
+					CurrentTextBox.SelectAll();
+				}
+			});
+
+			var DeselectAllEntriesCommand = ReactiveCommand.Create(() => {
+				if (CurrentTextBox == null)
+				{
+					if (SelectedFile != null)
+					{
+						SelectedFile.SelectNone();
+					}
+					else
+					{
+						this.SelectedGroup?.CombinedEntries.SelectNone();
+					}
+				}
+				else
+				{
+					CurrentTextBox.Select(0,0);
+				}
+			});
+
+			MenuData.Edit.Add(new MenuData("Edit.SelectAll", "Select All", SelectAllEntriesCommand, Key.A, ModifierKeys.Control));
 			MenuData.Edit.Add(new MenuData("Edit.SelectNone", "Select None", DeselectAllEntriesCommand, Key.D, ModifierKeys.Control));
 			MenuData.Edit.Add(new MenuData("Edit.GenerateHandles", "Generate Handles for Selected", GenerateHandlesCommand, Key.G, ModifierKeys.Control | ModifierKeys.Shift));
 			MenuData.Edit.Add(new MenuData("Edit.AddKey", "Add Key", AddNewKeyCommand));

@@ -233,36 +233,19 @@ namespace SCG.Modules.DOS2DE.Windows
 			}
 		}
 
-		private void TextBox_Loaded(object sender, RoutedEventArgs e)
+		private void OnLocaleTextboxGotKeyboardFocus(object sender, KeyboardFocusChangedEventArgs e)
 		{
-			//if(sender is RichTextBox richTextBox)
-			//{
-			//	/* Undo/Redo is disable in via xaml for this box, as otherwise the TextFormatter gets tracked and
-			//	 * outputs the internal undo commands to the history of the key entry. 
-			//	 * Here we're binding the global Undo/Redo as input keys in the RichTextBox.
-			//	*/
-			//	ViewModel.UndoMenuData.RegisterInputBinding(richTextBox.InputBindings);
-			//	ViewModel.RedoMenuData.RegisterInputBinding(richTextBox.InputBindings);
-			//}
-			//else if (sender is TextBox tb)
-			//{
-			//	if (ViewModel?.UndoMenuData != null) ViewModel.UndoMenuData.RegisterInputBinding(tb.InputBindings);
-			//	if (ViewModel?.RedoMenuData != null) ViewModel.RedoMenuData.RegisterInputBinding(tb.InputBindings);
-			//}
+			if(sender is TextBox tb)
+			{
+				ViewModel.CurrentTextBox = tb;
+				e.Handled = true;
+			}
 		}
 
-		private void TextBox_Unloaded(object sender, RoutedEventArgs e)
+		private void OnLocaleTextboxLostKeyboardFocus(object sender, KeyboardFocusChangedEventArgs e)
 		{
-			//if (sender is RichTextBox richTextBox)
-			//{
-			//	if (ViewModel?.UndoMenuData != null) ViewModel.UndoMenuData.UnregisterInputBinding(richTextBox.InputBindings);
-			//	if (ViewModel?.RedoMenuData != null) ViewModel.RedoMenuData.UnregisterInputBinding(richTextBox.InputBindings);
-			//}
-			//else if(sender is TextBox tb)
-			//{
-			//	if (ViewModel?.UndoMenuData != null) ViewModel.UndoMenuData.UnregisterInputBinding(tb.InputBindings);
-			//	if (ViewModel?.RedoMenuData != null) ViewModel.RedoMenuData.UnregisterInputBinding(tb.InputBindings);
-			//}
+			ViewModel.CurrentTextBox = null;
+			e.Handled = true;
 		}
 
 		public void SaveSettings()

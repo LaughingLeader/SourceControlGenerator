@@ -86,6 +86,12 @@ namespace SCG.Controls
 			lastText = Text;
 		}
 
+		protected override void OnLostKeyboardFocus(KeyboardFocusChangedEventArgs e)
+		{
+			base.OnGotKeyboardFocus(e);
+			lastText = Text;
+		}
+
 		protected override void OnKeyDown(KeyEventArgs e)
 		{
 			base.OnKeyDown(e);

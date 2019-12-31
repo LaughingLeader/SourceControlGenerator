@@ -281,13 +281,10 @@
 				GotFocus="EntryContent_GotFocus"
 				IsReadOnly="{Binding Path=DataContext.CanEditContentPreview, RelativeSource={RelativeSource AncestorType={x:Type Window}}}"
 				IsUndoEnabled="False"
-				Loaded="TextBox_Loaded"
-				LostFocus="EntryContent_LostFocus"
 				SelectionChanged="EntryContent_SelectionChanged"
 				Tag="{Binding Path=DataContext, RelativeSource={RelativeSource AncestorType={x:Type Window}}}"
 				Text="{Binding Path=DataContext.SelectedEntryContent, UpdateSourceTrigger=PropertyChanged, RelativeSource={RelativeSource AncestorType={x:Type Window}}}"
-				TextFormatter="{StaticResource LocalizationTextFormatter}"
-				Unloaded="TextBox_Unloaded">
+				TextFormatter="{StaticResource LocalizationTextFormatter}">
 				<i:Interaction.Behaviors>
 					<cb:RichTextBoxSelectionBehavior SelectedText="{Binding Path=DataContext.SelectedText, Mode=OneWayToSource, RelativeSource={RelativeSource AncestorType={x:Type Window}}}" />
 				</i:Interaction.Behaviors>
@@ -718,6 +715,9 @@
 								</Style>
 								<Style BasedOn="{StaticResource {x:Type TextBox}}" TargetType="{x:Type c:UnfocusableTextBox}">
 									<Setter Property="UpdateBindingOnFocusLost" Value="True" />
+									<Setter Property="CanUndoTextOnEscape" Value="True" />
+									<EventSetter Event="GotKeyboardFocus" Handler="OnLocaleTextboxGotKeyboardFocus" />
+									<EventSetter Event="LostKeyboardFocus" Handler="OnLocaleTextboxLostKeyboardFocus" />
 								</Style>
 							</DataGrid.Resources>
 							<DataGrid.RowStyle>
