@@ -90,6 +90,8 @@ namespace SCG.Modules.DOS2DE.Windows
 
 		private DOS2DEModuleData ModuleData { get; set; }
 
+		private object KeyActionsGrid;
+
 		public LocaleEditorWindow()
 		{
 			Init();
@@ -108,6 +110,8 @@ namespace SCG.Modules.DOS2DE.Windows
 				KeyDown += LocaleEditorWindow_KeyDown;
 
 				disposables = d;
+
+				KeyActionsGrid = this.FindResource("KeyActionsGrid");
 
 				ViewModel.OnViewLoaded(this, ModuleData, disposables);
 
@@ -604,6 +608,25 @@ namespace SCG.Modules.DOS2DE.Windows
 						tb.SelectAll();
 					});
 				}
+			}
+		}
+
+		private void LocaleEntryGridContentPresenter_Loaded(object sender, RoutedEventArgs e)
+		{
+			if(sender is ContentPresenter cp)
+			{
+				if(cp.Content != KeyActionsGrid)
+				{
+					cp.Content = KeyActionsGrid;
+				}
+			}
+		}
+
+		private void LocaleEntryGridContentPresenter_Unloaded(object sender, RoutedEventArgs e)
+		{
+			if (sender is ContentPresenter cp)
+			{
+				cp.Content = null;
 			}
 		}
 	}

@@ -646,10 +646,13 @@
 						<RowDefinition Height="*" />
 					</Grid.RowDefinitions>
 					<ContentPresenter
+						x:Name="LocaleEntryGridContentPresenter"
 						Grid.Row="0"
 						Grid.Column="0"
 						Grid.ColumnSpan="2"
-						Content="{StaticResource KeyActionsGrid}" />
+						Content="{x:Null}"
+						Loaded="LocaleEntryGridContentPresenter_Loaded"
+						Unloaded="LocaleEntryGridContentPresenter_Unloaded" />
 					<Grid Grid.Row="1">
 						<Grid.Resources>
 							<Style TargetType="{x:Type Border}">
@@ -692,8 +695,9 @@
 							CanUserDeleteRows="False"
 							CanUserResizeRows="True"
 							CellStyle="{StaticResource CellNoHighlightChangesUnsaved}"
+							EnableColumnVirtualization="True"
 							EnableRowVirtualization="True"
-							ItemsSource="{Binding Entries}"
+							ItemsSource="{Binding Entries, IsAsync=True}"
 							Loaded="LocaleEntryDataGrid_Loaded"
 							Style="{StaticResource LocaleDataGridStyle}"
 							VirtualizingPanel.IsVirtualizingWhenGrouping="True">
