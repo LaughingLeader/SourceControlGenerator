@@ -32,6 +32,8 @@ namespace SCG.Controls.Behavior
         {
             var uielement = (UIElement)sender;
 
+            //Log.Here().Activity($"InputBindingsBehavior_PreviewKeyDown: {e.Key}");
+
             KeyBinding foundBinding = ((UIElement)uielement).InputBindings
             .OfType<KeyBinding>()
             .FirstOrDefault(inputBinding => inputBinding.Gesture.Matches(sender, e));

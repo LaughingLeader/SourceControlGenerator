@@ -7,6 +7,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
+using static SCG.Extensions.ControlExtensions;
 
 namespace SCG.Controls
 {
@@ -57,12 +58,24 @@ namespace SCG.Controls
 					bindingExpression.UpdateSource();
 				}
 			}
+
+			var window = this.FindParent<Window>();
+			if(window != null)
+			{
+				Keyboard.Focus(window);
+			}
 		}
 
 		public void Escape()
 		{
 			if (CanUndoTextOnEscape && Text != lastText) Text = lastText;
 			Keyboard.ClearFocus();
+
+			var window = this.FindParent<Window>();
+			if (window != null)
+			{
+				Keyboard.Focus(window);
+			}
 		}
 
 		private string lastText = "";
