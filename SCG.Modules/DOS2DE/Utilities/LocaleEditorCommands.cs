@@ -379,42 +379,48 @@ namespace SCG.Modules.DOS2DE.Utilities
 		{
 			return await Task.Run(() =>
 			{
-				try
+				if (token != null && token.Value.IsCancellationRequested) return null;
+				return LoadResource(groupData, path);
+			});
+		}
+
+		public static LocaleNodeFileData LoadResource(LocaleTabGroup groupData, string path)
+		{
+			try
+			{
+				var resourceFormat = ResourceFormat.LSB;
+				if (FileCommands.FileExtensionFound(path, ".lsj"))
 				{
-					var resourceFormat = ResourceFormat.LSB;
-					if (FileCommands.FileExtensionFound(path, ".lsj"))
-					{
-						resourceFormat = ResourceFormat.LSJ;
-					}
-					else if (FileCommands.FileExtensionFound(path, ".lsf"))
-					{
-						resourceFormat = ResourceFormat.LSF;
-					}
-
-					var resource = LSLib.LS.ResourceUtils.LoadResource(path, resourceFormat);
-
-					var data = new LocaleNodeFileData(groupData, resourceFormat, resource, path, Path.GetFileNameWithoutExtension(path));
-					var entries = LoadFromResource(resource, resourceFormat);
-					if (entries.Count <= 0 && resourceFormat == ResourceFormat.LSF) // Root templates without any translated string nodes
-					{
-						return null;
-					}
-					else
-					{
-						foreach (var entry in entries)
-						{
-							data.Entries.Add(entry);
-							entry.Parent = data;
-						}
-						return data;
-					}
+					resourceFormat = ResourceFormat.LSJ;
 				}
-				catch(Exception ex)
+				else if (FileCommands.FileExtensionFound(path, ".lsf"))
 				{
-					Log.Here().Error($"Error loading '{path}': {ex.ToString()}");
+					resourceFormat = ResourceFormat.LSF;
+				}
+
+				var resource = LSLib.LS.ResourceUtils.LoadResource(path, resourceFormat);
+
+				var data = new LocaleNodeFileData(groupData, resourceFormat, resource, path, Path.GetFileNameWithoutExtension(path));
+				var entries = LoadFromResource(resource, resourceFormat);
+				if (entries.Count <= 0 && resourceFormat == ResourceFormat.LSF) // Root templates without any translated string nodes
+				{
 					return null;
 				}
-			});
+				else
+				{
+					foreach (var entry in entries)
+					{
+						data.Entries.Add(entry);
+						entry.Parent = data;
+					}
+					return data;
+				}
+			}
+			catch (Exception ex)
+			{
+				Log.Here().Error($"Error loading '{path}': {ex.ToString()}");
+				return null;
+			}
 		}
 
 		private static void LoadFromNodeLSF_Recursive(List<LocaleNodeKeyEntry> newEntries, Node node)

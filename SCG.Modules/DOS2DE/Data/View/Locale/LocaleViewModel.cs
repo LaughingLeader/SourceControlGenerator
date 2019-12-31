@@ -133,7 +133,8 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 		private readonly ReadOnlyObservableCollection<LocaleTabGroup> visibleGroups;
 		public ReadOnlyObservableCollection<LocaleTabGroup> VisibleGroups => visibleGroups;
 
-		private int selectedGroupIndex = -1;
+		private int lastSelectedGroupIndex = 0;
+		private int selectedGroupIndex = 0;
 
 		public int SelectedGroupIndex
 		{
@@ -141,19 +142,50 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			set
 			{
 				bool updateCanSave = selectedGroupIndex != value;
+				var lastSelectedFile = SelectedFile;
+				lastSelectedGroupIndex = selectedGroupIndex;
+
+				if (value > Groups.Count)
+				{
+					value = 0;
+				}
+				else if(value < 0)
+				{
+					value = Groups.Count - 1;
+				}
+
+				var nextGroup = Groups[value];
+				int nextIndex = 0;
+
+				if (nextGroup != null)
+				{
+					if (lastSelectedFile != null && nextGroup.DataFiles.Any(x => x.SourcePath == lastSelectedFile.SourcePath))
+					{
+						nextIndex = nextGroup.Tabs.IndexOf(lastSelectedFile);
+					}
+					else if (nextGroup.SelectedFileIndex > nextGroup.Tabs.Count)
+					{
+						nextIndex = 0;
+					}
+					else
+					{
+						nextIndex = nextGroup.SelectedFileIndex;
+					}
+				}
 				
+				Log.Here().Activity($"{nextGroup.Name}: {nextGroup.SelectedFileIndex} => {nextIndex}");
+
 				this.RaiseAndSetIfChanged(ref selectedGroupIndex, value);
 
-				if(Groups.Count > selectedGroupIndex)
-				{
-					SelectedGroup = Groups[SelectedGroupIndex];
-				}
+
+				SelectedGroup = nextGroup;
+				nextGroup.SelectedFileIndex = nextIndex;
 
 				this.RaisePropertyChanged("CurrentImportPath");
 
 				if (updateCanSave)
 				{
-					SelectedFileChanged(SelectedGroup, SelectedFile);
+					SelectedFileChanged(SelectedGroup, SelectedGroup.SelectedFile);
 				}
 			}
 		}
@@ -1059,6 +1091,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 		public ICommand AddNewKeyCommand { get; private set; }
 		public ICommand DeleteKeysCommand { get; private set; }
 		public ICommand RefreshFileCommand { get; private set; }
+		public ICommand ReloadFileCommand { get; private set; }
 		public ICommand ReloadFileLinkDataCommand { get; private set; }
 		public ICommand SetFileLinkDataCommand { get; private set; }
 		public ICommand RemoveFileLinkDataCommand { get; private set; }
@@ -1787,9 +1820,50 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			ChangesUnsaved = Groups.Any(g => g.ChangesUnsaved == true);
 		}
 
+		public void ReloadFileData(LocaleNodeFileData fileData)
+		{
+			FileCommands.OpenConfirmationDialog(view, "Reload Data?", "Reload data in selected file?", "Unsaved changes will be lost", (b) =>
+			{
+				if (b)
+				{
+					bool combinedSelected = SelectedGroup == CombinedGroup;
+					var selectedGroup = SelectedGroup;
+					var targetGroup = !combinedSelected ? SelectedGroup : Groups.FirstOrDefault(g => g.DataFiles.Contains(fileData));
+					var oldFile = fileData;
+					int index = targetGroup.DataFiles.IndexOf(fileData);
+					int selectedIndex = selectedGroup.SelectedFileIndex;
+
+					void undo()
+					{
+						targetGroup.DataFiles[index] = oldFile;
+						targetGroup.UpdateCombinedData();
+						if(selectedGroup != targetGroup) CombinedGroup.UpdateCombinedData();
+						selectedGroup.SelectedFileIndex = selectedIndex;
+
+						OutputText = $"Reverted file '{oldFile.SourcePath}'.";
+						OutputType = LogType.Important;
+					}
+
+					void redo()
+					{
+						var newFile = LocaleEditorCommands.LoadResource(oldFile.Parent, oldFile.SourcePath);
+						targetGroup.DataFiles[index] = newFile;
+						targetGroup.UpdateCombinedData();
+						if (selectedGroup != targetGroup) selectedGroup.UpdateCombinedData();
+						selectedGroup.SelectedFileIndex = selectedIndex;
+
+						OutputText = $"Reloaded file '{newFile.SourcePath}'";
+						OutputType = LogType.Important;
+					}
+					this.CreateSnapshot(undo, redo);
+					redo();
+				}
+			});
+		}
+
 		public void RefreshFileData(LocaleNodeFileData fileData)
 		{
-			FileCommands.OpenConfirmationDialog(view, "Refresh Data?", "Refresh data in selected file?", "Unsaved changes will be lost", (b) =>
+			FileCommands.OpenConfirmationDialog(view, "Refresh Data?", "Refresh data in selected file?", "", (b) =>
 			{
 				if (b)
 				{
@@ -1805,7 +1879,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 						foreach (var entry in entries)
 						{
 							ILocaleKeyEntry existingEntry = null;
-							if (fileData.Format == ResourceFormat.LSJ)
+							if (fileData.Format == ResourceFormat.LSJ || fileData.Format == ResourceFormat.LSF)
 							{
 								existingEntry = fileData.Entries.FirstOrDefault(x => x.Content == entry.Content || (x.Handle == entry.Handle &&
 									x.Handle != LocaleEditorCommands.UnsetHandle));
@@ -2204,6 +2278,14 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 				if(fileData is LocaleNodeFileData nodeFile)
 				{
 					RefreshFileData(nodeFile);
+				}
+			}, FileSelectedObservable).DisposeWith(disposables);
+
+			ReloadFileCommand = ReactiveCommand.Create<ILocaleFileData>((ILocaleFileData fileData) =>
+			{
+				if(fileData is LocaleNodeFileData nodeFile)
+				{
+					ReloadFileData(nodeFile);
 				}
 			}, FileSelectedObservable).DisposeWith(disposables);
 

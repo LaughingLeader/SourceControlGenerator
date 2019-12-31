@@ -212,6 +212,12 @@
 						CommandParameter="{Binding}"
 						Source="{x:Static vdata:IconPathData.Refresh}"
 						ToolTip="{x:Static core:DOS2DETooltips.Button_Locale_RefreshFile}" />
+					<c:ImageButton
+						cb:ImageButtonHoverOnDisabled.Enable="True"
+						Command="{Binding Path=DataContext.ReloadFileCommand, RelativeSource={RelativeSource AncestorType={x:Type Window}}}"
+						CommandParameter="{Binding}"
+						Source="{x:Static vdata:IconPathData.Import}"
+						ToolTip="{x:Static core:DOS2DETooltips.Button_Locale_ReloadFile}" />
 					<Rectangle Style="{StaticResource VerticalSeparator}" />
 					<c:ImageButton
 						x:Name="ExportButton"
@@ -1661,6 +1667,7 @@
 			ContentTemplate="{Binding Source={StaticResource LocaleFileTabs}}"
 			ItemsSource="{Binding VisibleGroups}"
 			SelectedIndex="{Binding SelectedGroupIndex}"
+			SelectionChanged="LocaleGroupTabControl_SelectionChanged"
 			Style="{StaticResource LocaleGroupTabControl}">
 			<TabControl.ItemContainerStyle>
 				<Style TargetType="TabItem">
