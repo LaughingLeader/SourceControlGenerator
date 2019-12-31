@@ -838,30 +838,51 @@
 									SortMemberPath="EntryHandle">
 									<DataGridTemplateColumn.CellTemplate>
 										<DataTemplate>
-											<c:UnfocusableTextBox
-												x:Name="EntryHandleTextBox"
-												Margin="0,0,12,0"
-												AcceptsReturn="False"
-												AcceptsTab="False"
-												Tag="{Binding Path=DataContext, RelativeSource={RelativeSource AncestorType={x:Type Window}}}"
-												Text="{Binding EntryHandle, UpdateSourceTrigger=PropertyChanged}">
-												<c:UnfocusableTextBox.ContextMenu>
-													<ContextMenu>
-														<MenuItem Command="ApplicationCommands.Cut" />
-														<MenuItem Command="ApplicationCommands.Copy" />
-														<MenuItem Command="ApplicationCommands.Paste" />
-														<MenuItem Command="ApplicationCommands.SelectAll" />
-														<MenuItem
-															Command="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.Tag.NewHandleCommand}"
-															CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget}"
-															Header="Generate New Handle" />
-														<MenuItem
-															Command="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.Tag.ResetHandleCommand}"
-															CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget}"
-															Header="Unset Handle" />
-													</ContextMenu>
-												</c:UnfocusableTextBox.ContextMenu>
-											</c:UnfocusableTextBox>
+											<Grid>
+												<c:UnfocusableTextBox
+													x:Name="EntryHandleTextBox"
+													Margin="0,0,12,0"
+													AcceptsReturn="False"
+													AcceptsTab="False"
+													Tag="{Binding Path=DataContext, RelativeSource={RelativeSource AncestorType={x:Type Window}}}"
+													Text="{Binding EntryHandle, UpdateSourceTrigger=PropertyChanged}">
+													<c:UnfocusableTextBox.ContextMenu>
+														<ContextMenu>
+															<MenuItem Command="ApplicationCommands.Cut" />
+															<MenuItem Command="ApplicationCommands.Copy" />
+															<MenuItem Command="ApplicationCommands.Paste" />
+															<MenuItem Command="ApplicationCommands.SelectAll" />
+															<MenuItem
+																Command="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.Tag.NewHandleCommand}"
+																CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget}"
+																Header="Generate New Handle" />
+															<MenuItem
+																Command="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.Tag.ResetHandleCommand}"
+																CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget}"
+																Header="Unset Handle" />
+														</ContextMenu>
+													</c:UnfocusableTextBox.ContextMenu>
+												</c:UnfocusableTextBox>
+												<TextBlock
+													Grid.Column="4"
+													Margin="4,0,0,0"
+													HorizontalAlignment="Left"
+													VerticalAlignment="Center"
+													Foreground="Gray"
+													IsHitTestVisible="False"
+													Text="{Binding EntryHandle, UpdateSourceTrigger=PropertyChanged}">
+													<TextBlock.Style>
+														<Style TargetType="{x:Type TextBlock}">
+															<Setter Property="Visibility" Value="Collapsed" />
+															<Style.Triggers>
+																<DataTrigger Binding="{Binding Text, ElementName=EntryHandleTextBox}" Value="ls::TranslatedStringRepository::s_HandleUnknown">
+																	<Setter Property="Visibility" Value="Visible" />
+																</DataTrigger>
+															</Style.Triggers>
+														</Style>
+													</TextBlock.Style>
+												</TextBlock>
+											</Grid>
 										</DataTemplate>
 									</DataGridTemplateColumn.CellTemplate>
 								</DataGridTemplateColumn>

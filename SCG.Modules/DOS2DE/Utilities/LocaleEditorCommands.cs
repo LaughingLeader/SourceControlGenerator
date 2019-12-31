@@ -581,7 +581,7 @@ namespace SCG.Modules.DOS2DE.Utilities
 				LocaleNodeKeyEntry localeEntry = new LocaleNodeKeyEntry(node);
 				
 				localeEntry.KeyIsEditable = false;
-				localeEntry.Key = "";
+				localeEntry.Key = resourceFormat == ResourceFormat.LSJ ? "TagText" : "";
 
 				NodeAttribute contentAtt = null;
 				
