@@ -423,16 +423,16 @@ namespace SCG.Modules.DOS2DE.Utilities
 			}
 		}
 
-		private static void LoadFromNodeLSF_Recursive(List<LocaleNodeKeyEntry> newEntries, Node node)
+		private static void LoadFromNode_Recursive(List<LocaleNodeKeyEntry> newEntries, Node node, ResourceFormat resourceFormat)
 		{
-			newEntries.AddRange(LoadAllFromNodeAttributes(node, ResourceFormat.LSF, false));
+			newEntries.AddRange(LoadAllFromNodeAttributes(node, resourceFormat, false));
 			if(node.Children.Count > 0)
 			{
 				foreach(var nList in node.Children.Values)
 				{
 					foreach(var n in nList)
 					{
-						LoadFromNodeLSF_Recursive(newEntries, n);
+						LoadFromNode_Recursive(newEntries, n, resourceFormat);
 					}
 				}
 			}
@@ -457,23 +457,34 @@ namespace SCG.Modules.DOS2DE.Utilities
 
 					}
 				}
-				else if (resourceFormat == ResourceFormat.LSJ || resourceFormat == ResourceFormat.LSX)
+				else
 				{
 					var rootNode = resource.Regions.First().Value;
 
-					var stringNodes = new List<Node>();
-
-					foreach (var nodeList in rootNode.Children)
+					if(rootNode != null)
 					{
-						var nodes = FindTranslatedStringsInNodeList(nodeList);
-						stringNodes.AddRange(nodes);
+						foreach (var nList in rootNode.Children.Values)
+						{
+							foreach (var node in nList)
+							{
+								LoadFromNode_Recursive(newEntries, node, resourceFormat);
+							}
+						}
 					}
 
-					foreach(var node in stringNodes)
-					{
-						LocaleNodeKeyEntry localeEntry = LoadFromNode(node, resourceFormat);
-						newEntries.Add(localeEntry);
-					}
+					//var stringNodes = new List<Node>();
+
+					//foreach (var nodeList in rootNode.Children)
+					//{
+					//	var nodes = FindTranslatedStringsInNodeList(nodeList);
+					//	stringNodes.AddRange(nodes);
+					//}
+
+					//foreach(var node in stringNodes)
+					//{
+					//	LocaleNodeKeyEntry localeEntry = LoadFromNode(node, resourceFormat);
+					//	newEntries.Add(localeEntry);
+					//}
 
 					/*
 					foreach(var region in resource.Regions)
@@ -481,24 +492,6 @@ namespace SCG.Modules.DOS2DE.Utilities
 						Debug_TraceRegion(region, 0);
 					}
 					*/
-				}
-				else if (resourceFormat == ResourceFormat.LSF)
-				{
-					try
-					{
-						var rootNode = resource.Regions.First().Value;
-						List<Node> nodes = null;
-
-						if (rootNode.Children.TryGetValue("GameObjects", out nodes))
-						{
-							Node node = nodes.FirstOrDefault();
-							if (node != null)
-							{
-								LoadFromNodeLSF_Recursive(newEntries, node);
-							}
-						}
-					}
-					catch (Exception ex) { }
 				}
 
 				if (sort)
