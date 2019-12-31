@@ -35,6 +35,8 @@ namespace SCG
 
 		public static string AuthorLink => @"https://github.com/LaughingLeader";
 
+		public static string UpdateInfoLink => @"https://raw.githubusercontent.com/LaughingLeader/SourceControlGenerator/master/Update.xml";
+
 		public static string Version => GetVersion();
 
 		private static string GetVersion()

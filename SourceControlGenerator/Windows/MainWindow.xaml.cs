@@ -29,6 +29,7 @@ using System.Windows.Threading;
 using ReactiveUI;
 using System.Reactive.Disposables;
 using System.Reactive.Concurrency;
+using AutoUpdaterDotNET;
 
 namespace SCG.Windows
 {
@@ -150,10 +151,27 @@ namespace SCG.Windows
 				}
 			}
 
+			AutoUpdater.ApplicationExitEvent += AutoUpdater_ApplicationExitEvent;
+			AutoUpdater.HttpUserAgent = "SourceControlGeneratorUser";
+
 			this.WhenActivated((disposables) =>
 			{
 				this.OneWayBind(ViewModel, vm => vm.ProgressValueTaskBar, v => v.TaskbarItemInfo.ProgressValue).DisposeWith(disposables);
+
+				if (this.Controller.Data.AppSettings.LastUpdateCheck == -1 || (DateTimeOffset.Now.ToUnixTimeSeconds() - this.Controller.Data.AppSettings.LastUpdateCheck >= 43200))
+				{
+					this.Controller.Data.AppSettings.LastUpdateCheck = DateTimeOffset.Now.ToUnixTimeSeconds();
+					this.Controller.SaveAppSettings();
+					AutoUpdater.Start(DefaultPaths.UpdateInfoLink);
+				}
 			});
+		}
+
+		private void AutoUpdater_ApplicationExitEvent()
+		{
+			this.Controller.Data.AppSettings.LastUpdateCheck = DateTimeOffset.Now.ToUnixTimeSeconds();
+			this.Controller.SaveAppSettings();
+			App.Current.Shutdown();
 		}
 
 		public void OnModuleSet(IProjectController module)

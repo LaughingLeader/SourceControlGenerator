@@ -68,5 +68,13 @@ namespace SCG.Data
 			}
 		}
 
+		private long lastUpdateCheck = -1;
+
+		[DataMember]
+		public long LastUpdateCheck
+		{
+			get => lastUpdateCheck;
+			set { this.RaiseAndSetIfChanged(ref lastUpdateCheck, value); }
+		}
 	}
 }
