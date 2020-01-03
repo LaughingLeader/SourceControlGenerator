@@ -343,13 +343,13 @@ namespace SCG.Controls
 							filename = Path.GetFullPath(filename);
 						}
 
-						filename = filename.Replace(DefaultPaths.AppFolder, "/");
 
 						SkipNext = true;
 						if (filename.Contains("%20"))
 						{
 							filename = Uri.UnescapeDataString(filename); // Get rid of %20
 						}
+						filename = filename.Replace(DefaultPaths.AppFolder, "");
 
 						FileLocationText = filename;
 						LastFileLocation = Path.GetDirectoryName(FileLocationText);
@@ -423,7 +423,7 @@ namespace SCG.Controls
 							path = Uri.UnescapeDataString(path); // Get rid of %20
 						}
 
-						path = path.Replace(DefaultPaths.AppFolder, "/");
+						path = path.Replace(DefaultPaths.AppFolder, "");
 
 						SkipNext = true;
 						FileLocationText = path;
