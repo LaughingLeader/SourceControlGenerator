@@ -290,6 +290,7 @@
     <Compile Include="Controls\LoadingSpinner.xaml.cs">
       <DependentUpon>LoadingSpinner.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Controls\MessageBoxEx.cs" />
     <Compile Include="Controls\MonitoredContentPresenter.cs" />
     <Compile Include="Controls\SortableDataGrid.cs" />
     <Compile Include="Controls\UnfocusableTextBox.cs" />

@@ -158,12 +158,7 @@ namespace SCG.Windows
 			{
 				this.OneWayBind(ViewModel, vm => vm.ProgressValueTaskBar, v => v.TaskbarItemInfo.ProgressValue).DisposeWith(disposables);
 
-				if (this.Controller.Data.AppSettings.LastUpdateCheck == -1 || (DateTimeOffset.Now.ToUnixTimeSeconds() - this.Controller.Data.AppSettings.LastUpdateCheck >= 43200))
-				{
-					this.Controller.Data.AppSettings.LastUpdateCheck = DateTimeOffset.Now.ToUnixTimeSeconds();
-					this.Controller.SaveAppSettings();
-					AutoUpdater.Start(DefaultPaths.UpdateInfoLink);
-				}
+				Controller.CheckForUpdates();
 			});
 		}
 

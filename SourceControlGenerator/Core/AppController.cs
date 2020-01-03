@@ -27,6 +27,7 @@ using SCG.Controls;
 using ReactiveUI;
 using System.Reactive.Concurrency;
 using SCG.Converters.Json;
+using AutoUpdaterDotNET;
 
 namespace SCG.Core
 {
@@ -867,6 +868,30 @@ namespace SCG.Core
 			LoadTextGeneratorData();
 		}
 
+		private void AutoUpdater_CheckForUpdateEvent(UpdateInfoEventArgs args)
+		{
+			if(args == null || (args != null && !args.IsUpdateAvailable))
+			{
+				MessageBoxEx.Show(mainWindow, "No updates found.");
+			}
+			AutoUpdater.CheckForUpdateEvent -= AutoUpdater_CheckForUpdateEvent;
+		}
+
+		public void CheckForUpdates(bool force = false)
+		{
+			if(force)
+			{
+				AutoUpdater.CheckForUpdateEvent += AutoUpdater_CheckForUpdateEvent;
+			}
+
+			if (force || Data.AppSettings.LastUpdateCheck == -1 || (DateTimeOffset.Now.ToUnixTimeSeconds() - Data.AppSettings.LastUpdateCheck >= 43200))
+			{
+				Data.AppSettings.LastUpdateCheck = DateTimeOffset.Now.ToUnixTimeSeconds();
+				SaveAppSettings();
+				AutoUpdater.Start(DefaultPaths.UpdateInfoLink);
+			}
+		}
+
 		private void InitDefaultMenus()
 		{
 			/*
@@ -907,6 +932,11 @@ namespace SCG.Core
 			);
 
 			Data.MenuBarData.Help.Register("Base",
+				new MenuData(MenuID.RepoLink)
+				{
+					Header = "Check for Updates",
+					ClickCommand = ReactiveCommand.Create(new Action(() => { CheckForUpdates(true); }))
+				},
 				new MenuData(MenuID.RepoLink)
 				{
 					Header = "Releases (Github)...",
