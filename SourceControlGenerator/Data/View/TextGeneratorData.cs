@@ -16,7 +16,10 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using ReactiveUI;
+using System.Reactive.Concurrency;
 using SCG.Windows;
+using DynamicData;
+using DynamicData.Binding;
 
 namespace SCG.Data.View
 {
@@ -35,7 +38,7 @@ namespace SCG.Data.View
 	public class TextGeneratorViewModel : ReactiveObject
 	{
 		[DataMember]
-		public ObservableCollection<TextGeneratorData> GeneratorPresets { get; set; }
+		public ObservableCollectionExtended<TextGeneratorData> GeneratorPresets { get; set; }
 
 		private int textGeneratorActiveSettingsIndex = 0;
 
@@ -110,7 +113,9 @@ namespace SCG.Data.View
 			var lastIndex = ActivePresetIndex;
 			var presets = GeneratorPresets.ToList();
 			presets.Remove(ActiveData);
-			GeneratorPresets = new ObservableCollection<TextGeneratorData>(presets);
+			GeneratorPresets.Clear();
+			GeneratorPresets.AddRange(presets);
+			this.RaisePropertyChanged("GeneratorPresets");
 
 			if (lastIndex > 0)
 			{
@@ -162,7 +167,7 @@ namespace SCG.Data.View
 
 		public TextGeneratorViewModel()
 		{
-			GeneratorPresets = new ObservableCollection<TextGeneratorData>();
+			GeneratorPresets = new ObservableCollectionExtended<TextGeneratorData>();
 		}
 	}
 
@@ -306,25 +311,32 @@ namespace SCG.Data.View
 
 			string initialDirectory = AppController.Main.CurrentModule != null ? DefaultPaths.ModuleTextGeneratorFolder(AppController.Main.CurrentModule.ModuleData) : DefaultPaths.RootFolder + @"Default\TextGenerator\";
 
-			if (!InputData.Open() || String.IsNullOrWhiteSpace(InputData.DefaultFileName))
+			RxApp.MainThreadScheduler.Schedule(TimeSpan.FromMilliseconds(50), _ =>
 			{
-				InputData.InitialDirectory = initialDirectory;
-				InputData.DefaultFileName = "TextGenerator_Input1.txt";
+				if (string.IsNullOrWhiteSpace(InputData.DefaultFileName) || !InputData.Open())
+				{
+					InputData.InitialDirectory = initialDirectory;
+					InputData.DefaultFileName = "TextGenerator_Input1.txt";
 
-				if (!FileCommands.IsValidFilePath(InputData.FilePath))
-				{
-					InputData.FilePath = Path.Combine(InputData.InitialDirectory, InputData.DefaultFileName);
+					if (!FileCommands.IsValidFilePath(InputData.FilePath))
+					{
+						InputData.FilePath = Path.Combine(InputData.InitialDirectory, InputData.DefaultFileName);
+					}
+
+					if (string.IsNullOrEmpty(InputData.Content)) InputData.Open();
 				}
-			}
-			if (!OutputData.Open() || String.IsNullOrWhiteSpace(OutputData.DefaultFileName))
-			{
-				OutputData.InitialDirectory = initialDirectory;
-				OutputData.DefaultFileName = "TextGenerator_Output1.txt";
-				if (!FileCommands.IsValidFilePath(OutputData.FilePath))
+				if (string.IsNullOrWhiteSpace(OutputData.DefaultFileName) || !OutputData.Open())
 				{
-					OutputData.FilePath = Path.Combine(OutputData.InitialDirectory, OutputData.DefaultFileName);
+					OutputData.InitialDirectory = initialDirectory;
+					OutputData.DefaultFileName = "TextGenerator_Output1.txt";
+					if (!FileCommands.IsValidFilePath(OutputData.FilePath))
+					{
+						OutputData.FilePath = Path.Combine(OutputData.InitialDirectory, OutputData.DefaultFileName);
+					}
+					if(string.IsNullOrEmpty(OutputData.Content)) OutputData.Open();
 				}
-			}
+			});
+
 
 			if((int)this.NextKeywordType > 2)
 			{
@@ -429,7 +441,7 @@ namespace SCG.Data.View
 
 		public bool Open()
 		{
-			if (FileCommands.IsValidFilePath(FilePath))
+			if (File.Exists(FilePath))
 			{
 				Content = FileCommands.ReadFile(FilePath);
 				DefaultFileName = Path.GetFileName(FilePath);
