@@ -23,11 +23,10 @@
 	Width="960"
 	Height="525"
 	cb:InputBindingsBehavior.TakesInputBindingPrecedence="True"
-	d:DataContext="{d:DesignInstance data:LocaleEditorDesignData,
-	                                 IsDesignTimeCreatable=True}"
 	Closing="LocaleWindow_Closing"
 	IsEnabled="{Binding IsUnlocked}"
 	mc:Ignorable="d">
+	<!--  d:DataContext="{d:DesignInstance data:LocaleEditorDesignData, IsDesignTimeCreatable=True}"  -->
 	<Window.Resources>
 		<ResourceDictionary>
 			<ResourceDictionary.MergedDictionaries>
@@ -123,10 +122,7 @@
 					</DataTrigger>
 				</Style.Triggers>
 			</Style>
-			<Style
-				x:Key="ProjectsHeaderStyle"
-				BasedOn="{StaticResource {x:Type DataGridColumnHeader}}"
-				TargetType="{x:Type DataGridColumnHeader}">
+			<Style x:Key="ProjectsHeaderStyle" TargetType="{x:Type DataGridColumnHeader}">
 				<Setter Property="HorizontalContentAlignment" Value="Center" />
 			</Style>
 			<SolidColorBrush x:Key="TabItem.Selected.Background" Color="#FFFFFF" />
@@ -247,6 +243,12 @@
 						Source="{x:Static vdata:IconPathData.LinkVertical}"
 						ToolTip="{x:Static core:DOS2DETooltips.Button_Locale_RefreshLinkedData}"
 						Visibility="{Binding HasFileLink, Converter={StaticResource BoolToVisibilityConverter}}" />
+					<Rectangle Style="{StaticResource VerticalSeparator}" />
+					<TextBlock Text="Hide Extras" />
+					<CheckBox
+						VerticalAlignment="Center"
+						IsChecked="{Binding Path=DataContext.HideExtras, RelativeSource={RelativeSource AncestorType={x:Type Window}}}"
+						ToolTip="Hide extra keys that may not need to be edited (GameMasterSpawnSubSection)." />
 				</StackPanel>
 			</Grid>
 			<html:HtmlPanel
@@ -696,7 +698,7 @@
 							CellStyle="{StaticResource CellNoHighlightChangesUnsaved}"
 							EnableColumnVirtualization="True"
 							EnableRowVirtualization="True"
-							ItemsSource="{Binding Entries, IsAsync=True}"
+							ItemsSource="{Binding VisibleEntries}"
 							Loaded="LocaleEntryDataGrid_Loaded"
 							SelectionChanged="LocaleEntryDataGrid_SelectionChanged"
 							Style="{StaticResource LocaleDataGridStyle}"
@@ -763,7 +765,7 @@
 								<Style BasedOn="{StaticResource UnfocusableTextBoxGridStyle}" TargetType="{x:Type c:UnfocusableTextBox}" />
 							</DataGrid.Resources>
 							<DataGrid.RowStyle>
-								<Style BasedOn="{StaticResource {x:Type DataGridRow}}" TargetType="{x:Type DataGridRow}">
+								<Style TargetType="{x:Type DataGridRow}">
 									<Setter Property="IsSelected" Value="{Binding Selected}" />
 								</Style>
 							</DataGrid.RowStyle>

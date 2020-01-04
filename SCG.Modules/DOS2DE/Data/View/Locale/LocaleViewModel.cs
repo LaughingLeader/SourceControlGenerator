@@ -31,6 +31,7 @@ using System.Reactive.Linq;
 using SCG.Controls;
 using System.Windows.Controls;
 using LSLib.LS.Enums;
+using System.Reactive.Concurrency;
 
 namespace SCG.Modules.DOS2DE.Data.View.Locale
 {
@@ -473,6 +474,15 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			set { this.RaiseAndSetIfChanged(ref clipboardHasText, value); }
 		}
 
+		private bool hideExtras = false;
+
+		public bool HideExtras
+		{
+			get => hideExtras;
+			set { this.RaiseAndSetIfChanged(ref hideExtras, value); }
+		}
+
+
 		public TextBox CurrentTextBox { get; set; }
 
 		private bool contentPreviewModeEnabled = false;
@@ -800,61 +810,68 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 				}
 			}
 		}
-
-		public async Task SaveAll()
+		public void SaveAll()
 		{
 			Log.Here().Activity("Saving all files.");
-			var backupSuccess = await LocaleEditorCommands.BackupDataFiles(this, ModuleData.Settings.BackupRootDirectory);
-			if (backupSuccess == true)
+			RxApp.TaskpoolScheduler.ScheduleAsync(async (s,t) =>
 			{
-				int total = SelectedGroup.DataFiles.Where(f => f.ChangesUnsaved).Count();
-				var successes = await LocaleEditorCommands.SaveDataFiles(this);
-				Log.Here().Important($"Saved {successes} localization files.");
-				OutputText = $"Saved {successes}/{total} files.";
-				OutputType = LogType.Important;
-			}
-			else
-			{
-				OutputText = $"Problem occured when backing up files. Check the log.";
-				OutputType = LogType.Error;
-			}
-			OutputDate = DateTime.Now.ToShortTimeString();
+				var backupSuccess = await LocaleEditorCommands.BackupDataFiles(this, ModuleData.Settings.BackupRootDirectory);
+				if (backupSuccess == true)
+				{
+					int total = SelectedGroup.DataFiles.Where(f => f.ChangesUnsaved).Count();
+					var successes = await LocaleEditorCommands.SaveDataFiles(this);
+					Log.Here().Important($"Saved {successes} localization files.");
+					OutputText = $"Saved {successes}/{total} files.";
+					OutputType = LogType.Important;
+				}
+				else
+				{
+					OutputText = $"Problem occured when backing up files. Check the log.";
+					OutputType = LogType.Error;
+				}
+				OutputDate = DateTime.Now.ToShortTimeString();
 
-			LocaleEditorCommands.SaveAllLinkedData(ModuleData, LinkedLocaleData);
+				LocaleEditorCommands.SaveAllLinkedData(ModuleData, LinkedLocaleData);
+				return Disposable.Empty;
+			});
 		}
 
-		public async Task SaveCurrent()
+		public void SaveCurrent()
 		{
 			if(SelectedFile != null)
 			{
 				if (SelectedFile is LocaleNodeFileData keyFileData)
 				{
-					var backupSuccess = await LocaleEditorCommands.BackupDataFile(keyFileData.SourcePath, ModuleData.Settings.BackupRootDirectory);
-					if (backupSuccess == true)
+					RxApp.TaskpoolScheduler.ScheduleAsync(async (s, t) =>
 					{
-						int result = await LocaleEditorCommands.SaveDataFile(keyFileData);
-						if (result > 0)
+						var backupSuccess = await LocaleEditorCommands.BackupDataFile(keyFileData.SourcePath, ModuleData.Settings.BackupRootDirectory);
+						if (backupSuccess == true)
 						{
-							OutputText = $"Saved '{keyFileData.SourcePath}'";
-							OutputType = LogType.Important;
+							int result = await LocaleEditorCommands.SaveDataFile(keyFileData);
+							if (result > 0)
+							{
+								OutputText = $"Saved '{keyFileData.SourcePath}'";
+								OutputType = LogType.Important;
 
-							keyFileData.SetChangesUnsaved(false, true);
-							ChangesUnsaved = false;
+								keyFileData.SetChangesUnsaved(false, true);
+								ChangesUnsaved = false;
+							}
+							else
+							{
+								OutputText = $"Error saving '{keyFileData.SourcePath}'. Check the log.";
+								OutputType = LogType.Error;
+							}
+							OutputDate = DateTime.Now.ToShortTimeString();
 						}
 						else
 						{
-							OutputText = $"Error saving '{keyFileData.SourcePath}'. Check the log.";
+							OutputText = $"Problem occured when backing up files. Check the log.";
 							OutputType = LogType.Error;
 						}
-						OutputDate = DateTime.Now.ToShortTimeString();
-					}
-					else
-					{
-						OutputText = $"Problem occured when backing up files. Check the log.";
-						OutputType = LogType.Error;
-					}
 
-					LocaleEditorCommands.SaveLinkedDataForFile(ModuleData, LinkedLocaleData, SelectedFile);
+						LocaleEditorCommands.SaveLinkedDataForFile(ModuleData, LinkedLocaleData, SelectedFile);
+						return Disposable.Empty;
+					});
 				}
 			}
 		}
@@ -1250,7 +1267,8 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 						var lastChangesUnsaved = selectedFile.ChangesUnsaved;
 						void undo()
 						{
-							selectedFile.Entries = new ObservableCollectionExtended<ILocaleKeyEntry>(last);
+							selectedFile.Entries.Clear();
+							selectedFile.Entries.AddRange(last);
 							lastSelectedGroup.UpdateCombinedData();
 							selectedFile.ChangesUnsaved = lastChangesUnsaved;
 						}
@@ -1480,8 +1498,6 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			get => problemEntriesViewInfoText1;
 			set { this.RaiseAndSetIfChanged(ref problemEntriesViewInfoText1, value); }
 		}
-
-		private string problemEntriesViewInfoText2;
 
 		public string ProblemEntriesViewInfoText2
 		{
@@ -2222,8 +2238,8 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			ConfirmRenameFileTabCommand = ReactiveCommand.Create<ILocaleFileData>(ConfirmRenaming).DisposeWith(disposables);
 			CancelRenamingFileTabCommand = ReactiveCommand.Create<ILocaleFileData>(CancelRenaming).DisposeWith(disposables);
 
-			SaveAllCommand = ReactiveCommand.CreateFromTask(SaveAll, GlobalCanActObservable).DisposeWith(disposables);
-			SaveCurrentCommand = ReactiveCommand.CreateFromTask(SaveCurrent, GlobalCanActObservable).DisposeWith(disposables);
+			SaveAllCommand = ReactiveCommand.Create(SaveAll, GlobalCanActObservable).DisposeWith(disposables);
+			SaveCurrentCommand = ReactiveCommand.Create(SaveCurrent, GlobalCanActObservable).DisposeWith(disposables);
 
 			SaveSettingsCommand = ReactiveCommand.Create(view.SaveSettings).DisposeWith(disposables);
 			Settings.SaveCommand = this.SaveSettingsCommand;
@@ -2583,6 +2599,27 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 					addMissingEntriesOnLoad = null;
 				}), System.Windows.Threading.DispatcherPriority.Loaded);
 			}
+
+			this.WhenAnyValue(x => x.HideExtras).Subscribe((b) =>
+			{
+				int totalHidden = 0;
+				if(SelectedGroup != null && SelectedGroup.SelectedFile != null)
+				{
+					foreach(var entry in SelectedGroup.SelectedFile.Entries)
+					{
+						if (b == true && !entry.KeyIsEditable && entry.Key.Equals("GameMasterSpawnSubSection"))
+						{
+							entry.Visible = false;
+							totalHidden += 1;
+						}
+						else
+						{
+							entry.Visible = true;
+						}
+					}
+				}
+				Log.Here().Activity($"Updated extra key visibility {totalHidden}");
+			});
 
 			//this.WhenAnyValue(x => x.Groups.WhenAnyValue(c => c.Select(g => g.ChangesUnsaved));
 
