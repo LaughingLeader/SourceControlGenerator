@@ -141,7 +141,7 @@ namespace SCG.Controls
 		public static readonly DependencyProperty IsHoveredProperty =
 			DependencyProperty.Register("IsHovered", typeof(bool), typeof(ImageButton), new PropertyMetadata(false));
 
-		public ImageButton()
+		public ImageButton() : base()
 		{
 			this.DefaultStyleKey = typeof(ImageButton);
 

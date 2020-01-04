@@ -12,7 +12,7 @@ using SCG.Interfaces;
 
 namespace SCG.Modules.DOS2DE.Data.View.Locale
 {
-	public interface ILocaleKeyEntry : INotifyPropertyChanging, IIndexable
+	public interface ILocaleKeyEntry : INotifyPropertyChanging, IIndexable, IReactiveObject
 	{
 		ILocaleFileData Parent { get; set; }
 		bool KeyIsEditable { get; set; }
@@ -28,7 +28,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 		string EntryKey { get; set; }
 		string EntryContent { get; set; }
 		string EntryHandle { get; set; }
-		int Index { get; set; }
+		bool Visible { get; set; }
 
 		void SetHistoryFromObject(IPropertyChangedHistoryBase obj);
 	}
@@ -64,8 +64,19 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			get { return selected; }
 			set
 			{
-				this.RaiseAndSetIfChanged(ref selected, value);
-				OnSelected(selected);
+				if (Visible)
+				{
+					this.RaiseAndSetIfChanged(ref selected, value);
+					OnSelected(value);
+				}
+				else;
+				{
+					if(Selected)
+					{
+						this.RaiseAndSetIfChanged(ref selected, false);
+						OnSelected(false);
+					}
+				}
 			}
 		}
 
@@ -75,6 +86,14 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 		{
 			get => index;
 			set { this.RaiseAndSetIfChanged(ref index, value); }
+		}
+
+		private bool visibile = true;
+
+		public bool Visible
+		{
+			get => visibile;
+			set { this.RaiseAndSetIfChanged(ref visibile, value); }
 		}
 
 		public virtual void OnSelected(bool isSelected)

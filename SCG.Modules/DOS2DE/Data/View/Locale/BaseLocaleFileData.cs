@@ -4,18 +4,25 @@ using ReactiveUI;
 using SCG.Data;
 using SCG.Modules.DOS2DE.Data.Savable;
 using System;
+using System.Reactive;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
+using DynamicData;
+using DynamicData.List;
+using System.Reactive.Linq;
 
 namespace SCG.Modules.DOS2DE.Data.View.Locale
 {
 	public class BaseLocaleFileData : ReactiveObject, ILocaleFileData
 	{
 		public ObservableCollectionExtended<ILocaleKeyEntry> Entries { get; set; } = new ObservableCollectionExtended<ILocaleKeyEntry>();
+
+		private ReadOnlyObservableCollection<ILocaleKeyEntry> visibleEntries;
+		public ReadOnlyObservableCollection<ILocaleKeyEntry> VisibleEntries => visibleEntries;
 
 		public LocaleTabGroup Parent { get; private set; }
 
@@ -231,6 +238,13 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 		{
 			Name = name;
 			Parent = parent;
+
+			var entryChangeSet = Entries.ToObservableChangeSet();
+			//Setting ChangesUnsaved to true when any item in entries is unsaved
+			var anyChanged = entryChangeSet.AutoRefresh(x => x.ChangesUnsaved).ToCollection();
+			anyChanged.Any(x => x.Any(y => y.ChangesUnsaved == true)).ToProperty(this, x => x.ChangesUnsaved);
+
+			entryChangeSet.AutoRefresh(x => x.Visible).Filter(x => x.Visible).ObserveOn(RxApp.MainThreadScheduler).Bind(out visibleEntries).Subscribe();
 		}
 	}
 }

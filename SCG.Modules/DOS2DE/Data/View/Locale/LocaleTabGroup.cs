@@ -113,7 +113,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			Tabs.Add(CombinedEntries);
 			Tabs.AddRange(DataFiles);
 
-			CombinedEntries.Entries = new ObservableCollectionExtended<ILocaleKeyEntry>();
+			CombinedEntries.Entries.Clear();
 			foreach (var obj in DataFiles)
 			{
 				CombinedEntries.Entries.AddRange(obj.Entries);
