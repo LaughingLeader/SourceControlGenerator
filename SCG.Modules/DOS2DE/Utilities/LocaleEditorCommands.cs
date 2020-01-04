@@ -425,6 +425,14 @@ namespace SCG.Modules.DOS2DE.Utilities
 
 		private static void LoadFromNode_Recursive(List<LocaleNodeKeyEntry> newEntries, Node node, ResourceFormat resourceFormat)
 		{
+			if(node.Attributes.TryGetValue("Type", out var nodeTypeAttribute))
+			{
+				string nodeType = (string)nodeTypeAttribute.Value;
+				if(!nodeType.Equals("character", StringComparison.OrdinalIgnoreCase) && !nodeType.Equals("item", StringComparison.OrdinalIgnoreCase))
+				{
+					return;
+				}
+			}
 			newEntries.AddRange(LoadAllFromNodeAttributes(node, resourceFormat, false));
 			if(node.Children.Count > 0)
 			{
@@ -1141,6 +1149,7 @@ namespace SCG.Modules.DOS2DE.Utilities
 										nodeFileData.Entries.Add(newEntry);
 										newEntry.ChangesUnsaved = true;
 										changesUnsaved = true;
+										newEntry.Index = nodeFileData.Entries.IndexOf(newEntry);
 										Log.Here().Activity($"Added new entry: {newEntry.Key} | {newEntry.Content}");
 									}
 								}
