@@ -35,6 +35,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 				this.RaiseAndSetIfChanged(ref editMenu, value);
 			}
 		}
+
 		private MenuData toolsMenu;
 
 		public MenuData Tools

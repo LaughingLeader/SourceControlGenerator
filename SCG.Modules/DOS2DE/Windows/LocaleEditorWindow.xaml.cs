@@ -68,7 +68,7 @@ namespace SCG.Modules.DOS2DE.Windows
 	/// <summary>
 	/// Interaction logic for LocaleEditorWindow.xaml
 	/// </summary>
-	public partial class LocaleEditorWindow : ReactiveWindow<LocaleViewModel>
+	public partial class LocaleEditorWindow : ClipboardMonitorWindow, IViewFor<LocaleViewModel>
 	{
 		
 		/*
@@ -91,6 +91,9 @@ namespace SCG.Modules.DOS2DE.Windows
 		private DOS2DEModuleData ModuleData { get; set; }
 
 		private object KeyActionsGrid;
+
+		public LocaleViewModel ViewModel { get; set; }
+		object IViewFor.ViewModel { get; set; }
 
 		public LocaleEditorWindow()
 		{
@@ -115,6 +118,8 @@ namespace SCG.Modules.DOS2DE.Windows
 
 				ViewModel.OnViewLoaded(this, ModuleData, disposables);
 
+				this.ClipboardUpdateCommand = ViewModel.OnClipboardChangedCommand;
+
 				this.OneWayBind(this.ViewModel, vm => vm.RemoveSelectedMissingEntriesCommand, view => view.ConfirmRemovedEntriesButton.Command).DisposeWith(d);
 				this.OneWayBind(this.ViewModel, vm => vm.CloseMissingEntriesCommand, view => view.CancelRemovedEntriesButton.Command).DisposeWith(d);
 				this.OneWayBind(this.ViewModel, vm => vm.CopySimpleMissingEntriesCommand, view => view.CopySimpleMissingEntriesButton.Command).DisposeWith(d);
@@ -124,14 +129,21 @@ namespace SCG.Modules.DOS2DE.Windows
 
 				ViewModel.PopoutContentCommand = ReactiveCommand.Create(() => PopoutContentWindow(ViewModel.SelectedEntry), ViewModel.CanExecutePopoutContentCommand).DisposeWith(d);
 
-				entryContentPreviewHtmlPanel = (HtmlPanel)this.TryFindResource("EntryContentPreview");
-
 				this.OneWayBind(this.ViewModel, vm => vm.SaveCurrentCommand, view => view.SaveButton.Command).DisposeWith(d);
 				this.OneWayBind(this.ViewModel, vm => vm.SaveAllCommand, view => view.SaveAllButton.Command).DisposeWith(d);
 				this.OneWayBind(this.ViewModel, vm => vm.AddFileCommand, view => view.AddFileButton.Command).DisposeWith(d);
 				this.OneWayBind(this.ViewModel, vm => vm.ImportFileCommand, view => view.ImportFileButton.Command).DisposeWith(d);
 
 				this.OneWayBind(this.ViewModel, vm => vm.SelectedEntryHtmlContent, view => view.EntryContentPreviewHtmlPanel.Text).DisposeWith(d);
+
+				var res = this.TryFindResource("EntryContentPreview");
+				if (res != null && res is HtmlPanel entryContentPreviewHtmlPanel)
+				{
+					Binding binding = new Binding("SelectedEntryHtmlContent");
+					binding.Source = ViewModel;
+					binding.Mode = BindingMode.OneWay;
+					entryContentPreviewHtmlPanel.SetBinding(HtmlPanel.TextProperty, binding);
+				}
 			});
 		}
 
@@ -627,6 +639,37 @@ namespace SCG.Modules.DOS2DE.Windows
 			if (sender is ContentPresenter cp)
 			{
 				cp.Content = null;
+			}
+		}
+
+		private void LocaleEntryDataGrid_SelectionChanged(object sender, SelectionChangedEventArgs e)
+		{
+			//if (sender is DataGrid dg)
+			//{
+
+			//	foreach (var item in dg.SelectedItems)
+			//	{
+			//		if (item is ILocaleKeyEntry data)
+			//		{
+			//			data.Selected = true;
+			//		}
+			//	}
+			//}
+
+			foreach (var item in e.AddedItems)
+			{
+				if (item is ILocaleKeyEntry data)
+				{
+					data.Selected = true;
+				}
+			}
+
+			foreach (var item in e.RemovedItems)
+			{
+				if (item is ILocaleKeyEntry data)
+				{
+					data.Selected = false;
+				}
 			}
 		}
 	}

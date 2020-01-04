@@ -465,6 +465,14 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			set { this.RaiseAndSetIfChanged(ref anyTextBoxFocused, value); }
 		}
 
+		private bool clipboardHasText = false;
+
+		public bool ClipboardHasText
+		{
+			get => clipboardHasText;
+			set { this.RaiseAndSetIfChanged(ref clipboardHasText, value); }
+		}
+
 		public TextBox CurrentTextBox { get; set; }
 
 		private bool contentPreviewModeEnabled = false;
@@ -1114,6 +1122,10 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 		public ICommand NewHandleCommand { get; private set; }
 		public ICommand ResetHandleCommand { get; private set; }
 		public ICommand ExportFileAsTextualCommand { get; private set; }
+		public ICommand OnClipboardChangedCommand { get; private set; }
+		public ICommand PasteIntoKeysCommand { get; private set; }
+		public ICommand PasteIntoContentCommand { get; private set; }
+		public ICommand PasteIntoHandlesCommand { get; private set; }
 
 		public IObservable<bool> GlobalCanActObservable { get; private set; }
 		public IObservable<bool> SubWindowOpenedObservable { get; private set; }
@@ -2017,6 +2029,11 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			});
 		}
 
+		private void OnClipboardChanged()
+		{
+			ClipboardHasText = Clipboard.ContainsText() && !String.IsNullOrEmpty(Clipboard.GetText());
+		}
+
 		public void OnViewLoaded(LocaleEditorWindow v, DOS2DEModuleData moduleData, CompositeDisposable disposables)
 		{
 			view = v;
@@ -2394,6 +2411,147 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			MenuData.Edit.Add(new MenuData("Edit.AddKey", "Add Key", AddNewKeyCommand));
 			MenuData.Edit.Add(new MenuData("Edit.DeleteSelectedKeys", "Delete Selected Keys", DeleteKeysCommand));
 
+			var pasteSubMenu = new MenuData("Edit.PasteSubMenu", "Paste...");
+
+			var canPasteObservable = this.WhenAnyValue(x => x.AnyEntrySelected, x => x.ClipboardHasText, (a, b) => a && b);
+			canPasteObservable.Subscribe((b) =>
+			{
+				pasteSubMenu.IsEnabled = b;
+			}).DisposeWith(disposables);
+
+			PasteIntoKeysCommand = ReactiveCommand.Create(() =>
+			{
+				if (SelectedGroup != null && SelectedGroup.SelectedFile != null)
+				{
+					var selectedList = SelectedGroup.SelectedFile.Entries.Where(e => e.Selected && e.KeyIsEditable).ToList();
+					if (selectedList.Count > 0)
+					{
+						var clipboardText = Clipboard.GetText();
+
+						List<LocaleEntryHistory> lastEntryValues = new List<LocaleEntryHistory>(selectedList.Select(x => new LocaleEntryHistory()
+						{
+							Entry = x,
+							ChangesUnsaved = x.ChangesUnsaved,
+							ParentFile = x.Parent,
+							LastKey = x.EntryKey
+						}));
+
+						void undo()
+						{
+							foreach (var entry in lastEntryValues)
+							{
+								if (entry.Entry != null)
+								{
+									entry.Entry.Key = entry.LastKey;
+									entry.Entry.ChangesUnsaved = entry.ChangesUnsaved;
+								}
+							}
+						};
+						void redo()
+						{
+							foreach (var entry in selectedList)
+							{
+								entry.Key = clipboardText;
+							}
+						}
+
+						CreateSnapshot(undo, redo);
+						redo();
+					}
+				}
+			}, canPasteObservable).DisposeWith(disposables);
+
+			PasteIntoContentCommand = ReactiveCommand.Create(() =>
+			{
+				if (SelectedGroup != null && SelectedGroup.SelectedFile != null)
+				{
+					var selectedList = SelectedGroup.SelectedFile.Entries.Where(e => e.Selected).ToList();
+					if (selectedList.Count > 0)
+					{
+						var clipboardText = Clipboard.GetText();
+
+						List<LocaleEntryHistory> lastEntryValues = new List<LocaleEntryHistory>(selectedList.Select(x => new LocaleEntryHistory()
+						{
+							Entry = x,
+							ChangesUnsaved = x.ChangesUnsaved,
+							ParentFile = x.Parent,
+							LastContent = x.EntryContent,
+						}));
+
+						void undo()
+						{
+							foreach (var entry in lastEntryValues)
+							{
+								if (entry.Entry != null)
+								{
+									entry.Entry.Content = entry.LastContent;
+									entry.Entry.ChangesUnsaved = entry.ChangesUnsaved;
+								}
+							}
+						};
+						void redo()
+						{
+							foreach (var entry in selectedList)
+							{
+								entry.Content = clipboardText;
+							}
+						}
+
+						CreateSnapshot(undo, redo);
+						redo();
+					}
+				}
+			}, canPasteObservable).DisposeWith(disposables);
+
+			PasteIntoHandlesCommand = ReactiveCommand.Create(() =>
+			{
+				if (SelectedGroup != null && SelectedGroup.SelectedFile != null)
+				{
+					var selectedList = SelectedGroup.SelectedFile.Entries.Where(e => e.Selected).ToList();
+					if (selectedList.Count > 0)
+					{
+						var clipboardText = Clipboard.GetText().Trim();
+
+						Log.Here().Activity($"Pasting '{clipboardText}' into the handle for {selectedList.Count} entries.");
+
+						List<LocaleEntryHistory> lastEntryValues = new List<LocaleEntryHistory>(selectedList.Select(x => new LocaleEntryHistory()
+						{
+							Entry = x,
+							ChangesUnsaved = x.ChangesUnsaved,
+							ParentFile = x.Parent,
+							LastHandle = x.EntryHandle,
+						}));
+
+						void undo()
+						{
+							foreach (var entry in lastEntryValues)
+							{
+								if (entry.Entry != null)
+								{
+									entry.Entry.Handle = entry.LastHandle;
+									entry.Entry.ChangesUnsaved = entry.ChangesUnsaved;
+								}
+							}
+						};
+						void redo()
+						{
+							foreach (var entry in selectedList)
+							{
+								entry.Handle = clipboardText;
+							}
+						}
+
+						CreateSnapshot(undo, redo);
+						redo();
+					}
+				}
+			}, canPasteObservable).DisposeWith(disposables);
+
+			pasteSubMenu.Add(new MenuData("Edit.Paste.IntoKey", "Into Key", PasteIntoKeysCommand));
+			pasteSubMenu.Add(new MenuData("Edit.Paste.IntoContent", "Into Content", PasteIntoContentCommand));
+			pasteSubMenu.Add(new MenuData("Edit.Paste.IntoHandle", "Into Handle", PasteIntoHandlesCommand));
+			MenuData.Edit.Add(pasteSubMenu);
+
 			MenuData.Tools.Add(new MenuData("Tools.CheckForDuplicates", "Check for Duplicate Keys", CheckForDuplicateKeysCommand));
 
 			MenuData.Settings.Add(new MenuData("Settings.Preferences", "Preferences", OpenPreferencesCommand));
@@ -2529,6 +2687,8 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 					redo();
 				}
 			});
+
+			OnClipboardChangedCommand = ReactiveCommand.Create(OnClipboardChanged);
 		}
 	}
 
