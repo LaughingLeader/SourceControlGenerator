@@ -299,6 +299,7 @@ namespace SCG.Modules.DOS2DE.Utilities
 				},
 				RecursionFilter = f =>
 				{
+					Log.Here().Activity("Recursing: " + f.FileName);
 					return true;
 				}
 			};
@@ -427,10 +428,13 @@ namespace SCG.Modules.DOS2DE.Utilities
 		{
 			if(node.Attributes.TryGetValue("Type", out var nodeTypeAttribute))
 			{
-				string nodeType = (string)nodeTypeAttribute.Value;
-				if(!nodeType.Equals("character", StringComparison.OrdinalIgnoreCase) && !nodeType.Equals("item", StringComparison.OrdinalIgnoreCase))
+				if(nodeTypeAttribute.Value.GetType() == typeof(string))
 				{
-					return;
+					string nodeType = (string)nodeTypeAttribute.Value;
+					if (!nodeType.Equals("character", StringComparison.OrdinalIgnoreCase) && !nodeType.Equals("item", StringComparison.OrdinalIgnoreCase))
+					{
+						return;
+					}
 				}
 			}
 			newEntries.AddRange(LoadAllFromNodeAttributes(node, resourceFormat, false));
@@ -855,6 +859,16 @@ namespace SCG.Modules.DOS2DE.Utilities
 			return "";
 		}
 
+		public static bool IgnoreHandle(string handle)
+		{
+			//Larian handles for empty GMSpawnSubsection
+			if (handle == UnsetHandle || handle == "heee99d71g1f41g4ba2g8adbg98fad94256ca" || handle == "hfeccb8bbgf99fg4028gb187g607c18c2cbaa")
+			{
+				return true;
+			}
+			return false;
+		}
+
 		public static string ExportDataAsXML(LocaleViewModel data)
 		{
 			string output = "<contentList>\n{0}</contentList>";
@@ -867,7 +881,7 @@ namespace SCG.Modules.DOS2DE.Utilities
 				{
 					bool findActualSource = fileData == data.SelectedGroup.CombinedEntries;
 
-					var exportedKeys = fileData.Entries.Where(fd => fd.Selected && fd.Handle != LocaleEditorCommands.UnsetHandle).DistinctBy(x => x.Handle);
+					var exportedKeys = fileData.Entries.Where(fd => fd.Selected && !IgnoreHandle(fd.Handle)).DistinctBy(x => x.Handle);
 
 					bool exportSource = false;
 					bool exportKeys = false;
