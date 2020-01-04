@@ -134,7 +134,7 @@ namespace SCG.Modules.DOS2DE.Windows
 				this.OneWayBind(this.ViewModel, vm => vm.AddFileCommand, view => view.AddFileButton.Command).DisposeWith(d);
 				this.OneWayBind(this.ViewModel, vm => vm.ImportFileCommand, view => view.ImportFileButton.Command).DisposeWith(d);
 
-				this.OneWayBind(this.ViewModel, vm => vm.SelectedEntryHtmlContent, view => view.EntryContentPreviewHtmlPanel.Text).DisposeWith(d);
+				//this.OneWayBind(this.ViewModel, vm => vm.SelectedEntryHtmlContent, view => view.EntryContentPreviewHtmlPanel.Text).DisposeWith(d);
 
 				var res = this.TryFindResource("EntryContentPreview");
 				if (res != null && res is HtmlPanel entryContentPreviewHtmlPanel)
@@ -670,6 +670,12 @@ namespace SCG.Modules.DOS2DE.Windows
 				{
 					data.Selected = false;
 				}
+			}
+
+			var lastEntry = e.AddedItems.OfType<ILocaleKeyEntry>().LastOrDefault();
+			if(lastEntry != null)
+			{
+				ViewModel.SelectedEntry = lastEntry;
 			}
 		}
 	}
