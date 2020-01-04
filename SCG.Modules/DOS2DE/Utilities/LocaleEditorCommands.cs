@@ -742,7 +742,7 @@ namespace SCG.Modules.DOS2DE.Utilities
 			int success = 0;
 			if (data.SelectedGroup != data.CustomGroup)
 			{
-				foreach (LocaleNodeFileData f in data.SelectedGroup.DataFiles.Where(f => f.ChangesUnsaved).Cast<LocaleNodeFileData>())
+				foreach (LocaleNodeFileData f in data.SelectedGroup.DataFiles.Where(f => f.ChangesUnsaved || f.Entries.Any(x => x.ChangesUnsaved)).Cast<LocaleNodeFileData>())
 				{
 					int result = await SaveDataFile(f, token);
 					success += result;
