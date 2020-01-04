@@ -68,7 +68,7 @@ namespace SCG.Modules.DOS2DE.Windows
 	/// <summary>
 	/// Interaction logic for LocaleEditorWindow.xaml
 	/// </summary>
-	public partial class LocaleEditorWindow : ClipboardMonitorWindow, IViewFor<LocaleViewModel>
+	public partial class LocaleEditorWindow : ClipboardMonitorWindow, IViewFor<LocaleViewModel>, IActivatableView
 	{
 		
 		/*
@@ -120,31 +120,60 @@ namespace SCG.Modules.DOS2DE.Windows
 
 				this.ClipboardUpdateCommand = ViewModel.OnClipboardChangedCommand;
 
-				this.OneWayBind(this.ViewModel, vm => vm.RemoveSelectedMissingEntriesCommand, view => view.ConfirmRemovedEntriesButton.Command).DisposeWith(d);
-				this.OneWayBind(this.ViewModel, vm => vm.CloseMissingEntriesCommand, view => view.CancelRemovedEntriesButton.Command).DisposeWith(d);
-				this.OneWayBind(this.ViewModel, vm => vm.CopySimpleMissingEntriesCommand, view => view.CopySimpleMissingEntriesButton.Command).DisposeWith(d);
-				this.OneWayBind(this.ViewModel, vm => vm.CopyAllMissingEntriesCommand, view => view.CopyAllDataMissingEntriesButton.Command).DisposeWith(d);
-				this.OneWayBind(this.ViewModel, vm => vm.MissingEntries, view => view.RemovedEntriesListView.ItemsSource).DisposeWith(d);
-				this.OneWayBind(this.ViewModel, vm => vm.MissingEntriesViewVisible, view => view.RemovedEntriesGrid.Visibility).DisposeWith(d);
-
 				ViewModel.PopoutContentCommand = ReactiveCommand.Create(() => PopoutContentWindow(ViewModel.SelectedEntry), ViewModel.CanExecutePopoutContentCommand).DisposeWith(d);
 
-				this.OneWayBind(this.ViewModel, vm => vm.SaveCurrentCommand, view => view.SaveButton.Command).DisposeWith(d);
-				this.OneWayBind(this.ViewModel, vm => vm.SaveAllCommand, view => view.SaveAllButton.Command).DisposeWith(d);
-				this.OneWayBind(this.ViewModel, vm => vm.AddFileCommand, view => view.AddFileButton.Command).DisposeWith(d);
-				this.OneWayBind(this.ViewModel, vm => vm.ImportFileCommand, view => view.ImportFileButton.Command).DisposeWith(d);
-
 				//this.OneWayBind(this.ViewModel, vm => vm.SelectedEntryHtmlContent, view => view.EntryContentPreviewHtmlPanel.Text).DisposeWith(d);
+
+				//this.OneWayBind(this.ViewModel, vm => vm.RemoveSelectedMissingEntriesCommand, view => view.ConfirmRemovedEntriesButton.Command).DisposeWith(d);
+				//this.OneWayBind(this.ViewModel, vm => vm.CloseMissingEntriesCommand, view => view.CancelRemovedEntriesButton.Command).DisposeWith(d);
+				//this.OneWayBind(this.ViewModel, vm => vm.CopySimpleMissingEntriesCommand, view => view.CopySimpleMissingEntriesButton.Command).DisposeWith(d);
+				//this.OneWayBind(this.ViewModel, vm => vm.CopyAllMissingEntriesCommand, view => view.CopyAllDataMissingEntriesButton.Command).DisposeWith(d);
+
+				//this.OneWayBind(this.ViewModel, vm => vm.MissingEntries, view => view.RemovedEntriesListView.ItemsSource).DisposeWith(d);
+				//this.OneWayBind(this.ViewModel, vm => vm.MissingEntriesViewVisible, view => view.RemovedEntriesGrid.Visibility).DisposeWith(d);
+
+				//this.OneWayBind(this.ViewModel, vm => vm.SaveCurrentCommand, view => view.SaveButton.Command).DisposeWith(d);
+				//this.OneWayBind(this.ViewModel, vm => vm.SaveAllCommand, view => view.SaveAllButton.Command).DisposeWith(d);
+				//this.OneWayBind(this.ViewModel, vm => vm.AddFileCommand, view => view.AddFileButton.Command).DisposeWith(d);
+				//this.OneWayBind(this.ViewModel, vm => vm.ImportFileCommand, view => view.ImportFileButton.Command).DisposeWith(d);
+
+				CreateButtonBinding("RemoveSelectedMissingEntriesCommand", ConfirmRemovedEntriesButton);
+				CreateButtonBinding("CloseMissingEntriesCommand", CancelRemovedEntriesButton);
+				CreateButtonBinding("CopySimpleMissingEntriesCommand", CopySimpleMissingEntriesButton);
+				CreateButtonBinding("CopyAllMissingEntriesCommand", CopyAllDataMissingEntriesButton);
+
+				CreateBinding("MissingEntries", RemovedEntriesListView, ListView.ItemsSourceProperty);
+				CreateBinding("MissingEntriesViewVisible", RemovedEntriesGrid, Grid.VisibilityProperty);
+
+				CreateButtonBinding("SaveCurrentCommand", SaveButton);
+				CreateButtonBinding("SaveAllCommand", SaveAllButton);
+				CreateButtonBinding("AddFileCommand", AddFileButton);
+				CreateButtonBinding("ImportFileCommand", ImportFileButton);
 
 				var res = this.TryFindResource("EntryContentPreview");
 				if (res != null && res is HtmlPanel entryContentPreviewHtmlPanel)
 				{
-					Binding binding = new Binding("SelectedEntryHtmlContent");
-					binding.Source = ViewModel;
-					binding.Mode = BindingMode.OneWay;
-					entryContentPreviewHtmlPanel.SetBinding(HtmlPanel.TextProperty, binding);
+					CreateBinding("SelectedEntryHtmlContent", entryContentPreviewHtmlPanel, HtmlPanel.TextProperty);
 				}
+
+				Log.Here().Important("Activated LocaleEditorWindow");
 			});
+		}
+
+		private void CreateBinding(string vmProperty, FrameworkElement element, DependencyProperty prop)
+		{
+			Binding binding = new Binding(vmProperty);
+			binding.Source = ViewModel;
+			binding.Mode = BindingMode.OneWay;
+			element.SetBinding(prop, binding);
+		}
+
+		private void CreateButtonBinding(string vmProperty, Button button)
+		{
+			Binding binding = new Binding(vmProperty);
+			binding.Source = ViewModel;
+			binding.Mode = BindingMode.OneWay;
+			button.SetBinding(Button.CommandProperty, binding);
 		}
 
 		private void LocaleEditorWindow_KeyDown(object sender, KeyEventArgs e)
@@ -221,10 +250,6 @@ namespace SCG.Modules.DOS2DE.Windows
 			var element = this.FindName(name);
 			return (T)element;
 		}
-
-		private HtmlPanel entryContentPreviewHtmlPanel;
-
-		public HtmlPanel EntryContentPreviewHtmlPanel => entryContentPreviewHtmlPanel;
 
 		public void LoadData(LocaleViewModel data)
 		{
