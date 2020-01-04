@@ -2452,6 +2452,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 							foreach (var entry in selectedList)
 							{
 								entry.Key = clipboardText;
+								entry.ChangesUnsaved = true;
 							}
 						}
 
@@ -2494,6 +2495,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 							foreach (var entry in selectedList)
 							{
 								entry.Content = clipboardText;
+								entry.ChangesUnsaved = true;
 							}
 						}
 
@@ -2538,6 +2540,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 							foreach (var entry in selectedList)
 							{
 								entry.Handle = clipboardText;
+								entry.ChangesUnsaved = true;
 							}
 						}
 
