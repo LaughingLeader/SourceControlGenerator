@@ -275,6 +275,30 @@ namespace SCG.Modules.DOS2DE.Windows
 			}
 		}
 
+		private void LocaleEntryDataGrid_Unloaded(object sender, RoutedEventArgs e)
+		{
+
+		}
+
+		public void LocaleEntryDataGrid_BuildIndexes()
+		{
+			if (this.TryFindName<DataGrid>("LocaleEntryDataGrid", out var dg))
+			{
+				RxApp.TaskpoolScheduler.Schedule(() =>
+				{
+					int i = 0;
+					foreach (var entry in dg.Items)
+					{
+						if (entry is ILocaleKeyEntry keyEntry)
+						{
+							i++;
+							keyEntry.Index = i;
+						}
+					}
+				});
+			}
+		}
+
 		private void OnLocaleTextboxGotKeyboardFocus(object sender, KeyboardFocusChangedEventArgs e)
 		{
 			if(sender is TextBox tb)

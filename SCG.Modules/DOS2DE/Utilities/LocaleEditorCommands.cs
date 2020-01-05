@@ -1163,7 +1163,7 @@ namespace SCG.Modules.DOS2DE.Utilities
 										nodeFileData.Entries.Add(newEntry);
 										newEntry.ChangesUnsaved = true;
 										changesUnsaved = true;
-										newEntry.Index = nodeFileData.Entries.IndexOf(newEntry);
+										//newEntry.Index = nodeFileData.Entries.IndexOf(newEntry);
 										Log.Here().Activity($"Added new entry: {newEntry.Key} | {newEntry.Content}");
 									}
 								}

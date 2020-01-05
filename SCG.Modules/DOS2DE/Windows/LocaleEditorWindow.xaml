@@ -243,9 +243,12 @@
 						Source="{x:Static vdata:IconPathData.LinkVertical}"
 						ToolTip="{x:Static core:DOS2DETooltips.Button_Locale_RefreshLinkedData}"
 						Visibility="{Binding HasFileLink, Converter={StaticResource BoolToVisibilityConverter}}" />
-					<Rectangle Style="{StaticResource VerticalSeparator}" />
-					<TextBlock Text="Hide Extras" />
+					<TextBlock
+						Margin="1"
+						VerticalAlignment="Center"
+						Text="Hide Extras" />
 					<CheckBox
+						Margin="1"
 						VerticalAlignment="Center"
 						IsChecked="{Binding Path=DataContext.HideExtras, RelativeSource={RelativeSource AncestorType={x:Type Window}}}"
 						ToolTip="Hide extra keys that may not need to be edited (GameMasterSpawnSubSection)." />
@@ -702,6 +705,7 @@
 							Loaded="LocaleEntryDataGrid_Loaded"
 							SelectionChanged="LocaleEntryDataGrid_SelectionChanged"
 							Style="{StaticResource LocaleDataGridStyle}"
+							Unloaded="LocaleEntryDataGrid_Unloaded"
 							VirtualizingPanel.IsVirtualizingWhenGrouping="True">
 							<DataGrid.Resources>
 								<cb:DataContextSpy x:Key="FileData" DataContext="{Binding}" />
@@ -807,7 +811,7 @@
 									</DataGridTemplateColumn.CellStyle>
 									<DataGridTemplateColumn.CellTemplate>
 										<DataTemplate>
-											<TextBlock Text="{Binding Index}" />
+											<TextBlock Text="{Binding Index, NotifyOnSourceUpdated=True, Mode=OneWay}" />
 										</DataTemplate>
 									</DataGridTemplateColumn.CellTemplate>
 								</DataGridTemplateColumn>

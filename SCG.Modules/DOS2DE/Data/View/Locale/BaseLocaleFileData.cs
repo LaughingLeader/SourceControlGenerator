@@ -244,7 +244,13 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			var anyChanged = entryChangeSet.AutoRefresh(x => x.ChangesUnsaved).ToCollection();
 			anyChanged.Any(x => x.Any(y => y.ChangesUnsaved == true)).ToProperty(this, x => x.ChangesUnsaved);
 
-			entryChangeSet.AutoRefresh(x => x.Visible).Filter(x => x.Visible).ObserveOn(RxApp.MainThreadScheduler).Bind(out visibleEntries).Subscribe();
+			entryChangeSet.AutoRefresh(x => x.Visible).Filter(x => x.Visible).ObserveOn(RxApp.MainThreadScheduler).Bind(out visibleEntries).Subscribe((items) =>
+			{
+				for(var i = 0; i < visibleEntries.Count; i++)
+				{
+					visibleEntries[i].Index = i + 1;
+				}
+			});
 		}
 	}
 }

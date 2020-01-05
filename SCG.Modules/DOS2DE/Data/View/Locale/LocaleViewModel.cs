@@ -555,7 +555,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 		private void SelectedFileChanged(LocaleTabGroup group, ILocaleFileData keyFileData)
 		{
 			SelectedFile = keyFileData;
-			if (keyFileData != null)
+			if (SelectedFile != null)
 			{
 				CanSave = (group.CombinedEntries != keyFileData) || group.DataFiles.Count == 1;
 				//Log.Here().Activity($"Selected file changed to {group.Name} | {keyFileData.Name}");
@@ -567,6 +567,8 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 
 			CanAddFile = group != CombinedGroup && group != DialogGroup;
 			CanAddKeys = SelectedGroup != null && SelectedGroup.SelectedFile != null && !SelectedGroup.SelectedFile.Locked;
+
+			//view.LocaleEntryDataGrid_BuildIndexes();
 
 			//if (group == DialogGroup)
 			//{
@@ -1576,7 +1578,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 					{
 						ParentFile = entry.Parent,
 						Entry = entry,
-						Index = entry.Parent.Entries.IndexOf(entry),
+						Index = entry.Index,
 						ChangesUnsaved = entry.ChangesUnsaved,
 						ParentChangesUnsaved = entry.Parent.ChangesUnsaved
 					});
@@ -1926,7 +1928,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 									{
 										ParentFile = existingEntry.Parent,
 										Entry = existingEntry,
-										Index = existingEntry.Parent.Entries.IndexOf(existingEntry),
+										Index = existingEntry.Index,
 										ChangesUnsaved = existingEntry.ChangesUnsaved,
 										ParentChangesUnsaved = existingEntry.Parent.ChangesUnsaved,
 										LastKey = entry.Key,
@@ -2602,15 +2604,22 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 
 			this.WhenAnyValue(x => x.HideExtras).Subscribe((b) =>
 			{
-				int totalHidden = 0;
+				//int totalHidden = 0;
 				if(SelectedGroup != null && SelectedGroup.SelectedFile != null)
 				{
 					foreach(var entry in SelectedGroup.SelectedFile.Entries)
 					{
-						if (b == true && !entry.KeyIsEditable && entry.Key.Equals("GameMasterSpawnSubSection"))
+						if(b)
 						{
-							entry.Visible = false;
-							totalHidden += 1;
+							if (!entry.KeyIsEditable && entry.Key.Equals("GameMasterSpawnSubSection"))
+							{
+								entry.Visible = false;
+								//totalHidden += 1;
+							}
+							else
+							{
+								entry.Visible = true;
+							}
 						}
 						else
 						{
@@ -2618,11 +2627,24 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 						}
 					}
 				}
-				Log.Here().Activity($"Updated extra key visibility {totalHidden}");
+				//Log.Here().Activity($"Updated extra key visibility {totalHidden}");
 			});
 
-			//this.WhenAnyValue(x => x.Groups.WhenAnyValue(c => c.Select(g => g.ChangesUnsaved));
+			this.WhenAnyValue(x => x.SelectedFile).Throttle(TimeSpan.FromMilliseconds(25)).ObserveOn(RxApp.MainThreadScheduler).Subscribe((x) =>
+			{
+				if(x != null)
+				{
+					for (var i = 0; i < SelectedFile.VisibleEntries.Count; i++)
+					{
+						SelectedFile.VisibleEntries[i].Index = i + 1;
+					}
+				}
+			}).DisposeWith(disposables);
 
+			SelectedGroup = CombinedGroup;
+			SelectedFile = CombinedGroup.CombinedEntries;
+
+			//this.WhenAnyValue(x => x.Groups.WhenAnyValue(c => c.Select(g => g.ChangesUnsaved));
 		}
 
 		public MenuData UndoMenuData { get; private set; }

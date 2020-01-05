@@ -50,7 +50,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			}
 		}
 
-		public ObservableCollectionExtended<ILocaleFileData> Tabs { get; set; }
+		public ObservableCollectionExtended<ILocaleFileData> Tabs { get; set; } = new ObservableCollectionExtended<ILocaleFileData>();
 
 		private ILocaleFileData combinedEntries;
 
@@ -109,7 +109,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 
 		public void UpdateCombinedData()
 		{
-			Tabs = new ObservableCollectionExtended<ILocaleFileData>();
+			Tabs.Clear();
 			Tabs.Add(CombinedEntries);
 			Tabs.AddRange(DataFiles);
 
@@ -122,6 +122,8 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			this.RaisePropertyChanged("CombinedEntries");
 			this.RaisePropertyChanged("Tabs");
 			Log.Here().Activity($"Updated combined entries for '{Name}'.");
+
+			if (SelectedFile == null) SelectedFileIndex = 0;
 		}
 
 		public void SelectFirst()

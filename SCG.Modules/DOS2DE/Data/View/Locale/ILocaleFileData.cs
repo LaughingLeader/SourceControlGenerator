@@ -13,6 +13,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 	{
 		LocaleTabGroup Parent { get; }
 		ObservableCollectionExtended<ILocaleKeyEntry> Entries { get; set; }
+		ReadOnlyObservableCollection<ILocaleKeyEntry> VisibleEntries { get; }
 
 		LocaleFileLinkData FileLinkData { get; set; }
 		string SourcePath { get; set; }
