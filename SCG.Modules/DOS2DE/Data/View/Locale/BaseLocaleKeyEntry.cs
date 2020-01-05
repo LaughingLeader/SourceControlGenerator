@@ -67,9 +67,9 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 				if (Visible)
 				{
 					this.RaiseAndSetIfChanged(ref selected, value);
-					OnSelected(value);
+					OnSelected(selected);
 				}
-				else;
+				else
 				{
 					if(Selected)
 					{
