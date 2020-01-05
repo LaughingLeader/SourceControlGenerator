@@ -840,11 +840,15 @@ namespace SCG.Modules.DOS2DE.Utilities
 			return 0;
 		}
 
-		private static string GetSourceFileName(ILocaleFileData fileData, bool findActualSource, LocaleViewModel data, ILocaleKeyEntry e)
+		private static string GetSourceFileName(ILocaleFileData fileData, bool findActualSource, LocaleViewModel data, ILocaleKeyEntry e, bool useDisplayName = false)
 		{
 			if (!findActualSource && fileData is LocaleNodeFileData keyFileData)
 			{
-				return EscapeXml(Path.GetFileName(keyFileData.SourcePath));
+				if (!useDisplayName)
+				{
+					useDisplayName = Path.GetExtension(keyFileData.SourcePath).Equals(".lsf", StringComparison.OrdinalIgnoreCase);
+				}
+				return EscapeXml(Path.GetFileName(!useDisplayName ? keyFileData.SourcePath : keyFileData.Name));
 			}
 
 			if (findActualSource)
@@ -852,7 +856,11 @@ namespace SCG.Modules.DOS2DE.Utilities
 				var actualSource = data.SelectedGroup.DataFiles.Where(d => d.Entries.Contains(e)).FirstOrDefault();
 				if (actualSource is LocaleNodeFileData sourceFileData)
 				{
-					return EscapeXml(Path.GetFileName(sourceFileData.SourcePath));
+					if (!useDisplayName)
+					{
+						useDisplayName = Path.GetExtension(actualSource.SourcePath).Equals(".lsf", StringComparison.OrdinalIgnoreCase);
+					}
+					return EscapeXml(Path.GetFileName(!useDisplayName ? sourceFileData.SourcePath : sourceFileData.Name));
 				}
 			}
 
@@ -904,7 +912,8 @@ namespace SCG.Modules.DOS2DE.Utilities
 					}
 					else if (exportSource && exportKeys)
 					{
-						exportedKeys = exportedKeys.OrderBy(x => GetSourceFileName(fileData, findActualSource, data, x)).ThenBy(x => x.EntryKey);
+						exportedKeys = exportedKeys.OrderBy(x => 
+							GetSourceFileName(fileData, findActualSource, data, x)).ThenBy(x => x.EntryKey);
 					}
 					else
 					{
