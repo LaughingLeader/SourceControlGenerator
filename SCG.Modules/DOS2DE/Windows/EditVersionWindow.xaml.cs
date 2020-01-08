@@ -1,5 +1,6 @@
 ﻿using ReactiveUI;
 using SCG.Modules.DOS2DE.Data.View;
+using SCG.Utilities;
 using SCG.Windows;
 using System;
 using System.Collections.Generic;
@@ -59,7 +60,7 @@ namespace SCG.Modules.DOS2DE.Windows
 							versionNode.Attribute("value").Value = versionIntString;
 							Log.Here().Important($"Updated project {SelectedProject.ProjectName} version to {versionIntString} ({SelectedProject.VersionData.ToString()})");
 
-							using (var writer = new XmlTextWriter(SelectedProject.ModMetaFilePath, new UTF8Encoding(false)))
+							using (var writer = new XmlTextWriter(SelectedProject.ModMetaFilePath, new UpperCaseUTF8Encoding()))
 							{
 								metaDoc.Save(writer);
 							}

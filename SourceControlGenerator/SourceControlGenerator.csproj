@@ -424,6 +424,7 @@
     <Compile Include="ThemeSystem\ThemeController.cs" />
     <Compile Include="Core\AppController.cs" />
     <Compile Include="Utilities\ReactionObservableExceptionHandler.cs" />
+    <Compile Include="Utilities\UpperCaseUTF8Encoding.cs" />
     <Compile Include="Windows\AboutWindow.xaml.cs">
       <DependentUpon>AboutWindow.xaml</DependentUpon>
     </Compile>
