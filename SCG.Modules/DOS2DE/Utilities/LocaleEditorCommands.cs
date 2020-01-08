@@ -870,14 +870,14 @@ namespace SCG.Modules.DOS2DE.Utilities
 			return "";
 		}
 
-		public static bool IgnoreHandle(string handle)
+		public static bool IgnoreHandle(string handle, ILocaleFileData fileData)
 		{
 			//Larian handles for empty GMSpawnSubsection
 			if (handle == UnsetHandle || handle == "heee99d71g1f41g4ba2g8adbg98fad94256ca" || handle == "hfeccb8bbgf99fg4028gb187g607c18c2cbaa")
 			{
 				return true;
 			}
-			if (IgnoredHandles.Contains(handle)) return true;
+			if (!fileData.CanOverride && IgnoredHandles.Contains(handle)) return true;
 			return false;
 		}
 
@@ -893,7 +893,7 @@ namespace SCG.Modules.DOS2DE.Utilities
 				{
 					bool findActualSource = fileData == data.SelectedGroup.CombinedEntries;
 
-					var exportedKeys = fileData.Entries.Where(fd => fd.Selected && !IgnoreHandle(fd.Handle)).DistinctBy(x => x.Handle);
+					var exportedKeys = fileData.Entries.Where(fd => fd.Selected && !IgnoreHandle(fd.Handle, fileData)).DistinctBy(x => x.Handle);
 
 					bool exportSource = false;
 					bool exportKeys = false;
@@ -1294,7 +1294,7 @@ namespace SCG.Modules.DOS2DE.Utilities
 			{
 				lineNum += 1;
 				// Skip top line, as it typically describes the columns
-				if (lineNum == 1 && delimitStepSkipLine(line))
+				if (lineNum == 1)
 				{
 					if (delimitStepSkipLine(line))
 					{
