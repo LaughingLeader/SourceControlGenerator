@@ -1250,9 +1250,17 @@ namespace SCG.Modules.DOS2DE.Utilities
 			return localeEntry;
 		}
 
-		private static bool delimitStepSkipLine(string line)
+		private static bool delimitStepSkipLine(string line, bool handleCheck = false)
 		{
-			Regex r = new Regex(@"^Key(\s*?|,)Content$", RegexOptions.IgnoreCase);
+			Regex r;
+			if (!handleCheck)
+			{
+				r = new Regex(@"^Key(\s*?|,)Content$", RegexOptions.IgnoreCase);
+			}
+			else
+			{
+				r = new Regex(@"^Key(\s*?|,)Content(\s*?|,)Handle$", RegexOptions.IgnoreCase);
+			}
 			return r.Match(line)?.Success == true;
 		}
 
@@ -1271,23 +1279,43 @@ namespace SCG.Modules.DOS2DE.Utilities
 			int lineNum = 0;
 			string line = String.Empty;
 
-			Regex r = new Regex($"^(.*){delimiter}+(.*)$", RegexOptions.Singleline);
+			Regex regularModePattern = new Regex($"^(.*){delimiter}+(.*)$", RegexOptions.Singleline);
+			Regex handleModePattern = new Regex($"^(.*?){delimiter}+(.*?){delimiter}+(.*?)$", RegexOptions.Singleline);
+
+			Regex r = regularModePattern;
+
+			bool handleMode = false;
 
 			while ((line = stream.ReadLine()) != null)
 			{
 				lineNum += 1;
 				// Skip top line, as it typically describes the columns
-				if (lineNum == 1 && delimitStepSkipLine(line)) continue;
-				
+				if (lineNum == 1 && delimitStepSkipLine(line))
+				{
+					if (delimitStepSkipLine(line))
+					{
+						handleMode = false;
+						r = regularModePattern;
+					}
+					if (delimitStepSkipLine(line, true))
+					{
+						handleMode = true;
+						r = handleModePattern;
+					}
+					continue;
+				}
+
 				var match = r.Match(line);
 				if(match.Success)
 				{
 					string key = match.Groups.Count >= 1 ? match.Groups[1].Value : "NewKey";
 					string content = match.Groups.Count >= 2 ? match.Groups[2].Value : "";
+					string handle = (handleMode && match.Groups.Count >= 3) ? match.Groups[3].Value : "";
 
-					Log.Here().Activity($"New entry: {key} => {content}");
+					Log.Here().Activity($"New entry: {key} => {content}{(handleMode ? "|" + handle : "")}");
 
 					var entry = CreateNewLocaleEntry(fileData, key, content);
+					if (handleMode && !String.IsNullOrEmpty(handle)) entry.Handle = handle;
 					entry.ChangesUnsaved = true;
 					fileData.Entries.Add(entry);
 				}
@@ -1368,42 +1396,69 @@ namespace SCG.Modules.DOS2DE.Utilities
 						using (var stream = new System.IO.StreamReader(path))
 						{
 							int lineNum = 0;
+							bool handleMode = false;
 							while ((line = stream.ReadLine()) != null)
 							{
 								lineNum += 1;
 								// Skip top line, as it typically describes the columns
-								if (lineNum == 1 && line.Contains("Key\tContent")) continue;
+								if (lineNum == 1)
+								{
+									if(line.Contains("Key\tContent"))
+									{
+										handleMode = false;
+										continue;
+									}
+									else if (line.Contains("Key\tContent\tHandle"))
+									{
+										handleMode = true;
+										continue;
+									}
+								}
+
 								var parts = line.Split(delimiter);
 
 								var key = parts.ElementAtOrDefault(0);
 								var content = parts.ElementAtOrDefault(1);
+								var handle = "";
+								if(handleMode)
+								{
+									handle = parts.ElementAtOrDefault(2);
+								}
 
 								if (key == null) key = "NewKey";
 								if (content == null) content = "";
 
 								bool addNew = true;
 
-								if (key != "NewKey" && content != "")
+								if (key != "NewKey" && content != "" || handleMode)
 								{
-									var updateEntries = fileData.Entries.Where(e => e.Key == key);
-									if (updateEntries.Count() > 0)
+									ILocaleKeyEntry updateEntry = null;
+
+									if (handleMode && !String.IsNullOrEmpty(handle))
+									{
+										updateEntry = fileData.Entries.FirstOrDefault(e => e.Handle == handle);
+									}
+									else
+									{
+										updateEntry = fileData.Entries.FirstOrDefault(e => e.Key == key);
+									}
+									
+									if (updateEntry != null)
 									{
 										addNew = addDuplicates != false;
 										Log.Here().Activity($"Updating content for existing key [{key}].");
-										foreach (var entry in updateEntries)
+										if (!updateEntry.Content.Equals(content, StringComparison.Ordinal))
 										{
-											if(!entry.Content.Equals(content, StringComparison.Ordinal))
-											{
-												entry.Content = content;
-											}
+											updateEntry.Content = content;
 										}
 									}
 								}
 
-								if(addNew)
+								if (addNew)
 								{
 									Log.Here().Activity($"Added new entry for key [{key}].");
 									var entry = CreateNewLocaleEntry(fileData, key, content);
+									if (handleMode && !String.IsNullOrEmpty(handle)) entry.Handle = handle;
 									newEntryList.Add(entry);
 								}
 							}
