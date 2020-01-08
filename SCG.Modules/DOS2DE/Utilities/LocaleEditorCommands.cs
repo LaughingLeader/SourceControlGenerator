@@ -1396,70 +1396,78 @@ namespace SCG.Modules.DOS2DE.Utilities
 						using (var stream = new System.IO.StreamReader(path))
 						{
 							int lineNum = 0;
+							string line = String.Empty;
+
+							Regex regularModePattern = new Regex($"^(.*){delimiter}+(.*)$", RegexOptions.Singleline);
+							Regex handleModePattern = new Regex($"^(.*?){delimiter}+(.*?){delimiter}+(.*?)$", RegexOptions.Singleline);
+
+							Regex r = regularModePattern;
+
 							bool handleMode = false;
+
 							while ((line = stream.ReadLine()) != null)
 							{
 								lineNum += 1;
 								// Skip top line, as it typically describes the columns
-								if (lineNum == 1)
+								if (lineNum == 1 && delimitStepSkipLine(line))
 								{
-									if(line.Contains("Key\tContent"))
+									if (delimitStepSkipLine(line))
 									{
 										handleMode = false;
-										continue;
+										r = regularModePattern;
 									}
-									else if (line.Contains("Key\tContent\tHandle"))
+									if (delimitStepSkipLine(line, true))
 									{
 										handleMode = true;
-										continue;
+										r = handleModePattern;
 									}
+									continue;
 								}
 
-								var parts = line.Split(delimiter);
-
-								var key = parts.ElementAtOrDefault(0);
-								var content = parts.ElementAtOrDefault(1);
-								var handle = "";
-								if(handleMode)
+								var match = r.Match(line);
+								if (match.Success)
 								{
-									handle = parts.ElementAtOrDefault(2);
-								}
+									string key = match.Groups.Count >= 1 ? match.Groups[1].Value : "NewKey";
+									string content = match.Groups.Count >= 2 ? match.Groups[2].Value : "";
+									string handle = (handleMode && match.Groups.Count >= 3) ? match.Groups[3].Value : "";
 
-								if (key == null) key = "NewKey";
-								if (content == null) content = "";
+									bool addNew = true;
 
-								bool addNew = true;
-
-								if (key != "NewKey" && content != "" || handleMode)
-								{
-									ILocaleKeyEntry updateEntry = null;
-
-									if (handleMode && !String.IsNullOrEmpty(handle))
+									if (!String.IsNullOrWhiteSpace(key) || !String.IsNullOrWhiteSpace(handle))
 									{
-										updateEntry = fileData.Entries.FirstOrDefault(e => e.Handle == handle);
-									}
-									else
-									{
-										updateEntry = fileData.Entries.FirstOrDefault(e => e.Key == key);
-									}
-									
-									if (updateEntry != null)
-									{
-										addNew = addDuplicates != false;
-										Log.Here().Activity($"Updating content for existing key [{key}].");
-										if (!updateEntry.Content.Equals(content, StringComparison.Ordinal))
+										ILocaleKeyEntry updateEntry = null;
+
+										if (!String.IsNullOrWhiteSpace(handle))
 										{
-											updateEntry.Content = content;
+											updateEntry = fileData.Entries.FirstOrDefault(e => e.Handle == handle);
+										}
+										if(updateEntry == null) 
+										{
+											updateEntry = fileData.Entries.FirstOrDefault(e => e.Key == key);
+										}
+
+										if (updateEntry != null)
+										{
+											addNew = addDuplicates != false;
+											Log.Here().Activity($"Updating content for existing key [{key}|{handle}].");
+											if (!updateEntry.Content.Equals(content, StringComparison.Ordinal))
+											{
+												updateEntry.Content = content;
+											}
+											if (!String.IsNullOrWhiteSpace(handle))
+											{
+												updateEntry.Key = key;
+											}
 										}
 									}
-								}
 
-								if (addNew)
-								{
-									Log.Here().Activity($"Added new entry for key [{key}].");
-									var entry = CreateNewLocaleEntry(fileData, key, content);
-									if (handleMode && !String.IsNullOrEmpty(handle)) entry.Handle = handle;
-									newEntryList.Add(entry);
+									if (addNew)
+									{
+										var entry = CreateNewLocaleEntry(fileData, key, content);
+										if (handleMode && !String.IsNullOrEmpty(handle)) entry.Handle = handle;
+										Log.Here().Activity($"Added new entry [{entry.Key}|{entry.Handle}].");
+										newEntryList.Add(entry);
+									}
 								}
 							}
 							stream.Close();
