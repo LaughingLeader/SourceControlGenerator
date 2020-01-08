@@ -41,6 +41,9 @@ namespace SCG.Modules.DOS2DE.Utilities
 	public static class LocaleEditorCommands
 	{
 		public static readonly string UnsetHandle = "ls::TranslatedStringRepository::s_HandleUnknown";
+
+		public static HashSet<string> IgnoredHandles { get; set; } = new HashSet<string>();
+
 		#region Loading Localization Files
 		public static async Task<LocaleViewModel> LoadLocalizationDataAsync(LocaleViewModel localizationData, DOS2DEModuleData vm, ModProjectData modProject, CancellationToken? token = null)
 		{
@@ -874,6 +877,7 @@ namespace SCG.Modules.DOS2DE.Utilities
 			{
 				return true;
 			}
+			if (IgnoredHandles.Contains(handle)) return true;
 			return false;
 		}
 
@@ -1392,7 +1396,6 @@ namespace SCG.Modules.DOS2DE.Utilities
 						char delimiter = '\t';
 						if (FileCommands.FileExtensionFound(path, ".csv")) delimiter = ',';
 
-						string line = String.Empty;
 						using (var stream = new System.IO.StreamReader(path))
 						{
 							int lineNum = 0;
@@ -1643,5 +1646,27 @@ namespace SCG.Modules.DOS2DE.Utilities
 			}
 		}
 		#endregion
+	
+		public static async Task<HashSet<string>> LoadIgnoredHandlesAsync(string path)
+		{
+			HashSet<string> handles = new HashSet<string>();
+			try
+			{
+				using (var stream = File.OpenText(path))
+				{
+					string line = "";
+
+					while ((line = await stream.ReadLineAsync()) != null)
+					{
+						handles.Add(line);
+					}
+				}
+			}
+			catch (Exception ex)
+			{
+				Log.Here().Error($"Error reading '{path}': {ex.ToString()}");
+			}
+			return handles;
+		}
 	}
 }

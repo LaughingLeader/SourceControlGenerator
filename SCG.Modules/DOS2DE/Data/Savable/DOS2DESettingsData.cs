@@ -51,6 +51,19 @@ namespace SCG.Modules.DOS2DE.Data
 			}
 		}
 
+		private string ignoredHandlesList;
+
+		[VisibleToView("Global Ignored Handles List", FileBrowseType.File)]
+		[DataMember]
+		public string IgnoredHandlesList
+		{
+			get { return ignoredHandlesList; }
+			set
+			{
+				this.RaiseAndSetIfChanged(ref ignoredHandlesList, value);
+			}
+		}
+
 		public bool FindDOS2DataDirectory()
 		{
 			string dataDirectory = Helpers.Registry.GetAppInstallPath("Divinity: Original Sin 2");
