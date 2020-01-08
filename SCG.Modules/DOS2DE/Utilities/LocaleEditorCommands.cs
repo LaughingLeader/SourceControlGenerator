@@ -873,7 +873,7 @@ namespace SCG.Modules.DOS2DE.Utilities
 		public static bool IgnoreHandle(string handle, ILocaleFileData fileData)
 		{
 			//Larian handles for empty GMSpawnSubsection
-			if (handle == UnsetHandle || handle == "heee99d71g1f41g4ba2g8adbg98fad94256ca" || handle == "hfeccb8bbgf99fg4028gb187g607c18c2cbaa")
+			if (handle == UnsetHandle || handle == "heee99d71g1f41g4ba2g8adbg98fad94256ca" || handle == "hfeccb8bbgf99fg4028gb187g607c18c2cbaa" || handle.StartsWith("ResStr_"))
 			{
 				return true;
 			}

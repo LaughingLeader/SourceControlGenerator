@@ -1345,15 +1345,6 @@ namespace SCG.Core
 			watch.Stop();
 			Log.Here().Important($"Loading time: {watch.ElapsedMilliseconds} ms");
 #endif
-
-			if(File.Exists(this.Data.Settings.IgnoredHandlesList))
-			{
-				RxApp.TaskpoolScheduler.ScheduleAsync(async (s, t) =>
-				{
-					LocaleEditorCommands.IgnoredHandles = await LocaleEditorCommands.LoadIgnoredHandlesAsync(Data.Settings.IgnoredHandlesList);
-					return Disposable.Empty;
-				});
-			}
 		}
 
 		public void Unload()

@@ -123,7 +123,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			set { this.RaiseAndSetIfChanged(ref canRename, value); }
 		}
 
-		private bool canOverride = true;
+		private bool canOverride = false;
 
 		public bool CanOverride
 		{

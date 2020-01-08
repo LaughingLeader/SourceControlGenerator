@@ -22,6 +22,10 @@ using SCG.Modules.DOS2DE.Data;
 using SCG.Modules.DOS2DE.Views;
 using System.Windows.Threading;
 using System.ComponentModel;
+using Alphaleonis.Win32.Filesystem;
+using System.Reactive.Concurrency;
+using SCG.Modules.DOS2DE.Utilities;
+using System.Reactive.Disposables;
 
 namespace SCG.Modules.DOS2DE.Data.View
 {
@@ -251,6 +255,21 @@ namespace SCG.Modules.DOS2DE.Data.View
 
 			OpenInLocalizationEditorCommand.IsExecuting.ToProperty(this, x => x.OpeningLocaleEditor, out openingLocaleEditor);
 			OpenInLocalizationEditorCommand.ThrownExceptions.Subscribe(ex => Log.Here().Error("Error opening Localization Editor: ", ex.ToString()));
+
+			this.WhenAnyValue(x => x.Settings.IgnoredHandlesList).Subscribe((f) =>
+			{
+				if (!String.IsNullOrEmpty(f) && File.Exists(f))
+				{
+					Log.Here().Activity($"Loading '{f}'.");
+					RxApp.TaskpoolScheduler.ScheduleAsync(async (s, t) =>
+					{
+						var handles = await LocaleEditorCommands.LoadIgnoredHandlesAsync(f);
+						Log.Here().Activity($"Loaded {handles.Count} ignored handles.");
+						LocaleEditorCommands.IgnoredHandles = handles;
+						return Disposable.Empty;
+					});
+				}
+			});
 
 			//this.WhenAnyValue(x => x.CanClickRefresh).ToProperty(this, x => x.CanExecuteRefresh, out canExecuteRefresh);
 
