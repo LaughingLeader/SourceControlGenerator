@@ -1123,30 +1123,47 @@ namespace SCG.Modules.DOS2DE.Utilities
 						int lineNum = 0;
 						string line = String.Empty;
 
-						Regex r = new Regex($"(.*?){delimiter}+?(.*)");
-
 						List<TextualLocaleEntry> entries = new List<TextualLocaleEntry>();
+
+						Regex regularModePattern = new Regex($"^(.*){delimiter}+(.*)$", RegexOptions.Singleline);
+						Regex handleModePattern = new Regex($"^(.*?){delimiter}+(.*?){delimiter}+(.*?)$", RegexOptions.Singleline);
+
+						Regex r = regularModePattern;
+
+						bool handleMode = false;
 
 						while ((line = stream.ReadLine()) != null)
 						{
 							lineNum += 1;
 							// Skip top line, as it typically describes the columns
-							if (lineNum == 1 && delimitStepSkipLine(line)) continue;
+							if (lineNum == 1)
+							{
+								if (delimitStepSkipLine(line, true))
+								{
+									handleMode = true;
+									r = handleModePattern;
+									Log.Here().Activity($"Handle mode activated for '{path}'.");
+									continue;
+								}
+								else if (delimitStepSkipLine(line))
+								{
+									r = regularModePattern;
+									continue;
+								}
+							}
 
 							var match = r.Match(line);
 							if (match.Success)
 							{
-								string key = match.Groups.Count >= 1 ? match.Groups[1].Value : String.Empty;
-								string content = match.Groups.Count >= 2 ? match.Groups[2].Value : String.Empty;
+								string key = match.Groups.Count >= 1 ? match.Groups[1].Value : "NewKey";
+								string content = match.Groups.Count >= 2 ? match.Groups[2].Value : "";
+								string handle = (handleMode && match.Groups.Count >= 3) ? match.Groups[3].Value : "";
 
-								if(String.IsNullOrWhiteSpace(key) && !String.IsNullOrWhiteSpace(content))
-								{
-									key = "NewKey" + (entries.Count + 1);
-								}
-
+								//Log.Here().Activity($"New entry: {key} => {content}{(handleMode ? "|" + handle : "")}");
+	
 								if (!String.IsNullOrWhiteSpace(key))
 								{
-									entries.Add(new TextualLocaleEntry { Key = key, Content = content });
+									entries.Add(new TextualLocaleEntry { Key = key, Content = content, Handle = handle });
 								}
 							}
 						}
@@ -1167,17 +1184,29 @@ namespace SCG.Modules.DOS2DE.Utilities
 										existingEntry.ChangesUnsaved = true;
 										changesUnsaved = true;
 									}
+
+									if(!String.IsNullOrWhiteSpace(entry.Handle) && entry.Handle != existingEntry.Handle)
+									{
+										Log.Here().Activity($"Updated entry handle: {existingEntry.Handle} => {entry.Handle}");
+										existingEntry.Handle = entry.Handle;
+										existingEntry.ChangesUnsaved = true;
+										changesUnsaved = true;
+									}
 								}
 								else
 								{
 									if(fileData is LocaleNodeFileData nodeFileData)
 									{
 										var newEntry = CreateNewLocaleEntry(nodeFileData, entry.Key, entry.Content);
+										if (!String.IsNullOrWhiteSpace(entry.Handle))
+										{
+											newEntry.Handle = entry.Handle;
+										}
 										nodeFileData.Entries.Add(newEntry);
 										newEntry.ChangesUnsaved = true;
 										changesUnsaved = true;
 										//newEntry.Index = nodeFileData.Entries.IndexOf(newEntry);
-										Log.Here().Activity($"Added new entry: {newEntry.Key} | {newEntry.Content}");
+										Log.Here().Activity($"Added new entry: {newEntry.Key} | {newEntry.Content} | {newEntry.Handle}");
 									}
 								}
 							}
@@ -1296,17 +1325,18 @@ namespace SCG.Modules.DOS2DE.Utilities
 				// Skip top line, as it typically describes the columns
 				if (lineNum == 1)
 				{
-					if (delimitStepSkipLine(line))
-					{
-						handleMode = false;
-						r = regularModePattern;
-					}
 					if (delimitStepSkipLine(line, true))
 					{
 						handleMode = true;
 						r = handleModePattern;
+						Log.Here().Activity($"Handle mode activated for '{filePath}'.");
+						continue;
 					}
-					continue;
+					else if (delimitStepSkipLine(line))
+					{
+						r = regularModePattern;
+						continue;
+					}
 				}
 
 				var match = r.Match(line);
@@ -1412,19 +1442,21 @@ namespace SCG.Modules.DOS2DE.Utilities
 							{
 								lineNum += 1;
 								// Skip top line, as it typically describes the columns
-								if (lineNum == 1 && delimitStepSkipLine(line))
+								if (lineNum == 1)
 								{
-									if (delimitStepSkipLine(line))
-									{
-										handleMode = false;
-										r = regularModePattern;
-									}
 									if (delimitStepSkipLine(line, true))
 									{
 										handleMode = true;
 										r = handleModePattern;
+										Log.Here().Activity($"Handle mode activated for '{path}'.");
+										continue;
 									}
-									continue;
+									else if (delimitStepSkipLine(line))
+									{
+										handleMode = false;
+										r = regularModePattern;
+										continue;
+									}
 								}
 
 								var match = r.Match(line);
