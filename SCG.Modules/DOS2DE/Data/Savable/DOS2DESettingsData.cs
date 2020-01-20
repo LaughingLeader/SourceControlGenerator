@@ -13,6 +13,7 @@ using Newtonsoft.Json;
 using Alphaleonis.Win32.Filesystem;
 using System.Runtime.Serialization;
 using ReactiveUI;
+using SCG.Modules.DOS2DE.Utilities;
 
 namespace SCG.Modules.DOS2DE.Data
 {
@@ -66,10 +67,10 @@ namespace SCG.Modules.DOS2DE.Data
 
 		public bool FindDOS2DataDirectory()
 		{
-			string dataDirectory = Helpers.Registry.GetAppInstallPath("Divinity: Original Sin 2");
-			if (!String.IsNullOrEmpty(dataDirectory))
+			string installDirectory = DOS2DERegistryHelper.GetDOS2InstallPath();
+			if (!String.IsNullOrEmpty(installDirectory))
 			{
-				dataDirectory = Path.Combine(dataDirectory, DOS2DEDefaultPaths.DataDirectory_DefEd);
+				string dataDirectory = Path.Combine(installDirectory, DOS2DEDefaultPaths.DataDirectory_DefEd);
 				if(Directory.Exists(dataDirectory))
 				{
 					DOS2DEDataDirectory = dataDirectory;
