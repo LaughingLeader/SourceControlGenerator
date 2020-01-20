@@ -9,9 +9,6 @@ namespace SCG
 {
 	public static class Helpers
 	{
-		private static RegisteryHelper _registeryHelper;
-		public static RegisteryHelper Registry => _registeryHelper;
-
 		private static ImageHelper _imageHelper;
 		public static ImageHelper Image => _imageHelper;
 
@@ -20,7 +17,6 @@ namespace SCG
 
 		public static void Init()
 		{
-			_registeryHelper = new RegisteryHelper();
 			_imageHelper = new ImageHelper();
 			_webHelper = new WebHelper();
 		}
