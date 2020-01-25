@@ -1087,7 +1087,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 				}
 
 				SelectedFile.ChangesUnsaved = true;
-				SelectedGroup.UpdateCombinedData();
+				SelectedGroup?.UpdateCombinedData();
 
 				//CurrentImportPath = Path.GetDirectoryName(files.FirstOrDefault());
 
@@ -1601,6 +1601,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 							}
 						}
 					}
+
 					SelectedGroup?.UpdateCombinedData();
 
 					MissingEntries.Clear();
@@ -1632,6 +1633,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 							parent.ChangesUnsaved = true;
 						}
 					}
+
 					SelectedGroup?.UpdateCombinedData();
 				}
 				this.CreateSnapshot(undo, redo);
