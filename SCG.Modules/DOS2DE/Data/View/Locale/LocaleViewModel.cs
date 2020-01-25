@@ -1042,11 +1042,8 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 
 			string importPath = CurrentImportPath;
 
-			if (LinkedProjects.Count == 1)
-			{
-				var settings = Settings.GetProjectSettings(LinkedProjects.FirstOrDefault());
-				if (settings != null) importPath = settings.LastEntryImportPath;
-			}
+			var settings = Settings.GetProjectSettings(LinkedProjects.FirstOrDefault());
+			if (settings != null) importPath = settings.LastEntryImportPath;
 
 			FileCommands.Save.OpenSaveDialog(view, "Save Locale File As...",
 				writeToFile, exportName, importPath, DOS2DEFileFilters.AllLocaleFilesList.ToArray());
@@ -1085,10 +1082,12 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 
 				//CurrentImportPath = Path.GetDirectoryName(files.FirstOrDefault());
 
-				if (LinkedProjects.Count == 1)
+				var settings = Settings.GetProjectSettings(LinkedProjects.FirstOrDefault());
+				if (settings != null)
 				{
-					var settings = Settings.GetProjectSettings(LinkedProjects.FirstOrDefault());
-					if (settings != null) settings.LastEntryImportPath = Path.GetDirectoryName(files.FirstOrDefault());
+					settings.LastEntryImportPath = Path.GetDirectoryName(files.FirstOrDefault());
+					view.SaveSettings();
+					
 				}
 
 				this.RaisePropertyChanged("CurrentImportPath");
@@ -1657,6 +1656,16 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 					var lastLinkData = fileData.FileLinkData;
 					List<TextualLocaleEntry> lastValues = fileData.Entries.Select(x => new TextualLocaleEntry { Key = x.Key, Content = x.Content, Handle = x.Handle }).ToList();
 
+					foreach (var p in LinkedProjects)
+					{
+						var projectSettings = Settings.GetProjectSettings(p);
+						if (projectSettings != null)
+						{
+							projectSettings.LastFileImportPath = Path.GetDirectoryName(filePath);
+							view.SaveSettings();
+						}
+					}
+
 					void undo()
 					{
 						fileData.FileLinkData = lastLinkData;
@@ -1716,11 +1725,8 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 
 			string entryImportPath = CurrentImportPath;
 
-			if (LinkedProjects.Count == 1)
-			{
-				var settings = Settings.GetProjectSettings(LinkedProjects.FirstOrDefault());
-				if (settings != null) entryImportPath = settings.LastEntryImportPath;
-			}
+			var settings = Settings.GetProjectSettings(LinkedProjects.FirstOrDefault());
+			if (settings != null) entryImportPath = Path.GetDirectoryName(settings.LastEntryImportPath);
 
 			FileCommands.Load.OpenFileDialog(view, "Pick localization file to link...",
 					entryImportPath, OnFileSelected, "", new Action<string, FileDialogResult>((s,r) => IsSubWindowOpen = false), CommonFileFilters.DelimitedLocaleFiles);
@@ -2146,11 +2152,8 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			{
 				string entryImportPath = CurrentImportPath;
 
-				if (LinkedProjects.Count == 1)
-				{
-					var settings = Settings.GetProjectSettings(LinkedProjects.FirstOrDefault());
-					if (settings != null) entryImportPath = settings.LastEntryImportPath;
-				}
+				var settings = Settings.GetProjectSettings(LinkedProjects.FirstOrDefault());
+				if (settings != null) entryImportPath = settings.LastEntryImportPath;
 
 				IsSubWindowOpen = true;
 				FileCommands.Load.OpenMultiFileDialog(view, DOS2DETooltips.Button_Locale_ImportFile,
@@ -2162,11 +2165,8 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			{
 				string entryImportPath = CurrentImportPath;
 
-				if (LinkedProjects.Count == 1)
-				{
-					var settings = Settings.GetProjectSettings(LinkedProjects.FirstOrDefault());
-					entryImportPath = settings.LastEntryImportPath;
-				}
+				var settings = Settings.GetProjectSettings(LinkedProjects.FirstOrDefault());
+				entryImportPath = settings.LastEntryImportPath;
 
 				IsSubWindowOpen = true;
 				FileCommands.Load.OpenMultiFileDialog(view, DOS2DETooltips.Button_Locale_ImportKeys,
@@ -2689,7 +2689,8 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 				DialogGroup,
 				RootTemplatesGroup,
 				GlobalTemplatesGroup,
-				LevelDataGroup
+				LevelDataGroup,
+				CustomGroup
 			};
 #endif
 			foreach (var g in Groups)
