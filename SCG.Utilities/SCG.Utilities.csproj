@@ -72,7 +72,6 @@
     <Compile Include="Util\EnumHelper.cs" />
     <Compile Include="Util\Helpers.cs" />
     <Compile Include="Util\HelperUtil\ImageHelper.cs" />
-    <Compile Include="Util\HelperUtil\RegisteryHelper.cs" />
     <Compile Include="Util\HelperUtil\WebHelper.cs" />
     <Compile Include="Util\JunctionHelper.cs" />
     <Compile Include="Util\Log.cs" />
