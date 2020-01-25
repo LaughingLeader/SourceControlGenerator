@@ -1235,6 +1235,7 @@ namespace SCG.Modules.DOS2DE.Utilities
 				toxml = toxml.Replace("\"", "&quot;");
 				toxml = toxml.Replace(">", "&gt;");
 				toxml = toxml.Replace("<", "&lt;");
+				toxml = toxml.Replace(Environment.NewLine, "&lt;br&gt;");
 			}
 			return toxml;
 		}
