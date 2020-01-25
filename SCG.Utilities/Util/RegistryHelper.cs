@@ -10,7 +10,7 @@ using Gameloop.Vdf.Linq;
 
 namespace SCG.Util
 {
-	public class RegistryHelper
+	public static class RegistryHelper
 	{
 		const string REG_App_32 = @"SOFTWARE";
 		const string REG_App_64 = @"SOFTWARE\Wow6432Node";		
@@ -190,7 +190,7 @@ namespace SCG.Util
 			return "";
 		}
 
-		public string GetAppInstallPath(string App)
+		public static string GetAppInstallPath(string App)
 		{
 			RegistryKey reg = Registry.LocalMachine;
 			object installPath = GetKey(reg, REG_App_64 + "\\" + App, "InstallPath");

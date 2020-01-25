@@ -242,12 +242,7 @@ namespace SCG.FileGen
 
 		public static string GetGitInstallPath()
 		{
-			string installPath = Helpers.Registry.GetRegistryKeyValue(RegistryView.Registry64, "InstallPath", @"SOFTWARE\GitForWindows");
-			if (String.IsNullOrEmpty(installPath))
-			{
-				installPath = Helpers.Registry.GetRegistryKeyValue(RegistryView.Registry32, "InstallPath", @"SOFTWARE\GitForWindows");
-			}
-
+			string installPath = RegistryHelper.GetAppInstallPath("GitForWindows");
 			if (!String.IsNullOrEmpty(installPath)) return installPath;
 
 			return "";
