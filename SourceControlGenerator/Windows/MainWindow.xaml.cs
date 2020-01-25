@@ -139,7 +139,7 @@ namespace SCG.Windows
 
 			if (String.IsNullOrWhiteSpace(ViewModel.AppSettings.GitInstallPath))
 			{
-				var gitPath = Helpers.Registry.GetRegistryKeyValue("InstallPath", "GitForWindows", "SOFTWARE");
+				var gitPath = GitGenerator.GetGitInstallPath();
 				if (!String.IsNullOrEmpty(gitPath))
 				{
 					ViewModel.AppSettings.GitInstallPath = gitPath;
