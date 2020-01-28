@@ -950,7 +950,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 					{
 						var fileData = LocaleEditorCommands.CreateFileData(SelectedGroup, path, Path.GetFileNameWithoutExtension(path));
 						SelectedGroup.DataFiles.Add(fileData);
-						SelectedGroup.UpdateCombinedData();
+						SelectedGroup.UpdateCombinedData(true);
 						SelectedGroup.SelectedFileIndex = SelectedGroup.Tabs.Count - 1;
 					}
 				}
@@ -979,7 +979,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 						if (lastFiles.Contains(entry)) lastFiles.Remove(entry);
 					}
 					currentGroup.DataFiles = new ObservableCollectionExtended<ILocaleFileData>(lastFiles);
-					currentGroup.UpdateCombinedData();
+					currentGroup.UpdateCombinedData(true);
 					currentGroup.SelectLast();
 					currentGroup.ChangesUnsaved = lastChangesUnsaved;
 					view.FocusSelectedTab();
@@ -996,7 +996,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 				}
 
 				SelectedGroup.ChangesUnsaved = true;
-				SelectedGroup.UpdateCombinedData();
+				SelectedGroup.UpdateCombinedData(true);
 				SelectedGroup.SelectLast();
 				view.FocusSelectedTab();
 
