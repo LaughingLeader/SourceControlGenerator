@@ -21,6 +21,7 @@ using ReactiveUI;
 using System.Reactive;
 using System.Reactive.Concurrency;
 using System.Text.RegularExpressions;
+using SCG.Util;
 
 namespace SCG.Modules.DOS2DE.Data.View
 {
@@ -424,7 +425,7 @@ namespace SCG.Modules.DOS2DE.Data.View
 				ModMetaFilePath = metaFilePath;
 
 				Log.Here().Activity("Meta file found for project {0}. Reading file.", metaFilePath);
-				string contents = await FileCommands.ReadFileAsync(metaFilePath);
+				string contents = XMLHelper.EscapeXmlAttributes(await FileCommands.ReadFileAsync(metaFilePath));
 				if (contents != String.Empty)
 				{
 					XDocument modMetaXml = null;
@@ -538,7 +539,7 @@ namespace SCG.Modules.DOS2DE.Data.View
 					ProjectMetaFilePath = Path.GetFullPath(projectMetaFilePath);
 
 					Log.Here().Activity("Attempting to load project meta.lsx at {0}", projectMetaFilePath);
-					string projectMetaFileContents = await FileCommands.ReadFileAsync(projectMetaFilePath);
+					string projectMetaFileContents = XMLHelper.EscapeXmlAttributes(await FileCommands.ReadFileAsync(projectMetaFilePath));
 
 					if (!String.IsNullOrWhiteSpace(projectMetaFileContents))
 					{
@@ -587,7 +588,7 @@ namespace SCG.Modules.DOS2DE.Data.View
 
 			if (File.Exists(ProjectMetaFilePath))
 			{
-				string contents = await FileCommands.ReadFileAsync(ProjectMetaFilePath);
+				string contents = XMLHelper.EscapeXmlAttributes(await FileCommands.ReadFileAsync(ProjectMetaFilePath));
 				if (!String.IsNullOrWhiteSpace(contents))
 				{
 					var projectMetaXml = XDocument.Parse(contents);
@@ -610,7 +611,7 @@ namespace SCG.Modules.DOS2DE.Data.View
 				ModMetaFilePath = metaFilePath;
 
 				Log.Here().Activity("Meta file found for project {0}. Reading file.", metaFilePath);
-				string contents = FileCommands.ReadFile(metaFilePath);
+				string contents = XMLHelper.EscapeXmlAttributes(FileCommands.ReadFile(metaFilePath));
 				if (contents != String.Empty)
 				{
 					XDocument modMetaXml = null;
@@ -761,7 +762,7 @@ namespace SCG.Modules.DOS2DE.Data.View
 
 			if (File.Exists(ModMetaFilePath))
 			{
-				string contents = FileCommands.ReadFile(ModMetaFilePath);
+				string contents = XMLHelper.EscapeXmlAttributes(FileCommands.ReadFile(ModMetaFilePath));
 				if (!String.IsNullOrWhiteSpace(contents))
 				{
 					var modMetaXml = XDocument.Parse(contents);
@@ -776,7 +777,7 @@ namespace SCG.Modules.DOS2DE.Data.View
 
 			if (File.Exists(ProjectMetaFilePath))
 			{
-				string contents = FileCommands.ReadFile(ProjectMetaFilePath);
+				string contents = XMLHelper.EscapeXmlAttributes(FileCommands.ReadFile(ProjectMetaFilePath));
 				if (!String.IsNullOrWhiteSpace(contents))
 				{
 					var projectMetaXml = XDocument.Parse(contents);
