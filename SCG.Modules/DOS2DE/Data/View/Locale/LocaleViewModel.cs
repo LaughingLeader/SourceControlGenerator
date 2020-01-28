@@ -558,6 +558,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			if (SelectedFile != null)
 			{
 				CanSave = (group.CombinedEntries != keyFileData) || group.DataFiles.Count == 1;
+				SelectedFile.Selected = true;
 				//Log.Here().Activity($"Selected file changed to {group.Name} | {keyFileData.Name}");
 			}
 			else
@@ -2215,7 +2216,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 					entryImportPath, ImportFilesAsKeys, "", onCancel, DOS2DEFileFilters.AllLocaleFilesList.ToArray());
 			}, CanImportKeysObservable).DisposeWith(disposables);
 
-			ExportFileAsTextualCommand = ReactiveCommand.Create<ILocaleFileData>(ExportFileAsText, GlobalCanActObservable).DisposeWith(disposables);
+			ExportFileAsTextualCommand = ReactiveCommand.Create(() => ExportFileAsText(SelectedFile), AnySelectedEntryObservable).DisposeWith(disposables);
 
 			OpenPreferencesCommand = ReactiveCommand.Create(() => { view.TogglePreferencesWindow(); }, GlobalCanActObservable).DisposeWith(disposables);
 
@@ -2414,6 +2415,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			MenuData.File.Add(new MenuData("File.ImportFile", "Import File", ImportFileCommand));
 			MenuData.File.Add(new MenuData("File.ImportKeys", "Import File as Keys", ImportKeysCommand));
 			MenuData.File.Add(new MenuData("File.ExportSelected", DOS2DETooltips.Button_Locale_ExportToXML, ExportXMLCommand, Key.E, ModifierKeys.Control | ModifierKeys.Shift));
+			MenuData.File.Add(new MenuData("File.ExportSelected", "Export Selected File to Text File...", ExportFileAsTextualCommand));
 
 			//MenuData.File.Add(CreateMenuDataWithLink(() => CanAddFile, "CanAddFile", "File.ImportFile", "Import File", ImportFileCommand));
 			//MenuData.File.Add(CreateMenuDataWithLink(() => CanAddKeys, "CanAddKeys", "File.ImportKeys", "Import File as Keys", ImportKeysCommand));
@@ -2673,19 +2675,24 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 				}
 			});
 
+			/*
 			this.WhenAnyValue(x => x.SelectedFile).Throttle(TimeSpan.FromMilliseconds(25)).ObserveOn(RxApp.MainThreadScheduler).Subscribe((x) =>
 			{
 				if(x != null)
 				{
-					for (var i = 0; i < SelectedFile.VisibleEntries.Count; i++)
+					int i = 1;
+					foreach (var item in x.VisibleEntries)
 					{
-						SelectedFile.VisibleEntries[i].Index = i + 1;
+						item.Index = i;
+						i++;
 					}
 				}
 			}).DisposeWith(disposables);
+			*/
 
 			SelectedGroup = CombinedGroup;
 			SelectedFile = CombinedGroup.CombinedEntries;
+			SelectedFile.Selected = true;
 
 			//this.WhenAnyValue(x => x.Groups.WhenAnyValue(c => c.Select(g => g.ChangesUnsaved));
 		}
