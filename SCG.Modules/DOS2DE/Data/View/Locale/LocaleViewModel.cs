@@ -665,6 +665,10 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 						return directory;
 					}
 				}
+				else if (Directory.GetCurrentDirectory() == DefaultPaths.AppFolder)
+				{
+					return DefaultPaths.ModuleRootFolder(ModuleData);
+				}
 				return Directory.GetCurrentDirectory();
 			}
 		}
@@ -1047,16 +1051,17 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 						OutputText = $"Problem saving file '{path}'.";
 						OutputDate = DateTime.Now.ToShortTimeString();
 					}
+
+					SaveLastFileImportPath(path, localeFileData);
 				}
 			}
 
-			string importPath = CurrentImportPath;
+			string startImportPath = GetLastFileImportPath(localeFileData);
 
-			var settings = Settings.GetProjectSettings(LinkedProjects.FirstOrDefault());
-			if (settings != null) importPath = settings.LastEntryImportPath;
+			Log.Here().Activity("Import path: " + startImportPath);
 
 			FileCommands.Save.OpenSaveDialog(view, "Save Locale File As...",
-				writeToFile, exportName, importPath, DOS2DEFileFilters.AllLocaleFilesList.ToArray());
+				writeToFile, exportName, startImportPath, DOS2DEFileFilters.AllLocaleFilesList.ToArray());
 		}
 
 		public void ImportFilesAsKeys(IEnumerable<string> files)
@@ -1672,6 +1677,19 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 				{
 					return settings.LastEntryImportPath;
 				}
+				else
+				{
+					string startPath = Path.Combine(ModuleData.Settings.DOS2DEDataDirectory, "Projects");
+					string directory = Path.Combine(Path.GetFullPath(startPath), project.ProjectName);
+					if (!Directory.Exists(directory))
+					{
+						directory = Path.Combine(Path.GetFullPath(startPath), project.ModuleInfo.Folder); // Imported projects
+					}
+					if (Directory.Exists(directory))
+					{
+						return directory;
+					}
+				}
 			}
 			return CurrentImportPath;
 		}
@@ -1696,8 +1714,8 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 				var settings = Settings.GetProjectSettings(project);
 				if (settings != null)
 				{
-					settings.LastEntryImportPath = lastFileImportPath;
-					Log.Here().Activity($"Saved settings.LastEntryImportPath: {lastFileImportPath}");
+					settings.LastEntryImportPath = Path.GetDirectoryName(lastFileImportPath);
+					Log.Here().Activity($"Saved settings.LastEntryImportPath: {settings.LastEntryImportPath}");
 					view.SaveSettings();
 				}
 			}
