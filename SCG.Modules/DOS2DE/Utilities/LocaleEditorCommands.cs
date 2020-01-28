@@ -903,7 +903,7 @@ namespace SCG.Modules.DOS2DE.Utilities
 			return false;
 		}
 
-		public static string ExportDataAsXML(LocaleViewModel data)
+		public static string ExportDataAsXML(LocaleViewModel data, bool exportAll = false)
 		{
 			string output = "<contentList>\n{0}</contentList>";
 			string entriesStr = "";
@@ -915,7 +915,15 @@ namespace SCG.Modules.DOS2DE.Utilities
 				{
 					bool findActualSource = fileData == data.SelectedGroup.CombinedEntries;
 
-					var exportedKeys = fileData.Entries.Where(fd => fd.Selected && !IgnoreHandle(fd.Handle, fileData)).DistinctBy(x => x.Handle);
+					IEnumerable<ILocaleKeyEntry> exportedKeys = null;
+					if(!exportAll)
+					{
+						exportedKeys = fileData.Entries.Where(fd => fd.Selected && !IgnoreHandle(fd.Handle, fileData)).DistinctBy(x => x.Handle);
+					}
+					else
+					{
+						exportedKeys = fileData.Entries.Where(fd => !IgnoreHandle(fd.Handle, fileData)).DistinctBy(x => x.Handle);
+					}
 
 					bool exportSource = false;
 					bool exportKeys = false;
@@ -1052,7 +1060,13 @@ namespace SCG.Modules.DOS2DE.Utilities
 						{
 							Log.Here().Activity($"Line file loaded: '{filePath}' => {data.ProjectUUID}.");
 
-							foreach (var link in data.Links)
+							//if (localizationData.LinkedLocaleData.Any(x => x.ProjectUUID == data.ProjectUUID))
+							//{
+							//	localizationData.LinkedLocaleData.RemoveAll(x => x.ProjectUUID == data.ProjectUUID);
+							//	Log.Here().Activity($"Removed duplicate link data entries for {data.ProjectUUID}");
+							//}
+
+							foreach (var link in data.Links.DistinctBy(x => x.TargetFile)) // Ignore duplicates
 							{
 								Log.Here().Activity($"Searching for locale files for '{link.TargetFile}'.");
 								var targetFiles = localizationData.Groups.SelectMany(g => g.DataFiles).Where(f => sourceFileMatch(f.SourcePath, link.TargetFile));
@@ -1063,7 +1077,6 @@ namespace SCG.Modules.DOS2DE.Utilities
 									removedEntries.AddRange(RefreshLinkedData(fileData));
 								}
 							}
-
 							localizationData.LinkedLocaleData.Add(data);
 						}
 					}
