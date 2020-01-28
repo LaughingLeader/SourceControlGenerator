@@ -2254,7 +2254,8 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 
 			UpdateCombinedGroup(true);
 
-			ExportXMLCommand = ReactiveCommand.Create<bool>(OpenExportWindow, AnySelectedEntryObservable).DisposeWith(disposables);
+			//ExportXMLCommand = ReactiveCommand.Create<bool>(OpenExportWindow, AnySelectedEntryObservable).DisposeWith(disposables);
+			ExportXMLCommand = ReactiveCommand.Create<bool>(OpenExportWindow).DisposeWith(disposables);
 			AddFileToGroupCommand = ReactiveCommand.Create<CustomLocaleTabGroup>(AddCustomFileToGroup, CanImportFilesObservable).DisposeWith(disposables);
 
 			var canConfirmAddFile = this.WhenAny(vm => vm.NewFileTabName, e => !String.IsNullOrWhiteSpace(e.Value));
