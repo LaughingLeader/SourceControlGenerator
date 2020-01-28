@@ -1320,11 +1320,11 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			}
 		}
 
-		public void OpenExportWindow()
+		public void OpenExportWindow(bool exportAll = false)
 		{
 			ActiveProjectSettings = Settings.GetProjectSettings(LinkedProjects.FirstOrDefault());
 
-			ExportText = LocaleEditorCommands.ExportDataAsXML(this);
+			ExportText = LocaleEditorCommands.ExportDataAsXML(this, exportAll);
 
 			if (view != null && view.ExportWindow != null)
 			{
@@ -1757,6 +1757,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 									LinkedLocaleData.Add(linkedList);
 								}
 
+								linkedList.Links.RemoveAll(x => x.TargetFile == fileData.FileLinkData.TargetFile);
 								linkedList.Links.Add(fileData.FileLinkData);
 
 								LocaleEditorCommands.SaveLinkedData(ModuleData, linkedList);
@@ -2253,7 +2254,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 
 			UpdateCombinedGroup(true);
 
-			ExportXMLCommand = ReactiveCommand.Create(OpenExportWindow, AnySelectedEntryObservable).DisposeWith(disposables);
+			ExportXMLCommand = ReactiveCommand.Create<bool>(OpenExportWindow, AnySelectedEntryObservable).DisposeWith(disposables);
 			AddFileToGroupCommand = ReactiveCommand.Create<CustomLocaleTabGroup>(AddCustomFileToGroup, CanImportFilesObservable).DisposeWith(disposables);
 
 			var canConfirmAddFile = this.WhenAny(vm => vm.NewFileTabName, e => !String.IsNullOrWhiteSpace(e.Value));
