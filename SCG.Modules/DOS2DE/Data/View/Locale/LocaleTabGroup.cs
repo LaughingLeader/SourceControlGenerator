@@ -131,18 +131,14 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			this.RaisePropertyChanged("Tabs");
 			Log.Here().Activity($"Updated combined entries for '{Name}'.");
 
+			var nextIndex = 0;
+
 			if(SelectedFile != null)
 			{
-				SelectedFileIndex = Tabs.IndexOf(SelectedFile);
+				nextIndex = Tabs.IndexOf(SelectedFile);
 			}
-			else if(SelectedFileIndex >= Tabs.Count)
-			{
-				SelectedFileIndex = 0;
-			}
-			else
-			{
-				SelectedFileIndex = 0;
-			}
+
+			if (SelectedFileIndex != nextIndex) SelectedFileIndex = nextIndex;
 		}
 
 		public void SelectFirst()
