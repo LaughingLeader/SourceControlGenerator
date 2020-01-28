@@ -785,9 +785,8 @@
 								<DataGridTemplateColumn
 									MinWidth="25"
 									CanUserResize="False"
-									CanUserSort="True"
-									HeaderStyle="{StaticResource ProjectsHeaderStyle}"
-									SortMemberPath="Selected">
+									CanUserSort="False"
+									HeaderStyle="{StaticResource ProjectsHeaderStyle}">
 									<DataGridTemplateColumn.Header>
 										<CheckBox IsChecked="{Binding Source={StaticResource FileData}, Path=DataContext.AllSelected, Mode=TwoWay}" ToolTip="Select/Deselect All" />
 									</DataGridTemplateColumn.Header>
