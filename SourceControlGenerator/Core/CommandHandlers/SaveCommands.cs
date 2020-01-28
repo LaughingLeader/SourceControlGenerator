@@ -164,10 +164,10 @@ namespace SCG.Commands
 				if (result == CommonFileDialogResult.Cancel) fileDialogResult = FileDialogResult.Cancel;
 				if (result == CommonFileDialogResult.None) fileDialogResult = FileDialogResult.None;
 
-				if(result == CommonFileDialogResult.Ok)
-				{
-					Directory.SetCurrentDirectory(Path.GetDirectoryName(fileDialog.FileName));
-				}
+				//if(result == CommonFileDialogResult.Ok)
+				//{
+				//	Directory.SetCurrentDirectory(Path.GetDirectoryName(fileDialog.FileName));
+				//}
 
 				OnClose.Invoke(fileDialogResult, fileDialog.FileName);
 			}

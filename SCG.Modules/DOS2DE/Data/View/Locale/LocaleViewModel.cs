@@ -1025,21 +1025,21 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 
 				if (result == FileDialogResult.Ok)
 				{
-					string delimiter = @"\t";
+					string delimiter = "\t";
 					if (FileCommands.FileExtensionFound(path, ".csv"))
 					{
 						delimiter = ",";
 					}
 					string contents = $"Key{delimiter}Content\n";
 					var entries = localeFileData.Entries.OrderBy(x => x.Key).ToList();
-					for (var i = 0; i < entries.Count(); i++)
+					for (var i = 0; i < entries.Count; i++)
 					{
 						var entry = entries[i];
 						contents += entry.Key + delimiter + entry.Content;
 						if (i < entries.Count - 1) contents += Environment.NewLine;
 					}
 
-					if(FileCommands.WriteToFile(path, contents))
+					if(FileCommands.WriteToFile(path, contents.Trim()))
 					{
 						OutputType = LogType.Important;
 						OutputText = $"Saved locale file to '{path}'.";
