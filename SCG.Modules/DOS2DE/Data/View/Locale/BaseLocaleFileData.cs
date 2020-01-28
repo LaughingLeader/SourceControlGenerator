@@ -73,14 +73,14 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			DisplayName = !ChangesUnsaved ? Name : "*" + Name;
 		}
 
-		private bool active = false;
+		private bool selected = false;
 
-		public bool Active
+		public bool Selected
 		{
-			get { return active; }
+			get { return selected; }
 			set
 			{
-				this.RaiseAndSetIfChanged(ref active, value);
+				this.RaiseAndSetIfChanged(ref selected, value);
 			}
 		}
 
@@ -245,17 +245,25 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 		{
 			Name = name;
 			Parent = parent;
-
 			var entryChangeSet = Entries.ToObservableChangeSet();
 			//Setting ChangesUnsaved to true when any item in entries is unsaved
 			var anyChanged = entryChangeSet.AutoRefresh(x => x.ChangesUnsaved).ToCollection();
 			anyChanged.Any(x => x.Any(y => y.ChangesUnsaved == true)).ToProperty(this, x => x.ChangesUnsaved);
+			entryChangeSet.AutoRefresh(x => x.Visible).Filter(x => x.Visible == true).ObserveOn(RxApp.MainThreadScheduler).Bind(out visibleEntries).Subscribe();
 
-			entryChangeSet.AutoRefresh(x => x.Visible).Filter(x => x.Visible).ObserveOn(RxApp.MainThreadScheduler).Bind(out visibleEntries).Subscribe((items) =>
+			this.WhenAnyValue(x => x.VisibleEntries.Count, x => x.Selected, (x,y) => x > 0 && y).
+				ObserveOn(RxApp.MainThreadScheduler).Subscribe((x) =>
 			{
-				for(var i = 0; i < visibleEntries.Count; i++)
+				if(Selected && VisibleEntries.Count > 0)
 				{
-					visibleEntries[i].Index = i + 1;
+					int index = 1;
+					for (var i = 0; i < VisibleEntries.Count; i++)
+					{
+						var item = VisibleEntries[i];
+						//System.Diagnostics.Trace.WriteLine($"{name}({Selected}) | items({i}) = {item.EntryKey}");
+						item.Index = index;
+						index++;
+					}
 				}
 			});
 		}
