@@ -1060,13 +1060,11 @@ namespace SCG.Modules.DOS2DE.Utilities
 						{
 							Log.Here().Activity($"Line file loaded: '{filePath}' => {data.ProjectUUID}.");
 
-							//if (localizationData.LinkedLocaleData.Any(x => x.ProjectUUID == data.ProjectUUID))
-							//{
-							//	localizationData.LinkedLocaleData.RemoveAll(x => x.ProjectUUID == data.ProjectUUID);
-							//	Log.Here().Activity($"Removed duplicate link data entries for {data.ProjectUUID}");
-							//}
+							// Ignore duplicates
+							var distinctLinks = data.Links.DistinctBy(x => x.TargetFile).ToList();
+							data.Links = distinctLinks;
 
-							foreach (var link in data.Links.DistinctBy(x => x.TargetFile)) // Ignore duplicates
+							foreach (var link in data.Links)
 							{
 								Log.Here().Activity($"Searching for locale files for '{link.TargetFile}'.");
 								var targetFiles = localizationData.Groups.SelectMany(g => g.DataFiles).Where(f => sourceFileMatch(f.SourcePath, link.TargetFile));
