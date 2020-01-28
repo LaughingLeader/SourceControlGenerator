@@ -72,9 +72,17 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			get { return selectedfileIndex; }
 			set
 			{
+				if (SelectedFile != null) SelectedFile.Selected = false;
 				this.RaiseAndSetIfChanged(ref selectedfileIndex, value);
 				this.RaisePropertyChanged("SelectedFile");
-				SelectedFileChanged?.Invoke(this, SelectedFile);
+				if(SelectedFileChanged != null)
+				{
+					SelectedFileChanged.Invoke(this, SelectedFile);
+				}
+				else if (SelectedFile != null) 
+				{
+					SelectedFile.Selected = true;
+				}
 			}
 		}
 
