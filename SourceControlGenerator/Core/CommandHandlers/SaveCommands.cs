@@ -122,7 +122,7 @@ namespace SCG.Commands
 
 				//if (FileCommands.IsValidFilePath(InitialDirectory) && !FileCommands.IsValidDirectoryPath(InitialDirectory)) InitialDirectory = Directory.GetParent(InitialDirectory).FullName + @"\";
 
-				if (!String.IsNullOrWhiteSpace(InitialDirectory) && FileCommands.IsValidDirectoryPath(InitialDirectory))
+				if (!String.IsNullOrWhiteSpace(InitialDirectory) && Directory.Exists(InitialDirectory))
 				{
 					fileDialog.InitialDirectory = Path.GetFullPath(InitialDirectory);
 				}
@@ -156,6 +156,11 @@ namespace SCG.Commands
 				FileDialogResult fileDialogResult = FileDialogResult.Ok;
 				if (result == CommonFileDialogResult.Cancel) fileDialogResult = FileDialogResult.Cancel;
 				if (result == CommonFileDialogResult.None) fileDialogResult = FileDialogResult.None;
+
+				if(result == CommonFileDialogResult.Ok)
+				{
+					Directory.SetCurrentDirectory(fileDialog.FileName);
+				}
 
 				OnClose.Invoke(fileDialogResult, fileDialog.FileName);
 			}
