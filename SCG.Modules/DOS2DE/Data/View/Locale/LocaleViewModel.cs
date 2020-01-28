@@ -1052,7 +1052,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 						OutputDate = DateTime.Now.ToShortTimeString();
 					}
 
-					SaveLastFileImportPath(path, localeFileData);
+					SaveLastFileImportPath(Path.GetDirectoryName(path), localeFileData);
 				}
 			}
 
@@ -1714,8 +1714,15 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 				var settings = Settings.GetProjectSettings(project);
 				if (settings != null)
 				{
-					settings.LastEntryImportPath = Path.GetDirectoryName(lastFileImportPath);
-					Log.Here().Activity($"Saved settings.LastEntryImportPath: {settings.LastEntryImportPath}");
+					if(!Directory.Exists(lastFileImportPath))
+					{
+						settings.LastEntryImportPath = Path.GetDirectoryName(lastFileImportPath);
+					}
+					else
+					{
+						settings.LastEntryImportPath = lastFileImportPath;
+					}
+					Log.Here().Activity($"Saved settings.LastEntryImportPath: {settings.LastEntryImportPath} | {lastFileImportPath}");
 					view.SaveSettings();
 				}
 			}

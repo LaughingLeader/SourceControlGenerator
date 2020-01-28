@@ -122,9 +122,16 @@ namespace SCG.Commands
 
 				//if (FileCommands.IsValidFilePath(InitialDirectory) && !FileCommands.IsValidDirectoryPath(InitialDirectory)) InitialDirectory = Directory.GetParent(InitialDirectory).FullName + @"\";
 
-				if (!String.IsNullOrWhiteSpace(InitialDirectory) && Directory.Exists(InitialDirectory))
+				if (!String.IsNullOrWhiteSpace(InitialDirectory))
 				{
-					fileDialog.InitialDirectory = Path.GetFullPath(InitialDirectory);
+					if (Directory.Exists(InitialDirectory))
+					{
+						fileDialog.InitialDirectory = InitialDirectory;
+					}
+					else
+					{
+						InitialDirectory = Path.GetDirectoryName(InitialDirectory);
+					}
 				}
 				else
 				{
@@ -159,14 +166,21 @@ namespace SCG.Commands
 
 				if(result == CommonFileDialogResult.Ok)
 				{
-					Directory.SetCurrentDirectory(fileDialog.FileName);
+					Directory.SetCurrentDirectory(Path.GetDirectoryName(fileDialog.FileName));
 				}
 
 				OnClose.Invoke(fileDialogResult, fileDialog.FileName);
 			}
 			catch (Exception ex)
 			{
-				Log.Here().Error($"Error opening dialog window: {ex.ToString()}");
+				if(ex is InvalidOperationException)
+				{
+					
+				}
+				else
+				{
+					Log.Here().Error($"Error opening dialog window: {ex.ToString()}");
+				}
 			}
 		}
 
