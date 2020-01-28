@@ -107,6 +107,14 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			set { this.RaiseAndSetIfChanged(ref canAddFiles, value); }
 		}
 
+		private bool isCustom = false;
+
+		public bool IsCustom
+		{
+			get => isCustom;
+			set { this.RaiseAndSetIfChanged(ref isCustom, value); }
+		}
+
 		public void UpdateCombinedData()
 		{
 			Tabs.Clear();

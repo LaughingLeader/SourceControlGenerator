@@ -15,6 +15,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 		public LocaleCustomFileData(LocaleTabGroup parent, string name = "") : base(parent, name)
 		{
 			CanRename = CanClose = true;
+			CanCreateFileLink = false;
 		}
 	}
 }

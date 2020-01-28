@@ -2645,30 +2645,30 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 
 			this.WhenAnyValue(x => x.HideExtras).Subscribe((b) =>
 			{
-				//int totalHidden = 0;
-				if(SelectedGroup != null && SelectedGroup.SelectedFile != null)
+				foreach(var g in Groups)
 				{
-					foreach(var entry in SelectedGroup.SelectedFile.Entries)
+					foreach(var f in g.Tabs)
 					{
-						if(b)
+						foreach(var entry in f.Entries)
 						{
-							if (!entry.KeyIsEditable && entry.Key.Equals("GameMasterSpawnSubSection"))
+							if (b)
 							{
-								entry.Visible = false;
-								//totalHidden += 1;
+								if (!entry.KeyIsEditable && entry.Key.Equals("GameMasterSpawnSubSection"))
+								{
+									entry.Visible = false;
+								}
+								else
+								{
+									entry.Visible = true;
+								}
 							}
 							else
 							{
 								entry.Visible = true;
 							}
 						}
-						else
-						{
-							entry.Visible = true;
-						}
 					}
 				}
-				//Log.Here().Activity($"Updated extra key visibility {totalHidden}");
 			});
 
 			this.WhenAnyValue(x => x.SelectedFile).Throttle(TimeSpan.FromMilliseconds(25)).ObserveOn(RxApp.MainThreadScheduler).Subscribe((x) =>
@@ -2708,6 +2708,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			LevelDataGroup = new LocaleTabGroup(this, "LevelData");
 			LevelDataGroup.CanAddFiles = false;
 			CustomGroup = new CustomLocaleTabGroup(this, "Custom");
+			CustomGroup.IsCustom = true;
 
 #if Debug
 			Groups = new ObservableCollectionExtended<LocaleTabGroup>

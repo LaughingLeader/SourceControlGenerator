@@ -828,12 +828,34 @@ namespace SCG.Modules.DOS2DE.Utilities
 			{
 				Log.Here().Activity($"Saving '{dataFile.Name}' to '{dataFile.SourcePath}'.");
 
-				string outputFilename = Path.Combine(targetDirectory, dataFile.Name, ".json");
-				string json = JsonInterface.SerializeObject(dataFile);
-				if(await FileCommands.WriteToFileAsync(outputFilename, json))
+				if (dataFile.SourcePath.EndsWith(".tsv"))
 				{
-					Log.Here().Important($"Saved '{dataFile.SourcePath}'.");
-					return 1;
+					string output = "Key\tContent\tHandle\n";
+					for(int i = 0; i < dataFile.Entries.Count; i++)
+					{
+						var entry = dataFile.Entries[i];
+						output += $"{entry.Key}\t{entry.Content}{entry.Handle}";
+						if(i < dataFile.Entries.Count - 1)
+						{
+							output += Environment.NewLine;
+						}
+						if (await FileCommands.WriteToFileAsync(dataFile.SourcePath, output))
+						{
+							Log.Here().Important($"Saved '{dataFile.SourcePath}'.");
+							return 1;
+						}
+					}
+
+				}
+				else if (dataFile.SourcePath.EndsWith(".json") || String.IsNullOrEmpty(dataFile.SourcePath))
+				{
+					string outputFilename = String.IsNullOrEmpty(dataFile.SourcePath) ? Path.Combine(targetDirectory, dataFile.Name, ".json") : dataFile.SourcePath;
+					string json = JsonInterface.SerializeObject(dataFile);
+					if (await FileCommands.WriteToFileAsync(outputFilename, json))
+					{
+						Log.Here().Important($"Saved '{outputFilename}'.");
+						return 1;
+					}
 				}
 			}
 			catch (Exception ex)
@@ -1386,13 +1408,26 @@ namespace SCG.Modules.DOS2DE.Utilities
 					{
 						foreach (var sourceDir in groupData.SourceDirectories)
 						{
-							var fileData = CreateNodeFileDataFromTextual(groupData, stream, sourceDir, path, delimiter);
-							// Automatically create linked data
-							fileData.FileLinkData = new LocaleFileLinkData()
+							ILocaleFileData fileData = null;
+							if(!groupData.IsCustom)
 							{
-								ReadFrom = path,
-								TargetFile = fileData.SourcePath
-							};
+								fileData = CreateNodeFileDataFromTextual(groupData, stream, sourceDir, path, delimiter);
+								// Automatically create linked data
+								fileData.FileLinkData = new LocaleFileLinkData()
+								{
+									ReadFrom = path,
+									TargetFile = fileData.SourcePath
+								};
+							}
+							else
+							{
+								fileData = new LocaleCustomFileData(groupData, Path.GetFileNameWithoutExtension(path))
+								{
+									SourcePath = path
+								};
+							}
+							
+							
 							newFileDataList.Add(fileData);
 						}
 					}
