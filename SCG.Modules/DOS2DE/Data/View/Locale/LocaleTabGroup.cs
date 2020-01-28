@@ -115,30 +115,46 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			set { this.RaiseAndSetIfChanged(ref isCustom, value); }
 		}
 
-		public void UpdateCombinedData()
+		public void UpdateCombinedData(bool all = false)
 		{
-			Tabs.Clear();
-			Tabs.Add(CombinedEntries);
-			Tabs.AddRange(DataFiles);
-
-			CombinedEntries.Entries.Clear();
-			foreach (var obj in DataFiles)
+			if(all || (Tabs.Count == 0 || CombinedEntries.Entries.Count == 0))
 			{
-				CombinedEntries.Entries.AddRange(obj.Entries);
+				Tabs.Clear();
+				Tabs.Add(CombinedEntries);
+				Tabs.AddRange(DataFiles);
+
+				CombinedEntries.Entries.Clear();
+				foreach (var obj in DataFiles)
+				{
+					CombinedEntries.Entries.AddRange(obj.Entries);
+				}
+				//CombinedEntries.Entries.OrderBy(e => e.Key);
+				this.RaisePropertyChanged("CombinedEntries");
+				this.RaisePropertyChanged("Tabs");
+				Log.Here().Activity($"Updated combined entries for '{Name}'.");
+
+				var nextIndex = -1;
+
+				if (SelectedFile != null)
+				{
+					nextIndex = Tabs.IndexOf(SelectedFile);
+				}
+				if (SelectedFileIndex != nextIndex && nextIndex >= 0) SelectedFileIndex = nextIndex;
 			}
-			//CombinedEntries.Entries.OrderBy(e => e.Key);
-			this.RaisePropertyChanged("CombinedEntries");
-			this.RaisePropertyChanged("Tabs");
-			Log.Here().Activity($"Updated combined entries for '{Name}'.");
-
-			var nextIndex = 0;
-
-			if(SelectedFile != null)
+			else
 			{
-				nextIndex = Tabs.IndexOf(SelectedFile);
+				if(CombinedEntries.Entries.Count != DataFiles.Count || CombinedEntries.Entries.Count == 0)
+				{
+					CombinedEntries.Entries.Clear();
+					foreach (var obj in DataFiles)
+					{
+						CombinedEntries.Entries.AddRange(obj.Entries);
+					}
+					this.RaisePropertyChanged("CombinedEntries");
+					this.RaisePropertyChanged("Tabs");
+					Log.Here().Activity($"Updated combined entries for '{Name}'.");
+				}
 			}
-
-			if (SelectedFileIndex != nextIndex) SelectedFileIndex = nextIndex;
 		}
 
 		public void SelectFirst()
@@ -172,7 +188,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			CombinedEntries.Locked = true;
 			DataFiles = new ObservableCollectionExtended<ILocaleFileData>();
 			Tabs = new ObservableCollectionExtended<ILocaleFileData>();
-			UpdateAllCommand = new ActionCommand(UpdateCombinedData);
+			UpdateAllCommand = ReactiveCommand.Create(() => UpdateCombinedData(true));
 		}
 	}
 }
