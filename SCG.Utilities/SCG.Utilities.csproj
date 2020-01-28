@@ -78,6 +78,7 @@
     <Compile Include="Util\ProcessHelper.cs" />
     <Compile Include="Util\PropertyCopier.cs" />
     <Compile Include="Util\RegistryHelper.cs" />
+    <Compile Include="Util\XMLHelper.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
