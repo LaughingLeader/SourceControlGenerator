@@ -23,6 +23,8 @@ namespace SCG.Modules.DOS2DE.Windows
 	/// </summary>
 	public partial class LocaleExportWindow : HideWindowBase, IViewFor<LocaleViewModel>
 	{
+		public bool ExportAll { get; set; } = false;
+
 		public LocaleExportWindow()
 		{
 			InitializeComponent();
@@ -81,7 +83,7 @@ namespace SCG.Modules.DOS2DE.Windows
 			{
 				Log.Here().Activity("Exporting data to xml format.");
 				outputTextbox.Text = "";
-				outputTextbox.Text = LocaleEditorCommands.ExportDataAsXML(ViewModel);
+				outputTextbox.Text = LocaleEditorCommands.ExportDataAsXML(ViewModel, ExportAll);
 			}
 		}
 	}

@@ -1113,7 +1113,8 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 		public ICommand CloseFileCommand { get; private set; }
 		public ICommand ImportFileCommand { get; internal set; }
 		public ICommand ImportKeysCommand { get; internal set; }
-		public ICommand ExportXMLCommand { get; private set; }
+		public ICommand ExportAllXMLCommand { get; private set; }
+		public ICommand ExportSelectedXMLCommand { get; private set; }
 		public ICommand CheckForDuplicateKeysCommand { get; private set; }
 
 		public ICommand SaveAllCommand { get; private set; }
@@ -1339,6 +1340,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 					view.ExportWindow.Show();
 					view.ExportWindow.Owner = view;
 				}
+				view.ExportWindow.ExportAll = exportAll;
 			}
 		}
 
@@ -2281,7 +2283,8 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			UpdateCombinedGroup(true);
 
 			//ExportXMLCommand = ReactiveCommand.Create<bool>(OpenExportWindow, AnySelectedEntryObservable).DisposeWith(disposables);
-			ExportXMLCommand = ReactiveCommand.Create<bool>(OpenExportWindow).DisposeWith(disposables);
+			ExportAllXMLCommand = ReactiveCommand.Create(() => OpenExportWindow(true)).DisposeWith(disposables);
+			ExportSelectedXMLCommand = ReactiveCommand.Create(() => OpenExportWindow(false)).DisposeWith(disposables);
 			AddFileToGroupCommand = ReactiveCommand.Create<CustomLocaleTabGroup>(AddCustomFileToGroup, CanImportFilesObservable).DisposeWith(disposables);
 
 			var canConfirmAddFile = this.WhenAny(vm => vm.NewFileTabName, e => !String.IsNullOrWhiteSpace(e.Value));
@@ -2442,7 +2445,8 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			MenuData.File.Add(new SeparatorData());
 			MenuData.File.Add(new MenuData("File.ExportSelected", "Export Selected File to Text File...", ExportFileAsTextualCommand));
 			MenuData.File.Add(new SeparatorData());
-			MenuData.File.Add(new MenuData("File.ExportSelected", DOS2DETooltips.Button_Locale_ExportToXML, ExportXMLCommand, Key.E, ModifierKeys.Control | ModifierKeys.Shift));
+			MenuData.File.Add(new MenuData("File.ExportSelected", DOS2DETooltips.Button_Locale_ExportAllToXML, ExportXMLCommand, Key.E, ModifierKeys.Control));
+			MenuData.File.Add(new MenuData("File.ExportSelected", DOS2DETooltips.Button_Locale_ExportSelectedToXML, ExportXMLCommand, Key.E, ModifierKeys.Control | ModifierKeys.Shift));
 
 			//MenuData.File.Add(CreateMenuDataWithLink(() => CanAddFile, "CanAddFile", "File.ImportFile", "Import File", ImportFileCommand));
 			//MenuData.File.Add(CreateMenuDataWithLink(() => CanAddKeys, "CanAddKeys", "File.ImportKeys", "Import File as Keys", ImportKeysCommand));
