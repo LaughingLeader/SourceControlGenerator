@@ -36,6 +36,7 @@ using LSLib.LS;
 using System.Text.RegularExpressions;
 using System.Xml.Linq;
 using SCG.Data.Xml;
+using System.Reactive;
 
 namespace SCG.Core
 {
@@ -1043,31 +1044,38 @@ namespace SCG.Core
 
 		public async Task RefreshAllProjects()
 		{
-			if (MainAppData.ProgressActive) return;
-
 			if (Data.CanClickRefresh)
 			{
 				RxApp.MainThreadScheduler.Schedule(() =>
 				{
-					if (projectViewControl != null)
+					if(!MainAppData.ProgressActive)
 					{
-						projectViewControl.FadeLoadingPanel(false);
+						if (projectViewControl != null)
+						{
+							projectViewControl.FadeLoadingPanel(false);
+						}
+						else
+						{
+							HideLoadingPanel();
+						}
 					}
-					else
-					{
-						HideLoadingPanel();
-					}
+					
 					Data.ModProjects.Clear();
 					Data.CanClickRefresh = false;
 				});
 
-				var newMods = await DOS2DECommands.LoadAllAsync(projectViewControl.Dispatcher, Data);
+				await Task.Delay(250);
+
+				var newMods = await DOS2DECommands.LoadAllAsync(Data);
 
 				RxApp.MainThreadScheduler.Schedule(() =>
 				{
 					Data.ModProjects.AddRange(newMods);
 					Data.CanClickRefresh = true;
-					HideLoadingPanel();
+					if (!MainAppData.ProgressActive)
+					{
+						HideLoadingPanel();
+					}
 				});
 			}
 			else
@@ -1076,19 +1084,18 @@ namespace SCG.Core
 			}
 		}
 
-		public async Task RefreshModProjects()
+		public async Task<Unit> RefreshModProjects()
 		{
-			if (MainAppData.ProgressActive) return;
-
 			if (Data.CanClickRefresh)
 			{
 				Data.CanClickRefresh = false;
 				//projectViewControl.LoadingProjectsPanel.Opacity = 1d;
 				//projectViewControl.LoadingProjectsPanel.Visibility = System.Windows.Visibility.Visible;
-				await DOS2DECommands.RefreshManagedProjects(projectViewControl.Dispatcher, Data);
+				await DOS2DECommands.RefreshManagedProjects(Data);
 				Data.CanClickRefresh = true;
 				//HideLoadingPanel();
 			}
+			return Unit.Default;
 		}
 
 		private ModProjectData ReplaceKeywordAction(IProjectData data)
@@ -1260,11 +1267,11 @@ namespace SCG.Core
 			{
 				if (await CreateEditorProjectFromPakAsync(path))
 				{
-					MainWindow.FooterLog($"Successfully created project from {path}");
+					MainWindow.FooterLog($"Successfully created project from {Path.GetFileName(path)}");
 				}
 				else
 				{
-					MainWindow.FooterError($"Problem occurred when creating project from {path}. Check the log (F8).");
+					MainWindow.FooterError($"Problem occurred when creating project from {Path.GetFileName(path)}. Check the log (F8).");
 				}
 				AppController.Main.FinishProgress();
 				return Disposable.Empty;

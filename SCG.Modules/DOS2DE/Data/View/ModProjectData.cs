@@ -22,6 +22,7 @@ using System.Reactive;
 using System.Reactive.Concurrency;
 using System.Text.RegularExpressions;
 using SCG.Util;
+using System.Reactive.Linq;
 
 namespace SCG.Modules.DOS2DE.Data.View
 {
@@ -576,12 +577,20 @@ namespace SCG.Modules.DOS2DE.Data.View
 				string contents = await FileCommands.ReadFileAsync(ModMetaFilePath);
 				if (!String.IsNullOrWhiteSpace(contents))
 				{
-					var modMetaXml = XDocument.Parse(contents);
+					var modMetaXml = await Observable.Start(() =>
+					{
+						return XDocument.Parse(contents);
+					}, RxApp.MainThreadScheduler);
+
 					if (modMetaXml != null)
 					{
-						this.ModuleInfo.LoadFromXml(modMetaXml);
-						LoadDependencies(modMetaXml);
-						ModuleInfo.RaisePropertyChanged(String.Empty);
+						await Observable.Start(() =>
+						{
+							this.ModuleInfo.LoadFromXml(modMetaXml);
+							LoadDependencies(modMetaXml);
+							ModuleInfo.RaisePropertyChanged(String.Empty);
+							return Unit.Default;
+						}, RxApp.MainThreadScheduler);
 					}
 				}
 			}
@@ -591,12 +600,20 @@ namespace SCG.Modules.DOS2DE.Data.View
 				string contents = XMLHelper.EscapeXmlAttributes(await FileCommands.ReadFileAsync(ProjectMetaFilePath));
 				if (!String.IsNullOrWhiteSpace(contents))
 				{
-					var projectMetaXml = XDocument.Parse(contents);
+					var projectMetaXml = await Observable.Start(() =>
+					{
+						return XDocument.Parse(contents);
+					}, RxApp.MainThreadScheduler);
+
 					if (projectMetaXml != null)
 					{
-						this.ProjectInfo.LoadFromXml(projectMetaXml);
-						LoadThumbnail(Path.GetDirectoryName(ProjectMetaFilePath));
-						ProjectInfo.RaisePropertyChanged(String.Empty);
+						await Observable.Start(() =>
+						{
+							this.ProjectInfo.LoadFromXml(projectMetaXml);
+							LoadThumbnail(Path.GetDirectoryName(ProjectMetaFilePath));
+							ProjectInfo.RaisePropertyChanged(String.Empty);
+							return Unit.Default;
+						}, RxApp.MainThreadScheduler);
 					}
 				}
 			}
