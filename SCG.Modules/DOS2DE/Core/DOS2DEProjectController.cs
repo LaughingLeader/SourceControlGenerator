@@ -32,6 +32,10 @@ using System.Reactive.Concurrency;
 using System.Reactive.Linq;
 using DynamicData;
 using System.Reactive.Disposables;
+using LSLib.LS;
+using System.Text.RegularExpressions;
+using System.Xml.Linq;
+using SCG.Data.Xml;
 
 namespace SCG.Core
 {
@@ -1043,29 +1047,28 @@ namespace SCG.Core
 
 			if (Data.CanClickRefresh)
 			{
-				Data.CanClickRefresh = false;
-
-				if (projectViewControl != null)
+				RxApp.MainThreadScheduler.Schedule(() =>
 				{
-					this.projectViewControl.FadeLoadingPanel(false);
-
-					this.projectViewControl.Dispatcher.Invoke(new Action(() => {
-						Data.ModProjects.Clear();
-					}));
-
-					await this.projectViewControl.Dispatcher.BeginInvoke(DispatcherPriority.Background, new Action(async () => {
-						var newMods = await DOS2DECommands.LoadAllAsync(projectViewControl.Dispatcher, Data);
-						Data.ModProjects.AddRange(newMods);
-						Data.CanClickRefresh = true;
-
+					if (projectViewControl != null)
+					{
+						projectViewControl.FadeLoadingPanel(false);
+					}
+					else
+					{
 						HideLoadingPanel();
-					}));
-				}
-				else
+					}
+					Data.ModProjects.Clear();
+					Data.CanClickRefresh = false;
+				});
+
+				var newMods = await DOS2DECommands.LoadAllAsync(projectViewControl.Dispatcher, Data);
+
+				RxApp.MainThreadScheduler.Schedule(() =>
 				{
+					Data.ModProjects.AddRange(newMods);
+					Data.CanClickRefresh = true;
 					HideLoadingPanel();
-				}
-				
+				});
 			}
 			else
 			{
@@ -1217,6 +1220,166 @@ namespace SCG.Core
 			}
 		}
 
+		private void CreateEditorProjectFromPak_Start()
+		{
+			string documentsFolder = System.Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+			string startDirectory = documentsFolder;
+
+			string larianDocumentsFolder = Path.Combine(documentsFolder, @"Larian Studios\Divinity Original Sin 2 Definitive Edition");
+			if (Directory.Exists(larianDocumentsFolder))
+			{
+				startDirectory = larianDocumentsFolder;
+				string modPakFolder = Path.Combine(larianDocumentsFolder, "Mods");
+				if (Directory.Exists(modPakFolder))
+				{
+					startDirectory = modPakFolder;
+				}
+				else
+				{
+					modPakFolder = Path.Combine(larianDocumentsFolder, "Local Mods");
+					if (Directory.Exists(modPakFolder))
+					{
+						startDirectory = modPakFolder;
+					}
+				}
+			}
+
+			FileCommands.Load.OpenFileDialog(this.projectViewControl.MainWindow, "Create Divinity Editor Project from Mod Pak...",
+					startDirectory, CreateEditorProjectFromPak_OnDialogDone, "", null, DOS2DEFileFilters.LarianPakFile);
+		}
+
+		private void CreateEditorProjectFromPak_OnDialogDone(string path)
+		{
+			AppController.Main.Data.ProgressValueMax = 100;
+			AppController.Main.StartProgress($"Creating project from pak... ", () => CreateEditorProjectFromPak(path), "", 0, true);
+		}
+
+		private void CreateEditorProjectFromPak(string path)
+		{
+			RxApp.TaskpoolScheduler.ScheduleAsync(async (ctrl, t) =>
+			{
+				if (await CreateEditorProjectFromPakAsync(path))
+				{
+					MainWindow.FooterLog($"Successfully created project from {path}");
+				}
+				else
+				{
+					MainWindow.FooterError($"Problem occurred when creating project from {path}. Check the log (F8).");
+				}
+				AppController.Main.FinishProgress();
+				return Disposable.Empty;
+			});
+		}
+
+		private async Task<bool> CreateEditorProjectFromPakAsync(string path)
+		{
+			string outputDirectory = Data.Settings.DOS2DEDataDirectory;
+			AppController.Main.UpdateProgressMessage($"Checking data directory {outputDirectory}...");
+			if (Directory.Exists(outputDirectory))
+			{
+				try
+				{
+					ModuleInfo moduleInfo = null;
+
+					AppController.Main.UpdateProgressMessage($"Reading Mods meta.lsx in pak...");
+
+					using (var pr = new LSLib.LS.PackageReader(path))
+					{
+						string pakName = Path.GetFileNameWithoutExtension(path);
+
+						var pak = pr.Read();
+						var metaFiles = pak?.Files?.Where(pf => DOS2DEXMLUtils.IsModMetaFile(pakName, pf));
+						AbstractFileInfo metaFile = null;
+						foreach (var f in metaFiles)
+						{
+							var parentDir = Directory.GetParent(f.Name);
+							// A pak may have multiple meta.lsx files for overriding NumPlayers or something. Match against the pak name in that case.
+							if (parentDir.Name == pakName)
+							{
+								metaFile = f;
+								break;
+							}
+						}
+						if (metaFile == null) metaFile = metaFiles.FirstOrDefault();
+						if (metaFile != null)
+						{
+							Log.Here().Activity($"Parsing meta.lsx for mod pak '{path}'.");
+							using (var stream = metaFile.MakeStream())
+							{
+								using (var sr = new System.IO.StreamReader(stream))
+								{
+									string metaContents = await sr.ReadToEndAsync();
+
+									AppController.Main.UpdateProgressLog("Parsing meta.lsx.");
+									moduleInfo = new ModuleInfo();
+									moduleInfo.LoadFromXml(XDocument.Parse(DOS2DEXMLUtils.EscapeXmlAttributes(metaContents)), true);
+
+									AppController.Main.UpdateProgressLog("Loaded meta.lsx.");
+									AppController.Main.UpdateProgress(20);
+								}
+							}
+						}
+						else
+						{
+							Log.Here().Error($"Error: No meta.lsx for mod pak '{path}'.");
+						}
+					}
+
+					if(moduleInfo != null && !String.IsNullOrWhiteSpace(moduleInfo.UUID) && !String.IsNullOrWhiteSpace(moduleInfo.Folder))
+					{
+						AppController.Main.UpdateProgressMessage($"Preparing pak extraction...");
+
+						string projectMetaFile = Path.Combine(Data.Settings.DOS2DEDataDirectory, $"Projects/{moduleInfo.Folder}/meta.lsx");
+
+						if (!Data.ModProjects.Items.Any(x => x.ModuleInfo.UUID == moduleInfo.UUID))
+						{
+							AppController.Main.UpdateProgressMessage($"Extracting pak...");
+							if (await DOS2DEPackageCreator.ExtractPackageAsync(path, outputDirectory, CancellationToken.None))
+							{
+								Log.Here().Important($"Successfully extracted pak {path}.");
+								AppController.Main.UpdateProgressLog($"Pak extracted!");
+							}
+						}
+						else
+						{
+							AppController.Main.UpdateProgressLog($"Project already extracted? Skipping so we don't kill your files.");
+							Log.Here().Warning($"Mod project {moduleInfo.Name}({moduleInfo.UUID}) already exists in data directory. Skipping extraction.");
+						}
+
+						AppController.Main.UpdateProgress(60);
+
+						AppController.Main.UpdateProgressMessage($"Creating Project meta.lsx...");
+
+						if (!File.Exists(projectMetaFile))
+						{
+							AppController.Main.UpdateProgressLog($"Creating meta.lsx for project at {projectMetaFile}");
+							System.IO.FileInfo file = new System.IO.FileInfo(projectMetaFile);
+							file.Directory.Create(); // If the directory already exists, this method does nothing.
+							File.WriteAllText(file.FullName, DOS2DEXMLUtils.CreateProjectMetaString(moduleInfo.UUID, DOS2DEXMLUtils.UnescapeXml(moduleInfo.Name), moduleInfo.Type));
+							Log.Here().Important($"Successfully extracted '{path}' and turned it into an editor project. {moduleInfo.Name}({moduleInfo.UUID}).");
+							AppController.Main.UpdateProgressMessage($"Success! Refreshing projects...");
+							await RefreshAllProjects();
+						}
+						else
+						{
+							Log.Here().Warning($"Project meta file {projectMetaFile} already exists. Skipping.");
+						}
+						AppController.Main.UpdateProgress(20);
+						return true;
+					}
+				}
+				catch (Exception ex)
+				{
+					Log.Here().Error($"Error extracting package: {ex.ToString()}");
+				}
+			}
+			else
+			{
+				Log.Here().Error($"Data directory does not exist!");
+			}
+			return false;
+		}
+
 		private MenuData BackupSelectedMenuData { get; set; }
 		private MenuData BackupSelectedToMenuData { get; set; }
 		private MenuData StartGitGenerationMenuData { get; set; }
@@ -1283,7 +1446,10 @@ namespace SCG.Core
 
 			MainAppData.MenuBarData.Tools.Register(Data.ModuleName,
 				new SeparatorData(),
-				OpenLocalizationEditorMenuData
+				OpenLocalizationEditorMenuData,
+				new SeparatorData(),
+				new MenuData("DOS2DE.CreateEditorProject",
+				"Create Editor Project from Pak...", ReactiveCommand.Create(CreateEditorProjectFromPak_Start))
 			);
 
 			Data.OnLockScreenChangedAction = new Action<System.Windows.Visibility, bool>((v, b) =>
