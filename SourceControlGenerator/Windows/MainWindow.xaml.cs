@@ -244,7 +244,7 @@ namespace SCG.Windows
 
 		public static void FooterLog(string Message, params object[] Vars)
 		{
-			_instance?.Dispatcher.Invoke(() =>
+			RxApp.MainThreadScheduler.Schedule(_ =>
 			{
 				Message = String.Format(Message, Vars);
 				_instance.Controller.SetFooter(Message, LogType.Important);
@@ -254,7 +254,7 @@ namespace SCG.Windows
 
 		public static void FooterError(string Message, params object[] Vars)
 		{
-			_instance?.Dispatcher.Invoke(() =>
+			RxApp.MainThreadScheduler.Schedule(_ =>
 			{
 				Message = String.Format(Message, Vars);
 				_instance.Controller.SetFooter(Message, LogType.Error);
