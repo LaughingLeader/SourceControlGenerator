@@ -49,7 +49,7 @@ namespace SCG.Modules.DOS2DE.Core
 		public static string Button_Locale_GenerateHandles = "Generate Handles for Selected Entries...\nOnly unset handles will be replaced.";
 		public static string Button_Locale_ReplaceResHandles = "Replace all selected ResStr handles with newly generated handles.\nRes_ handles are unset handles wrapped inside a new handle. It's weird.";
 		public static string Button_Locale_ExportAllToXML = "Generate Language XML from All...";
-		public static string Button_Locale_ExportToXML = "Generate Language XML from Selected...";
+		public static string Button_Locale_ExportSelectedToXML = "Generate Language XML from Selected...";
 		public static string Button_Locale_SaveAll = "Save All Localization Files";
 		public static string Button_Locale_SaveCurrent = "Save";
 		public static string Button_Locale_SaveCurrent_Disabled = "Save (Disabled - Select a File Tab)";

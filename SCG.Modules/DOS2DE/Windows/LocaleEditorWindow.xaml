@@ -221,17 +221,15 @@
 					<c:ImageButton
 						x:Name="ExportAllButton"
 						cb:ImageButtonHoverOnDisabled.Enable="True"
-						Command="{Binding Path=DataContext.ExportXMLCommand, RelativeSource={RelativeSource AncestorType={x:Type Window}}}"
-						CommandParameter="{StaticResource True}"
-						Source="{x:Static vdata:IconPathData.XSLTTemplate}"
+						Command="{Binding Path=DataContext.ExportAllXMLCommand, RelativeSource={RelativeSource AncestorType={x:Type Window}}}"
+						Source="{x:Static vdata:IconPathData.XMLDocumentTypeDefinitionFile}"
 						ToolTip="{x:Static core:DOS2DETooltips.Button_Locale_ExportAllToXML}" />
 					<c:ImageButton
 						x:Name="ExportButton"
 						cb:ImageButtonHoverOnDisabled.Enable="True"
-						Command="{Binding Path=DataContext.ExportXMLCommand, RelativeSource={RelativeSource AncestorType={x:Type Window}}}"
-						CommandParameter="{StaticResource False}"
+						Command="{Binding Path=DataContext.ExportSelectedXMLCommand, RelativeSource={RelativeSource AncestorType={x:Type Window}}}"
 						Source="{x:Static vdata:IconPathData.XSLTTemplate}"
-						ToolTip="{x:Static core:DOS2DETooltips.Button_Locale_ExportToXML}" />
+						ToolTip="{x:Static core:DOS2DETooltips.Button_Locale_ExportSelectedToXML}" />
 					<Rectangle Style="{StaticResource VerticalSeparator}" />
 					<c:ImageButton
 						cb:ImageButtonHoverOnDisabled.Enable="True"
@@ -244,14 +242,14 @@
 						cb:ImageButtonHoverOnDisabled.Enable="True"
 						Command="{Binding Path=DataContext.RemoveFileLinkDataCommand, RelativeSource={RelativeSource AncestorType={x:Type Window}}}"
 						CommandParameter="{Binding}"
-						Source="{x:Static vdata:IconPathData.LinkRemoved}"
+						Source="{x:Static vdata:IconPathData.FileExclude}"
 						ToolTip="{x:Static core:DOS2DETooltips.Button_Locale_RemoveLinkedData}"
 						Visibility="{Binding HasFileLink, Converter={StaticResource BoolToVisibilityConverter}}" />
 					<c:ImageButton
 						cb:ImageButtonHoverOnDisabled.Enable="True"
 						Command="{Binding Path=DataContext.ReloadFileLinkDataCommand, RelativeSource={RelativeSource AncestorType={x:Type Window}}}"
 						CommandParameter="{Binding}"
-						Source="{x:Static vdata:IconPathData.LinkVertical}"
+						Source="{x:Static vdata:IconPathData.QuickRefresh}"
 						ToolTip="{x:Static core:DOS2DETooltips.Button_Locale_RefreshLinkedData}"
 						Visibility="{Binding HasFileLink, Converter={StaticResource BoolToVisibilityConverter}}" />
 					<TextBlock
