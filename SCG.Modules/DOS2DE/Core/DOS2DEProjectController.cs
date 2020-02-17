@@ -1317,11 +1317,11 @@ namespace SCG.Core
 								{
 									string metaContents = await sr.ReadToEndAsync();
 
-									AppController.Main.UpdateProgressLog("Parsing meta.lsx.");
+									AppController.Main.UpdateProgressLog(@"Parsing Mods\..\meta.lsx.");
 									moduleInfo = new ModuleInfo();
 									moduleInfo.LoadFromXml(XDocument.Parse(DOS2DEXMLUtils.EscapeXmlAttributes(metaContents)), true);
 
-									AppController.Main.UpdateProgressLog("Loaded meta.lsx.");
+									AppController.Main.UpdateProgressLog(@"Loaded Mods\..\meta.lsx.");
 									AppController.Main.UpdateProgress(20);
 								}
 							}
@@ -1340,7 +1340,8 @@ namespace SCG.Core
 
 						if (!Data.ModProjects.Items.Any(x => x.ModuleInfo.UUID == moduleInfo.UUID))
 						{
-							AppController.Main.UpdateProgressMessage($"Extracting pak...");
+							AppController.Main.UpdateProgressMessage($"Extracting...");
+							AppController.Main.UpdateProgressLog($"Extracting pak...");
 							if (await DOS2DEPackageCreator.ExtractPackageAsync(path, outputDirectory, CancellationToken.None))
 							{
 								Log.Here().Important($"Successfully extracted pak {path}.");
@@ -1365,6 +1366,7 @@ namespace SCG.Core
 							File.WriteAllText(file.FullName, DOS2DEXMLUtils.CreateProjectMetaString(moduleInfo.UUID, DOS2DEXMLUtils.UnescapeXml(moduleInfo.Name), moduleInfo.Type));
 							Log.Here().Important($"Successfully extracted '{path}' and turned it into an editor project. {moduleInfo.Name}({moduleInfo.UUID}).");
 							AppController.Main.UpdateProgressMessage($"Success! Refreshing projects...");
+							AppController.Main.UpdateProgressTitle($"Refreshing projects...");
 							await RefreshAllProjects();
 						}
 						else
