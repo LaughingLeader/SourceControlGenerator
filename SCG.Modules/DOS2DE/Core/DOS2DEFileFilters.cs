@@ -9,6 +9,12 @@ namespace SCG.Modules.DOS2DE.Core
 {
 	public static class DOS2DEFileFilters
 	{
+		public static FileBrowserFilter LarianPakFile { get; private set; } = new FileBrowserFilter()
+		{
+			Name = "Divinity Mod Pak",
+			Values = "*.pak"
+		};
+
 		public static FileBrowserFilter LarianBinaryFile { get; private set; } = new FileBrowserFilter()
 		{
 			Name = "Larian StringKey file",
