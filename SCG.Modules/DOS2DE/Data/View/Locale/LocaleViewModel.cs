@@ -2445,8 +2445,8 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			MenuData.File.Add(new SeparatorData());
 			MenuData.File.Add(new MenuData("File.ExportSelected", "Export Selected File to Text File...", ExportFileAsTextualCommand));
 			MenuData.File.Add(new SeparatorData());
-			MenuData.File.Add(new MenuData("File.ExportSelected", DOS2DETooltips.Button_Locale_ExportAllToXML, ExportXMLCommand, Key.E, ModifierKeys.Control));
-			MenuData.File.Add(new MenuData("File.ExportSelected", DOS2DETooltips.Button_Locale_ExportSelectedToXML, ExportXMLCommand, Key.E, ModifierKeys.Control | ModifierKeys.Shift));
+			MenuData.File.Add(new MenuData("File.ExportAll", DOS2DETooltips.Button_Locale_ExportAllToXML, ExportAllXMLCommand, Key.E, ModifierKeys.Control));
+			MenuData.File.Add(new MenuData("File.ExportSelected", DOS2DETooltips.Button_Locale_ExportSelectedToXML, ExportSelectedXMLCommand, Key.E, ModifierKeys.Control | ModifierKeys.Shift));
 
 			//MenuData.File.Add(CreateMenuDataWithLink(() => CanAddFile, "CanAddFile", "File.ImportFile", "Import File", ImportFileCommand));
 			//MenuData.File.Add(CreateMenuDataWithLink(() => CanAddKeys, "CanAddKeys", "File.ImportKeys", "Import File as Keys", ImportKeysCommand));
