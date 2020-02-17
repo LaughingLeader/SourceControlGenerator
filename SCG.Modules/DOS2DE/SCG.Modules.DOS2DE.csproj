@@ -245,6 +245,7 @@
     </Compile>
     <Compile Include="Utilities\DOS2DEPackageCreator.cs" />
     <Compile Include="Utilities\DOS2DERegistryHelper.cs" />
+    <Compile Include="Utilities\DOS2DEXMLUtils.cs" />
     <Compile Include="Utilities\LocaleEditorCommands.cs" />
     <Compile Include="Utilities\LocalizationTextFormatter.cs" />
     <Compile Include="Views\DOS2DEProjectsView.xaml.cs">
