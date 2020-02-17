@@ -148,5 +148,32 @@ namespace SCG.Modules.DOS2DE.Utilities
 
 			return task;
 		}
+
+		public static async Task<bool> ExtractPackageAsync(string pakPath, string outputDirectory, CancellationToken token)
+		{
+			var task = await Task.Run(async () =>
+			{
+				// execute actual operation in child task
+				var childTask = Task.Factory.StartNew(() =>
+				{
+					try
+					{
+						var packager = new Packager();
+						packager.UncompressPackage(pakPath, outputDirectory, null);
+						return true;
+					}
+					catch (Exception) { return false; }
+				}, TaskCreationOptions.AttachedToParent);
+
+				var awaiter = childTask.GetAwaiter();
+				while (!awaiter.IsCompleted)
+				{
+					await Task.Delay(0, token);
+				}
+				return childTask.Result;
+			}, token);
+
+			return task;
+		}
 	}
 }
