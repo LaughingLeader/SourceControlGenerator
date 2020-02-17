@@ -628,6 +628,18 @@
     <Resource Include="Resources\Icons\LinkFile_16x.png" />
     <Resource Include="Resources\Icons\LinkRemoved_16x.png" />
     <Resource Include="Resources\Icons\LinkVertical_16x.png" />
+    <Resource Include="Resources\Icons\CreateListItem_16x.png" />
+    <Resource Include="Resources\Icons\CustomActionEditor_16x.png" />
+    <Resource Include="Resources\Icons\ExportScript_16x.png" />
+    <Resource Include="Resources\Icons\ExportTableToFile_16x.png" />
+    <Resource Include="Resources\Icons\FileExclude_16x.png" />
+    <Resource Include="Resources\Icons\FileSource_16x.png" />
+    <Resource Include="Resources\Icons\WriteToHistory_16x.png" />
+    <Resource Include="Resources\Icons\XMLDocumentTypeDefinitionFile_16x.png" />
+    <Resource Include="Resources\Icons\CacheRefresh_16x.png" />
+    <Resource Include="Resources\Icons\QuickRefresh_16x.png" />
+    <Resource Include="Resources\Icons\RefreshScript_16x.png" />
+    <Resource Include="Resources\Icons\Refresh_grey_16xMD.png" />
     <Content Include="Resources\Logos\DivinityOriginalSin2DE.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
