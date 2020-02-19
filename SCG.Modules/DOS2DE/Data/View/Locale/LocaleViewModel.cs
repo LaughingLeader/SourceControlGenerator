@@ -965,6 +965,51 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			}
 		}
 
+		public void AddNewFile()
+		{
+			if (SelectedGroup != null)
+			{
+				var currentGroup = Groups.Where(g => g == SelectedGroup).First();
+				var totalFiles = currentGroup.Tabs.Count;
+				string futurePath = FileCommands.EnsureExtension(Path.Combine(currentGroup.SourceDirectories.First(), "NewFile" + totalFiles), ".lsb");
+				var newFile = LocaleEditorCommands.CreateFileData(currentGroup, futurePath, "NewFile" + totalFiles);
+				bool lastChangesUnsaved = currentGroup.ChangesUnsaved;
+				bool lastGlobalChangesUnsaved = ChangesUnsaved;
+
+				void undo()
+				{
+					var list = currentGroup.DataFiles.ToList();
+					list.Remove(newFile);
+					currentGroup.DataFiles = new ObservableCollectionExtended<ILocaleFileData>(list);
+
+					currentGroup.ChangesUnsaved = lastChangesUnsaved;
+					currentGroup.UpdateCombinedData();
+					currentGroup.SelectLast();
+					view.FocusSelectedTab();
+
+					ChangesUnsaved = lastGlobalChangesUnsaved;
+				}
+
+				void redo()
+				{
+					currentGroup.DataFiles.Add(newFile);
+
+					currentGroup.ChangesUnsaved = true;
+					currentGroup.UpdateCombinedData(true);
+					currentGroup.SelectLast();
+					view.FocusSelectedTab();
+
+					ChangesUnsaved = true;
+
+					newFile.ChangesUnsaved = true;
+					newFile.IsRenaming = true;
+				}
+
+				CreateSnapshot(undo, redo);
+				redo();
+			}
+		}
+
 		public void ImportFilesAsFileData(IEnumerable<string> files)
 		{
 			IsSubWindowOpen = false;
@@ -2184,45 +2229,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 
 			var onCancel = new Action<string, FileDialogResult>((s, r) => IsSubWindowOpen = false);
 
-			AddFileCommand = ReactiveCommand.Create(() =>
-			{
-				if(SelectedGroup != null)
-				{
-					var currentGroup = Groups.Where(g => g == SelectedGroup).First();
-					var totalFiles = currentGroup.Tabs.Count;
-					string futurePath = FileCommands.EnsureExtension(Path.Combine(currentGroup.SourceDirectories.First(), "NewFile" + totalFiles), ".lsb");
-					var newFile = LocaleEditorCommands.CreateFileData(currentGroup, futurePath, "NewFile" + totalFiles);
-					bool lastChangesUnsaved = currentGroup.ChangesUnsaved;
-
-					void undo()
-					{
-						var list = currentGroup.DataFiles.ToList();
-						list.Remove(newFile);
-						currentGroup.DataFiles = new ObservableCollectionExtended<ILocaleFileData>(list);
-
-						SelectedGroup.ChangesUnsaved = lastChangesUnsaved;
-						SelectedGroup.UpdateCombinedData();
-						SelectedGroup.SelectLast();
-						view.FocusSelectedTab();
-					}
-
-					void redo()
-					{
-						currentGroup.DataFiles.Add(newFile);
-
-						SelectedGroup.ChangesUnsaved = true;
-						SelectedGroup.UpdateCombinedData();
-						SelectedGroup.SelectLast();
-						view.FocusSelectedTab();
-
-						newFile.ChangesUnsaved = true;
-						newFile.IsRenaming = true;
-					}
-
-					CreateSnapshot(undo, redo);
-					redo();
-				}
-			}, CanImportFilesObservable).DisposeWith(disposables);
+			AddFileCommand = ReactiveCommand.Create(AddNewFile, CanAddFileObservable).DisposeWith(disposables);
 
 			ImportFileCommand = ReactiveCommand.Create(() =>
 			{
