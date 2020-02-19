@@ -11,20 +11,7 @@ namespace SCG.Modules.DOS2DE.Utilities
 {
 	public static class DOS2DEXMLUtils
 	{
-		public static readonly string ProjectMetaTemplate = @"<?xml version=""1.0"" encoding=""UTF-8"" ?>
-<save>
-    <header version = ""2"" time=""1534787253"" />
-    <version major = ""3"" minor=""6"" revision=""0"" build=""3"" />
-    <region id = ""MetaData"" >
-
-		< node id=""root"">
-            <attribute id = ""Module"" value=""{0}"" type=""23"" />
-            <attribute id = ""Name"" value=""{1}"" type=""23"" />
-            <attribute id = ""Type"" value=""{2}"" type=""23"" />
-            <attribute id = ""UUID"" value=""{3}"" type=""23"" />
-        </node>
-    </region>
-</save>";
+		public static readonly string ProjectMetaTemplate = "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>\n<save>\n\t<header version=\"2\" />\n\t<version major=\"3\" minor=\"6\" revision=\"1\" build=\"0\" />\n\t<region id=\"MetaData\">\n\t\t<node id=\"root\">\n\t\t\t<attribute id=\"Module\" value=\"{0}\" type=\"23\" />\n\t\t\t<attribute id=\"Name\" value=\"{1}\" type=\"23\" />\n\t\t\t<attribute id=\"Type\" value=\"{2}\" type=\"23\" />\n\t\t\t<attribute id=\"UUID\" value=\"{3}\" type=\"23\" />\n\t\t</node>\n\t</region>\n</save>";
 		public static string CreateProjectMetaString(string moduleUUID, string name, string modType, string projectUUID = "")
 		{
 			if(String.IsNullOrWhiteSpace(projectUUID))

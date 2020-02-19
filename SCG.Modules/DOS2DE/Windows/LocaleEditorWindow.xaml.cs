@@ -478,6 +478,7 @@ namespace SCG.Modules.DOS2DE.Windows
 				if(tb.DataContext is ILocaleFileData fileData)
 				{
 					fileData.IsRenaming = false;
+
 					e.Handled = true;
 				}
 			}
