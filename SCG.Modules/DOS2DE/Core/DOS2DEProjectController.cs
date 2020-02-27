@@ -720,7 +720,12 @@ namespace SCG.Core
 			".ailog",
 			".log",
 			".debugInfo",
-			".dmp"
+			".dmp",
+			"goals.div",
+			"goals.raw",
+			"story.div",
+			"story_ac.dat",
+			"story_definitions.div",
 		};
 
 		public async Task<FileCreationTaskData> PackageProjectAsync(ModProjectData modProject, string outputDirectory, List<string> exportDirectories)
@@ -769,8 +774,14 @@ namespace SCG.Core
 					}
 				}
 
+				var ignoredFiles = IgnoredPackageFiles.ToList();
+				if(modProject.ModuleInfo != null && modProject.ModuleInfo.Type.Equals("Add-on", StringComparison.OrdinalIgnoreCase))
+				{
+					ignoredFiles.Add("story.div.osi");
+				}
+
 				var result = await DOS2DEPackageCreator.CreatePackage(Data.Settings.DOS2DEDataDirectory.Replace("/", "\\"), 
-					sourceFolders, outputPackage, IgnoredPackageFiles, cancellationTokenSource.Token);
+					sourceFolders, outputPackage, ignoredFiles, cancellationTokenSource.Token);
 				if (result)
 				{
 					taskData.Result = FileCreationTaskResult.Success;
