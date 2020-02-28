@@ -6,6 +6,7 @@ using System.Linq;
 using System.Reactive.Concurrency;
 using System.Text;
 using System.Threading.Tasks;
+using Xceed.Wpf.Toolkit;
 
 namespace SCG.Utilities
 {
@@ -15,24 +16,23 @@ namespace SCG.Utilities
 		{
 			//if (Debugger.IsAttached) Debugger.Break();
 
-			Log.Here().Important($"Next: [{value.GetType().ToString()}] {value.Message}");
-
-			RxApp.MainThreadScheduler.Schedule(() => { throw value; });
+			var message = $"Exception encountered:\nType: {value.GetType().ToString()}\tMessage: {value.Message}\nSource: {value.Source}\nStackTrace: {value.StackTrace}";
+			Debug.WriteLine(message);
+			MessageBox.Show(message);
+			//RxApp.MainThreadScheduler.Schedule(() => { throw value; });
 		}
 
-		public void OnError(Exception error)
+		public void OnError(Exception value)
 		{
-			//if (Debugger.IsAttached) Debugger.Break();
-
-			Log.Here().Error($"Error: [{error.GetType().ToString()}] {error.Message}");
-
-			RxApp.MainThreadScheduler.Schedule(() => { throw error; });
+			var message = $"Exception encountered:\nType: {value.GetType().ToString()}\tMessage: {value.Message}\nSource: {value.Source}\nStackTrace: {value.StackTrace}";
+			Debug.WriteLine(message);
+			MessageBox.Show(message);
 		}
 
 		public void OnCompleted()
 		{
 			//if (Debugger.IsAttached) Debugger.Break();
-			RxApp.MainThreadScheduler.Schedule(() => { throw new NotImplementedException(); });
+			//RxApp.MainThreadScheduler.Schedule(() => { throw new NotImplementedException(); });
 		}
 	}
 }
