@@ -1017,13 +1017,17 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			if (files.Count() > 0)
 			{
 				var currentGroup = Groups.Where(g => g == SelectedGroup).First();
-				var newFileDataList = LocaleEditorCommands.ImportFilesAsData(files, SelectedGroup);
+				var newFileDataList = LocaleEditorCommands.ImportFilesAsData(files, SelectedGroup, LinkedProjects);
 
-				var lastChangesUnsaved = currentGroup.ChangesUnsaved;
+				var lastGroupChangesUnsaved = currentGroup.ChangesUnsaved;
+				var lastChangesUnsaved = ChangesUnsaved;
 
 				var lastFiles = currentGroup.DataFiles.ToList();
 
-				CreateSnapshot(() => {
+				var lastImportPath = CurrentImportPath;
+
+				void undo()
+				{
 					foreach (var entry in newFileDataList)
 					{
 						if (lastFiles.Contains(entry)) lastFiles.Remove(entry);
@@ -1033,30 +1037,44 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 					currentGroup.SelectLast();
 					currentGroup.ChangesUnsaved = lastChangesUnsaved;
 					view.FocusSelectedTab();
-				}, () => {
-					currentGroup.DataFiles.AddRange(newFileDataList);
-				});
 
-				SelectedGroup.DataFiles.AddRange(newFileDataList);
+					if (currentGroup != CombinedGroup)
+					{
+						CombinedGroup.UpdateCombinedData(true);
+						currentGroup.ChangesUnsaved = true;
+					}
 
-				Log.Here().Activity("Saving linked data for new files.");
-				foreach(var file in newFileDataList)
-				{
-					LocaleEditorCommands.SaveLinkedDataForFile(ModuleData, LinkedLocaleData, file);
+					ChangesUnsaved = lastChangesUnsaved;
+
+					SaveLastFileImportPath(lastImportPath);
 				}
 
-				SelectedGroup.ChangesUnsaved = true;
-				SelectedGroup.UpdateCombinedData(true);
-				SelectedGroup.SelectLast();
-				view.FocusSelectedTab();
+				void redo()
+				{
+					currentGroup.DataFiles.AddRange(newFileDataList);
+					currentGroup.UpdateCombinedData(true);
+					currentGroup.ChangesUnsaved = true;
+					currentGroup.SelectLast();
+					view.FocusSelectedTab();
 
-				string lastImport = files.FirstOrDefault();
-				SaveLastFileImportPath(Path.GetDirectoryName(lastImport));
+					if (currentGroup != CombinedGroup)
+					{
+						CombinedGroup.DataFiles.AddRange(newFileDataList);
+						CombinedGroup.UpdateCombinedData(true);
+						CombinedGroup.ChangesUnsaved = true;
+					}
 
-				this.RaisePropertyChanged("CurrentImportPath");
-				this.RaisePropertyChanged("CurrentFileImportPath");
+					string lastImport = files.FirstOrDefault();
+					SaveLastFileImportPath(Path.GetDirectoryName(lastImport));
 
-				ChangesUnsaved = true;
+					this.RaisePropertyChanged("CurrentImportPath");
+					this.RaisePropertyChanged("CurrentFileImportPath");
+
+					ChangesUnsaved = true;
+				}
+
+				CreateSnapshot(undo, redo);
+				redo();
 			}
 		}
 
@@ -2246,7 +2264,6 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			ImportFileCommand = ReactiveCommand.Create(() =>
 			{
 				string entryImportPath = GetLastFileImportPath();
-
 				IsSubWindowOpen = true;
 				FileCommands.Load.OpenMultiFileDialog(view, DOS2DETooltips.Button_Locale_ImportFile,
 					entryImportPath, ImportFilesAsFileData, "", onCancel, DOS2DEFileFilters.AllLocaleFilesList.ToArray());
