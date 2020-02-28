@@ -1076,11 +1076,23 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 						delimiter = ",";
 					}
 					string contents = $"Key{delimiter}Content\n";
+					bool handleMode = localeFileData.Entries.Any(x => x.Handle != LocaleEditorCommands.UnsetHandle);
+					if(handleMode)
+					{
+						contents = $"Key{delimiter}Content{delimiter}Handle\n";
+					}
 					var entries = localeFileData.Entries.OrderBy(x => x.Key).ToList();
 					for (var i = 0; i < entries.Count; i++)
 					{
 						var entry = entries[i];
-						contents += entry.Key + delimiter + entry.Content;
+						if (!handleMode)
+						{
+							contents += entry.Key + delimiter + entry.Content;
+						}
+						else
+						{
+							contents += entry.Key + delimiter + entry.Content + delimiter + entry.Handle;
+						}
 						if (i < entries.Count - 1) contents += Environment.NewLine;
 					}
 
