@@ -1096,7 +1096,7 @@ namespace SCG.Modules.DOS2DE.Utilities
 			{
 				if (nodeFileData.ModProject != null && !String.IsNullOrEmpty(nodeFileData.FileLinkData.ReadFrom))
 				{
-					var linkedList = linkedLocaleData.FirstOrDefault(x => x.ProjectUUID.Equals(nodeFileData.ModProject.UUID, StringComparison.OrdinalIgnoreCase));
+					var linkedList = linkedLocaleData.FirstOrDefault(x => x.ProjectUUID.Equals(nodeFileData.ModProject.UUID));
 					if (linkedList == null)
 					{
 						linkedList = new LocaleProjectLinkData()
@@ -1109,6 +1109,10 @@ namespace SCG.Modules.DOS2DE.Utilities
 
 					SaveLinkedData(moduleData, linkedList);
 				}
+				else
+				{
+					Log.Here().Important($"ModProject for file is null. Skipping.");
+				}
 			}
 		}
 
@@ -1120,7 +1124,7 @@ namespace SCG.Modules.DOS2DE.Utilities
 				Directory.CreateDirectory(dir);
 			}
 
-			var filePath = moduleData.ModProjects.Items.Where(x => x.UUID.Equals(linkFile.ProjectUUID, StringComparison.OrdinalIgnoreCase)).
+			var filePath = moduleData.ModProjects.Items.Where(x => x.UUID.Equals(linkFile.ProjectUUID)).
 					Select(x => x.ModuleInfo.Folder).FirstOrDefault();
 			if (!String.IsNullOrEmpty(filePath))
 			{
@@ -1397,7 +1401,7 @@ namespace SCG.Modules.DOS2DE.Utilities
 			return fileData;
 		}
 
-		public static List<ILocaleFileData> ImportFilesAsData(IEnumerable<string> files, LocaleTabGroup groupData)
+		public static List<ILocaleFileData> ImportFilesAsData(IEnumerable<string> files, LocaleTabGroup groupData, List<ModProjectData> linkedProjects)
 		{
 			List<ILocaleFileData> newFileDataList = new List<ILocaleFileData>();
 			foreach (var path in files)
@@ -1422,13 +1426,29 @@ namespace SCG.Modules.DOS2DE.Utilities
 							ILocaleFileData fileData = null;
 							if(!groupData.IsCustom)
 							{
-								fileData = CreateNodeFileDataFromTextual(groupData, stream, sourceDir, path, delimiter);
+								var newFileData = CreateNodeFileDataFromTextual(groupData, stream, sourceDir, path, delimiter);
 								// Automatically create linked data
-								fileData.FileLinkData = new LocaleFileLinkData()
+								newFileData.FileLinkData = new LocaleFileLinkData()
 								{
 									ReadFrom = path,
-									TargetFile = fileData.SourcePath
+									TargetFile = newFileData.SourcePath
 								};
+								fileData = newFileData;
+								if(linkedProjects.Count == 1)
+								{
+									newFileData.ModProject = linkedProjects.First();
+								}
+								else
+								{
+									foreach(var project in linkedProjects)
+									{
+										if (sourceDir.Contains(project.FolderName))
+										{
+											newFileData.ModProject = project;
+											break;
+										}
+									}
+								}
 							}
 							else
 							{
