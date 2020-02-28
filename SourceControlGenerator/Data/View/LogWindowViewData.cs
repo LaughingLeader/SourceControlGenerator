@@ -22,6 +22,8 @@ namespace SCG.Data.View
 		private ReadOnlyObservableCollection<LogData> visibleLogs;
 		public ReadOnlyObservableCollection<LogData> VisibleLogs => visibleLogs;
 
+		//public ObservableCollectionExtended<LogData> VisibleLogs {get; set;} = new ObservableCollectionExtended<LogData>();
+
 		public List<LogData> LastLogs { get; set; }
 
 		public bool CanRestore => LastLogs != null;
@@ -53,9 +55,10 @@ namespace SCG.Data.View
 
 		public void Add(LogData log)
 		{
-			RxApp.MainThreadScheduler.Schedule(() =>
+			Logs.Add(log);
+
+			if(IsVisible)
 			{
-				Logs.Add(log);
 				this.RaisePropertyChanged("Logs");
 				this.RaisePropertyChanged("CanClear");
 
@@ -64,7 +67,24 @@ namespace SCG.Data.View
 					LastLogs = null;
 					this.RaisePropertyChanged("CanRestore");
 				}
-			});
+			}
+		}
+
+		public void AddRange(IEnumerable<LogData> logs)
+		{
+			Logs.AddRange(logs);
+
+			if (IsVisible)
+			{
+				this.RaisePropertyChanged("Logs");
+				this.RaisePropertyChanged("CanClear");
+
+				if (LastLogs != null)
+				{
+					LastLogs = null;
+					this.RaisePropertyChanged("CanRestore");
+				}
+			}
 		}
 
 		public void Clear()
@@ -74,9 +94,12 @@ namespace SCG.Data.View
 				LastLogs = new List<LogData>(Logs.Items);
 				Logs.Clear();
 
-				this.RaisePropertyChanged("Logs");
-				this.RaisePropertyChanged("CanClear");
-				this.RaisePropertyChanged("CanRestore");
+				if (IsVisible)
+				{
+					this.RaisePropertyChanged("Logs");
+					this.RaisePropertyChanged("CanClear");
+					this.RaisePropertyChanged("CanRestore");
+				}
 			}
 		}
 
@@ -90,10 +113,12 @@ namespace SCG.Data.View
 				}
 
 				LastLogs = null;
-
-				this.RaisePropertyChanged("Logs");
-				this.RaisePropertyChanged("CanClear");
-				this.RaisePropertyChanged("CanRestore");
+				if (IsVisible)
+				{
+					this.RaisePropertyChanged("Logs");
+					this.RaisePropertyChanged("CanClear");
+					this.RaisePropertyChanged("CanRestore");
+				}
 			}
 		}
 
@@ -275,16 +300,31 @@ namespace SCG.Data.View
 			return false;
 		}
 
+		private IComparer<LogData> sortOrder = SortExpressionComparer<LogData>.Ascending(m => m.Index);
+		private IDisposable autoRefreshSubscription;
+		private IObservable<IChangeSet<LogData>> logConnection;
+
+		public void OnOpened()
+		{
+			if(autoRefreshSubscription == null)
+			{
+				autoRefreshSubscription = logConnection.Subscribe();
+			}
+		}
+
+		public void OnClosed()
+		{
+			if(autoRefreshSubscription != null)
+			{
+				autoRefreshSubscription.Dispose();
+				autoRefreshSubscription = null;
+			}
+		}
+
 		public LogWindowViewData()
 		{
-			var sortOrder = SortExpressionComparer<LogData>.Ascending(m => m.Index);
-			var connection = Logs.Connect().AutoRefreshOnObservable(x => x.WhenPropertyChanged(p => p.IsVisible))
-			//Buffer(TimeSpan.FromMilliseconds(100)).FlattenBufferResult()
-			.ObserveOn(RxApp.MainThreadScheduler);
-			//connection.Filter(x => CanDisplayLog(x)).Bind(out visibleLogs).Subscribe();
-			connection.Filter(x => x.IsVisible).Sort(sortOrder, resetThreshold:50).Bind(out visibleLogs).Subscribe();
-			//Console.WriteLine($"Log added: {x.First().Item.Current?.Message}");
-			//this.WhenAnyValue(x => x, x => x.Logs, x => x.FilterActivity, x => x.FilterErrors, x => x.FilterImportant, x => x.SearchText).
+			logConnection = Logs.Connect().AutoRefreshOnObservable(x => x.WhenPropertyChanged(p => p.IsVisible)).
+				ObserveOn(RxApp.TaskpoolScheduler).Filter(x => x.IsVisible).Sort(sortOrder, resetThreshold: 50).Bind(out visibleLogs);
 		}
 	}
 }

@@ -73,6 +73,15 @@ namespace SCG.Windows
 			{
 				mainWindow.Controller.LogMenuData.Header = ViewModel.LogVisibleText;
 			}
+
+			if(this.IsVisible)
+			{
+				ViewModel.OnOpened();
+			}
+			else
+			{
+				ViewModel.OnClosed();
+			}
 		}
 
 		private void CopyButton_Click(object sender, RoutedEventArgs e)
