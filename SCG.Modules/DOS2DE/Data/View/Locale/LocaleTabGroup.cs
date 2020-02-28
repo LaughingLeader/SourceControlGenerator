@@ -127,15 +127,16 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 		{
 			if(all || (Tabs.Count == 0 || CombinedEntries.Entries.Count == 0))
 			{
-				Tabs.Clear();
-				Tabs.Add(CombinedEntries);
-				Tabs.AddRange(DataFiles);
-
 				CombinedEntries.Entries.Clear();
 				foreach (var obj in DataFiles)
 				{
 					CombinedEntries.Entries.AddRange(obj.Entries);
 				}
+
+				Tabs.Clear();
+				Tabs.Add(CombinedEntries);
+				Tabs.AddRange(DataFiles.OrderBy(x => x.Name));
+
 				//CombinedEntries.Entries.OrderBy(e => e.Key);
 				this.RaisePropertyChanged("CombinedEntries");
 				this.RaisePropertyChanged("Tabs");
@@ -154,7 +155,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 				if(CombinedEntries.Entries.Count != DataFiles.Count || CombinedEntries.Entries.Count == 0)
 				{
 					CombinedEntries.Entries.Clear();
-					foreach (var obj in DataFiles)
+					foreach (var obj in DataFiles.OrderBy(x => x.Name))
 					{
 						CombinedEntries.Entries.AddRange(obj.Entries);
 					}
