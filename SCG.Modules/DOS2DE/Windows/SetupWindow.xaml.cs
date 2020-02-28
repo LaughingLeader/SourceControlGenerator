@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reactive;
 using System.Reactive.Concurrency;
 using System.Text;
 using System.Threading.Tasks;
@@ -70,7 +71,7 @@ namespace SCG.Modules.DOS2DE.Windows
 			onConfirmed?.Invoke();
 			Close();
 
-			RxApp.MainThreadScheduler.Schedule(async () => await controller.RefreshAllProjects());
+			controller.RefreshAllProjects_Start();
 		}
 	}
 }

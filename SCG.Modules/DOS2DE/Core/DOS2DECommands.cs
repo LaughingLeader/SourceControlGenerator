@@ -280,6 +280,11 @@ namespace SCG.Modules.DOS2DE.Core
 							},
 						};
 
+						//var modFolders = await Observable.Start(() =>
+						//{
+						//	return Directory.EnumerateDirectories(modsPath, DirectoryEnumerationOptions.Folders, filters, PathFormat.LongFullPath);
+						//}, RxApp.TaskpoolScheduler);
+
 						var modFolders = Directory.EnumerateDirectories(modsPath, DirectoryEnumerationOptions.Folders, filters, PathFormat.LongFullPath);
 
 						if (modFolders != null)

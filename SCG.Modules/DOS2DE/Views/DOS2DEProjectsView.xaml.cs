@@ -255,7 +255,7 @@ namespace SCG.Modules.DOS2DE.Views
 			ToggleAvailableProjectsView();
 		}
 
-		public void FadeLoadingPanel(bool fadeOut = true)
+		public void FadeLoadingPanel(bool fadeOut = true, Action onCompleted = null)
 		{
 			ViewModel.LoadPanelVisibility = Visibility.Visible;
 
@@ -268,14 +268,22 @@ namespace SCG.Modules.DOS2DE.Views
 				LoadingProjectsPanel.Opacity = 1d;
 				animation.From = 1.0;
 				animation.To = 0.0;
-				animation.Completed += (s, e) => ViewModel.LoadPanelVisibility = Visibility.Collapsed;
+				animation.Completed += (s, e) =>
+				{
+					ViewModel.LoadPanelVisibility = Visibility.Collapsed;
+					onCompleted?.Invoke();
+				};
 			}
 			else
 			{
 				LoadingProjectsPanel.Opacity = 0d;
 				animation.From = 0.0;
 				animation.To = 1.0;
-				animation.Completed += (s, e) => ViewModel.LoadPanelVisibility = Visibility.Visible;
+				animation.Completed += (s, e) =>
+				{
+					ViewModel.LoadPanelVisibility = Visibility.Visible;
+					onCompleted?.Invoke();
+				};
 			}
 			animation.Duration = new Duration(duration);
 
@@ -286,11 +294,6 @@ namespace SCG.Modules.DOS2DE.Views
 
 			// Begin the storyboard
 			storyboard.Begin(this);
-
-			Dispatcher.Invoke(() =>
-			{
-				
-			}, DispatcherPriority.ApplicationIdle);
 		}
 
 		public void ToggleAvailableProjectsView(bool? NextValue = null)

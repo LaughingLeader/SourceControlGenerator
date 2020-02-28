@@ -1053,60 +1053,76 @@ namespace SCG.Core
 			}
 		}
 
-		public async Task RefreshAllProjects()
+		private void RefreshAllProjects_OnFadingDone()
 		{
-			if (Data.CanClickRefresh)
+			RxApp.TaskpoolScheduler.ScheduleAsync(async (s, t) =>
 			{
-				RxApp.MainThreadScheduler.Schedule(() =>
-				{
-					if(!MainAppData.ProgressActive)
-					{
-						if (projectViewControl != null)
-						{
-							projectViewControl.FadeLoadingPanel(false);
-						}
-						else
-						{
-							HideLoadingPanel();
-						}
-					}
-					
-					Data.ModProjects.Clear();
-					Data.CanClickRefresh = false;
-				});
+				await RefreshAllProjectsAsync();
+				await s.Yield();
+				return Disposable.Empty;
+			});
+		}
 
-				await Task.Delay(250);
-
-				var newMods = await DOS2DECommands.LoadAllAsync(Data);
-
-				RxApp.MainThreadScheduler.Schedule(() =>
-				{
-					Data.ModProjects.AddRange(newMods);
-					Data.CanClickRefresh = true;
-					if (!MainAppData.ProgressActive)
-					{
-						HideLoadingPanel();
-					}
-				});
+		public void RefreshAllProjects_Start()
+		{
+			Data.CanClickRefresh = false;
+			if (projectViewControl != null)
+			{
+				projectViewControl.FadeLoadingPanel(false, RefreshAllProjects_OnFadingDone);
 			}
 			else
 			{
-				//Log.Here().Activity("Currently refreshing.");
+				RefreshAllProjects_OnFadingDone();
 			}
 		}
 
-		public async Task<Unit> RefreshModProjects()
+		public async Task<Unit> RefreshAllProjectsAsync()
 		{
-			if (Data.CanClickRefresh)
+			await Observable.Start(() => {
+				Data.ModProjects.Clear();
+				return Unit.Default;
+			}, RxApp.MainThreadScheduler);
+
+			Log.Here().Activity("Refreshing all data");
+			var newMods = await DOS2DECommands.LoadAllAsync(Data);
+			Log.Here().Activity("Done Refreshing all data");
+
+			return await Observable.Start(() => {
+				Data.ModProjects.AddRange(newMods);
+				projectViewControl.FadeLoadingPanel(true, () => { Data.CanClickRefresh = true; });
+				return Unit.Default;
+			}, RxApp.MainThreadScheduler);
+		}
+		private async Task<Unit> RefreshModProjectsAsync()
+		{
+			await DOS2DECommands.RefreshManagedProjects(Data);
+			return await Observable.Start(() => {
+				projectViewControl.FadeLoadingPanel(true, () => { Data.CanClickRefresh = true; });
+				return Unit.Default;
+			}, RxApp.MainThreadScheduler);
+		}
+
+		private void RefreshModProjects_OnFadingDone()
+		{
+			RxApp.TaskpoolScheduler.ScheduleAsync(async (s, t) =>
 			{
-				Data.CanClickRefresh = false;
-				//projectViewControl.LoadingProjectsPanel.Opacity = 1d;
-				//projectViewControl.LoadingProjectsPanel.Visibility = System.Windows.Visibility.Visible;
-				await DOS2DECommands.RefreshManagedProjects(Data);
-				Data.CanClickRefresh = true;
-				//HideLoadingPanel();
+				await RefreshModProjectsAsync();
+				await s.Yield();
+				return Disposable.Empty;
+			});
+		}
+
+		public void RefreshModProjects_Start()
+		{
+			Data.CanClickRefresh = false;
+			if (projectViewControl != null)
+			{
+				projectViewControl.FadeLoadingPanel(false, RefreshModProjects_OnFadingDone);
 			}
-			return Unit.Default;
+			else
+			{
+				RefreshModProjects_OnFadingDone();
+			}
 		}
 
 		private ModProjectData ReplaceKeywordAction(IProjectData data)
@@ -1202,9 +1218,7 @@ namespace SCG.Core
 
 			canRefresh = this.WhenAnyValue(vm => vm.Data.CanClickRefresh);
 			anySelected = this.WhenAnyValue(vm => vm.Data.ProjectSelected);
-			Data.RefreshAllCommand = ReactiveCommand.CreateFromTask(RefreshAllProjects, canRefresh);
-
-			Log.Here().Activity("DOS2DEProjectController created");
+			Data.RefreshAllCommand = ReactiveCommand.Create(RefreshAllProjects_Start, canRefresh);
 		}
 
 		public void SelectionChanged()
@@ -1378,7 +1392,7 @@ namespace SCG.Core
 							Log.Here().Important($"Successfully extracted '{path}' and turned it into an editor project. {moduleInfo.Name}({moduleInfo.UUID}).");
 							AppController.Main.UpdateProgressMessage($"Success! Refreshing projects...");
 							AppController.Main.UpdateProgressTitle($"Refreshing projects...");
-							await RefreshAllProjects();
+							await RefreshAllProjectsAsync();
 						}
 						else
 						{
@@ -1448,7 +1462,7 @@ namespace SCG.Core
 					MenuItems = new ObservableCollectionExtended<IMenuData>()
 					{
 						new MenuData("DOS2DE.RefreshAll", "Refresh All", Data.RefreshAllCommand, System.Windows.Input.Key.F5),
-						new MenuData("DOS2DE.RefreshManagedData", "Refresh Managed Data", ReactiveCommand.CreateFromTask(RefreshModProjects, canRefresh)),
+						new MenuData("DOS2DE.RefreshManagedData", "Refresh Managed Data", ReactiveCommand.Create(RefreshModProjects_Start, canRefresh)),
 					}
 				},
 				new SeparatorData(),
@@ -1483,16 +1497,6 @@ namespace SCG.Core
 					}
 				}
 			});
-		}
-
-		private async void HideLoadingPanel()
-		{
-			await Task.Delay(500);
-			//Data.LoadPanelVisibility = System.Windows.Visibility.Collapsed;
-			if(projectViewControl != null)
-			{
-				projectViewControl.FadeLoadingPanel(true);
-			}
 		}
 
 		public void Start()
