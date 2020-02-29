@@ -361,6 +361,8 @@
 						</Grid>
 						<DataGrid
 							x:Name="ManagedProjectsDataGrid"
+							MaxWidth="3840"
+							MaxHeight="2160"
 							cb:DataGridCustomSortBehaviour.AllowCustomSort="True"
 							AutoGenerateColumns="False"
 							BorderBrush="{x:Null}"
