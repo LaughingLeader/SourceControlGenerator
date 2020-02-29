@@ -23,6 +23,8 @@ using System.Reactive.Concurrency;
 using System.Text.RegularExpressions;
 using SCG.Util;
 using System.Reactive.Linq;
+using SCG.Controls.Behavior;
+using System.Reactive.Disposables;
 
 namespace SCG.Modules.DOS2DE.Data.View
 {
@@ -419,7 +421,7 @@ namespace SCG.Modules.DOS2DE.Data.View
 		}
 
 		#region Async
-		public async Task LoadModMetaAsync(string metaFilePath)
+		public async Task<Unit> LoadModMetaAsync(string metaFilePath)
 		{
 			if (File.Exists(metaFilePath))
 			{
@@ -479,9 +481,11 @@ namespace SCG.Modules.DOS2DE.Data.View
 				CreateTooltip();
 				SetVersion();
 			}
+
+			return Unit.Default;
 		}
 
-		public async Task LoadProjectMetaAsync(string projectsFolderPath)
+		public async Task<Unit> LoadProjectMetaAsync(string projectsFolderPath)
 		{
 			try
 			{
@@ -546,7 +550,23 @@ namespace SCG.Modules.DOS2DE.Data.View
 					{
 						var projectMetaXml = XDocument.Parse(projectMetaFileContents);
 						this.ProjectInfo.LoadFromXml(projectMetaXml);
-						ProjectInfo.CreationDate = File.GetCreationTime(projectMetaFilePath);
+
+						try
+						{
+							var projectMetaCreationTime = File.GetCreationTime(projectMetaFilePath);
+							var projectMetaModifiedTime = File.GetChangeTime(projectMetaFilePath);
+							var modMetaCreationTime = File.GetCreationTime(modMetaFilePath);
+
+							var dates = new List<DateTime>() { projectMetaCreationTime, projectMetaModifiedTime, modMetaCreationTime };
+							dates.Sort();
+							ProjectInfo.CreationDate = dates.First();
+						}
+						catch(Exception ex)
+						{
+							ProjectInfo.CreationDate = DateTime.Now;
+						}
+
+						//Log.Here().Activity($"Set {this.DisplayName} creation date to: {ProjectInfo.CreationDate.ToString("d")}");
 					}
 
 					LoadThumbnail(projectDirectory);
@@ -560,15 +580,18 @@ namespace SCG.Modules.DOS2DE.Data.View
 			{
 				Log.Here().Error("Error loading project meta.lsx for {0}: {1}", this.ModuleInfo.Name, ex.ToString());
 			}
+
+			return Unit.Default;
 		}
 
-		public async Task LoadAllDataAsync(string metaFilePath, string projectsFolderPath)
+		public async Task<Unit> LoadAllDataAsync(string metaFilePath, string projectsFolderPath)
 		{
 			await LoadModMetaAsync(metaFilePath);
 			await LoadProjectMetaAsync(projectsFolderPath);
+			return Unit.Default;
 		}
 
-		public async Task ReloadDataAsync()
+		public async Task<Unit> ReloadDataAsync()
 		{
 			Log.Here().Activity("Reloading mod data.");
 
@@ -617,197 +640,20 @@ namespace SCG.Modules.DOS2DE.Data.View
 					}
 				}
 			}
+
+			return Unit.Default;
 		}
 		#endregion
-
-		#region Synchronous
-		public void LoadModMeta(string metaFilePath)
-		{
-			if (File.Exists(metaFilePath))
-			{
-				ModMetaFilePath = metaFilePath;
-
-				Log.Here().Activity("Meta file found for project {0}. Reading file.", metaFilePath);
-				string contents = XMLHelper.EscapeXmlAttributes(FileCommands.ReadFile(metaFilePath));
-				if (contents != String.Empty)
-				{
-					XDocument modMetaXml = null;
-					try
-					{
-						modMetaXml = XDocument.Parse(contents);
-					}
-					catch (Exception ex)
-					{
-						Log.Here().Error("Error loading mod meta.lsx: {0}", ex.ToString());
-
-					}
-
-					if (modMetaXml != null)
-					{
-						this.ModuleInfo.LoadFromXml(modMetaXml);
-
-						LoadDependencies(modMetaXml);
-
-						Log.Here().Important("[{0}] All mod data loaded.", this.ModuleInfo.Name);
-
-						ModuleInfo.ModifiedDate = File.GetLastWriteTime(metaFilePath);
-					}
-					else
-					{
-						Log.Here().Error("Error loading mod meta.lsx: modMetaXml is null. Is this an xml file?");
-					}
-				}
-			}
-
-			if (ModuleInfo.Folder.Contains(ModuleInfo.UUID))
-			{
-				ProjectName = ModuleInfo.Folder.Replace("_" + ModuleInfo.UUID, "");
-				FolderUUID = ModuleInfo.UUID;
-			}
-			else
-			{
-				var UUIDStartIndex = ModuleInfo.Folder.LastIndexOf('_');
-				if (UUIDStartIndex > 0)
-				{
-
-					ProjectName = ModuleInfo.Folder.Replace(ModuleInfo.Folder.Substring(UUIDStartIndex), "");
-					FolderUUID = ModuleInfo.Folder.Substring(UUIDStartIndex + 1);
-				}
-			}
-			//Log.Here().Important($"Project name set to {ProjectName}");
-
-			if (ModuleInfo != null)
-			{
-				CreateTooltip();
-				SetVersion();
-			}
-		}
-
-		public void LoadProjectMeta(string projectsFolderPath)
-		{
-			try
-			{
-				string projectDirectory = Path.Combine(projectsFolderPath, ProjectName);
-
-				if (!Directory.Exists(projectDirectory))
-				{
-					projectDirectory = Path.Combine(projectsFolderPath, ModuleInfo.Folder);
-
-					if (Directory.Exists(projectDirectory))
-					{
-						ProjectFolder = ModuleInfo.Folder;
-					}
-					else
-					{
-						Log.Here().Error($"Project directory not found for {ModuleInfo.Name} at {Path.Combine(projectsFolderPath, ProjectName)} and {projectDirectory}.");
-						Log.Here().Important($"Checking for meta.lsx files in '{projectsFolderPath}'.");
-						var projectMetaFiles = Directory.EnumerateFiles(projectsFolderPath, DirectoryEnumerationOptions.Recursive | DirectoryEnumerationOptions.Files, new DirectoryEnumerationFilters
-						{
-							InclusionFilter = (f) =>
-							{
-								return f.FileName.Equals("meta.lsx", StringComparison.OrdinalIgnoreCase);
-							}
-						});
-
-						if (projectMetaFiles.Count() > 0)
-						{
-							Regex regex = new Regex("^.*Module.*value=\"([^\"]+)\".* $", RegexOptions.IgnoreCase | RegexOptions.Multiline);
-
-							foreach (var f in projectMetaFiles)
-							{
-								string contents = FileCommands.ReadFile(f);
-								var match = regex.Match(contents);
-								if (match.Success)
-								{
-									string modUUID = match.Groups[1].Value;
-									if (modUUID.Equals(this.UUID, StringComparison.OrdinalIgnoreCase))
-									{
-										projectDirectory = Path.GetDirectoryName(f);
-										Log.Here().Important($"Found project folder by UUID {this.UUID} at {projectDirectory}.");
-										break;
-									}
-								}
-							}
-						}
-					}
-				}
-				else
-				{
-					ProjectFolder = ProjectName;
-				}
-
-				if (Directory.Exists(projectDirectory))
-				{
-					string projectMetaFilePath = Path.ChangeExtension(Path.Combine(projectDirectory, "meta"), "lsx");
-					ProjectMetaFilePath = Path.GetFullPath(projectMetaFilePath);
-
-					Log.Here().Activity("Attempting to load project meta.lsx at {0}", projectMetaFilePath);
-					string projectMetaFileContents = FileCommands.ReadFile(projectMetaFilePath);
-
-					if (!String.IsNullOrWhiteSpace(projectMetaFileContents))
-					{
-						var projectMetaXml = XDocument.Parse(projectMetaFileContents);
-						this.ProjectInfo.LoadFromXml(projectMetaXml);
-						ProjectInfo.CreationDate = File.GetCreationTime(projectMetaFilePath);
-					}
-
-					RxApp.MainThreadScheduler.Schedule(() =>
-					{
-						LoadThumbnail(projectDirectory);
-					});
-				}
-				else
-				{
-					Log.Here().Error($"Project directory not found for {ModuleInfo.Name} at '{projectDirectory}'.");
-				}
-			}
-			catch (Exception ex)
-			{
-				Log.Here().Error("Error loading project meta.lsx for {0}: {1}", this.ModuleInfo.Name, ex.ToString());
-			}
-		}
 
 		public void LoadAllData(string metaFilePath, string projectsFolderPath)
 		{
-			LoadModMeta(metaFilePath);
-			LoadProjectMeta(projectsFolderPath);
+			RxApp.MainThreadScheduler.ScheduleAsync(async (s,t) => {
+				await LoadModMetaAsync(metaFilePath);
+				await LoadProjectMetaAsync(projectsFolderPath);
+				await s.Yield();
+				return Disposable.Empty;
+			});
 		}
-
-		public void ReloadData()
-		{
-			Log.Here().Activity("Reloading mod data.");
-
-			if (File.Exists(ModMetaFilePath))
-			{
-				string contents = XMLHelper.EscapeXmlAttributes(FileCommands.ReadFile(ModMetaFilePath));
-				if (!String.IsNullOrWhiteSpace(contents))
-				{
-					var modMetaXml = XDocument.Parse(contents);
-					if (modMetaXml != null)
-					{
-						this.ModuleInfo.LoadFromXml(modMetaXml);
-						LoadDependencies(modMetaXml);
-						ModuleInfo.RaisePropertyChanged(String.Empty);
-					}
-				}
-			}
-
-			if (File.Exists(ProjectMetaFilePath))
-			{
-				string contents = XMLHelper.EscapeXmlAttributes(FileCommands.ReadFile(ProjectMetaFilePath));
-				if (!String.IsNullOrWhiteSpace(contents))
-				{
-					var projectMetaXml = XDocument.Parse(contents);
-					if (projectMetaXml != null)
-					{
-						this.ProjectInfo.LoadFromXml(projectMetaXml);
-						LoadThumbnail(Path.GetDirectoryName(ProjectMetaFilePath));
-						ProjectInfo.RaisePropertyChanged(String.Empty);
-					}
-				}
-			}
-		}
-		#endregion
 
 		public ModProjectData()
 		{
