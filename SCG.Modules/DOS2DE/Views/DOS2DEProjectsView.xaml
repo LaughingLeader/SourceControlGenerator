@@ -33,6 +33,8 @@
 			<ResourceDictionary.MergedDictionaries>
 				<ResourceDictionary Source="pack://application:,,,/SourceControlGenerator;component/ThemeSystem/ResourceDictionary/MainAppDictionary.xaml" />
 			</ResourceDictionary.MergedDictionaries>
+			<CollectionViewSource x:Key="ManagedProjectDataView" Source="{Binding ManagedProjects}" />
+			<data:ModProjectDataComparer x:Key="ModProjectDataComparer" />
 			<Style
 				x:Key="DataGrid_NoHighlight"
 				BasedOn="{StaticResource {x:Type DataGridCell}}"
@@ -359,7 +361,7 @@
 						</Grid>
 						<DataGrid
 							x:Name="ManagedProjectsDataGrid"
-							cb:DataGridDefaultSortDirection.Direction="Descending"
+							cb:DataGridCustomSortBehaviour.AllowCustomSort="True"
 							AutoGenerateColumns="False"
 							BorderBrush="{x:Null}"
 							BorderThickness="0"
@@ -369,13 +371,14 @@
 							EnableRowVirtualization="False"
 							FrameworkElement.Loaded="ManagedProjectsDataGrid_Loaded"
 							IsReadOnly="True"
+							ItemsSource="{Binding Source={StaticResource ManagedProjectDataView}}"
 							SelectionChanged="ManagedProjectsDataGrid_SelectionChanged">
-							<DataGrid.ItemsSource>
+							<!--<DataGrid.ItemsSource>
 								<x:Array Type="data:ModProjectData">
 									<data:ModProjectData DebugMode="True" />
 									<data:ModProjectData DebugMode="True" />
 								</x:Array>
-							</DataGrid.ItemsSource>
+							</DataGrid.ItemsSource>-->
 							<DataGrid.Resources>
 								<Style
 									x:Key="ColumnElementStyle"
@@ -532,6 +535,7 @@
 								<DataGridTextColumn
 									Width="Auto"
 									MinWidth="50"
+									cb:DataGridCustomSortBehaviour.CustomSorter="{StaticResource ModProjectDataComparer}"
 									Binding="{Binding ModuleInfo.Name}"
 									ElementStyle="{StaticResource ColumnElementStyle}"
 									Header="Name"
@@ -544,15 +548,20 @@
 								</DataGridTextColumn>
 								<DataGridTextColumn
 									MinWidth="50"
+									cb:DataGridCustomSortBehaviour.CustomSorter="{StaticResource ModProjectDataComparer}"
 									Binding="{Binding ModuleInfo.Author}"
 									ElementStyle="{StaticResource ColumnElementStyle}"
 									Header="Author"
-									HeaderStyle="{StaticResource ProjectsHeaderStyle}" />
+									HeaderStyle="{StaticResource ProjectsHeaderStyle}"
+									SortMemberPath="ModuleInfo.Author" />
 								<DataGridTemplateColumn
 									MinWidth="50"
+									cb:DataGridCustomSortBehaviour.CustomSorter="{StaticResource ModProjectDataComparer}"
+									CanUserSort="True"
 									CellStyle="{StaticResource DataGrid_NoHighlight}"
 									Header="Version"
-									HeaderStyle="{StaticResource ProjectsHeaderStyle}">
+									HeaderStyle="{StaticResource ProjectsHeaderStyle}"
+									SortMemberPath="ModuleInfo.Version">
 									<DataGridTemplateColumn.CellTemplate>
 										<DataTemplate>
 											<TextBlock Tag="{Binding Path=DataContext, RelativeSource={RelativeSource AncestorType={x:Type local:DOS2DEProjectsView}}}" Text="{Binding Version}">
@@ -570,17 +579,21 @@
 								</DataGridTemplateColumn>
 								<DataGridTextColumn
 									MinWidth="40"
+									cb:DataGridCustomSortBehaviour.CustomSorter="{StaticResource ModProjectDataComparer}"
 									Binding="{Binding ModuleInfo.Type}"
 									ElementStyle="{StaticResource ColumnElementStyle}"
 									Header="Type"
-									HeaderStyle="{StaticResource ProjectsHeaderStyle}" />
+									HeaderStyle="{StaticResource ProjectsHeaderStyle}"
+									SortMemberPath="ModuleInfo.Type" />
 								<DataGridTextColumn
 									x:Name="DescriptionColumn"
 									Width="70"
+									cb:DataGridCustomSortBehaviour.CustomSorter="{StaticResource ModProjectDataComparer}"
 									Binding="{Binding ModuleInfo.Description}"
 									ElementStyle="{StaticResource ColumnElementStyle}"
 									Header="Description"
-									HeaderStyle="{StaticResource ProjectsHeaderStyle}">
+									HeaderStyle="{StaticResource ProjectsHeaderStyle}"
+									SortMemberPath="ModuleInfo.Description">
 									<DataGridTextColumn.CellStyle>
 										<Style BasedOn="{StaticResource DataGrid_NoHighlight}" TargetType="DataGridCell">
 											<Style.Triggers>
@@ -601,7 +614,12 @@
 										</Style>
 									</DataGridTextColumn.CellStyle>
 								</DataGridTextColumn>
-								<DataGridTemplateColumn Header="Icon" HeaderStyle="{StaticResource ProjectsHeaderStyle}">
+								<DataGridTemplateColumn
+									cb:DataGridCustomSortBehaviour.CustomSorter="{StaticResource ModProjectDataComparer}"
+									CanUserSort="True"
+									Header="Icon"
+									HeaderStyle="{StaticResource ProjectsHeaderStyle}"
+									SortMemberPath="Icon">
 									<DataGridTemplateColumn.CellStyle>
 										<Style BasedOn="{StaticResource DataGrid_NoHighlight}" TargetType="DataGridCell">
 											<Setter Property="ToolTip" Value="{x:Null}" />
@@ -634,14 +652,16 @@
 								</DataGridTemplateColumn>
 								<DataGridTextColumn
 									MinWidth="80"
-									Binding="{Binding ProjectInfo.CreationDate, Converter={StaticResource DateTimeToStringConverter}, ConverterParameter='d', FallbackValue=''}"
+									cb:DataGridCustomSortBehaviour.CustomSorter="{StaticResource ModProjectDataComparer}"
+									Binding="{Binding ProjectInfo.CreationDateString}"
 									ElementStyle="{StaticResource ColumnElementStyle}"
 									Header="Created"
-									HeaderStyle="{StaticResource ProjectsHeaderStyle}">
+									HeaderStyle="{StaticResource ProjectsHeaderStyle}"
+									SortMemberPath="ProjectInfo.CreationDate">
 									<DataGridTextColumn.CellStyle>
 										<Style BasedOn="{StaticResource DataGrid_NoHighlight}" TargetType="DataGridCell">
 											<Style.Triggers>
-												<DataTrigger Binding="{Binding ProjectInfo.CreationDate, Converter={StaticResource EmptyValueVisibilityConverter}}" Value="Visible">
+												<DataTrigger Binding="{Binding ProjectInfo.CreationDateString, Converter={StaticResource EmptyValueVisibilityConverter}}" Value="Visible">
 													<Setter Property="ToolTip">
 														<Setter.Value>
 															<TextBlock Text="{Binding ProjectInfo.CreationDate, Converter={StaticResource DateTimeToStringConverter}, ConverterParameter='f'}" />
@@ -657,10 +677,12 @@
 								</DataGridTextColumn>
 								<DataGridTextColumn
 									MinWidth="80"
-									Binding="{Binding ModuleInfo.ModifiedDate, Converter={StaticResource DateTimeToStringConverter}, ConverterParameter='d', FallbackValue=''}"
+									cb:DataGridCustomSortBehaviour.CustomSorter="{StaticResource ModProjectDataComparer}"
+									Binding="{Binding ModuleInfo.ModifiedDateString}"
 									ElementStyle="{StaticResource ColumnElementStyle}"
 									Header="Modified"
-									HeaderStyle="{StaticResource ProjectsHeaderStyle}">
+									HeaderStyle="{StaticResource ProjectsHeaderStyle}"
+									SortMemberPath="ModuleInfo.ModifiedDate">
 									<DataGridTextColumn.CellStyle>
 										<Style BasedOn="{StaticResource DataGrid_NoHighlight}" TargetType="DataGridCell">
 											<Style.Triggers>
@@ -680,10 +702,12 @@
 								</DataGridTextColumn>
 								<DataGridTextColumn
 									MinWidth="80"
+									cb:DataGridCustomSortBehaviour.CustomSorter="{StaticResource ModProjectDataComparer}"
 									Binding="{Binding LastBackup, Converter={StaticResource DateTimeToStringConverter}, ConverterParameter='d', FallbackValue=''}"
 									ElementStyle="{StaticResource ColumnElementStyle}"
 									Header="Last Backup"
-									HeaderStyle="{StaticResource ProjectsHeaderStyle}">
+									HeaderStyle="{StaticResource ProjectsHeaderStyle}"
+									SortMemberPath="LastBackup">
 									<DataGridTextColumn.CellStyle>
 										<Style BasedOn="{StaticResource DataGrid_NoHighlight}" TargetType="DataGridCell">
 											<Style.Triggers>

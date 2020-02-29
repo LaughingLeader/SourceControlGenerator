@@ -218,6 +218,7 @@
     <Compile Include="Data\View\Locale\LocaleTabGroup.cs" />
     <Compile Include="Data\View\Locale\LocaleUnsavedChangesData.cs" />
     <Compile Include="Data\View\Locale\LocaleViewModel.cs" />
+    <Compile Include="Data\View\ModProjectDataComparer.cs" />
     <Compile Include="Data\View\ProjectVersionData.cs" />
     <Compile Include="Module.cs" />
     <Compile Include="Core\DOS2DECommands.cs" />

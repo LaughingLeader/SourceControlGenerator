@@ -274,6 +274,7 @@
     </Compile>
     <Compile Include="Controls\AutoScrollingTextbox.cs" />
     <Compile Include="Controls\Behavior\ComboBoxWidthFromItemsBehavior.cs" />
+    <Compile Include="Controls\Behavior\DataGridCustomSortBehaviour.cs" />
     <Compile Include="Controls\Behavior\DataGridDefaultSortDirection.cs" />
     <Compile Include="Controls\Behavior\ImageButtonDisabledHoverBehavior.cs" />
     <Compile Include="Controls\Behavior\InputBindingsBehavior.cs" />

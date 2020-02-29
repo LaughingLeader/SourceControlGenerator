@@ -2,6 +2,7 @@
 	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 	xmlns:c="clr-namespace:SCG.Controls"
+	xmlns:cb="clr-namespace:SCG.Controls.Behavior"
 	xmlns:core="clr-namespace:SCG.Core"
 	xmlns:cv="clr-namespace:SCG.Converters"
 	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"

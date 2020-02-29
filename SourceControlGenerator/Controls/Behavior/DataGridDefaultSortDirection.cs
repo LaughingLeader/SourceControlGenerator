@@ -18,8 +18,7 @@ namespace SCG.Controls.Behavior
 
         private static void OnDirectionChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            var grid = d as DataGrid;
-            if (grid != null)
+            if (d is DataGrid grid)
             {
                 grid.Sorting += (source, args) => {
                     if (args.Column.SortDirection == null)
@@ -29,6 +28,10 @@ namespace SCG.Controls.Behavior
                         args.Column.SortDirection = sortDir;
                     }
                 };
+            }
+            else if(d is DataGridColumn col)
+            {
+                col.SortDirection = GetDirection(d);
             }
         }
 

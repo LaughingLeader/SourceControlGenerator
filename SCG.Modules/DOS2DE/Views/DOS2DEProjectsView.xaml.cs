@@ -36,6 +36,7 @@ using DynamicData;
 using System.Windows.Media.Animation;
 using System.Reactive.Disposables;
 using System.Reactive.Concurrency;
+using System.Collections;
 
 namespace SCG.Modules.DOS2DE.Views
 {
@@ -103,7 +104,7 @@ namespace SCG.Modules.DOS2DE.Views
 
 			this.WhenActivated((d) =>
 			{
-				this.OneWayBind(ViewModel, vm => vm.ManagedProjects, v => v.ManagedProjectsDataGrid.ItemsSource).DisposeWith(d);
+				//this.OneWayBind(ViewModel, vm => vm.ManagedProjects, v => v.ManagedProjectsDataGrid.ItemsSource).DisposeWith(d);
 				this.OneWayBind(ViewModel, vm => vm.UnmanagedProjects, v => v.AvailableProjectsList.ItemsSource).DisposeWith(d);
 				this.OneWayBind(ViewModel, vm => vm.ManageButtonsText, v => v.AddSelectedProjectsButton.Content).DisposeWith(d);
 
@@ -126,7 +127,6 @@ namespace SCG.Modules.DOS2DE.Views
 					}
 				}).DisposeWith(d);
 			});
-			
 		}
 
 
@@ -612,6 +612,5 @@ namespace SCG.Modules.DOS2DE.Views
 			return projects;
 		}
 		#endregion
-
 	}
 }
