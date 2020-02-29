@@ -44,7 +44,13 @@ namespace SCG
 			{
 				if (File.Exists(filePath))
 				{
-					contents = File.ReadAllText(filePath);
+					using (System.IO.FileStream stream = new System.IO.FileStream(filePath, System.IO.FileMode.Open, System.IO.FileAccess.Read, System.IO.FileShare.Read, 4096, false))
+					{
+						using (System.IO.StreamReader sr = new System.IO.StreamReader(stream))
+						{
+							contents = sr.ReadToEnd();
+						}
+					}
 				}
 				else
 				{
@@ -86,7 +92,7 @@ namespace SCG
 
 		public static async Task<string> ReadFileAsync(string filePath)
 		{
-			using (System.IO.FileStream stream = new System.IO.FileStream(filePath, System.IO.FileMode.Open, System.IO.FileAccess.Read, System.IO.FileShare.None, 4096, true))
+			using (System.IO.FileStream stream = new System.IO.FileStream(filePath, System.IO.FileMode.Open, System.IO.FileAccess.Read, System.IO.FileShare.Read, 4096, true))
 			{
 				using (System.IO.StreamReader sr = new System.IO.StreamReader(stream))
 				{
@@ -102,7 +108,7 @@ namespace SCG
 			{
 				Directory.CreateDirectory(Path.GetDirectoryName(filePath));
 
-				using (System.IO.FileStream stream = new System.IO.FileStream(filePath, System.IO.FileMode.Create, System.IO.FileAccess.Write, System.IO.FileShare.None, 4096, false))
+				using (System.IO.FileStream stream = new System.IO.FileStream(filePath, System.IO.FileMode.Create, System.IO.FileAccess.Write, System.IO.FileShare.Write, 4096, false))
 				{
 					using (System.IO.StreamWriter sw = new System.IO.StreamWriter(stream))
 					{
@@ -126,7 +132,7 @@ namespace SCG
 			{
 				Directory.CreateDirectory(Path.GetDirectoryName(filePath));
 
-				using (System.IO.FileStream stream = new System.IO.FileStream(filePath, System.IO.FileMode.Create, System.IO.FileAccess.Write, System.IO.FileShare.None, 4096, true))
+				using (System.IO.FileStream stream = new System.IO.FileStream(filePath, System.IO.FileMode.Create, System.IO.FileAccess.Write, System.IO.FileShare.Write, 4096, true))
 				{
 					using (System.IO.StreamWriter sw = new System.IO.StreamWriter(stream))
 					{
