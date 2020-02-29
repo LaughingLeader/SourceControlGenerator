@@ -368,10 +368,10 @@
 							CanUserAddRows="False"
 							CellStyle="{StaticResource DataGrid_NoHighlight}"
 							ColumnWidth="Auto"
-							EnableRowVirtualization="False"
+							EnableRowVirtualization="True"
 							FrameworkElement.Loaded="ManagedProjectsDataGrid_Loaded"
 							IsReadOnly="True"
-							ItemsSource="{Binding Source={StaticResource ManagedProjectDataView}}"
+							ItemsSource="{Binding Source={StaticResource ManagedProjectDataView}, IsAsync=True}"
 							SelectionChanged="ManagedProjectsDataGrid_SelectionChanged">
 							<!--<DataGrid.ItemsSource>
 								<x:Array Type="data:ModProjectData">
