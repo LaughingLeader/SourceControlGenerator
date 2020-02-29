@@ -60,15 +60,6 @@ namespace SCG.Core
 			var totalLoaded = StartLoadingModules().GetAwaiter().GetResult();
 
 			Log.Here().Important($"Loaded {totalLoaded} project modules. Last Module: [{Data.AppSettings.LastModule}]");
-
-			if (!String.IsNullOrWhiteSpace(Data.AppSettings.LastModule) && SetModule(Data.AppSettings.LastModule))
-			{
-				Data.ModuleSelectionVisibility = Visibility.Collapsed;
-			}
-			else
-			{
-				Data.ModuleSelectionVisibility = Visibility.Visible;
-			}
 		}
 
 		private Task<int> StartLoadingModules()

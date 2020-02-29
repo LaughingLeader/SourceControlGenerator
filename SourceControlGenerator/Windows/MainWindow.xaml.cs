@@ -160,6 +160,20 @@ namespace SCG.Windows
 
 				Controller.CheckForUpdates();
 			});
+
+			this.Loaded += MainWindow_Loaded;
+		}
+
+		private void MainWindow_Loaded(object sender, RoutedEventArgs e)
+		{
+			if (!String.IsNullOrWhiteSpace(Controller.Data.AppSettings.LastModule) && Controller.SetModule(Controller.Data.AppSettings.LastModule))
+			{
+				Controller.Data.ModuleSelectionVisibility = Visibility.Collapsed;
+			}
+			else
+			{
+				Controller.Data.ModuleSelectionVisibility = Visibility.Visible;
+			}
 		}
 
 		private void AutoUpdater_ApplicationExitEvent()
