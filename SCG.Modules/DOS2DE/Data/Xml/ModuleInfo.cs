@@ -144,9 +144,20 @@ namespace SCG.Data.Xml
 		public DateTime ModifiedDate
 		{
 			get => modifiedDate;
-			set { this.RaiseAndSetIfChanged(ref modifiedDate, value); }
+			set { 
+				this.RaiseAndSetIfChanged(ref modifiedDate, value);
+				ModifiedDateString = modifiedDate.ToString("d");
+				Timestamp = ((DateTimeOffset)modifiedDate).ToUnixTimeSeconds();
+			}
 		}
 
+		private string modifiedDateString;
+
+		public string ModifiedDateString
+		{
+			get => modifiedDateString;
+			set { this.RaiseAndSetIfChanged(ref modifiedDateString, value); }
+		}
 
 		public void Set(ModuleInfo moduleInfo)
 		{

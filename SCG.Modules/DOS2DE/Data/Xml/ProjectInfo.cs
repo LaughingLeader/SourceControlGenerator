@@ -38,7 +38,26 @@ namespace SCG.Data.Xml
 			set { timestamp = value; }
 		}
 
-		public DateTime CreationDate { get; set; }
+		private DateTime creationDate;
+
+		public DateTime CreationDate
+		{
+			get => creationDate;
+			set
+			{
+				this.RaiseAndSetIfChanged(ref creationDate, value);
+				CreationDateString = creationDate.ToString("d");
+				Timestamp = ((DateTimeOffset)creationDate).ToUnixTimeSeconds();
+			}
+		}
+
+		private string creationDateString;
+
+		public string CreationDateString
+		{
+			get => creationDateString;
+			set { this.RaiseAndSetIfChanged(ref creationDateString, value); }
+		}
 
 		public void Set(ProjectInfo projectInfo)
 		{
