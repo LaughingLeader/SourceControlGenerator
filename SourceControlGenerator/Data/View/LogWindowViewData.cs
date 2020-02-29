@@ -19,10 +19,7 @@ namespace SCG.Data.View
 	{
 		public SourceList<LogData> Logs { get; set; } = new SourceList<LogData>();
 
-		private ReadOnlyObservableCollection<LogData> visibleLogs;
-		public ReadOnlyObservableCollection<LogData> VisibleLogs => visibleLogs;
-
-		//public ObservableCollectionExtended<LogData> VisibleLogs {get; set;} = new ObservableCollectionExtended<LogData>();
+		public ObservableCollectionExtended<LogData> VisibleLogs {get; private set;} = new ObservableCollectionExtended<LogData>();
 
 		public List<LogData> LastLogs { get; set; }
 
@@ -53,6 +50,12 @@ namespace SCG.Data.View
 			get => IsVisible ? "Close Log Window" : "Open Log Window";
 		}
 
+		private void UpdateLogs()
+		{
+			VisibleLogs.Clear();
+			if (Logs.Count > 0) VisibleLogs.AddRange(Logs.Items.Where(x => CanDisplayLog(x)).OrderBy(x => x.Index));
+		}
+
 		public void Add(LogData log)
 		{
 			Logs.Add(log);
@@ -76,7 +79,6 @@ namespace SCG.Data.View
 
 			if (IsVisible)
 			{
-				this.RaisePropertyChanged("Logs");
 				this.RaisePropertyChanged("CanClear");
 
 				if (LastLogs != null)
@@ -84,6 +86,8 @@ namespace SCG.Data.View
 					LastLogs = null;
 					this.RaisePropertyChanged("CanRestore");
 				}
+
+				UpdateLogs();
 			}
 		}
 
@@ -96,7 +100,7 @@ namespace SCG.Data.View
 
 				if (IsVisible)
 				{
-					this.RaisePropertyChanged("Logs");
+					UpdateLogs();
 					this.RaisePropertyChanged("CanClear");
 					this.RaisePropertyChanged("CanRestore");
 				}
@@ -115,7 +119,7 @@ namespace SCG.Data.View
 				LastLogs = null;
 				if (IsVisible)
 				{
-					this.RaisePropertyChanged("Logs");
+					UpdateLogs();
 					this.RaisePropertyChanged("CanClear");
 					this.RaisePropertyChanged("CanRestore");
 				}
@@ -134,20 +138,28 @@ namespace SCG.Data.View
 
 				if (!String.IsNullOrWhiteSpace(value))
 				{
-					foreach (var log in Logs.Items.Where(x => x.IsVisible))
+					foreach (var log in Logs.Items)
 					{
-						log.IsVisible = log.Message.CaseInsensitiveContains(searchText);
+						log.IsVisible = CanDisplayLog(log);
 					}
 				}
 
 				if (searchText != lastVal)
 				{
-					this.RaisePropertyChanged("Logs");
+					UpdateLogs();
 				}
 			}
 		}
 
 		private bool autoRaiseLogsChanged = true;
+
+		private HashSet<LogType> visibleFilters = new HashSet<LogType>()
+		{
+			LogType.Activity,
+			LogType.Important,
+			LogType.Warning,
+			LogType.Error
+		};
 
 		private bool filterActivity = true;
 
@@ -157,6 +169,14 @@ namespace SCG.Data.View
 			set
 			{
 				this.RaiseAndSetIfChanged(ref filterActivity, value);
+				if(value)
+				{
+					visibleFilters.Add(LogType.Activity);
+				}
+				else if(visibleFilters.Contains(LogType.Activity))
+				{
+					visibleFilters.Remove(LogType.Activity);
+				}
 				FilterChanged(LogType.Activity, filterActivity, autoRaiseLogsChanged);
 			}
 		}
@@ -169,6 +189,14 @@ namespace SCG.Data.View
 			set
 			{
 				this.RaiseAndSetIfChanged(ref filterImportant, value);
+				if (value)
+				{
+					visibleFilters.Add(LogType.Important);
+				}
+				else if (visibleFilters.Contains(LogType.Important))
+				{
+					visibleFilters.Remove(LogType.Important);
+				}
 				FilterChanged(LogType.Important, filterImportant, autoRaiseLogsChanged);
 			}
 		}
@@ -181,6 +209,14 @@ namespace SCG.Data.View
 			set
 			{
 				this.RaiseAndSetIfChanged(ref filterWarnings, value);
+				if (value)
+				{
+					visibleFilters.Add(LogType.Warning);
+				}
+				else if (visibleFilters.Contains(LogType.Warning))
+				{
+					visibleFilters.Remove(LogType.Warning);
+				}
 				FilterChanged(LogType.Warning, filterWarnings, autoRaiseLogsChanged);
 			}
 		}
@@ -193,6 +229,14 @@ namespace SCG.Data.View
 			set
 			{
 				this.RaiseAndSetIfChanged(ref filterErrors, value);
+				if (value)
+				{
+					visibleFilters.Add(LogType.Error);
+				}
+				else if (visibleFilters.Contains(LogType.Error))
+				{
+					visibleFilters.Remove(LogType.Error);
+				}
 				FilterChanged(LogType.Error, filterErrors, autoRaiseLogsChanged);
 			}
 		}
@@ -205,14 +249,10 @@ namespace SCG.Data.View
 				var change = false;
 				foreach(var log in logs)
 				{
-					if(log.IsVisible != showType)
-					{
-						log.IsVisible = showType;
-						change = true;
-					}
+					log.IsVisible = CanDisplayLog(log);
 				}
 
-				if(raiseLogsChanged && change) this.RaisePropertyChanged("Logs");
+				UpdateLogs();
 			}
 		}
 
@@ -235,7 +275,9 @@ namespace SCG.Data.View
 
 		public void OnlyShowFilter(LogType logType)
 		{
-			if(logType == LogType.Activity)
+			visibleFilters.Clear();
+			visibleFilters.Add(logType);
+			if (logType == LogType.Activity)
 			{
 				filterActivity = true;
 				filterImportant = filterWarnings = filterErrors = false;
@@ -258,37 +300,46 @@ namespace SCG.Data.View
 
 			foreach(var log in Logs.Items)
 			{
-				log.IsVisible = log.MessageType == logType;
+				log.IsVisible = CanDisplayLog(log);
 			}
 
 			this.RaisePropertyChanged("FilterActivity");
 			this.RaisePropertyChanged("FilterImportant");
 			this.RaisePropertyChanged("FilterWarnings");
 			this.RaisePropertyChanged("FilterErrors");
-			this.RaisePropertyChanged("Logs");
+			UpdateLogs();
 		}
 
 		public void ToggleAllFilters(bool toValue)
 		{
 			filterActivity = filterImportant = filterWarnings = filterErrors = toValue;
 
+			visibleFilters.Clear();
+			if (toValue == true)
+			{
+				visibleFilters.Add(LogType.Activity);
+				visibleFilters.Add(LogType.Important);
+				visibleFilters.Add(LogType.Warning);
+				visibleFilters.Add(LogType.Error);
+			}
+
 			foreach (var log in Logs.Items)
 			{
-				log.IsVisible = toValue;
+				log.IsVisible = CanDisplayLog(log);
 			}
 
 			this.RaisePropertyChanged("FilterActivity");
 			this.RaisePropertyChanged("FilterImportant");
 			this.RaisePropertyChanged("FilterWarnings");
 			this.RaisePropertyChanged("FilterErrors");
-			this.RaisePropertyChanged("Logs");
+			UpdateLogs();
 		}
 
 		private bool CanDisplayLog(LogData logData)
 		{
-			if(logData.IsVisible)
+			if(visibleFilters.Contains(logData.MessageType))
 			{
-				if(String.IsNullOrWhiteSpace(SearchText))
+				if (String.IsNullOrWhiteSpace(SearchText))
 				{
 					return true;
 				}
@@ -300,31 +351,19 @@ namespace SCG.Data.View
 			return false;
 		}
 
-		private IComparer<LogData> sortOrder = SortExpressionComparer<LogData>.Ascending(m => m.Index);
-		private IDisposable autoRefreshSubscription;
-		private IObservable<IChangeSet<LogData>> logConnection;
-
 		public void OnOpened()
 		{
-			if(autoRefreshSubscription == null)
-			{
-				autoRefreshSubscription = logConnection.Subscribe();
-			}
+			UpdateLogs();
 		}
 
 		public void OnClosed()
 		{
-			if(autoRefreshSubscription != null)
-			{
-				autoRefreshSubscription.Dispose();
-				autoRefreshSubscription = null;
-			}
+
 		}
 
 		public LogWindowViewData()
 		{
-			logConnection = Logs.Connect().AutoRefreshOnObservable(x => x.WhenPropertyChanged(p => p.IsVisible)).
-				ObserveOn(RxApp.TaskpoolScheduler).Filter(x => x.IsVisible).Sort(sortOrder, resetThreshold: 50).Bind(out visibleLogs);
+
 		}
 	}
 }
