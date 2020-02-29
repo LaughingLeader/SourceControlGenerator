@@ -190,7 +190,7 @@ namespace SCG.Modules.DOS2DE.Data.View
 			}
 		}
 
-		private Visibility loadPanelVisibility = Visibility.Collapsed;
+		private Visibility loadPanelVisibility = Visibility.Visible;
 
 		public Visibility LoadPanelVisibility
 		{
