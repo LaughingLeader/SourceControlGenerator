@@ -63,8 +63,6 @@ namespace SCG.Modules.DOS2DE.Data.View
 					string property = SortMemberPath.Replace("ModuleInfo.", "");
 					string valueA = (string)dataType.GetProperty(property).GetValue(a.ModuleInfo);
 					string valueB = (string)dataType.GetProperty(property).GetValue(b.ModuleInfo);
-
-					//Log.Here().Activity($"Property: {property} = {valueA} | {valueB}");
 					if (String.IsNullOrWhiteSpace(valueA))
 					{
 						return 1;

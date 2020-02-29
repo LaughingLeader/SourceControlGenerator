@@ -69,35 +69,23 @@ namespace SCG.Controls.Behavior
 
         private static void HandleCustomSorting(object sender, DataGridSortingEventArgs e)
         {
-            var dataGrid = sender as DataGrid;
-            if (dataGrid == null || !GetAllowCustomSort(dataGrid)) return;
-
-            // Sanity check
-            var sorter = GetCustomSorter(e.Column);
-            if (sorter == null) return;
-
-            var direction = (e.Column.SortDirection != ListSortDirection.Ascending)
-                                ? ListSortDirection.Ascending
-                                : ListSortDirection.Descending;
-
-            e.Column.SortDirection = sorter.SortDirection = direction;
-            sorter.SortMemberPath = e.Column.SortMemberPath;
-
-            if (dataGrid.ItemsSource is ListCollectionView listColView)
+            if(sender is DataGrid dataGrid)
             {
-                listColView.CustomSort = sorter;
-                e.Handled = true;
-            }
-            else
-            {
-                Log.Here().Activity($"dataGrid.ItemsSource is: {dataGrid.ItemsSource.GetType()}");
-            }
-            //else if(dataGrid.ItemsSource is IList<IComparable> list)
-            //{
+                if (dataGrid == null || !GetAllowCustomSort(dataGrid)) return;
+                var sorter = GetCustomSorter(e.Column);
+                if (sorter == null) return;
 
-            //}
+                var direction = (e.Column.SortDirection != ListSortDirection.Ascending) ? ListSortDirection.Ascending : ListSortDirection.Descending;
 
-            
+                e.Column.SortDirection = sorter.SortDirection = direction;
+                sorter.SortMemberPath = e.Column.SortMemberPath;
+
+                if (dataGrid.ItemsSource is ListCollectionView listColView)
+                {
+                    listColView.CustomSort = sorter;
+                    e.Handled = true;
+                }
+            }
         }
     }
 }
