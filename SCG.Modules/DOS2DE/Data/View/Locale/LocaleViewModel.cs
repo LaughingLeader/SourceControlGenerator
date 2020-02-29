@@ -728,7 +728,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			}
 		}
 
-		private void GenerateHandlesThatMatch(string match, bool equals = true)
+		private void GenerateHandlesThatMatch(string match = "", bool equals = true)
 		{
 			if (SelectedGroup != null && SelectedGroup.SelectedFile != null)
 			{
@@ -737,13 +737,20 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 
 				List<ILocaleKeyEntry> list;
 
-				if (equals)
+				if(!String.IsNullOrEmpty(match))
 				{
-					list = SelectedGroup.SelectedFile.Entries.Where(e => e.Selected && e.Handle.Equals(match)).ToList();
+					if (equals)
+					{
+						list = SelectedGroup.SelectedFile.Entries.Where(e => e.Selected && e.Handle.Equals(match)).ToList();
+					}
+					else
+					{
+						list = SelectedGroup.SelectedFile.Entries.Where(e => e.Selected && e.Handle.Contains(match)).ToList();
+					}
 				}
 				else
 				{
-					list = SelectedGroup.SelectedFile.Entries.Where(e => e.Selected && e.Handle.Contains(match)).ToList();
+					list = SelectedGroup.SelectedFile.Entries.Where(e => e.Selected).ToList();
 				}
 
 				if(list.Count > 0)
@@ -776,9 +783,16 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			}
 		}
 
-		public void GenerateHandles()
+		public void GenerateHandles(bool forceRegenerate = false)
 		{
-			GenerateHandlesThatMatch(LocaleEditorCommands.UnsetHandle);
+			if(!forceRegenerate)
+			{
+				GenerateHandlesThatMatch(LocaleEditorCommands.UnsetHandle);
+			}
+			else
+			{
+				GenerateHandlesThatMatch();
+			}
 		}
 		public void OverrideResHandles()
 		{
@@ -1196,6 +1210,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 		public ICommand SaveCurrentCommand { get; private set; }
 		public ICommand SaveSettingsCommand { get; private set; }
 		public ICommand GenerateHandlesCommand { get; private set; }
+		public ICommand ForceGenerateHandlesCommand { get; private set; }
 		public ICommand OverrideResHandlesCommand { get; private set; }
 
 		public ICommand AddNewKeyCommand { get; private set; }
@@ -2354,7 +2369,13 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			SaveSettingsCommand = ReactiveCommand.Create(view.SaveSettings).DisposeWith(disposables);
 			Settings.SaveCommand = this.SaveSettingsCommand;
 
-			GenerateHandlesCommand = ReactiveCommand.Create(GenerateHandles, AnySelectedEntryObservable).DisposeWith(disposables);
+			GenerateHandlesCommand = ReactiveCommand.Create(() => { GenerateHandles(); }, AnySelectedEntryObservable).DisposeWith(disposables);
+			ForceGenerateHandlesCommand = ReactiveCommand.Create(() => {
+				FileCommands.OpenConfirmationDialog(this.view, "Regenerate Handles Confirmation", "Replace all selected entry handles with new handles?", "", (b) =>
+				{
+					if (b) this.GenerateHandles(true);
+				}); 
+			}, AnySelectedEntryObservable).DisposeWith(disposables);
 			OverrideResHandlesCommand = ReactiveCommand.Create(OverrideResHandles, AnySelectedEntryObservable).DisposeWith(disposables);
 			NewHandleCommand = ReactiveCommand.Create<object>(GenerateHandle).DisposeWith(disposables);
 			AddNewKeyCommand = ReactiveCommand.Create(AddNewKey, CanImportKeysObservable).DisposeWith(disposables);
@@ -2537,7 +2558,8 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 
 			MenuData.Edit.Add(new MenuData("Edit.SelectAll", "Select All", SelectAllEntriesCommand, Key.A, ModifierKeys.Control));
 			MenuData.Edit.Add(new MenuData("Edit.SelectNone", "Select None", DeselectAllEntriesCommand, Key.D, ModifierKeys.Control));
-			MenuData.Edit.Add(new MenuData("Edit.GenerateHandles", "Generate Handles for Selected", GenerateHandlesCommand, Key.G, ModifierKeys.Control | ModifierKeys.Shift));
+			MenuData.Edit.Add(new MenuData("Edit.GenerateHandles", "Generate Handles for Selected (Unset Only)", GenerateHandlesCommand, Key.G, ModifierKeys.Control | ModifierKeys.Shift));
+			MenuData.Edit.Add(new MenuData("Edit.GenerateHandles", "Regenerate Handles for Selected", ForceGenerateHandlesCommand));
 			MenuData.Edit.Add(new MenuData("Edit.AddKey", "Add Key", AddNewKeyCommand));
 			MenuData.Edit.Add(new MenuData("Edit.DeleteSelectedKeys", "Delete Selected Keys", DeleteKeysCommand));
 
