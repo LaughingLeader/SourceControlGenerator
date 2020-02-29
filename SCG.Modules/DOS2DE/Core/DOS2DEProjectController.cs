@@ -1078,28 +1078,54 @@ namespace SCG.Core
 
 		public async Task<Unit> RefreshAllProjectsAsync()
 		{
-			await Observable.Start(() => {
+			if (Thread.CurrentThread.IsBackground)
+			{
+				await Observable.Start(() => {
+					Data.ModProjects.Clear();
+					return Unit.Default;
+				}, RxApp.MainThreadScheduler);
+			}
+			else
+			{
 				Data.ModProjects.Clear();
-				return Unit.Default;
-			}, RxApp.MainThreadScheduler);
+			}
 
 			Log.Here().Activity("Refreshing all data");
 			var newMods = await DOS2DECommands.LoadAllAsync(Data);
 			Log.Here().Activity("Done Refreshing all data");
 
-			return await Observable.Start(() => {
+			if (Thread.CurrentThread.IsBackground)
+			{
+				return await Observable.Start(() => {
+					Data.ModProjects.AddRange(newMods);
+					projectViewControl.FadeLoadingPanel(true, () => { Data.CanClickRefresh = true; });
+					Data.UpdateManageButtonsText();
+					return Unit.Default;
+				}, RxApp.MainThreadScheduler);
+			}
+			else
+			{
 				Data.ModProjects.AddRange(newMods);
 				projectViewControl.FadeLoadingPanel(true, () => { Data.CanClickRefresh = true; });
+				Data.UpdateManageButtonsText();
 				return Unit.Default;
-			}, RxApp.MainThreadScheduler);
+			}
 		}
 		private async Task<Unit> RefreshModProjectsAsync()
 		{
 			await DOS2DECommands.RefreshManagedProjects(Data);
-			return await Observable.Start(() => {
+			if (Thread.CurrentThread.IsBackground)
+			{
+				return await Observable.Start(() => {
+					projectViewControl.FadeLoadingPanel(true, () => { Data.CanClickRefresh = true; });
+					return Unit.Default;
+				}, RxApp.MainThreadScheduler);
+			}
+			else
+			{
 				projectViewControl.FadeLoadingPanel(true, () => { Data.CanClickRefresh = true; });
 				return Unit.Default;
-			}, RxApp.MainThreadScheduler);
+			}
 		}
 
 		private void RefreshModProjects_OnFadingDone()
@@ -1510,27 +1536,43 @@ namespace SCG.Core
 			var watch = new System.Diagnostics.Stopwatch();
 			watch.Start();
 #endif
-			/*
-			RxApp.MainThreadScheduler.ScheduleAsync(Data, async (scheduler, data, cancelationToken) =>
-			{
-				var newMods = await DOS2DECommands.LoadAllAsync(Dispatcher.CurrentDispatcher, data);
-				RxApp.MainThreadScheduler.Schedule(newMods, (scheduler2, mods) =>
-				{
-					Data.ModProjects.AddRange(newMods);
-				});
-			});
-			*/
+			//RxApp.MainThreadScheduler.ScheduleAsync(async (scheduler, token) =>
+			//{
+			//	var newMods = await DOS2DECommands.LoadAllAsync(Data);
+			//	Data.ModProjects.AddRange(newMods);
+			//	Data.UpdateManageButtonsText();
 
-			var newMods = DOS2DECommands.LoadAll(Data);
-			Data.ModProjects.AddRange(newMods);
+			//	if (saveModuleSettings)
+			//	{
+			//		FileCommands.Save.SaveModuleSettings(Data);
+			//		saveModuleSettings = false;
+			//	}
+			//	await scheduler.Yield();
+			//	return Disposable.Empty;
+			//});
+			RefreshAllProjects_Start();
 
-			Data.UpdateManageButtonsText();
+			//var task = DOS2DECommands.LoadAllAsync(Data, false, true).ConfigureAwait(true).;
+
+			//var newMods = task.GetAwaiter().GetResult();
+			//Data.ModProjects.AddRange(newMods);
+			//Data.UpdateManageButtonsText();
 
 			if (saveModuleSettings)
 			{
 				FileCommands.Save.SaveModuleSettings(Data);
 				saveModuleSettings = false;
 			}
+
+			//var task = Task.Run(() => RefreshAllProjectsAsync());
+			//task.Wait();
+
+			//if (saveModuleSettings)
+			//{
+			//	FileCommands.Save.SaveModuleSettings(Data);
+			//	saveModuleSettings = false;
+			//}
+
 #if Debug
 			watch.Stop();
 			Log.Here().Important($"Loading time: {watch.ElapsedMilliseconds} ms");
