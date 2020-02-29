@@ -27,12 +27,13 @@ using System.Reactive.Linq;
 using System.Windows.Threading;
 using System.Reactive.Disposables;
 using System.Reactive;
+using System.Threading;
 
 namespace SCG.Modules.DOS2DE.Core
 {
 	public static class DOS2DECommands
 	{
-		#region Syync
+		#region Sync
 		public static List<ModProjectData> LoadAll(DOS2DEModuleData Data, bool clearExisting = false)
 		{
 			var newMods = LoadModProjects(Data, clearExisting);
@@ -181,23 +182,28 @@ namespace SCG.Modules.DOS2DE.Core
 
 						if (clearExisting)
 						{
-							modData.ReloadData();
-
-							if (!String.IsNullOrWhiteSpace(m.LastBackupUTC))
+							RxApp.MainThreadScheduler.ScheduleAsync(async (s, t) =>
 							{
-								DateTime lastBackup;
+								await modData.ReloadDataAsync();
 
-								var success = DateTime.TryParse(m.LastBackupUTC, out lastBackup);
-								if (success)
+								if (!String.IsNullOrWhiteSpace(m.LastBackupUTC))
 								{
-									//Log.Here().Activity($"Successully parsed {modProject.LastBackup} to DateTime.");
-									modData.LastBackup = lastBackup.ToLocalTime();
+									DateTime lastBackup;
+
+									var success = DateTime.TryParse(m.LastBackupUTC, out lastBackup);
+									if (success)
+									{
+										//Log.Here().Activity($"Successully parsed {modProject.LastBackup} to DateTime.");
+										modData.LastBackup = lastBackup.ToLocalTime();
+									}
+									else
+									{
+										Log.Here().Error($"Could not convert {m.LastBackupUTC} to DateTime.");
+									}
 								}
-								else
-								{
-									Log.Here().Error($"Could not convert {m.LastBackupUTC} to DateTime.");
-								}
-							}
+								await s.Yield();
+								return Disposable.Empty;
+							});	
 						}
 					}
 				};
@@ -233,7 +239,7 @@ namespace SCG.Modules.DOS2DE.Core
 		}
 		#endregion
 		#region Async
-		public static async Task<List<ModProjectData>> LoadAllAsync(DOS2DEModuleData Data, bool clearExisting = false)
+		public static async Task<List<ModProjectData>> LoadAllAsync(DOS2DEModuleData Data, bool clearExisting = false, bool continueOnCaptureContext = true)
 		{
 			//await new SynchronizationContextRemover();
 			var newMods = await LoadModProjectsAsync(Data, clearExisting);
@@ -248,12 +254,19 @@ namespace SCG.Modules.DOS2DE.Core
 		{
 			if (clearExisting)
 			{
-				await Observable.Start(() =>
+				Log.Here().Important("Clearing mod projects");
+				if (Thread.CurrentThread.IsBackground)
 				{
-					Log.Here().Important("Clearing mod projects");
+					await Observable.Start(() =>
+					{
+						Data.ModProjects.Clear();
+						return Unit.Default;
+					}, RxApp.MainThreadScheduler);
+				}
+				else
+				{
 					Data.ModProjects.Clear();
-					return Unit.Default;
-				}, RxApp.MainThreadScheduler);
+				}
 			}
 
 			List<ModProjectData> newItems = new List<ModProjectData>();
@@ -311,11 +324,18 @@ namespace SCG.Modules.DOS2DE.Core
 										{
 											if(previous.DataIsNewer(modProjectData))
 											{
-												await Observable.Start(() =>
+												if (Thread.CurrentThread.IsBackground)
+												{
+													await Observable.Start(() =>
+													{
+														previous.UpdateData(modProjectData);
+														return Unit.Default;
+													}, RxApp.MainThreadScheduler);
+												}
+												else
 												{
 													previous.UpdateData(modProjectData);
-													return Unit.Default;
-												}, RxApp.MainThreadScheduler);
+												}
 											}
 										}
 										else
@@ -341,7 +361,7 @@ namespace SCG.Modules.DOS2DE.Core
 			return newItems;
 		}
 
-		public static async Task LoadManagedProjectsAsync(DOS2DEModuleData Data, List<ModProjectData> modProjects, bool clearExisting = false)
+		public static async Task<Unit> LoadManagedProjectsAsync(DOS2DEModuleData Data, List<ModProjectData> modProjects, bool clearExisting = false)
 		{
 			if (clearExisting)
 			{
@@ -369,11 +389,18 @@ namespace SCG.Modules.DOS2DE.Core
 						MissingMemberHandling = MissingMemberHandling.Error
 					};
 
-					await Observable.Start(() =>
+					if (Thread.CurrentThread.IsBackground)
+					{
+						await Observable.Start(() =>
+						{
+							Data.ManagedProjectsData = JsonConvert.DeserializeObject<ManagedProjectsData>(contents, settings);
+							return Unit.Default;
+						}, RxApp.MainThreadScheduler);
+					}
+					else
 					{
 						Data.ManagedProjectsData = JsonConvert.DeserializeObject<ManagedProjectsData>(contents, settings);
-						return Unit.Default;
-					}, RxApp.MainThreadScheduler);
+					}
 				}
 				catch (Exception ex)
 				{
@@ -381,26 +408,45 @@ namespace SCG.Modules.DOS2DE.Core
 				}
 			}
 
+			Debug.WriteLine("Loading managed project data");
+
 			if (Data.ManagedProjectsData == null)
 			{
-				await Observable.Start(() =>
+				if (Thread.CurrentThread.IsBackground)
+				{
+					await Observable.Start(() =>
+					{
+						Data.ManagedProjectsData = new ManagedProjectsData();
+						return Unit.Default;
+					}, RxApp.MainThreadScheduler);
+				}
+				else
 				{
 					Data.ManagedProjectsData = new ManagedProjectsData();
-					return Unit.Default;
-				}, RxApp.MainThreadScheduler);
+				}
 			}
 			else
 			{
 				if (Data.ManagedProjectsData.SortedProjects != null)
 				{
-					await Observable.Start(() =>
+					if (Thread.CurrentThread.IsBackground)
+					{
+						await Observable.Start(() =>
+						{
+							foreach (var p in Data.ManagedProjectsData.SortedProjects)
+							{
+								Data.ManagedProjectsData.SavedProjects.AddOrUpdate(p);
+							}
+							return Unit.Default;
+						}, RxApp.MainThreadScheduler);
+					}
+					else
 					{
 						foreach (var p in Data.ManagedProjectsData.SortedProjects)
 						{
 							Data.ManagedProjectsData.SavedProjects.AddOrUpdate(p);
 						}
-						return Unit.Default;
-					}, RxApp.MainThreadScheduler);
+					}
 				}
 
 				foreach (var m in Data.ManagedProjectsData.SavedProjects.Items)
@@ -433,6 +479,8 @@ namespace SCG.Modules.DOS2DE.Core
 					}
 				};
 			}
+
+			return Unit.Default;
 		}
 
 		public static async Task<bool> LoadSourceControlDataAsync(DOS2DEModuleData Data, IEnumerable<ModProjectData> modProjects)
@@ -470,11 +518,19 @@ namespace SCG.Modules.DOS2DE.Core
 		{
 			//await new SynchronizationContextRemover();
 			var newMods = await LoadModProjectsAsync(Data, true);
-			await Observable.Start(() =>
+			if (Thread.CurrentThread.IsBackground)
+			{
+				await Observable.Start(() =>
+				{
+					Data.ModProjects.AddRange(newMods);
+					return Unit.Default;
+				}, RxApp.MainThreadScheduler);
+			}
+			else
 			{
 				Data.ModProjects.AddRange(newMods);
-				return Unit.Default;
-			}, RxApp.MainThreadScheduler);
+			}
+			
 			await LoadManagedProjectsAsync(Data, newMods, true);
 			return true;
 		}
