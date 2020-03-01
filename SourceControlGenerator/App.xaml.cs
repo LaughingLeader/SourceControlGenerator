@@ -36,11 +36,10 @@ namespace SCG
 
 		public App()
 		{
+			RxApp.DefaultExceptionHandler = new ReactionObservableExceptionHandler();
 			ThemeController.Init(this);
 			SCG.Helpers.Init();
 			FileCommands.Init();
-
-			RxApp.DefaultExceptionHandler = new ReactionObservableExceptionHandler();
 		}
 
 		private void Application_Startup(object sender, StartupEventArgs e)

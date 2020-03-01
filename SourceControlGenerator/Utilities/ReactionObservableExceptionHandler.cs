@@ -17,15 +17,15 @@ namespace SCG.Utilities
 			//if (Debugger.IsAttached) Debugger.Break();
 
 			var message = $"Exception encountered:\nType: {value.GetType().ToString()}\tMessage: {value.Message}\nSource: {value.Source}\nStackTrace: {value.StackTrace}";
-			Debug.WriteLine(message);
-			MessageBox.Show(message);
+			Trace.WriteLine(message);
+			//MessageBox.Show(message);
 			//RxApp.MainThreadScheduler.Schedule(() => { throw value; });
 		}
 
 		public void OnError(Exception value)
 		{
 			var message = $"Exception encountered:\nType: {value.GetType().ToString()}\tMessage: {value.Message}\nSource: {value.Source}\nStackTrace: {value.StackTrace}";
-			Debug.WriteLine(message);
+			Trace.WriteLine(message);
 			MessageBox.Show(message);
 		}
 
