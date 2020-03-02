@@ -772,6 +772,7 @@ namespace SCG.Modules.DOS2DE.Utilities
 					}
 				}
 			}
+			data.UpdateSelectedGroupCombinedData(false);
 			Log.Here().Activity($"Files saved: '{success}'.");
 			return success;
 		}

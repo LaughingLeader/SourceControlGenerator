@@ -799,7 +799,20 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			GenerateHandlesThatMatch("ResStr_", false);
 		}
 
-		public void UpdateCombinedGroup(bool updateCombinedEntries = false)
+		public void UpdateSelectedGroupCombinedData(bool all = false)
+		{
+			if(SelectedGroup != null)
+			{
+				SelectedGroup.UpdateCombinedData(all);
+
+				if(SelectedGroup != CombinedGroup)
+				{
+					CombinedGroup.UpdateCombinedData(all);
+				}
+			}
+		}
+
+		public void UpdateCombinedGroup(bool updateCombinedEntries = false, bool autoSelectGroup = false)
 		{
 			CombinedGroup.DataFiles = new ObservableCollectionExtended<ILocaleFileData>();
 			CombinedGroup.DataFiles.AddRange(ModsGroup.DataFiles);
@@ -812,28 +825,31 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			//CombinedGroup.Visibility = MultipleGroupsEntriesFilled();
 			CombinedGroup.Visibility = true;
 
-			if (!CombinedGroup.Visibility)
+			if(autoSelectGroup)
 			{
-				if (PublicGroup.Visibility)
+				if (!CombinedGroup.Visibility)
 				{
-					SelectedGroupIndex = 1;
-				}
-				else if (ModsGroup.Visibility)
-				{
-					SelectedGroupIndex = 2;
-				}
-				else if (DialogGroup.Visibility)
-				{
-					SelectedGroupIndex = 3;
+					if (PublicGroup.Visibility)
+					{
+						SelectedGroupIndex = 1;
+					}
+					else if (ModsGroup.Visibility)
+					{
+						SelectedGroupIndex = 2;
+					}
+					else if (DialogGroup.Visibility)
+					{
+						SelectedGroupIndex = 3;
+					}
+					else
+					{
+						SelectedGroupIndex = 0;
+					}
 				}
 				else
 				{
 					SelectedGroupIndex = 0;
 				}
-			}
-			else
-			{
-				SelectedGroupIndex = 0;
 			}
 
 			this.RaisePropertyChanged("CombinedGroup");
@@ -893,6 +909,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 								OutputType = LogType.Important;
 
 								keyFileData.SetChangesUnsaved(false, true);
+								UpdateSelectedGroupCombinedData(false);
 								ChangesUnsaved = false;
 							}
 							else
