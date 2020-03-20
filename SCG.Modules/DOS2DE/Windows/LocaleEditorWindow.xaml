@@ -1221,6 +1221,10 @@
 								<Setter.Value>
 									<ContextMenu>
 										<MenuItem
+											Command="{Binding Path=PlacementTarget.Tag.OpenFileInExplorerCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
+											CommandParameter="{Binding SourcePath}"
+											Header="Open in File Explorer..." />
+										<MenuItem
 											Command="{Binding Path=PlacementTarget.Tag.CopyToClipboardCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
 											CommandParameter="{Binding Name}"
 											Header="Copy Name" />
