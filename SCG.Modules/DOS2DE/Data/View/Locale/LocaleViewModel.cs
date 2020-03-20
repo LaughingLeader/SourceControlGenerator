@@ -1028,7 +1028,10 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 
 					currentGroup.ChangesUnsaved = true;
 					currentGroup.UpdateCombinedData(true);
-					currentGroup.SelectLast();
+					//currentGroup.SelectLast();
+
+					currentGroup.SelectedFileIndex = currentGroup.Tabs.IndexOf(newFile);
+
 					view.FocusSelectedTab();
 
 					ChangesUnsaved = true;
@@ -2265,6 +2268,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			GlobalCanActObservable = this.WhenAny(vm => vm.IsAddingNewFileTab, vm => vm.IsSubWindowOpen, (b1, b2) => !b1.Value && !b2.Value);
 			AnySelectedEntryObservable = this.WhenAnyValue(vm => vm.AnyEntrySelected);
 			CanImportFilesObservable = this.WhenAnyValue(vm => vm.CanAddFile);
+			CanAddFileObservable = this.WhenAnyValue(vm => vm.CanAddFile);
 			CanImportKeysObservable = this.WhenAnyValue(vm => vm.CanAddKeys);
 
 			this.WhenAny(vm => vm.SelectedFile.IsRenaming, b => b.Value == true).Subscribe((b) =>
@@ -2439,9 +2443,20 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 
 			OpenFileInExplorerCommand = ReactiveCommand.Create<string>((path) =>
 			{
-				if (path != String.Empty && File.Exists(path))
+				if (!String.IsNullOrEmpty(path))
 				{
-					Process.Start("explorer.exe", path);
+					if(File.Exists(path) || Directory.Exists(path))
+					{
+						Process.Start("explorer.exe", $"/select, \"{path}\"");
+					}
+					else
+					{
+						string parentDir = Path.GetDirectoryName(path);
+						if(Directory.Exists(parentDir))
+						{
+							Process.Start("explorer.exe", parentDir);
+						}
+					}
 				}
 			});
 
@@ -2524,12 +2539,12 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 				}
 			}).DisposeWith(disposables);
 
+			MenuData.File.Add(new MenuData("File.AddNewFile", "Add New File", AddFileCommand, Key.N, ModifierKeys.Control));
+			MenuData.File.Add(new SeparatorData());
 			var SaveCurrentMenuData = new MenuData("SaveCurrent", "Save", SaveCurrentCommand, Key.S, ModifierKeys.Control);
-
 			MenuData.File.Add(SaveCurrentMenuData);
 			MenuData.File.Add(new MenuData("File.SaveAll", "Save All", SaveAllCommand, Key.S, ModifierKeys.Control | ModifierKeys.Shift));
-
-			MenuData.File.Add(new MenuData("File.AddNewFile", "New", AddFileCommand));
+			MenuData.File.Add(new SeparatorData());
 			MenuData.File.Add(new MenuData("File.ImportFile", "Import File", ImportFileCommand));
 			MenuData.File.Add(new MenuData("File.ImportKeys", "Import File as Keys", ImportKeysCommand));
 			MenuData.File.Add(new SeparatorData());
