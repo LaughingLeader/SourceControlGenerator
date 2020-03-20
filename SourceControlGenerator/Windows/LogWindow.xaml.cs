@@ -56,7 +56,7 @@ namespace SCG.Windows
 
 			this.WhenActivated((disposables) =>
 			{
-				Console.WriteLine($"Logs: {String.Join(",", ViewModel.VisibleLogs.Select(x => x.Message))}");
+				//Console.WriteLine($"Logs: {String.Join(",", ViewModel.VisibleLogs.Select(x => x.Message))}");
 			});
 		}
 

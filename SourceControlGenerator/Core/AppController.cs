@@ -642,16 +642,19 @@ namespace SCG.Core
 
 		public void AddLogMessage(string LogMessage, LogType logType)
 		{
-			var log = new LogData()
+			RxApp.MainThreadScheduler.Schedule(_ =>
 			{
-				Index = logIndex++,
-				DateTime = DateTime.Now,
-				Message = LogMessage,
-				MessageType = logType
-			};
-			log.FormatOutput();
+				var log = new LogData()
+				{
+					Index = logIndex++,
+					DateTime = DateTime.Now,
+					Message = LogMessage,
+					MessageType = logType
+				};
+				log.FormatOutput();
 
-			mainWindow.LogWindow.ViewModel.Add(log);
+				mainWindow.LogWindow.ViewModel.Add(log);
+			});
 		}
 
 		public MenuData LogMenuData { get; set; }

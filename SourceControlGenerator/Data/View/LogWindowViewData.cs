@@ -17,9 +17,9 @@ namespace SCG.Data.View
 {
 	public class LogWindowViewData : ReactiveObject
 	{
-		public SourceList<LogData> Logs { get; set; } = new SourceList<LogData>();
+		public SourceList<LogData> Logs { get; set; }
 
-		public ObservableCollectionExtended<LogData> VisibleLogs {get; private set;} = new ObservableCollectionExtended<LogData>();
+		public ObservableCollectionExtended<LogData> VisibleLogs {get; private set;}
 
 		public List<LogData> LastLogs { get; set; }
 
@@ -52,8 +52,11 @@ namespace SCG.Data.View
 
 		private void UpdateLogs()
 		{
-			VisibleLogs.Clear();
-			if (Logs.Count > 0) VisibleLogs.AddRange(Logs.Items.Where(x => CanDisplayLog(x)).OrderBy(x => x.Index));
+			RxApp.MainThreadScheduler.Schedule(_ =>
+			{
+				VisibleLogs.Clear();
+				if (Logs.Count > 0) VisibleLogs.AddRange(Logs.Items.Where(x => CanDisplayLog(x)).OrderBy(x => x.Index));
+			});
 		}
 
 		public void Add(LogData log)
@@ -363,7 +366,8 @@ namespace SCG.Data.View
 
 		public LogWindowViewData()
 		{
-
+			Logs = new SourceList<LogData>();
+			VisibleLogs = new ObservableCollectionExtended<LogData>();
 		}
 	}
 }
