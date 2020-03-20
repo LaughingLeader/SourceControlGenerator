@@ -75,6 +75,7 @@ namespace SCG
 					{
 						Microsoft.VisualBasic.FileIO.FileSystem.DeleteFile(filePath, 
 							Microsoft.VisualBasic.FileIO.UIOption.OnlyErrorDialogs, Microsoft.VisualBasic.FileIO.RecycleOption.SendToRecycleBin);
+						Log.Here().Activity($"Renamed \"{filePath}\" to \"{nextFilePath}\".");
 						return true;
 					}
 				}
