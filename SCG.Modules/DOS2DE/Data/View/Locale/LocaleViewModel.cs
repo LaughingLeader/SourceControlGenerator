@@ -32,6 +32,7 @@ using SCG.Controls;
 using System.Windows.Controls;
 using LSLib.LS.Enums;
 using System.Reactive.Concurrency;
+using System.Diagnostics;
 
 namespace SCG.Modules.DOS2DE.Data.View.Locale
 {
@@ -1248,6 +1249,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 		public ICommand ToggleContentLightModeCommand { get; private set; }
 		public ICommand ChangeContentFontSizeCommand { get; private set; }
 		public ICommand PopoutContentCommand { get; set; }
+		public ICommand OpenFileInExplorerCommand { get; private set; }
 		public ICommand CopyToClipboardCommand { get; private set; }
 		public ICommand ToggleRenameFileTabCommand { get; private set; }
 		public ICommand ConfirmRenameFileTabCommand { get; private set; }
@@ -2018,6 +2020,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 					if(FileCommands.RenameFile(fileData.SourcePath, nextFilePath))
 					{
 						fileData.Name = fileData.RenameText;
+						fileData.SourcePath = nextFilePath;
 					}
 					else
 					{
@@ -2031,6 +2034,10 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 					fileData.Name = fileData.RenameText;
 					fileData.IsRenaming = false;
 				}
+
+				fileData.ChangesUnsaved = true;
+				if (fileData.Parent != null) fileData.Parent.ChangesUnsaved = true;
+				ChangesUnsaved = true;
 			}
 			CreateSnapshot(undo, redo);
 			redo();
@@ -2430,6 +2437,14 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 				}
 			}).DisposeWith(disposables);
 
+			OpenFileInExplorerCommand = ReactiveCommand.Create<string>((path) =>
+			{
+				if (path != String.Empty && File.Exists(path))
+				{
+					Process.Start("explorer.exe", path);
+				}
+			});
+
 			CopyToClipboardCommand = ReactiveCommand.Create<string>((str) =>
 			{
 				if (str != String.Empty)
@@ -2514,6 +2529,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			MenuData.File.Add(SaveCurrentMenuData);
 			MenuData.File.Add(new MenuData("File.SaveAll", "Save All", SaveAllCommand, Key.S, ModifierKeys.Control | ModifierKeys.Shift));
 
+			MenuData.File.Add(new MenuData("File.AddNewFile", "New", AddFileCommand));
 			MenuData.File.Add(new MenuData("File.ImportFile", "Import File", ImportFileCommand));
 			MenuData.File.Add(new MenuData("File.ImportKeys", "Import File as Keys", ImportKeysCommand));
 			MenuData.File.Add(new SeparatorData());

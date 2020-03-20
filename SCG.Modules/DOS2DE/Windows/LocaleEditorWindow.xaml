@@ -1243,6 +1243,10 @@
 								<Setter.Value>
 									<ContextMenu>
 										<MenuItem
+											Command="{Binding Path=PlacementTarget.Tag.OpenFileInExplorerCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
+											CommandParameter="{Binding SourcePath}"
+											Header="Open in File Explorer..." />
+										<MenuItem
 											Command="{Binding Path=PlacementTarget.Tag.CopyToClipboardCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
 											CommandParameter="{Binding Name}"
 											Header="Copy Name" />
@@ -1355,6 +1359,7 @@
 															HorizontalAlignment="Left"
 															DataContext="{Binding}"
 															KeyDown="TextBox_KeyDown_MoveFocus"
+															Loaded="FileTabRenamingTextBox_Loaded"
 															Tag="{Binding Path=DataContext, RelativeSource={RelativeSource AncestorType={x:Type Window}}}"
 															Text="{Binding RenameText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
 															TextAlignment="Left"

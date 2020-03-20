@@ -728,5 +728,13 @@ namespace SCG.Modules.DOS2DE.Windows
 				ViewModel.SelectedEntry = lastEntry;
 			}
 		}
+
+		private void FileTabRenamingTextBox_Loaded(object sender, RoutedEventArgs e)
+		{
+			if (sender is UnfocusableTextBox tb)
+			{
+				tb.SelectAll();
+			}
+		}
 	}
 }
