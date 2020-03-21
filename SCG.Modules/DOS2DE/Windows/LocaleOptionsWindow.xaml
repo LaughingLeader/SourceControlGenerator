@@ -134,7 +134,7 @@
 			<Grid.ColumnDefinitions>
 				<ColumnDefinition Width="*" />
 				<ColumnDefinition Width="20" />
-				<ColumnDefinition Width="*" />
+				<ColumnDefinition Width="2*" />
 			</Grid.ColumnDefinitions>
 			<StackPanel
 				MinHeight="16"
@@ -150,16 +150,21 @@
 			</StackPanel>
 			<StackPanel
 				Grid.Column="2"
+				Margin="0,2"
 				VerticalAlignment="Center"
 				Orientation="Horizontal">
-				<CheckBox
-					Margin="0,0,4,0"
-					Content="Root Templates"
-					IsChecked="{Binding LoadRootTemplates, Mode=TwoWay}" />
-				<CheckBox
-					Margin="0,0,4,0"
-					Content="Globals"
-					IsChecked="{Binding LoadGlobals, Mode=TwoWay}" />
+				<StackPanel.Resources>
+					<Style BasedOn="{StaticResource {x:Type CheckBox}}" TargetType="CheckBox">
+						<Setter Property="Margin" Value="0,0,4,0" />
+					</Style>
+				</StackPanel.Resources>
+				<TextBlock
+					Margin="0,-1,4,0"
+					VerticalAlignment="Center"
+					Text="Load LSF Files:"
+					TextAlignment="Center" />
+				<CheckBox Content="Root Templates" IsChecked="{Binding LoadRootTemplates, Mode=TwoWay}" />
+				<CheckBox Content="Globals" IsChecked="{Binding LoadGlobals, Mode=TwoWay}" />
 				<CheckBox Content="Level Data" IsChecked="{Binding LoadLevelData, Mode=TwoWay}" />
 			</StackPanel>
 		</Grid>
