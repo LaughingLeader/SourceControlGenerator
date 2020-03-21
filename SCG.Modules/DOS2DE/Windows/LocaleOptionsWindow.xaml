@@ -163,9 +163,18 @@
 					VerticalAlignment="Center"
 					Text="Load LSF Files:"
 					TextAlignment="Center" />
-				<CheckBox Content="Root Templates" IsChecked="{Binding LoadRootTemplates, Mode=TwoWay}" />
-				<CheckBox Content="Globals" IsChecked="{Binding LoadGlobals, Mode=TwoWay}" />
-				<CheckBox Content="Level Data" IsChecked="{Binding LoadLevelData, Mode=TwoWay}" />
+				<CheckBox
+					Content="Root Templates"
+					IsChecked="{Binding LoadRootTemplates, Mode=TwoWay}"
+					ToolTip="Load Root Template LSF files from loaded projects" />
+				<CheckBox
+					Content="Globals"
+					IsChecked="{Binding LoadGlobals, Mode=TwoWay}"
+					ToolTip="Load Global LSF files from loaded projects" />
+				<CheckBox
+					Content="Level Data"
+					IsChecked="{Binding LoadLevelData, Mode=TwoWay}"
+					ToolTip="Load Level Data LSF files from loaded projects" />
 			</StackPanel>
 		</Grid>
 
