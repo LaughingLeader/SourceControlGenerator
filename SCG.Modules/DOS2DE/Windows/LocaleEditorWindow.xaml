@@ -360,7 +360,8 @@
 								x:Name="templateRoot"
 								ClipToBounds="true"
 								KeyboardNavigation.TabNavigation="Local"
-								SnapsToDevicePixels="true">
+								SnapsToDevicePixels="true"
+								Tag="{Binding Path=DataContext, RelativeSource={RelativeSource AncestorType={x:Type Window}}}">
 								<Grid.ColumnDefinitions>
 									<ColumnDefinition x:Name="ColumnDefinition0" />
 									<ColumnDefinition x:Name="ColumnDefinition1" Width="0" />
@@ -393,6 +394,14 @@
 										ContentSource="SelectedContent"
 										SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" />
 								</Border>
+								<!--<Grid.ContextMenu>
+									<ContextMenu>
+										<MenuItem
+											Command="{Binding Path=PlacementTarget.Tag.OpenFileInExplorerCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
+											CommandParameter="{Binding SourcePath}"
+											Header="Open in File Explorer..." />
+									</ContextMenu>
+								</Grid.ContextMenu>-->
 							</Grid>
 							<ControlTemplate.Triggers>
 								<Trigger Property="TabStripPlacement" Value="Bottom">
