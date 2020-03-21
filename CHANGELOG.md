@@ -1,5 +1,22 @@
 Source Control Generator Changelog
 =======
+# 1.7.2.0
+
+## Divinity: Original Sin 2 - Definitive Edition Module
+
+* Added the ability to turn paks into editor projects via Tools -> Create Editor Project from Pak...
+* Sped up mod project loading/performance.
+* Tweaked grid column sorting so it properly sorts values in an expected way (Dates - newest first, versions - highest first, etc.).
+* Added a "Global Handles Ignore List" file path in the Settings tab. This is a list of handles to ignore when exporting XML values / replacing handles in the Localization Editor. This can be used to skip exporting values like GM spawn menu names in LSF files.
+
+### Localization Editor
+* Fixed various bugs associated with importing files / adding new files.
+* Sped up file loading / tab changing via virtualization and asynchronous loading.
+* Added an "Open in File Explorer" context menu item to file tabs (right click them).
+* Handles can now be re-generated. ResStr handles (unset values) in LSF files can be regenerated as well.
+* LSF files in the Mods and Public folders can be loaded for localization editing (Settings -> Preferences, check the various boxes like Root Templates).
+* Added support for loading handle values from TSV entries, making it easier to have an "Overrides" TSV/LSB used to override english.xml entries in the game.
+
 # 1.4.0.0
 * The "About" window now shows the proper program version.
 * Divinity: Original Sin 2 - Definitive Edition Module
