@@ -397,6 +397,10 @@ namespace SCG.Modules.DOS2DE.Utilities
 				{
 					resourceFormat = ResourceFormat.LSJ;
 				}
+				else if (FileCommands.FileExtensionFound(path, ".lsx"))
+				{
+					resourceFormat = ResourceFormat.LSX;
+				}
 				else if (FileCommands.FileExtensionFound(path, ".lsf"))
 				{
 					resourceFormat = ResourceFormat.LSF;
@@ -1407,7 +1411,7 @@ namespace SCG.Modules.DOS2DE.Utilities
 			List<ILocaleFileData> newFileDataList = new List<ILocaleFileData>();
 			foreach (var path in files)
 			{
-				if (FileCommands.FileExtensionFound(path, ".lsb", ".lsj"))
+				if (FileCommands.FileExtensionFound(path, ".lsb", ".lsj", ".lsx"))
 				{
 					Task<ILocaleFileData> task = Task.Run<ILocaleFileData>(async () => await LoadResourceAsync(groupData, path));
 					if (task != null && task.Result != null)

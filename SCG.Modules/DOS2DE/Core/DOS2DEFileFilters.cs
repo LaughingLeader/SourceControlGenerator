@@ -27,10 +27,16 @@ namespace SCG.Modules.DOS2DE.Core
 			Values = "*.lsj"
 		};
 
+		public static FileBrowserFilter LarianXMLFile { get; private set; } = new FileBrowserFilter()
+		{
+			Name = "Larian XML file",
+			Values = "*.lsx"
+		};
+
 		public static FileBrowserFilter LarianLocalizationFiles { get; private set; } = new FileBrowserFilter()
 		{
 			Name = "Larian Localization files",
-			Values = CommonFileFilters.CombineFilters(LarianBinaryFile, LarianJsonFile)
+			Values = CommonFileFilters.CombineFilters(LarianBinaryFile, LarianXMLFile, LarianJsonFile)
 		};
 
 		public static FileBrowserFilter AllLocaleImportFiles { get; private set; } = new FileBrowserFilter()
