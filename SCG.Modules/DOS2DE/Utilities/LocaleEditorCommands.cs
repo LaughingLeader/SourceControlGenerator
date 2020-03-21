@@ -463,7 +463,7 @@ namespace SCG.Modules.DOS2DE.Utilities
 
 			try
 			{
-				if (resourceFormat == ResourceFormat.LSB)
+				if (resourceFormat == ResourceFormat.LSB || resourceFormat == ResourceFormat.LSX)
 				{
 					var rootNode = resource.Regions.First().Value;
 					foreach (var entry in rootNode.Children)
@@ -473,7 +473,6 @@ namespace SCG.Modules.DOS2DE.Utilities
 							LocaleNodeKeyEntry localeEntry = LoadFromNode(node, resourceFormat);
 							newEntries.Add(localeEntry);
 						}
-
 					}
 				}
 				else
@@ -551,7 +550,7 @@ namespace SCG.Modules.DOS2DE.Utilities
 		}
 		public static LocaleNodeKeyEntry LoadFromNode(Node node, ResourceFormat resourceFormat, bool generateNewHandle = false)
 		{
-			if (resourceFormat == ResourceFormat.LSB)
+			if (resourceFormat == ResourceFormat.LSB || resourceFormat == ResourceFormat.LSX)
 			{
 				LocaleNodeKeyEntry localeEntry = new LocaleNodeKeyEntry(node);
 				NodeAttribute keyAtt = null;
@@ -588,7 +587,7 @@ namespace SCG.Modules.DOS2DE.Utilities
 
 				return localeEntry;
 			}
-			else if (resourceFormat == ResourceFormat.LSJ || resourceFormat == ResourceFormat.LSX)
+			else if (resourceFormat == ResourceFormat.LSJ)
 			{
 				LocaleNodeKeyEntry localeEntry = new LocaleNodeKeyEntry(node);
 				
@@ -799,18 +798,20 @@ namespace SCG.Modules.DOS2DE.Utilities
 				if (dataFile.Source != null)
 				{
 					var parentDir = Directory.GetParent(dataFile.SourcePath)?.FullName;
+					string outputFile = dataFile.SourcePath;
 					if (!String.IsNullOrEmpty(parentDir) && !Directory.Exists(parentDir))
 					{
 						Directory.CreateDirectory(parentDir);
 					}
 					var saveFormat = dataFile.Format;
-					if (saveFormat == ResourceFormat.LSX && FileCommands.FileExtensionFound(dataFile.SourcePath, ".lsb"))
+					if (saveFormat == ResourceFormat.LSX)
 					{
+						outputFile = Path.ChangeExtension(dataFile.SourcePath, ".lsb");
 						saveFormat = ResourceFormat.LSB;
 					}
-					Log.Here().Activity($"Saving '{dataFile.Name}' to '{dataFile.SourcePath}'.");
-					await Task.Run(() => LSLib.LS.ResourceUtils.SaveResource(dataFile.Source, dataFile.SourcePath, saveFormat));
-					Log.Here().Important($"Saved '{dataFile.SourcePath}'.");
+					Log.Here().Activity($"Saving '{dataFile.Name}' to '{outputFile}'.");
+					await Task.Run(() => LSLib.LS.ResourceUtils.SaveResource(dataFile.Source, outputFile, saveFormat));
+					Log.Here().Important($"Saved '{outputFile}'.");
 					dataFile.UnsavedChanges.Clear();
 					dataFile.ChangesUnsaved = false;
 					return 1;

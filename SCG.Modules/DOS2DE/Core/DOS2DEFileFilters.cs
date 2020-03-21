@@ -42,7 +42,7 @@ namespace SCG.Modules.DOS2DE.Core
 		public static FileBrowserFilter AllLocaleImportFiles { get; private set; } = new FileBrowserFilter()
 		{
 			Name = "Localization files",
-			Values = CommonFileFilters.CombineFilters(CommonFileFilters.DelimitedLocaleFiles, LarianBinaryFile, LarianJsonFile)
+			Values = CommonFileFilters.CombineFilters(CommonFileFilters.DelimitedLocaleFiles, LarianBinaryFile, LarianXMLFile, LarianJsonFile)
 		};
 
 		public static List<FileBrowserFilter> AllLocaleFilesList { get; set; } = new List<FileBrowserFilter>()
