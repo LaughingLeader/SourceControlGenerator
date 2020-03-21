@@ -906,7 +906,14 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 							int result = await LocaleEditorCommands.SaveDataFile(keyFileData);
 							if (result > 0)
 							{
-								OutputText = $"Saved '{keyFileData.SourcePath}'";
+								if(keyFileData.Format == ResourceFormat.LSX)
+								{
+									OutputText = $"Saved '{Path.ChangeExtension(keyFileData.SourcePath, ".lsb")}'";
+								}
+								else
+								{
+									OutputText = $"Saved '{keyFileData.SourcePath}'";
+								}
 								OutputType = LogType.Important;
 
 								keyFileData.SetChangesUnsaved(false, true);
@@ -930,6 +937,14 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 						return Disposable.Empty;
 					});
 				}
+				else
+				{
+					Log.Here().Warning($"Selected file saving of type [{SelectedFile.GetType()}] is not currently supported.");
+				}
+			}
+			else
+			{
+				Log.Here().Error("No file is selected. Skipping saving.");
 			}
 		}
 
@@ -1086,17 +1101,31 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 
 				void redo()
 				{
-					currentGroup.DataFiles.AddRange(newFileDataList);
-					currentGroup.UpdateCombinedData(true);
-					currentGroup.ChangesUnsaved = true;
-					currentGroup.SelectLast();
-					view.FocusSelectedTab();
-
-					if (currentGroup != CombinedGroup)
+					if(newFileDataList.Count > 0)
 					{
-						CombinedGroup.DataFiles.AddRange(newFileDataList);
-						CombinedGroup.UpdateCombinedData(true);
-						CombinedGroup.ChangesUnsaved = true;
+						foreach (var entry in newFileDataList)
+						{
+							entry.ChangesUnsaved = true;
+						}
+
+						var newFile = newFileDataList.Last();
+
+						currentGroup.DataFiles.AddRange(newFileDataList);
+						currentGroup.UpdateCombinedData(true);
+						currentGroup.ChangesUnsaved = true;
+						currentGroup.SelectedFileIndex = currentGroup.Tabs.IndexOf(newFile);
+						view.FocusSelectedTab();
+
+						if (currentGroup != CombinedGroup)
+						{
+							CombinedGroup.DataFiles.AddRange(newFileDataList);
+							CombinedGroup.UpdateCombinedData(true);
+							CombinedGroup.ChangesUnsaved = true;
+
+							SelectedFileChanged(currentGroup, newFile);
+						}
+
+						ChangesUnsaved = true;
 					}
 
 					string lastImport = files.FirstOrDefault();
@@ -1104,13 +1133,14 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 
 					this.RaisePropertyChanged("CurrentImportPath");
 					this.RaisePropertyChanged("CurrentFileImportPath");
-
-					ChangesUnsaved = true;
 				}
 
 				CreateSnapshot(undo, redo);
 				redo();
 			}
+
+			IsAddingNewFileTab = false;
+			IsSubWindowOpen = false;
 		}
 
 		public void ExportFileAsText(ILocaleFileData localeFileData)
@@ -2267,8 +2297,8 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 
 			GlobalCanActObservable = this.WhenAny(vm => vm.IsAddingNewFileTab, vm => vm.IsSubWindowOpen, (b1, b2) => !b1.Value && !b2.Value);
 			AnySelectedEntryObservable = this.WhenAnyValue(vm => vm.AnyEntrySelected);
-			CanImportFilesObservable = this.WhenAnyValue(vm => vm.CanAddFile);
 			CanAddFileObservable = this.WhenAnyValue(vm => vm.CanAddFile);
+			CanImportFilesObservable = this.WhenAnyValue(vm => vm.CanAddFile);
 			CanImportKeysObservable = this.WhenAnyValue(vm => vm.CanAddKeys);
 
 			this.WhenAny(vm => vm.SelectedFile.IsRenaming, b => b.Value == true).Subscribe((b) =>
