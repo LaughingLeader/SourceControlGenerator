@@ -73,6 +73,8 @@ namespace SCG.Data.View
 					LastLogs = null;
 					this.RaisePropertyChanged("CanRestore");
 				}
+
+				UpdateLogs();
 			}
 		}
 
@@ -82,6 +84,7 @@ namespace SCG.Data.View
 
 			if (IsVisible)
 			{
+				this.RaisePropertyChanged("Logs");
 				this.RaisePropertyChanged("CanClear");
 
 				if (LastLogs != null)
