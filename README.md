@@ -6,7 +6,7 @@ Source Control Generator is a program designed to ease effort in creating git re
 ## Links
 
 * [Downloads](https://github.com/LaughingLeader/SourceControlGenerator/releases)
-* [Changelog](CHANGELOG.md)
+* [Changelog](https://github.com/LaughingLeader/SourceControlGenerator/wiki/Changelog)
 
 ### Recommended Reading
 
