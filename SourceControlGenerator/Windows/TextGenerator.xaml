@@ -198,8 +198,9 @@
 		</ListView>
 		<Grid Grid.Row="2" DataContext="{Binding ActiveData}">
 			<Grid.RowDefinitions>
+				<RowDefinition Height="2.5*" />
+				<RowDefinition Height="Auto" />
 				<RowDefinition Height="1*" />
-				<RowDefinition Height="3*" />
 			</Grid.RowDefinitions>
 			<Grid>
 				<Grid.RowDefinitions>
@@ -274,7 +275,12 @@
 					ToolTip="{Binding Source={x:Static core:TooltipText.TextGeneratorRemoveKeywordButton}}"
 					VerticalScrollBarVisibility="Auto" />
 			</Grid>
-			<Grid Grid.Row="1" DataContext="{Binding DataContext.ActiveData, RelativeSource={RelativeSource AncestorType=Window}}">
+			<GridSplitter
+				Grid.Row="1"
+				Height="4"
+				HorizontalAlignment="Stretch"
+				Foreground="{x:Null}" />
+			<Grid Grid.Row="2" DataContext="{Binding DataContext.ActiveData, RelativeSource={RelativeSource AncestorType=Window}}">
 				<Grid.RowDefinitions>
 					<RowDefinition Height="Auto" />
 					<RowDefinition Height="*" />
