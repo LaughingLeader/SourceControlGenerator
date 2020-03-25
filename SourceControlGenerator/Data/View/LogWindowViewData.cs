@@ -252,7 +252,6 @@ namespace SCG.Data.View
 			var logs = Logs.Items.Where(ld => ld.MessageType == logType);
 			if(logs != null)
 			{
-				var change = false;
 				foreach(var log in logs)
 				{
 					log.IsVisible = CanDisplayLog(log);
