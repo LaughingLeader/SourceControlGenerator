@@ -457,7 +457,7 @@ namespace SCG.Data.View
 			{
 				Parent.Parent.FooterText = $"Saved preset text to '{FilePath}'.";
 			}
-			else;
+			else
 			{
 				Parent.Parent.FooterText = $"Failed to save preset text to '{FilePath}'.";
 			}
