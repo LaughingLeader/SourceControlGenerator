@@ -864,17 +864,21 @@ namespace SCG.Core
 
 		private void AutoUpdater_CheckForUpdateEvent(UpdateInfoEventArgs args)
 		{
+			AutoUpdater.CheckForUpdateEvent -= AutoUpdater_CheckForUpdateEvent;
+			AutoUpdater.ReportErrors = false;
 			if(args == null || (args != null && !args.IsUpdateAvailable))
 			{
+				Log.Here().Important("No updates found.");
 				MessageBoxEx.Show(mainWindow, "No updates found.");
 			}
-			AutoUpdater.CheckForUpdateEvent -= AutoUpdater_CheckForUpdateEvent;
 		}
 
 		public void CheckForUpdates(bool force = false)
 		{
 			if(force)
 			{
+				Log.Here().Important("Checking for updates.");
+				AutoUpdater.ReportErrors = true;
 				AutoUpdater.CheckForUpdateEvent += AutoUpdater_CheckForUpdateEvent;
 			}
 
