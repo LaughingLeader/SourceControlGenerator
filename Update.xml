@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <item>
-    <version>1.7.2.0</version>
+    <version>1.7.3.0</version>
     <url>https://github.com/LaughingLeader/SourceControlGenerator/releases/latest/download/SourceControlGenerator_Latest.zip</url>
     <changelog>https://github.com/LaughingLeader/SourceControlGenerator/wiki/Changelog</changelog>
     <mandatory>false</mandatory>
