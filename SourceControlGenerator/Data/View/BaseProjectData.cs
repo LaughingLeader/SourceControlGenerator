@@ -44,6 +44,8 @@ namespace SCG.Data.View
 			}
 		}
 
+		public string ProjectFolder { get; set; }
+
 		private string displayName;
 
 		public string DisplayName

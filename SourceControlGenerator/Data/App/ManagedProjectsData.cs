@@ -12,6 +12,7 @@ using Reactive.Bindings.Extensions;
 using System.Reactive;
 using System.Reactive.Linq;
 using Newtonsoft.Json;
+using SCG.FileGen;
 
 namespace SCG.Data
 {
@@ -30,13 +31,16 @@ namespace SCG.Data
 		}
 	}
 
-	public struct ProjectAppData
+	[DataContract]
+	public class ProjectAppData
 	{
+		[DataMember]
 		public string Name { get; set; }
 
+		[DataMember]
 		public string UUID { get; set; }
 
+		[DataMember]
 		public string LastBackupUTC { get; set; }
-
 	}
 }

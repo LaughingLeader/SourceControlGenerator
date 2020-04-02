@@ -11,6 +11,7 @@ namespace SCG.Interfaces
 	public interface IProjectData : INotifyPropertyChanged
 	{
 		string ProjectName { get; set; }
+		string ProjectFolder { get; set; }
 		string DisplayName { get; set; }
 		string UUID { get; set; }
 
