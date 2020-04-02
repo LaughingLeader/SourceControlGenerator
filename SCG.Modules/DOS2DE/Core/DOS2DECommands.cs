@@ -215,22 +215,23 @@ namespace SCG.Modules.DOS2DE.Core
 			if (Directory.Exists(Data.Settings.GitRootDirectory))
 			{
 				int totalSuccess = 0;
+				var projectFiles = Directory.EnumerateFiles(Data.Settings.GitRootDirectory, DirectoryEnumerationOptions.Files | DirectoryEnumerationOptions.Recursive, new DirectoryEnumerationFilters
+				{
+					InclusionFilter = (f) =>
+					{
+						return f.FileName.Equals("SourceControlGenerator.json", StringComparison.OrdinalIgnoreCase);
+					}
+				}).Select(x => SourceControlData.FromPath(x));
+
 				foreach (var project in modProjects)
 				{
-					var filePath = Path.Combine(Data.Settings.GitRootDirectory, project.ProjectName, DefaultPaths.SourceControlGeneratorDataFile);
-					bool success = false;
-					if (File.Exists(filePath))
+					var sourceControlData = projectFiles.FirstOrDefault(x => x.ProjectUUID == project.UUID);
+					if(sourceControlData != null)
 					{
-						var sourceControlData = FileCommands.Load.LoadSourceControlData(filePath);
-						if (sourceControlData != null)
-						{
-							project.GitData = sourceControlData;
-							totalSuccess += 1;
-							success = true;
-						}
+						project.GitData = sourceControlData;
+						project.GitGenerated = true;
+						totalSuccess += 1;
 					}
-
-					project.GitGenerated = success;
 				}
 
 				return totalSuccess > 0;
@@ -488,22 +489,24 @@ namespace SCG.Modules.DOS2DE.Core
 			if (Directory.Exists(Data.Settings.GitRootDirectory))
 			{
 				int totalSuccess = 0;
+				var projectFiles = Directory.EnumerateFiles(Data.Settings.GitRootDirectory, DirectoryEnumerationOptions.Files | DirectoryEnumerationOptions.Recursive, new DirectoryEnumerationFilters
+				{
+					InclusionFilter = (f) =>
+					{
+						return f.FileName.Equals("SourceControlGenerator.json", StringComparison.OrdinalIgnoreCase);
+					}
+				});
+				var sourceFiles = (await Task.WhenAll(projectFiles.Select(x => SourceControlData.FromPathAsync(x)).Where(i => i != null).ToList()));
+
 				foreach (var project in modProjects)
 				{
-					var filePath = Path.Combine(Data.Settings.GitRootDirectory, project.ProjectName, DefaultPaths.SourceControlGeneratorDataFile);
-					bool success = false;
-					if (File.Exists(filePath))
+					var sourceControlData = sourceFiles.FirstOrDefault(x => x.ProjectUUID == project.UUID);
+					if (sourceControlData != null)
 					{
-						var sourceControlData = await FileCommands.Load.LoadSourceControlDataAsync(filePath);
-						if (sourceControlData != null)
-						{
-							project.GitData = sourceControlData;
-							totalSuccess += 1;
-							success = true;
-						}
+						project.GitData = sourceControlData;
+						project.GitGenerated = true;
+						totalSuccess += 1;
 					}
-
-					project.GitGenerated = success;
 				}
 
 				return totalSuccess > 0;
