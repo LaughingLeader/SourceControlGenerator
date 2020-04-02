@@ -682,14 +682,15 @@
 					<ListView.ItemTemplate>
 						<DataTemplate>
 							<StackPanel Orientation="Vertical">
-								<!--  Click="ModuleSelection_ModuleButtonClick"  -->
+								<!--  Click="ModuleSelection_ModuleButtonClick" Visibility="{Binding LogoExists, FallbackValue=Collapsed}"  -->
 								<Image
+									Width="256"
+									Height="128"
 									MaxWidth="256"
 									MaxHeight="256"
-									Source="{Binding Logo, TargetNullValue='Resources/Logos/Blank.png'}"
+									Source="{Binding Logo, FallbackValue='pack://application:,,,/SourceControlGenerator;component/Resources/Logos/Blank.png'}"
 									Stretch="Uniform"
-									ToolTip="{Binding ModuleName}"
-									Visibility="{Binding LogoExists, FallbackValue=Collapsed}" />
+									ToolTip="{Binding ModuleName}" />
 								<TextBlock
 									Text="{Binding DisplayName}"
 									TextAlignment="Center"

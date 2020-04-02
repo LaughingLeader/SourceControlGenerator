@@ -641,9 +641,7 @@
     <Resource Include="Resources\Icons\QuickRefresh_16x.png" />
     <Resource Include="Resources\Icons\RefreshScript_16x.png" />
     <Resource Include="Resources\Icons\Refresh_grey_16xMD.png" />
-    <Content Include="Resources\Logos\DivinityOriginalSin2DE.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
+    <Resource Include="Resources\Logos\DivinityOriginalSin2DE.png" />
     <Resource Include="SourceControlGenerator_Icon.ico" />
   </ItemGroup>
   <ItemGroup>
@@ -671,15 +669,9 @@
   <ItemGroup>
     <Resource Include="Resources\Icons\Refresh_16x.png" />
     <Resource Include="Resources\Icons\Star_16x.png" />
-    <Content Include="Resources\Logos\Blank.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Resources\Logos\Default.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Resources\Logos\DivinityOriginalSin2.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
+    <Resource Include="Resources\Logos\Blank.png" />
+    <Resource Include="Resources\Logos\Default.png" />
+    <Resource Include="Resources\Logos\DivinityOriginalSin2.png" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.7.1">

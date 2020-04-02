@@ -443,16 +443,34 @@ namespace SCG.Core
 		{
 			_instance.ProjectControllers.Add(Name, projectController);
 
+			Uri logoUri = null;
+			
+			if(!String.IsNullOrEmpty(Logo))
+			{
+				try
+				{
+					logoUri = new Uri(Logo);
+				}
+				catch(Exception ex)
+				{
+
+				}
+			}
+
 			var selectionData = new ModuleSelectionData()
 			{
 				ModuleName = Name,
-				Logo = Path.GetFullPath(Logo),
-				DisplayName = DisplayName
+				DisplayName = DisplayName,
+				Logo = logoUri?.LocalPath
 			};
 
-			if(!String.IsNullOrWhiteSpace(Logo) && File.Exists(Logo))
+			if(logoUri != null)
 			{
 				selectionData.LogoExists = Visibility.Visible;
+			}
+			else
+			{
+				selectionData.LogoExists = Visibility.Collapsed;
 			}
 
 			if (DisplayName == null && Logo == null) selectionData.DisplayName = Name;
