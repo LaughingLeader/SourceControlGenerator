@@ -176,7 +176,7 @@ namespace SCG.Core
 
 			if (!string.IsNullOrEmpty(Data.Settings.GitRootDirectory))
 			{
-				string gitProjectRootDirectory = Path.Combine(Data.Settings.GitRootDirectory, modProject.ProjectName);
+				string gitProjectRootDirectory = Path.Combine(Data.Settings.GitRootDirectory, modProject.ProjectFolder);
 
 				AppController.Main.UpdateProgressLog("Creating git project directory...");
 
@@ -216,7 +216,7 @@ namespace SCG.Core
 					AppController.Main.UpdateProgressLog("Creating junctions...");
 
 					var sourceFolders = PrepareDirectories(modProject, Data.Settings.DirectoryLayouts);
-					var result = GitGenerator.CreateJunctions(modProject.ProjectName, sourceFolders, Data);
+					var result = GitGenerator.CreateJunctions(modProject.ProjectFolder, sourceFolders, Data);
 
 					if (result)
 					{
@@ -353,7 +353,7 @@ namespace SCG.Core
 		public bool GenerateBackupFolder(ModProjectData modProject = null)
 		{
 			string projectBackupDirectory = Data.Settings.BackupRootDirectory;
-			if (modProject != null) projectBackupDirectory = Path.Combine(Data.Settings.BackupRootDirectory, modProject.ProjectName);
+			if (modProject != null) projectBackupDirectory = Path.Combine(Data.Settings.BackupRootDirectory, modProject.ProjectFolder);
 
 			try
 			{
@@ -525,7 +525,7 @@ namespace SCG.Core
 		{
 			if (String.IsNullOrWhiteSpace(OutputDirectory))
 			{
-				OutputDirectory = Path.Combine(Path.GetFullPath(Data.Settings.BackupRootDirectory), modProject.ProjectName);
+				OutputDirectory = Path.Combine(Path.GetFullPath(Data.Settings.BackupRootDirectory), modProject.ProjectFolder);
 				Directory.CreateDirectory(OutputDirectory);
 			}
 			else
@@ -537,7 +537,7 @@ namespace SCG.Core
 
 			//Log.Here().Important($"System date format: {sysFormat}");
 
-			string archiveName = modProject.ProjectName + "_" + DateTime.Now.ToString(sysFormat + "_HH-mm-ss") + ".zip";
+			string archiveName = modProject.ProjectFolder + "_" + DateTime.Now.ToString(sysFormat + "_HH-mm-ss") + ".zip";
 			string archivePath = Path.Combine(OutputDirectory, archiveName);
 			string gitProjectDirectory = "";
 
@@ -566,7 +566,7 @@ namespace SCG.Core
 			}
 			else
 			{
-				gitProjectDirectory = Path.Combine(Data.Settings.GitRootDirectory, modProject.ProjectName);
+				gitProjectDirectory = Path.Combine(Data.Settings.GitRootDirectory, modProject.ProjectFolder);
 
 				if (mode == BackupMode.GitArchive)
 				{
@@ -866,7 +866,7 @@ namespace SCG.Core
 				var mod = selectedProjects.FirstOrDefault(x => x.UUID == task.ID);
 				AppController.Main.UpdateProgressMessage($"Creating zip for project package {mod.ProjectName}...");
 
-				string zipName = Path.Combine(localModsFolder, mod.ProjectName + "_v" + mod.Version + ".zip");
+				string zipName = Path.Combine(localModsFolder, mod.ProjectFolder + "_v" + mod.Version + ".zip");
 
 				AppController.Main.UpdateProgressTitle((total > 1 ? "Zipping packages..." : "Zipping project... ") + $"{i}/{total}");
 				AppController.Main.UpdateProgress();
@@ -1270,7 +1270,7 @@ namespace SCG.Core
 			{
 				Log.Here().Important($"Rebuilding junctions for project '{modProject.ProjectName}'.");
 				var sourceFolders = PrepareDirectories(modProject, Data.Settings.DirectoryLayouts);
-				var result = GitGenerator.CreateJunctions(modProject.ProjectName, sourceFolders, Data, true);
+				var result = GitGenerator.CreateJunctions(modProject.ProjectFolder, sourceFolders, Data, true);
 				if(result)
 				{
 					Log.Here().Activity($"Rebuilt junction for '{modProject.ProjectName}'.");
