@@ -12,18 +12,42 @@ namespace SCG.FileGen
 	{
 		public static T DeserializeObject<T>(string path)
 		{
-			return JsonConvert.DeserializeObject<T>(File.ReadAllText(path));
+			try
+			{
+				return JsonConvert.DeserializeObject<T>(File.ReadAllText(path));
+			}
+			catch(Exception ex)
+			{
+				Log.Here().Error($"Error deserializing json ({path}):\n{ex.ToString()}");
+			}
+			return default(T);
 		}
 
 		public static async Task<T> DeserializeObjectAsync<T>(string path)
 		{
-			string contents = await FileCommands.ReadFileAsync(path);
-			return JsonConvert.DeserializeObject<T>(contents);
+			try
+			{
+				string contents = await FileCommands.ReadFileAsync(path);
+				return JsonConvert.DeserializeObject<T>(contents);
+			}
+			catch (Exception ex)
+			{
+				Log.Here().Error($"Error deserializing json ({path}):\n{ex.ToString()}");
+			}
+			return default(T);
 		}
 
 		public static string SerializeObject(object o, bool indented = true)
 		{
-			return JsonConvert.SerializeObject(o, indented ? Formatting.Indented : Formatting.None);
+			try
+			{
+				return JsonConvert.SerializeObject(o, indented ? Formatting.Indented : Formatting.None);
+			}
+			catch (Exception ex)
+			{
+				Log.Here().Error($"Error serializing json:\n{ex.ToString()}");
+			}
+			return "";
 		}
 	}
 }
