@@ -99,7 +99,7 @@
       <HintPath>..\packages\ControlzEx.4.2.2\lib\net462\ControlzEx.dll</HintPath>
     </Reference>
     <Reference Include="DynamicData, Version=6.14.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\DynamicData.6.14.8\lib\net461\DynamicData.dll</HintPath>
+      <HintPath>..\packages\DynamicData.6.14.10\lib\net461\DynamicData.dll</HintPath>
     </Reference>
     <Reference Include="HtmlRenderer, Version=1.5.0.6, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\HtmlRenderer.Core.1.5.0.6\lib\net45\HtmlRenderer.dll</HintPath>
@@ -152,23 +152,23 @@
     <Reference Include="ReactiveProperty.NET46, Version=6.2.0.0, Culture=neutral, PublicKeyToken=3d1fed915120cbde, processorArchitecture=MSIL">
       <HintPath>..\packages\ReactiveProperty.6.2.0\lib\net461\ReactiveProperty.NET46.dll</HintPath>
     </Reference>
-    <Reference Include="ReactiveUI, Version=11.2.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\ReactiveUI.11.2.3\lib\net461\ReactiveUI.dll</HintPath>
+    <Reference Include="ReactiveUI, Version=11.3.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\ReactiveUI.11.3.1\lib\net461\ReactiveUI.dll</HintPath>
     </Reference>
-    <Reference Include="ReactiveUI.Events.WPF, Version=11.2.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\ReactiveUI.Events.WPF.11.2.3\lib\net461\ReactiveUI.Events.WPF.dll</HintPath>
+    <Reference Include="ReactiveUI.Events.WPF, Version=11.3.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\ReactiveUI.Events.WPF.11.3.1\lib\net461\ReactiveUI.Events.WPF.dll</HintPath>
     </Reference>
-    <Reference Include="ReactiveUI.WPF, Version=11.2.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\ReactiveUI.WPF.11.2.3\lib\net461\ReactiveUI.WPF.dll</HintPath>
+    <Reference Include="ReactiveUI.WPF, Version=11.3.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\ReactiveUI.WPF.11.3.1\lib\net461\ReactiveUI.WPF.dll</HintPath>
     </Reference>
     <Reference Include="SharpCompress, Version=0.24.0.0, Culture=neutral, PublicKeyToken=afb0a02973931d96, processorArchitecture=MSIL">
       <HintPath>..\packages\SharpCompress.0.24.0\lib\net45\SharpCompress.dll</HintPath>
     </Reference>
-    <Reference Include="Splat, Version=9.3.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Splat.9.3.11\lib\net461\Splat.dll</HintPath>
+    <Reference Include="Splat, Version=9.4.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Splat.9.4.1\lib\net461\Splat.dll</HintPath>
     </Reference>
-    <Reference Include="Splat.Drawing, Version=9.3.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Splat.Drawing.9.3.11\lib\net461\Splat.Drawing.dll</HintPath>
+    <Reference Include="Splat.Drawing, Version=9.4.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Splat.Drawing.9.4.1\lib\net461\Splat.Drawing.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Buffers, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
