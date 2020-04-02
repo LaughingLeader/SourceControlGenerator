@@ -691,13 +691,41 @@ namespace SCG.Core
 			Log.Here().Activity("Opening readme...");
 			if (obj is IProjectData projectData)
 			{
-				if (CurrentModule != null && CurrentModule.ModuleData != null && CurrentModule.ModuleData.ModuleSettings != null)
+				var projectGitFolder = "";
+				if (projectData.GitData != null && !String.IsNullOrEmpty(projectData.GitData.RepositoryPath) && Directory.Exists(projectData.GitData.RepositoryPath))
 				{
-					var projectGitFolder = Path.Combine(CurrentModule.ModuleData.ModuleSettings.GitRootDirectory, projectData.ProjectName);
-					if (Directory.Exists(projectGitFolder))
+					projectGitFolder = projectData.GitData.RepositoryPath;
+					Log.Here().Activity($"Project has git data. Setting project git folder to '{projectGitFolder}'");
+				}
+				else
+				{
+					Log.Here().Activity($"Project does not have git data. Looking for SourceControlGenerator.json files.");
+					var projectFiles = Directory.EnumerateFiles(CurrentModule.ModuleData.ModuleSettings.GitRootDirectory, DirectoryEnumerationOptions.Files | DirectoryEnumerationOptions.Recursive, new DirectoryEnumerationFilters
 					{
-						var readmeFilePath = Path.Combine(projectGitFolder, "README.md");
-						if (File.Exists(readmeFilePath))
+						InclusionFilter = (f) =>
+						{
+							return f.FileName.Equals("SourceControlGenerator.json", StringComparison.OrdinalIgnoreCase);
+						}
+					}).Select(x => SourceControlData.FromPath(x));
+
+					//var projectGitFolder = Path.Combine(CurrentModule.ModuleData.ModuleSettings.GitRootDirectory, projectData.ProjectFolder);
+					var sourceFile = projectFiles.FirstOrDefault(x => x.ProjectUUID == projectData.UUID)?.SourceFile;
+					if (!String.IsNullOrEmpty(sourceFile))
+					{
+						projectGitFolder = Path.GetDirectoryName(sourceFile);
+					}
+					else
+					{
+						Log.Here().Activity($"Could not find SourceControlGenerator.json for project {projectData.ProjectName} with UUID {projectData.UUID}.");
+					}
+				}
+
+				if (!String.IsNullOrEmpty(projectGitFolder) && Directory.Exists(projectGitFolder))
+				{
+					var readmeFilePath = Path.Combine(projectGitFolder, "README.md");
+					if (File.Exists(readmeFilePath))
+					{
+						try
 						{
 							var converterData = mainWindow.MarkdownConverterWindow.ViewData;
 							converterData.SetBatchExportRoot(Path.Combine(DefaultPaths.ModuleExportFolder(CurrentModule.ModuleData), projectData.ProjectName));
@@ -705,19 +733,19 @@ namespace SCG.Core
 							converterData.Mode = MarkdownConverterMode.Batch;
 							MenuAction_ToggleMarkdownWindow();
 						}
-						else
+						catch (Exception ex)
 						{
-							Log.Here().Error("Cannot find project file Readme.md.");
+							Log.Here().Error($"Error loading ({readmeFilePath}):\n{ex.ToString()}");
 						}
 					}
 					else
 					{
-						Log.Here().Error("Cannot find project git folder.");
+						Log.Here().Error($"Cannot find project README.md at '{readmeFilePath}'");
 					}
 				}
 				else
 				{
-					Log.Here().Error("Current module data is null!");
+					Log.Here().Error($"Cannot find project git folder at '{projectGitFolder}'");
 				}
 			}
 		}
