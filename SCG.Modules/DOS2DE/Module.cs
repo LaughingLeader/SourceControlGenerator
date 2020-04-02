@@ -15,7 +15,7 @@ namespace SCG
 		public void Init()
 		{
 			Controller = new DOS2DEProjectController();
-			AppController.RegisterController("Divinity: Original Sin 2 - Definitive Edition", Controller, "Resources/Logos/DivinityOriginalSin2DE.png", "");
+			AppController.RegisterController("Divinity: Original Sin 2 - Definitive Edition", Controller, "pack://application:,,,/SourceControlGenerator;component/Resources/Logos/DivinityOriginalSin2DE.png", "");
 		}
 
 		public Module() { }
