@@ -329,7 +329,9 @@ namespace SCG.Core
 				SourceControlData sourceControlData = new SourceControlData()
 				{
 					ProjectName = modProject.ProjectName,
-					ProjectUUID = modProject.UUID
+					ProjectUUID = modProject.UUID,
+					RepositoryPath = gitProjectRootDirectory,
+					SourceFile = Path.Combine(gitProjectRootDirectory, DefaultPaths.SourceControlGeneratorDataFile)
 				};
 
 				modProject.GitData = sourceControlData;

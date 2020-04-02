@@ -323,7 +323,9 @@ namespace SCG.Commands
 			SourceControlData sourceControlData = new SourceControlData()
 			{
 				ProjectName = data.ProjectName,
-				ProjectUUID = data.UUID
+				ProjectUUID = data.UUID,
+				RepositoryPath = folderPath,
+				SourceFile = Path.Combine(folderPath, DefaultPaths.SourceControlGeneratorDataFile)
 			};
 			return SaveSourceControlData(sourceControlData, folderPath);
 		}
