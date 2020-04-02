@@ -11,6 +11,7 @@ using SCG.SCGEnum;
 using SCG.Interfaces;
 using Newtonsoft.Json;
 using ReactiveUI;
+using SCG.Util;
 
 namespace SCG.Modules.DOS2.Data.App
 {
@@ -48,7 +49,7 @@ namespace SCG.Modules.DOS2.Data.App
 
 		public bool FindDOS2DataDirectory()
 		{
-			string dataDirectory = Helpers.Registry.GetAppInstallPath("Divinity: Original Sin 2");
+			string dataDirectory = RegistryHelper.GetAppInstallPath("Divinity: Original Sin 2");
 			if (!String.IsNullOrEmpty(dataDirectory))
 			{
 				dataDirectory = dataDirectory + @"\Data";

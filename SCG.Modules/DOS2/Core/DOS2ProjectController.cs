@@ -23,6 +23,7 @@ using System.Threading.Tasks;
 using System.Windows.Controls;
 using ReactiveUI;
 using DynamicData.Binding;
+using DynamicData;
 
 namespace SCG.Core
 {
@@ -435,17 +436,17 @@ namespace SCG.Core
 
 					var backupSuccess = await BackupProjectAsync(project, targetBackupOutputDirectory, Data.Settings.BackupMode);
 
-					if (backupSuccess == BackupResult.Success)
+					if (backupSuccess == FileCreationTaskResult.Success)
 					{
 						totalSuccess += 1;
 						Log.Here().Activity("Successfully created archive for {0}.", project.ProjectName);
 						project.LastBackup = DateTime.Now;
-						var d = Data.ManagedProjectsData.Projects.Where(p => p.Name == project.ProjectName && p.UUID == project.UUID).FirstOrDefault();
+						var d = Data.ManagedProjectsData.SavedProjects.Items.Where(p => p.UUID == project.UUID).FirstOrDefault();
 						if (d != null) d.LastBackupUTC = project.LastBackup?.ToUniversalTime().ToString();
 
 						AppController.Main.UpdateProgressLog("Archive created.");
 					}
-					else if (backupSuccess == BackupResult.Error)
+					else if (backupSuccess == FileCreationTaskResult.Error)
 					{
 						Log.Here().Error("Failed to create archive for {0}.", project.ProjectName);
 						AppController.Main.UpdateProgressLog("Archive creation failed.");
@@ -473,7 +474,7 @@ namespace SCG.Core
 			return totalSuccess;
 		}
 
-		public async Task<BackupResult> BackupProjectAsync(ModProjectData modProject, string OutputDirectory = "", BackupMode mode = BackupMode.Zip)
+		public async Task<FileCreationTaskResult> BackupProjectAsync(ModProjectData modProject, string OutputDirectory = "", BackupMode mode = BackupMode.Zip)
 		{
 			if (String.IsNullOrWhiteSpace(OutputDirectory))
 			{
@@ -524,7 +525,7 @@ namespace SCG.Core
 				{
 					AppController.Main.UpdateProgressLog("Running git archive command...");
 					var success = await GitGenerator.Archive(gitProjectDirectory, archivePath).ConfigureAwait(false);
-					return success ? BackupResult.Success : BackupResult.Error;
+					return success ? FileCreationTaskResult.Success : FileCreationTaskResult.Error;
 				}
 				else
 				{
@@ -553,11 +554,11 @@ namespace SCG.Core
 					var availableProject = Data.NewProjects.Where(p => p.Name == project.Name).FirstOrDefault();
 					if (availableProject != null) Data.NewProjects.Remove(availableProject);
 
-					if (Data.ManagedProjectsData.Projects.Any(p => p.Name == modData.ProjectName))
+					if (Data.ManagedProjectsData.SavedProjects.Items.Any(p => p.UUID == modData.UUID))
 					{
 						if (modData.ProjectAppData == null)
 						{
-							ProjectAppData data = Data.ManagedProjectsData.Projects.Where(p => p.Name == modData.ProjectName && p.UUID == modData.ModuleInfo.UUID).FirstOrDefault();
+							ProjectAppData data = Data.ManagedProjectsData.SavedProjects.Items.Where(p => p.UUID == modData.ModuleInfo.UUID).FirstOrDefault();
 							if (data != null)
 							{
 								modData.ProjectAppData = data;
@@ -574,7 +575,7 @@ namespace SCG.Core
 							UUID = modData.ModuleInfo.UUID,
 							LastBackupUTC = null
 						};
-						Data.ManagedProjectsData.Projects.Add(data);
+						Data.ManagedProjectsData.SavedProjects.AddOrUpdate(data);
 						modData.ProjectAppData = data;
 
 						Log.Here().Activity($"Added project {modData.DisplayName} to managed projects.");

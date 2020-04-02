@@ -87,6 +87,7 @@ namespace SCG.Data
 		}
 
 		public string ProjectName { get; set; }
+		public string ProjectFolder { get; set; }
 
 		/// <summary>
 		/// The project folder name. Also used for the repo.

@@ -14,7 +14,7 @@ namespace SCG
 
 		public void Init()
 		{
-			AppController.RegisterController("Divinity: Original Sin 2", Controller, "Resources/Logos/DivinityOriginalSin2.png", "");
+			AppController.RegisterController("Divinity: Original Sin 2", Controller, "pack://application:,,,/SourceControlGenerator;component/Resources/Logos/DivinityOriginalSin2.png", "");
 		}
 
 		public Module()

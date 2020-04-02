@@ -75,10 +75,10 @@ namespace SCG.Modules.DOS2.Core
 			}
 			else
 			{
-				foreach (var project in Data.ManagedProjectsData.SavedProjects)
+				foreach (var project in Data.ManagedProjectsData.SavedProjects.Items)
 				{
 					//var modProject = Data.ModProjects.Where(x => x.Name == project.Name && x.ModuleInfo.UUID == project.GUID).FirstOrDefault();
-					var modProject = Data.ModProjects.Where(x => x.ProjectName == project.Name && x.UUID == project.UUID).FirstOrDefault();
+					var modProject = Data.ModProjects.Where(x => x.UUID == project.UUID).FirstOrDefault();
 					if (modProject != null)
 					{
 						ModProjectData existingData = null;
@@ -331,7 +331,7 @@ namespace SCG.Modules.DOS2.Core
 		{
 			Log.Here().Important("Saving Managed Projects data to {0}", Data.Settings.AddedProjectsFile);
 
-			if (Data.ManagedProjectsData != null && Data.ManagedProjectsData.Projects.Count > 0 && Data.Settings != null && FileCommands.IsValidPath(Data.Settings.AddedProjectsFile))
+			if (Data.ManagedProjectsData != null && Data.ManagedProjectsData.SavedProjects.Count > 0 && Data.Settings != null && FileCommands.IsValidPath(Data.Settings.AddedProjectsFile))
 			{
 				string json = JsonInterface.SerializeObject(Data.ManagedProjectsData);
 				return FileCommands.WriteToFile(Data.Settings.AddedProjectsFile, json);
