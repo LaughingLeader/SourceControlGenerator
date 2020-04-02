@@ -624,8 +624,8 @@ namespace SCG.Modules.DOS2DE.Core
 		{
 			if (MainData != null)
 			{
-				string directory = Path.Combine(Path.GetFullPath(MainData.Settings.GitRootDirectory), modProjectData.ProjectName);
-				if (Directory.Exists(directory))
+				string directory = modProjectData.GitData?.RepositoryPath;
+				if (!String.IsNullOrEmpty(directory) && Directory.Exists(directory))
 				{
 					Process.Start(directory);
 				}
@@ -722,7 +722,7 @@ namespace SCG.Modules.DOS2DE.Core
 			if (MainData != null)
 			{
 				string startPath = Path.Combine(MainData.Settings.DOS2DEDataDirectory, "Projects");
-				string directory = Path.Combine(Path.GetFullPath(startPath), modProjectData.ProjectName);
+				string directory = Path.Combine(Path.GetFullPath(startPath), modProjectData.ProjectFolder);
 				if(!Directory.Exists(directory))
 				{
 					directory = Path.Combine(Path.GetFullPath(startPath), modProjectData.ModuleInfo.Folder); // Imported projects
