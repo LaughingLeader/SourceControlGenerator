@@ -282,7 +282,7 @@ namespace SCG.Modules.DOS2DE.Data.View
 			}
 		}
 
-		private void openBackupFolder()
+		private void OpenBackupFolder()
 		{
 			Log.Here().Activity("Opening backup folder!");
 			DOS2DECommands.OpenBackupFolder(this);
@@ -650,7 +650,6 @@ namespace SCG.Modules.DOS2DE.Data.View
 			RxApp.MainThreadScheduler.ScheduleAsync(async (s,t) => {
 				await LoadModMetaAsync(metaFilePath);
 				await LoadProjectMetaAsync(projectsFolderPath);
-				await s.Yield();
 				return Disposable.Empty;
 			});
 		}

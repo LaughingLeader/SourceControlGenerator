@@ -272,6 +272,15 @@ namespace SCG.Data.Xml
 					Log.Here().Error("[{0}] Error checking target modes: {1}", this.Name, ex.ToString());
 				}
 			}
+
+			if(!String.IsNullOrEmpty(Name))
+			{
+				Name = XMLHelper.UnescapeXml(Name);
+			}
+			if(!String.IsNullOrEmpty(Description))
+			{
+				Description = XMLHelper.UnescapeXml(Description);
+			}
 		}
 	}
 }

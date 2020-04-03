@@ -70,7 +70,7 @@ namespace SCG.Data.Xml
 
 			if(rootXml != null)
 			{
-				this.Name = XmlDataHelper.GetDOS2AttributeValue(rootXml, "Name");
+				this.Name = XMLHelper.UnescapeXml(XmlDataHelper.GetDOS2AttributeValue(rootXml, "Name"));
 				this.Type = XmlDataHelper.GetDOS2AttributeValue(rootXml, "Type");
 				this.Module = XmlDataHelper.GetDOS2AttributeValue(rootXml, "Module");
 				this.UUID = XmlDataHelper.GetDOS2AttributeValue(rootXml, "UUID");
