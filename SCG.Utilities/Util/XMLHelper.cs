@@ -9,6 +9,19 @@ namespace SCG.Util
 {
 	public static class XMLHelper
 	{
+		public static string FixWhitespaces(string s)
+		{
+			string toxml = s;
+			if (!string.IsNullOrEmpty(toxml))
+			{
+				// replace literal values with entities
+				toxml = toxml.Replace("< ", "<");
+				toxml = toxml.Replace("> ", ">");
+				toxml = toxml.Replace(" = ", "=");
+			}
+			return toxml;
+		}
+
 		public static string EscapeXml(string s)
 		{
 			string toxml = s;
@@ -28,6 +41,7 @@ namespace SCG.Util
 		{
 			if (!string.IsNullOrEmpty(xmlstring))
 			{
+				xmlstring = FixWhitespaces(xmlstring);
 				xmlstring = Regex.Replace(xmlstring, "value=\"(.*?)\"", new MatchEvaluator((m) =>
 				{
 					return $"value=\"{EscapeXml(m.Groups[1].Value)}\"";
