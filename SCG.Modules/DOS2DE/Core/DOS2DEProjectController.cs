@@ -868,7 +868,12 @@ namespace SCG.Core
 				var mod = selectedProjects.FirstOrDefault(x => x.UUID == task.ID);
 				AppController.Main.UpdateProgressMessage($"Creating zip for project package {mod.ProjectName}...");
 
-				string zipName = Path.Combine(localModsFolder, mod.ProjectFolder + "_v" + mod.Version + ".zip");
+				string zipName = mod.ProjectFolder.Replace(mod.UUID, "");
+				if(!zipName.EndsWith("_"))
+				{
+					zipName = zipName + "_";
+				}
+				zipName = Path.Combine(localModsFolder, zipName + "v" + mod.Version + ".zip");
 
 				AppController.Main.UpdateProgressTitle((total > 1 ? "Zipping packages..." : "Zipping project... ") + $"{i}/{total}");
 				AppController.Main.UpdateProgress();
