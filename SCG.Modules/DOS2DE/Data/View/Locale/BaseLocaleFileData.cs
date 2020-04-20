@@ -163,6 +163,14 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			set { this.RaiseAndSetIfChanged(ref canCreateFileLink, value); }
 		}
 
+		private bool isCombinedData = false;
+
+		public bool IsCombinedData
+		{
+			get => isCombinedData;
+			set { this.RaiseAndSetIfChanged(ref isCombinedData, value); }
+		}
+
 		public List<LocaleUnsavedChangesData> UnsavedChanges = new List<LocaleUnsavedChangesData>();
 
 		public void SetChangesUnsaved(bool b, bool clearUnsaved = true)

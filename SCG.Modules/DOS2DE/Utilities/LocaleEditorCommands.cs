@@ -900,12 +900,26 @@ namespace SCG.Modules.DOS2DE.Utilities
 
 		public static bool IgnoreHandle(string handle, ILocaleFileData fileData)
 		{
-			//Larian handles for empty GMSpawnSubsection
-			if (handle == UnsetHandle || handle == "heee99d71g1f41g4ba2g8adbg98fad94256ca" || handle == "hfeccb8bbgf99fg4028gb187g607c18c2cbaa" || handle.StartsWith("ResStr_"))
+			if (handle == UnsetHandle || handle.StartsWith("ResStr_"))
 			{
 				return true;
 			}
-			if (!fileData.CanOverride && IgnoredHandles.Contains(handle)) return true;
+
+			if (fileData.CanOverride) return false;
+			if (fileData.IsCombinedData)
+			{
+				// The real file that contains this handle is allowing overrides.
+				if(fileData.Parent.DataFiles.Any(f => f.CanOverride && f.Entries.Any(x => x.Handle == handle)))
+				{
+					return false;
+				}
+			}
+			//Larian handles for empty GMSpawnSubsection
+			if(handle == "heee99d71g1f41g4ba2g8adbg98fad94256ca" || handle == "hfeccb8bbgf99fg4028gb187g607c18c2cbaa")
+			{
+				return true;
+			}
+			if (IgnoredHandles.Contains(handle)) return true;
 			return false;
 		}
 
@@ -1156,9 +1170,16 @@ namespace SCG.Modules.DOS2DE.Utilities
 			{
 				Log.Here().Activity($"Loading linked file data from {fileData.FileLinkData.ReadFrom}");
 				string path = fileData.FileLinkData.ReadFrom;
+				if (path.IndexOf("Override", StringComparison.OrdinalIgnoreCase) > -1)
+				{
+					fileData.CanOverride = true;
+				}
+
 				if (FileCommands.FileExtensionFound(path, ".txt", ".tsv", ".csv"))
 				{
 					char delimiter = '\t';
+					string notDelimiter = $"[^{delimiter}]";
+
 					if (FileCommands.FileExtensionFound(path, ".csv")) delimiter = ',';
 
 					using (var stream = new System.IO.StreamReader(path))
@@ -1168,8 +1189,8 @@ namespace SCG.Modules.DOS2DE.Utilities
 
 						List<TextualLocaleEntry> entries = new List<TextualLocaleEntry>();
 
-						Regex regularModePattern = new Regex($"^(.*){delimiter}+(.*)$", RegexOptions.Singleline);
-						Regex handleModePattern = new Regex($"^(.*?){delimiter}+(.*?){delimiter}+(.*?)$", RegexOptions.Singleline);
+						Regex regularModePattern = new Regex($"^({notDelimiter}*){delimiter}+(.*)$", RegexOptions.Singleline);
+						Regex handleModePattern = new Regex($"^({notDelimiter}*?){delimiter}+({notDelimiter}+){delimiter}*?({notDelimiter}*?)$", RegexOptions.Singleline);
 
 						Regex r = regularModePattern;
 
@@ -1355,9 +1376,10 @@ namespace SCG.Modules.DOS2DE.Utilities
 
 			int lineNum = 0;
 			string line = String.Empty;
+			string notDelimiter = $"[^{delimiter}]";
 
 			Regex regularModePattern = new Regex($"^(.*){delimiter}+(.*)$", RegexOptions.Singleline);
-			Regex handleModePattern = new Regex($"^(.*?){delimiter}+(.*?){delimiter}+(.*?)$", RegexOptions.Singleline);
+			Regex handleModePattern = new Regex($"^({notDelimiter}*?){delimiter}+({notDelimiter}+){delimiter}*?({notDelimiter}*?)$", RegexOptions.Singleline);
 
 			Regex r = regularModePattern;
 
@@ -1497,6 +1519,7 @@ namespace SCG.Modules.DOS2DE.Utilities
 					{
 						Log.Here().Activity($"Creating entries from delimited text file.");
 						char delimiter = '\t';
+						string notDelimiter = $"[^{delimiter}]";
 						if (FileCommands.FileExtensionFound(path, ".csv")) delimiter = ',';
 
 						using (var stream = new System.IO.StreamReader(path))
@@ -1505,7 +1528,7 @@ namespace SCG.Modules.DOS2DE.Utilities
 							string line = String.Empty;
 
 							Regex regularModePattern = new Regex($"^(.*){delimiter}+(.*)$", RegexOptions.Singleline);
-							Regex handleModePattern = new Regex($"^(.*?){delimiter}+(.*?){delimiter}+(.*?)$", RegexOptions.Singleline);
+							Regex handleModePattern = new Regex($"^({notDelimiter}*?){delimiter}+({notDelimiter}+){delimiter}*?({notDelimiter}*?)$", RegexOptions.Singleline);
 
 							Regex r = regularModePattern;
 
