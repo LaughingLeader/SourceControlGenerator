@@ -1,4 +1,5 @@
-﻿using DynamicData.Binding;
+﻿using Alphaleonis.Win32.Filesystem;
+using DynamicData.Binding;
 using LSLib.LS;
 using LSLib.LS.Enums;
 using SCG.Data;
@@ -48,6 +49,11 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 					
 					//TraceRegion();
 				}
+			}
+
+			if (Path.GetFileNameWithoutExtension(SourcePath).IndexOf("Override", StringComparison.OrdinalIgnoreCase) > -1)
+			{
+				CanOverride = true;
 			}
 		}
 

@@ -194,6 +194,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			Parent = parent;
 			Name = name;
 			CombinedEntries = new BaseLocaleFileData(this, "All");
+			CombinedEntries.IsCombinedData = true;
 			CombinedEntries.Locked = true;
 			DataFiles = new ObservableCollectionExtended<ILocaleFileData>();
 			Tabs = new ObservableCollectionExtended<ILocaleFileData>();
