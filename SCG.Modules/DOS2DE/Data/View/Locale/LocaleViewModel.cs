@@ -475,7 +475,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			set { this.RaiseAndSetIfChanged(ref clipboardHasText, value); }
 		}
 
-		private bool hideExtras = false;
+		private bool hideExtras = true;
 
 		public bool HideExtras
 		{
