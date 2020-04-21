@@ -176,7 +176,7 @@ namespace SCG.Core
 
 			if (!string.IsNullOrEmpty(Data.Settings.GitRootDirectory))
 			{
-				string gitProjectRootDirectory = Path.Combine(Data.Settings.GitRootDirectory, modProject.ProjectFolder);
+				string gitProjectRootDirectory = Path.Combine(Data.Settings.GitRootDirectory, modProject.ProjectName);
 
 				AppController.Main.UpdateProgressLog("Creating git project directory...");
 
@@ -216,7 +216,7 @@ namespace SCG.Core
 					AppController.Main.UpdateProgressLog("Creating junctions...");
 
 					var sourceFolders = PrepareDirectories(modProject, Data.Settings.DirectoryLayouts);
-					var result = GitGenerator.CreateJunctions(modProject.ProjectFolder, sourceFolders, Data);
+					var result = GitGenerator.CreateJunctions(modProject.ProjectName, sourceFolders, Data);
 
 					if (result)
 					{
