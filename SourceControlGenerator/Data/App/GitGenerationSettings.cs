@@ -100,7 +100,7 @@ namespace SCG.Data
 		{
 			TemplateSettings = new ObservableImmutableList<TemplateGenerationData>();
 			ExportProjects = new ObservableImmutableList<IProjectData>();
-			SelectedLicense = LicenseType.MIT;
+			SelectedLicense = LicenseType.None;
 
 			BindingOperations.EnableCollectionSynchronization(TemplateSettings, TemplateSettingsLock);
 			BindingOperations.EnableCollectionSynchronization(ExportProjects, ExportProjectsLock);
