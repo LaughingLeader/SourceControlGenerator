@@ -1190,7 +1190,7 @@ namespace SCG.Modules.DOS2DE.Utilities
 						List<TextualLocaleEntry> entries = new List<TextualLocaleEntry>();
 
 						Regex regularModePattern = new Regex($"^({notDelimiter}*){delimiter}+(.*)$", RegexOptions.Singleline);
-						Regex handleModePattern = new Regex($"^({notDelimiter}*?){delimiter}+({notDelimiter}+){delimiter}*?({notDelimiter}*?)$", RegexOptions.Singleline);
+						Regex handleModePattern = new Regex($"^({notDelimiter}*?){delimiter}+({notDelimiter}*){delimiter}+({notDelimiter}*?)$", RegexOptions.Singleline);
 
 						Regex r = regularModePattern;
 
@@ -1379,7 +1379,7 @@ namespace SCG.Modules.DOS2DE.Utilities
 			string notDelimiter = $"[^{delimiter}]";
 
 			Regex regularModePattern = new Regex($"^(.*){delimiter}+(.*)$", RegexOptions.Singleline);
-			Regex handleModePattern = new Regex($"^({notDelimiter}*?){delimiter}+({notDelimiter}+){delimiter}*?({notDelimiter}*?)$", RegexOptions.Singleline);
+			Regex handleModePattern = new Regex($"^({notDelimiter}*?){delimiter}+({notDelimiter}*){delimiter}+({notDelimiter}*?)$", RegexOptions.Singleline);
 
 			Regex r = regularModePattern;
 
@@ -1528,7 +1528,7 @@ namespace SCG.Modules.DOS2DE.Utilities
 							string line = String.Empty;
 
 							Regex regularModePattern = new Regex($"^(.*){delimiter}+(.*)$", RegexOptions.Singleline);
-							Regex handleModePattern = new Regex($"^({notDelimiter}*?){delimiter}+({notDelimiter}+){delimiter}*?({notDelimiter}*?)$", RegexOptions.Singleline);
+							Regex handleModePattern = new Regex($"^({notDelimiter}*?){delimiter}+({notDelimiter}*){delimiter}+({notDelimiter}*?)$", RegexOptions.Singleline);
 
 							Regex r = regularModePattern;
 
