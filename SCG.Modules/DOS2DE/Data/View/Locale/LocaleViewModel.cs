@@ -1725,29 +1725,79 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 
 				foreach (var entry in selectedRemovedEntries)
 				{
-					lastState.Add(new LocaleEntryHistory
+					if (entry.Parent.IsCombinedData)
 					{
-						ParentFile = entry.Parent,
-						Entry = entry,
-						Index = entry.Index,
-						ChangesUnsaved = entry.ChangesUnsaved,
-						ParentChangesUnsaved = entry.Parent.ChangesUnsaved
-					});
+						var realParent = Groups.Select(g => g.DataFiles.FirstOrDefault(d => !d.IsCombinedData && d.Entries.Any(x => x.Handle == entry.Handle && x.Key == entry.Key))).FirstOrDefault();
+						if (realParent != null)
+						{
+							var refEntry = realParent.Entries.First(x => x.Handle == entry.Handle && x.Key == entry.Key);
+							lastState.Add(new LocaleEntryHistory
+							{
+								ParentFile = realParent,
+								Entry = entry,
+								Index = realParent.Entries.IndexOf(refEntry),
+								ChangesUnsaved = entry.ChangesUnsaved,
+								ParentChangesUnsaved = realParent.ChangesUnsaved
+							});
+						}
+						else
+						{
+							lastState.Add(new LocaleEntryHistory
+							{
+								ParentFile = entry.Parent,
+								Entry = entry,
+								Index = entry.Index,
+								ChangesUnsaved = entry.ChangesUnsaved,
+								ParentChangesUnsaved = entry.Parent.ChangesUnsaved
+							});
+						}
+					}
+					else
+					{
+						lastState.Add(new LocaleEntryHistory
+						{
+							ParentFile = entry.Parent,
+							Entry = entry,
+							Index = entry.Index,
+							ChangesUnsaved = entry.ChangesUnsaved,
+							ParentChangesUnsaved = entry.Parent.ChangesUnsaved
+						});
+					}
 				}
 
 				void undo()
 				{
 					foreach (var x in lastState)
 					{
-						var fileEntries = Groups.Select(g => g.DataFiles.FirstOrDefault(f => f.SourcePath == x.ParentFile.SourcePath));
-						foreach (var fileEntry in fileEntries)
+						var fileEntries = Groups.SelectMany(g => g.DataFiles.Where(f => f != null && !f.IsCombinedData && f.SourcePath == x.ParentFile.SourcePath)).ToList();
+						if (fileEntries.Count > 0)
 						{
-							if (x.ChangesUnsaved) fileEntry.ChangesUnsaved = x.ChangesUnsaved;
-							fileEntry.Entries.Insert(x.Index, x.Entry);
-							fileEntry.ChangesUnsaved = x.ParentChangesUnsaved;
-							if (fileEntry is LocaleNodeFileData nodeFileData && x.Entry is LocaleNodeKeyEntry nodeKeyEntry)
+							foreach (var fileEntry in fileEntries)
 							{
-								nodeFileData.RootRegion.AppendChild(nodeKeyEntry.Node);
+								if(fileEntry != null)
+								{
+									if (x.ChangesUnsaved) fileEntry.ChangesUnsaved = x.ChangesUnsaved;
+									if (fileEntry.Entries.Count > x.Index)
+									{
+										try
+										{
+											fileEntry.Entries.Insert(x.Index, x.Entry);
+										}
+										catch(Exception ex)
+										{
+											fileEntry.Entries.Add(x.Entry);
+										}
+									}
+									else
+									{
+										fileEntry.Entries.Add(x.Entry);
+									}
+									fileEntry.ChangesUnsaved = x.ParentChangesUnsaved;
+									if (fileEntry is LocaleNodeFileData nodeFileData && x.Entry is LocaleNodeKeyEntry nodeKeyEntry)
+									{
+										nodeFileData.RootRegion.AppendChild(nodeKeyEntry.Node);
+									}
+								}
 							}
 						}
 					}
