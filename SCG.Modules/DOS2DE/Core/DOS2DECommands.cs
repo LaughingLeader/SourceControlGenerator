@@ -201,7 +201,7 @@ namespace SCG.Modules.DOS2DE.Core
 										Log.Here().Error($"Could not convert {m.LastBackupUTC} to DateTime.");
 									}
 								}
-								await s.Yield();
+								//await s.Yield();
 								return Disposable.Empty;
 							});	
 						}
