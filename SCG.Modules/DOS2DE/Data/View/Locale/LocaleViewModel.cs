@@ -1431,7 +1431,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 							for (var i = 0; i < deleteEntries.Count; i++)
 							{
 								var entry = deleteEntries[i];
-								entry.Parent.Entries.Remove(entry);
+								selectedFile.Entries.Remove(entry);
 								if (selectedFile is LocaleNodeFileData nodeFileData && entry is LocaleNodeKeyEntry nodeKeyEntry)
 								{
 									//Log.Here().Important($"Looking for container for '{nodeKeyEntry.Node.Name}' => {nodeKeyEntry.Key}.");
@@ -2132,7 +2132,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 
 		public void ReloadFileData(LocaleNodeFileData fileData)
 		{
-			FileCommands.OpenConfirmationDialog(view, "Reload Data?", "Reload data in selected file?", "Unsaved changes will be lost", (b) =>
+			FileCommands.OpenConfirmationDialog(view, "Reload Data?", "This current file will be reverted to what is saved, potentially restoring or changing keys.", "Unsaved changes will be lost.", (b) =>
 			{
 				if (b)
 				{
@@ -2157,23 +2157,44 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 					void redo()
 					{
 						var newFile = LocaleEditorCommands.LoadResource(oldFile.Parent, oldFile.SourcePath);
-						targetGroup.DataFiles[index] = newFile;
+						var oldEntries = oldFile.Entries.ToList();
+						oldFile.Entries.Clear();
+						oldFile.Entries.AddRange(newFile.Entries);
+						var changesUnsaved = 0;
+						foreach(var entry in oldFile.Entries)
+						{
+							if(!oldEntries.Any(x => x.ValuesMatch(entry)))
+							{
+								entry.ChangesUnsaved = true;
+								changesUnsaved++;
+							}
+						}
 						targetGroup.UpdateCombinedData();
 						if (selectedGroup != targetGroup) selectedGroup.UpdateCombinedData();
 						selectedGroup.SelectedFileIndex = selectedIndex;
 
 						OutputText = $"Reloaded file '{newFile.SourcePath}'";
 						OutputType = LogType.Important;
+
+						if (changesUnsaved > 0)
+						{
+							oldFile.ChangesUnsaved = targetGroup.ChangesUnsaved = ChangesUnsaved = true;
+						}
 					}
 					this.CreateSnapshot(undo, redo);
 					redo();
+				}
+				else
+				{
+					OutputText = $"Canceled reloading file.";
+					OutputType = LogType.Activity;
 				}
 			});
 		}
 
 		public void RefreshFileData(LocaleNodeFileData fileData)
 		{
-			FileCommands.OpenConfirmationDialog(view, "Refresh Data?", "Refresh data in selected file?", "", (b) =>
+			FileCommands.OpenConfirmationDialog(view, "Refresh Data?", "Data for the current file's keys will be reloaded from the saved data, potentially changing keys, content, or handles.", "", (b) =>
 			{
 				if (b)
 				{
@@ -2318,6 +2339,11 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 									OutputText = "No changes found.";
 									OutputType = LogType.Activity;
 								}
+							}
+							else
+							{
+								OutputText = "No changes found.";
+								OutputType = LogType.Activity;
 							}
 						}
 						this.CreateSnapshot(undo, redo);
