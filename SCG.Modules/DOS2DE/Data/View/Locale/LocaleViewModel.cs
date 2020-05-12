@@ -161,11 +161,11 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 
 				if (nextGroup != null)
 				{
-					if (lastSelectedFile != null && nextGroup.DataFiles.Any(x => x.SourcePath == lastSelectedFile.SourcePath))
-					{
-						nextIndex = nextGroup.Tabs.IndexOf(lastSelectedFile);
-					}
-					else if (nextGroup.SelectedFileIndex > nextGroup.Tabs.Count)
+					//if (lastSelectedFile != null && nextGroup.DataFiles.Any(x => x.SourcePath == lastSelectedFile.SourcePath))
+					//{
+					//	nextIndex = nextGroup.Tabs.IndexOf(lastSelectedFile);
+					//}
+					if (nextGroup.SelectedFileIndex > nextGroup.Tabs.Count)
 					{
 						nextIndex = 0;
 					}
