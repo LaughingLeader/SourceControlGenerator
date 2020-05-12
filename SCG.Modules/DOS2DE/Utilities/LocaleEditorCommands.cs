@@ -930,7 +930,7 @@ namespace SCG.Modules.DOS2DE.Utilities
 
 			if (data.SelectedGroup != null)
 			{
-				var fileData = data.SelectedGroup.SelectedFile;
+				var fileData = !exportAll ? data.SelectedGroup.SelectedFile : data.CombinedGroup.CombinedEntries;
 				if (fileData != null)
 				{
 					bool findActualSource = fileData == data.SelectedGroup.CombinedEntries;
