@@ -2854,16 +2854,6 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 
 			//var anyRemovedEntriesSelected = this.WhenAnyValue(vm => vm.RemovedEntries);
 
-			if (openMissingEntriesViewOnLoad)
-			{
-				view.Dispatcher.Invoke(new Action(() =>
-				{
-					openMissingEntriesViewOnLoad = false;
-					ShowMissingEntriesView(addMissingEntriesOnLoad);
-					addMissingEntriesOnLoad = null;
-				}), System.Windows.Threading.DispatcherPriority.Loaded);
-			}
-
 			this.WhenAnyValue(x => x.HideExtras).Subscribe((b) =>
 			{
 				foreach(var g in Groups)
@@ -2910,6 +2900,16 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			SelectedGroup = CombinedGroup;
 			SelectedFile = CombinedGroup.CombinedEntries;
 			SelectedFile.Selected = true;
+
+			if (openMissingEntriesViewOnLoad)
+			{
+				RxApp.MainThreadScheduler.Schedule(TimeSpan.FromMilliseconds(150), () =>
+				{
+					openMissingEntriesViewOnLoad = false;
+					ShowMissingEntriesView(addMissingEntriesOnLoad);
+					addMissingEntriesOnLoad = null;
+				});
+			}
 
 			//this.WhenAnyValue(x => x.Groups.WhenAnyValue(c => c.Select(g => g.ChangesUnsaved));
 		}

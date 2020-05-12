@@ -684,6 +684,15 @@ namespace SCG.Modules.DOS2DE.Windows
 			}
 		}
 
+		public void SetContentToKeyActionsGrid()
+		{
+			ContentPresenter cp = null;
+			if (this.TryFindName("LocaleEntryGridContentPresenter", out cp))
+			{
+				cp.Content = KeyActionsGrid;
+			}
+		}
+
 		private void LocaleEntryGridContentPresenter_Unloaded(object sender, RoutedEventArgs e)
 		{
 			if (sender is ContentPresenter cp)
