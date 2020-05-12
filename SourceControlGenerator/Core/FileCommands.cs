@@ -189,7 +189,7 @@ namespace SCG
 					dialog.Buttons.Add(cancelButton);
 					//dialog.HyperlinkClicked += new EventHandler<HyperlinkClickedEventArgs>(TaskDialog_HyperLinkClicked);
 					TaskDialogButton button = dialog.ShowDialog(ParentWindow);
-					if (button == okButton)
+					if (button.ButtonType == ButtonType.Ok || button.ButtonType == ButtonType.Yes)
 					{
 						TaskAction?.Invoke(true);
 					}
