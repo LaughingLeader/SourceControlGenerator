@@ -2303,11 +2303,13 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 										if ((fileData.Format == ResourceFormat.LSF || fileData.Format == ResourceFormat.LSJ))
 										{
 											existingEntry.Content = entry.Content;
+											existingEntry.ChangesUnsaved = true;
 										}
 										else
 										{
 											existingEntry.Key = entry.Key;
 											existingEntry.Content = entry.Content;
+											existingEntry.ChangesUnsaved = true;
 										}
 
 										existingEntry.Handle = entry.Handle;
@@ -2329,7 +2331,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 
 								if(changes > 0)
 								{
-									fileData.ChangesUnsaved = true;
+									fileData.ChangesUnsaved = fileData.Parent.ChangesUnsaved = ChangesUnsaved = true;
 
 									OutputText = $"Refreshed file. Found {changes} changes.";
 									OutputType = LogType.Important;
