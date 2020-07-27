@@ -249,7 +249,7 @@ namespace SCG.Modules.DOS2DE.Core
 			return newMods;
 		}
 
-		public static string[] IgnoredFolders { get; private set; } = new string[7] { "Origins", "DivinityOrigins_1301db3d-1f54-4e98-9be5-5094030916e4", "Shared", "Arena", "DOS2_Arena", "Game_Master", "GameMaster" };
+		public static string[] IgnoredFolders { get; private set; } = new string[8] { "Origins", "DivinityOrigins_1301db3d-1f54-4e98-9be5-5094030916e4", "Shared", "Arena", "DOS2_Arena", "Game_Master", "GameMaster", "ArmorSets" };
 
 		public static async Task<List<ModProjectData>> LoadModProjectsAsync(DOS2DEModuleData Data, bool clearExisting = false)
 		{
