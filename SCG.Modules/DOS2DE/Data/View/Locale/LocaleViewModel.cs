@@ -1073,8 +1073,8 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 				var lastChangesUnsaved = ChangesUnsaved;
 
 				var lastFiles = currentGroup.DataFiles.ToList();
-
 				var lastImportPath = CurrentImportPath;
+				var lastLinked = LinkedLocaleData.ToList();
 
 				void undo()
 				{
@@ -1097,6 +1097,8 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 					ChangesUnsaved = lastChangesUnsaved;
 
 					SaveLastFileImportPath(lastImportPath);
+
+					LinkedLocaleData = lastLinked;
 				}
 
 				void redo()
@@ -1106,6 +1108,26 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 						foreach (var entry in newFileDataList)
 						{
 							entry.ChangesUnsaved = true;
+							if (entry.HasFileLink && entry is LocaleNodeFileData nodeFileData)
+							{
+								if (nodeFileData.ModProject != null)
+								{
+									var linkedList = LinkedLocaleData.FirstOrDefault(x => nodeFileData.ModProject.UUID == x.ProjectUUID);
+									if (linkedList == null)
+									{
+										linkedList = new LocaleProjectLinkData()
+										{
+											ProjectUUID = nodeFileData.ModProject.UUID,
+										};
+										LinkedLocaleData.Add(linkedList);
+									}
+
+									linkedList.Links.RemoveAll(x => x.TargetFile == nodeFileData.FileLinkData.TargetFile);
+									linkedList.Links.Add(nodeFileData.FileLinkData);
+
+									LocaleEditorCommands.SaveLinkedData(ModuleData, linkedList);
+								}
+							}
 						}
 
 						var newFile = newFileDataList.Last();

@@ -1486,7 +1486,6 @@ namespace SCG.Modules.DOS2DE.Utilities
 								};
 							}
 							
-							
 							newFileDataList.Add(fileData);
 						}
 					}
