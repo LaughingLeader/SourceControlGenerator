@@ -242,10 +242,13 @@ namespace SCG.Modules.DOS2DE.Core
 		#region Async
 		public static async Task<List<ModProjectData>> LoadAllAsync(DOS2DEModuleData Data, bool clearExisting = false, bool continueOnCaptureContext = true)
 		{
-			//await new SynchronizationContextRemover();
+			Log.Here().Activity("Loading all mod projects data.");
 			var newMods = await LoadModProjectsAsync(Data, clearExisting);
+			Log.Here().Activity("Loading all managed projects data.");
 			await LoadManagedProjectsAsync(Data, newMods, clearExisting);
+			Log.Here().Activity("Loading all source control data.");
 			await LoadSourceControlDataAsync(Data, newMods);
+			Log.Here().Activity("Loading complete!");
 			return newMods;
 		}
 
@@ -281,7 +284,7 @@ namespace SCG.Modules.DOS2DE.Core
 
 					if (Directory.Exists(modsPath))
 					{
-						Log.Here().Activity("Loading DOS2 projects from mods directory at: {0}", modsPath);
+						Log.Here().Activity($"Loading DOS2 projects from mods directory at: {modsPath}");
 
 						//DirectoryInfo modsRoot = new DirectoryInfo(modsPath);
 						//var modFolders = modsRoot.GetDirectories().Where(s => !IgnoredFolders.Contains(s.Name));
@@ -305,38 +308,45 @@ namespace SCG.Modules.DOS2DE.Core
 						{
 							foreach (string modFolder in modFolders)
 							{
-								var modFolderName = Path.GetFileName(modFolder);
-								Log.Here().Activity("Checking project mod folder: {0}", modFolderName);
-
-								var metaFilePath = Path.Combine(modFolder, "meta.lsx");
-								if (File.Exists(metaFilePath))
+								try
 								{
-									Log.Here().Activity("Meta file found for project {0}. Reading file.", modFolderName);
+									var modFolderName = Path.GetFileName(modFolder);
+									Log.Here().Activity($"Checking project mod folder: {modFolderName}");
 
-									ModProjectData modProjectData = new ModProjectData();
-									await modProjectData.LoadAllDataAsync(metaFilePath, projectsPath);
-
-									Log.Here().Activity("Finished reading meta files for mod: {0}", modProjectData.ModuleInfo.Name);
-
-									if(!clearExisting)
+									var metaFilePath = Path.Combine(modFolder, "meta.lsx");
+									if (File.Exists(metaFilePath))
 									{
-										var previous = Data.ModProjects.Items.FirstOrDefault(p => p.FolderName == modProjectData.FolderName);
-										if(previous != null)
+										Log.Here().Activity($"Meta file found for project {modFolderName}. Reading file.");
+
+										ModProjectData modProjectData = new ModProjectData();
+										await modProjectData.LoadAllDataAsync(metaFilePath, projectsPath);
+
+										Log.Here().Activity($"Finished reading meta files for mod: {modProjectData.ModuleInfo.Name}");
+
+										if (!clearExisting)
 										{
-											if(previous.DataIsNewer(modProjectData))
+											var previous = Data.ModProjects.Items.FirstOrDefault(p => p.FolderName == modProjectData.FolderName);
+											if (previous != null)
 											{
-												if (Thread.CurrentThread.IsBackground)
+												if (previous.DataIsNewer(modProjectData))
 												{
-													await Observable.Start(() =>
+													if (Thread.CurrentThread.IsBackground)
+													{
+														await Observable.Start(() =>
+														{
+															previous.UpdateData(modProjectData);
+															return Unit.Default;
+														}, RxApp.MainThreadScheduler);
+													}
+													else
 													{
 														previous.UpdateData(modProjectData);
-														return Unit.Default;
-													}, RxApp.MainThreadScheduler);
+													}
 												}
-												else
-												{
-													previous.UpdateData(modProjectData);
-												}
+											}
+											else
+											{
+												newItems.Add(modProjectData);
 											}
 										}
 										else
@@ -344,10 +354,11 @@ namespace SCG.Modules.DOS2DE.Core
 											newItems.Add(modProjectData);
 										}
 									}
-									else
-									{
-										newItems.Add(modProjectData);
-									}
+								}
+								catch(Exception ex)
+								{
+									Log.Here().Error($"Error parsing mod folder ${modFolder}:");
+									Log.Here().Error(ex.ToString());
 								}
 							}
 						}
@@ -364,121 +375,129 @@ namespace SCG.Modules.DOS2DE.Core
 
 		public static async Task<Unit> LoadManagedProjectsAsync(DOS2DEModuleData Data, List<ModProjectData> modProjects, bool clearExisting = false)
 		{
-			if (clearExisting)
+			try
 			{
-				foreach (var mod in Data.ModProjects.Items)
+				if (clearExisting)
 				{
-					mod.IsManaged = false;
-				}
-			}
-
-			string projectsAppDataPath = DefaultPaths.ModuleAddedProjectsFile(Data);
-
-			if (Data.Settings != null && File.Exists(Data.Settings.AddedProjectsFile))
-			{
-				projectsAppDataPath = Data.Settings.AddedProjectsFile;
-			}
-
-			if (!String.IsNullOrEmpty(projectsAppDataPath) && File.Exists(projectsAppDataPath))
-			{
-				try
-				{
-					string contents = await FileCommands.ReadFileAsync(projectsAppDataPath);
-					var settings = new JsonSerializerSettings
+					foreach (var mod in Data.ModProjects.Items)
 					{
-						NullValueHandling = NullValueHandling.Ignore,
-						MissingMemberHandling = MissingMemberHandling.Error
-					};
+						mod.IsManaged = false;
+					}
+				}
 
+				string projectsAppDataPath = DefaultPaths.ModuleAddedProjectsFile(Data);
+
+				if (Data.Settings != null && File.Exists(Data.Settings.AddedProjectsFile))
+				{
+					projectsAppDataPath = Data.Settings.AddedProjectsFile;
+				}
+
+				if (!String.IsNullOrEmpty(projectsAppDataPath) && File.Exists(projectsAppDataPath))
+				{
+					try
+					{
+						string contents = await FileCommands.ReadFileAsync(projectsAppDataPath);
+						var settings = new JsonSerializerSettings
+						{
+							NullValueHandling = NullValueHandling.Ignore,
+							MissingMemberHandling = MissingMemberHandling.Error
+						};
+
+						if (Thread.CurrentThread.IsBackground)
+						{
+							await Observable.Start(() =>
+							{
+								Data.ManagedProjectsData = JsonConvert.DeserializeObject<ManagedProjectsData>(contents, settings);
+								return Unit.Default;
+							}, RxApp.MainThreadScheduler);
+						}
+						else
+						{
+							Data.ManagedProjectsData = JsonConvert.DeserializeObject<ManagedProjectsData>(contents, settings);
+						}
+					}
+					catch (Exception ex)
+					{
+						Log.Here().Error("Error deserializing managed projects data at {0}: {1}", projectsAppDataPath, ex.ToString());
+					}
+				}
+
+				Debug.WriteLine("Loading managed project data");
+
+				if (Data.ManagedProjectsData == null)
+				{
 					if (Thread.CurrentThread.IsBackground)
 					{
 						await Observable.Start(() =>
 						{
-							Data.ManagedProjectsData = JsonConvert.DeserializeObject<ManagedProjectsData>(contents, settings);
+							Data.ManagedProjectsData = new ManagedProjectsData();
 							return Unit.Default;
 						}, RxApp.MainThreadScheduler);
 					}
 					else
 					{
-						Data.ManagedProjectsData = JsonConvert.DeserializeObject<ManagedProjectsData>(contents, settings);
-					}
-				}
-				catch (Exception ex)
-				{
-					Log.Here().Error("Error deserializing managed projects data at {0}: {1}", projectsAppDataPath, ex.ToString());
-				}
-			}
-
-			Debug.WriteLine("Loading managed project data");
-
-			if (Data.ManagedProjectsData == null)
-			{
-				if (Thread.CurrentThread.IsBackground)
-				{
-					await Observable.Start(() =>
-					{
 						Data.ManagedProjectsData = new ManagedProjectsData();
-						return Unit.Default;
-					}, RxApp.MainThreadScheduler);
+					}
 				}
 				else
 				{
-					Data.ManagedProjectsData = new ManagedProjectsData();
-				}
-			}
-			else
-			{
-				if (Data.ManagedProjectsData.SortedProjects != null)
-				{
-					if (Thread.CurrentThread.IsBackground)
+					if (Data.ManagedProjectsData.SortedProjects != null)
 					{
-						await Observable.Start(() =>
+						if (Thread.CurrentThread.IsBackground)
+						{
+							await Observable.Start(() =>
+							{
+								foreach (var p in Data.ManagedProjectsData.SortedProjects)
+								{
+									Data.ManagedProjectsData.SavedProjects.AddOrUpdate(p);
+								}
+								return Unit.Default;
+							}, RxApp.MainThreadScheduler);
+						}
+						else
 						{
 							foreach (var p in Data.ManagedProjectsData.SortedProjects)
 							{
 								Data.ManagedProjectsData.SavedProjects.AddOrUpdate(p);
 							}
-							return Unit.Default;
-						}, RxApp.MainThreadScheduler);
-					}
-					else
-					{
-						foreach (var p in Data.ManagedProjectsData.SortedProjects)
-						{
-							Data.ManagedProjectsData.SavedProjects.AddOrUpdate(p);
 						}
 					}
-				}
 
-				foreach (var m in Data.ManagedProjectsData.SavedProjects.Items)
-				{
-					var modData = modProjects.FirstOrDefault(p => p.UUID == m.UUID);
-					if (modData != null)
+					foreach (var m in Data.ManagedProjectsData.SavedProjects.Items)
 					{
-						modData.IsManaged = true;
-
-						if (clearExisting)
+						var modData = modProjects.FirstOrDefault(p => p.UUID == m.UUID);
+						if (modData != null)
 						{
-							await modData.ReloadDataAsync();
+							modData.IsManaged = true;
 
-							if (!String.IsNullOrWhiteSpace(m.LastBackupUTC))
+							if (clearExisting)
 							{
-								DateTime lastBackup;
+								await modData.ReloadDataAsync();
 
-								var success = DateTime.TryParse(m.LastBackupUTC, out lastBackup);
-								if (success)
+								if (!String.IsNullOrWhiteSpace(m.LastBackupUTC))
 								{
-									//Log.Here().Activity($"Successully parsed {modProject.LastBackup} to DateTime.");
-									modData.LastBackup = lastBackup.ToLocalTime();
-								}
-								else
-								{
-									Log.Here().Error($"Could not convert {m.LastBackupUTC} to DateTime.");
+									DateTime lastBackup;
+
+									var success = DateTime.TryParse(m.LastBackupUTC, out lastBackup);
+									if (success)
+									{
+										//Log.Here().Activity($"Successully parsed {modProject.LastBackup} to DateTime.");
+										modData.LastBackup = lastBackup.ToLocalTime();
+									}
+									else
+									{
+										Log.Here().Error($"Could not convert {m.LastBackupUTC} to DateTime.");
+									}
 								}
 							}
 						}
-					}
-				};
+					};
+				}
+			}
+			catch(Exception ex)
+			{
+				Log.Here().Error("Error loading managed projects:");
+				Log.Here().Error(ex.ToString());
 			}
 
 			return Unit.Default;
@@ -486,30 +505,43 @@ namespace SCG.Modules.DOS2DE.Core
 
 		public static async Task<bool> LoadSourceControlDataAsync(DOS2DEModuleData Data, IEnumerable<ModProjectData> modProjects)
 		{
-			if (Directory.Exists(Data.Settings.GitRootDirectory))
+			try
 			{
-				int totalSuccess = 0;
-				var projectFiles = Directory.EnumerateFiles(Data.Settings.GitRootDirectory, DirectoryEnumerationOptions.Files | DirectoryEnumerationOptions.Recursive, new DirectoryEnumerationFilters
+				if (Directory.Exists(Data.Settings.GitRootDirectory))
 				{
-					InclusionFilter = (f) =>
-					{
-						return f.FileName.Equals("SourceControlGenerator.json", StringComparison.OrdinalIgnoreCase);
-					}
-				});
-				var sourceFiles = (await Task.WhenAll(projectFiles.Select(x => SourceControlData.FromPathAsync(x)).Where(i => i != null).ToList()));
+					int totalSuccess = 0;
 
-				foreach (var project in modProjects)
-				{
-					var sourceControlData = sourceFiles.FirstOrDefault(x => x.ProjectUUID == project.UUID);
-					if (sourceControlData != null)
+					var sourceFiles = new List<SourceControlData>();
+
+					var folders = Directory.EnumerateDirectories(Data.Settings.GitRootDirectory);
+					foreach (var folder in folders)
 					{
-						project.GitData = sourceControlData;
-						project.GitGenerated = true;
-						totalSuccess += 1;
+						var sourceFile = Path.Combine(folder, "SourceControlGenerator.json");
+						Log.Here().Activity(sourceFile);
+						if (File.Exists(sourceFile))
+						{
+							sourceFiles.Add(await SourceControlData.FromPathAsync(sourceFile));
+						}
 					}
+
+					foreach (var project in modProjects)
+					{
+						var sourceControlData = sourceFiles.FirstOrDefault(x => x.ProjectUUID == project.UUID);
+						if (sourceControlData != null)
+						{
+							project.GitData = sourceControlData;
+							project.GitGenerated = true;
+							totalSuccess += 1;
+						}
+					}
+
+					return totalSuccess > 0;
 				}
-
-				return totalSuccess > 0;
+			}
+			catch(Exception ex)
+			{
+				Log.Here().Error("Error loading source control data:");
+				Log.Here().Error(ex.ToString());
 			}
 			return false;
 		}

@@ -586,8 +586,16 @@ namespace SCG.Modules.DOS2DE.Data.View
 
 		public async Task<Unit> LoadAllDataAsync(string metaFilePath, string projectsFolderPath)
 		{
-			await LoadModMetaAsync(metaFilePath);
-			await LoadProjectMetaAsync(projectsFolderPath);
+			try
+			{
+				await LoadModMetaAsync(metaFilePath);
+				await LoadProjectMetaAsync(projectsFolderPath);
+			}
+			catch(Exception ex)
+			{
+				Log.Here().Error("Error loading mod data:");
+				Log.Here().Error(ex.ToString());
+			}
 			return Unit.Default;
 		}
 

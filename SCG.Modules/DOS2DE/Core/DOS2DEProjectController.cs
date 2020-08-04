@@ -1099,7 +1099,7 @@ namespace SCG.Core
 
 			Log.Here().Activity("Refreshing all data.");
 			var newMods = await DOS2DECommands.LoadAllAsync(Data);
-			Log.Here().Activity("Done Refreshing all data.");
+			Log.Here().Activity("Done refreshing all data.");
 
 			if (Thread.CurrentThread.IsBackground)
 			{
