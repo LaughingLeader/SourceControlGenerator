@@ -2124,21 +2124,17 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 				{
 					if(FileCommands.RenameFile(fileData.SourcePath, nextFilePath))
 					{
-						fileData.Name = fileData.RenameText;
-						fileData.SourcePath = nextFilePath;
+						Log.Here().Activity($"Renamed file '{fileData.SourcePath}' => '{nextFilePath}'.");
 					}
 					else
 					{
-						fileData.RenameText = fileData.Name;
+						Log.Here().Error($"Error renaming file '{fileData.SourcePath}' => '{nextFilePath}'.");
 					}
+				}
 
-					fileData.IsRenaming = false;
-				}
-				else
-				{
-					fileData.Name = fileData.RenameText;
-					fileData.IsRenaming = false;
-				}
+				fileData.Name = fileData.RenameText;
+				fileData.SourcePath = nextFilePath;
+				fileData.IsRenaming = false;
 
 				fileData.ChangesUnsaved = true;
 				if (fileData.Parent != null) fileData.Parent.ChangesUnsaved = true;
