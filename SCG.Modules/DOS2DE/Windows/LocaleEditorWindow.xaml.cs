@@ -742,6 +742,7 @@ namespace SCG.Modules.DOS2DE.Windows
 		{
 			if (sender is UnfocusableTextBox tb)
 			{
+				tb.Focus();
 				tb.SelectAll();
 			}
 		}
