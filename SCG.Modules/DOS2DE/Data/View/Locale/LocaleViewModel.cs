@@ -1235,6 +1235,55 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 				writeToFile, exportName, startImportPath, DOS2DEFileFilters.AllLocaleFilesList.ToArray());
 		}
 
+		public void ExportAllToSpreadsheet()
+		{
+			var project = GetMainProject();
+			string exportName = Path.GetFileNameWithoutExtension(project.ProjectName) + "-All.tsv";
+			IsSubWindowOpen = true;
+			void writeToFile(FileDialogResult result, string path)
+			{
+				IsSubWindowOpen = false;
+
+				if (result == FileDialogResult.Ok)
+				{
+					string delimiter = "\t";
+					if (FileCommands.FileExtensionFound(path, ".csv"))
+					{
+						delimiter = ",";
+					}
+					string contents = $"Key{delimiter}Content{delimiter}Handle{delimiter}Comment{delimiter}File/Template Name{delimiter}File Path\n";
+					var entries = CombinedGroup.CombinedEntries.Entries.OrderBy(x => x.Parent.SourcePath).ToList();
+					for (var i = 0; i < entries.Count; i++)
+					{
+						var entry = entries[i];
+						var localPath = entry.Parent.SourcePath.Replace(this.ModuleData.Settings.DOS2DEDataDirectory+"\\", "");
+						contents += String.Join(delimiter, entry.Key, entry.Content, entry.Handle, "", entry.Parent.Name, localPath);
+						if (i < entries.Count - 1) contents += Environment.NewLine;
+					}
+
+					if (FileCommands.WriteToFile(path, contents.Trim()))
+					{
+						OutputType = LogType.Important;
+						OutputText = $"Saved locale spreadsheet to '{path}'.";
+						OutputDate = DateTime.Now.ToShortTimeString();
+					}
+					else
+					{
+						OutputType = LogType.Error;
+						OutputText = $"Problem saving file '{path}'.";
+						OutputDate = DateTime.Now.ToShortTimeString();
+					}
+
+					SaveLastFileImportPath(Path.GetDirectoryName(path));
+				}
+			}
+
+			string startImportPath = GetLastFileImportPath();
+
+			FileCommands.Save.OpenSaveDialog(view, "Save Locale Spreadsheet As...",
+				writeToFile, exportName, startImportPath, DOS2DEFileFilters.AllLocaleFilesList.ToArray());
+		}
+
 		public void ImportFilesAsKeys(IEnumerable<string> files)
 		{
 			IsSubWindowOpen = false;
@@ -1322,6 +1371,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 		public ICommand NewHandleCommand { get; private set; }
 		public ICommand ResetHandleCommand { get; private set; }
 		public ICommand ExportFileAsTextualCommand { get; private set; }
+		public ICommand ExportAllAsSpreadsheetCommand { get; private set; }
 		public ICommand OnClipboardChangedCommand { get; private set; }
 		public ICommand PasteIntoKeysCommand { get; private set; }
 		public ICommand PasteIntoContentCommand { get; private set; }
@@ -2550,6 +2600,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			}, CanImportKeysObservable).DisposeWith(disposables);
 
 			ExportFileAsTextualCommand = ReactiveCommand.Create(() => ExportFileAsText(SelectedFile), FileSelectedObservable).DisposeWith(disposables);
+			ExportAllAsSpreadsheetCommand = ReactiveCommand.Create(ExportAllToSpreadsheet).DisposeWith(disposables);
 
 			OpenPreferencesCommand = ReactiveCommand.Create(() => { view.TogglePreferencesWindow(); }, GlobalCanActObservable).DisposeWith(disposables);
 
@@ -2820,10 +2871,11 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			MenuData.File.Add(new MenuData("File.ImportFile", "Import File", ImportFileCommand));
 			MenuData.File.Add(new MenuData("File.ImportKeys", "Import File as Keys", ImportKeysCommand));
 			MenuData.File.Add(new SeparatorData());
-			MenuData.File.Add(new MenuData("File.ExportSelected", "Export Selected File to Text File...", ExportFileAsTextualCommand));
+			MenuData.File.Add(new MenuData("File.ExportTextSelected", "Export Selected File to Text File...", ExportFileAsTextualCommand));
+			MenuData.File.Add(new MenuData("File.ExportTextSpreadsheet", "Export All to Spreadsheet...", ExportAllAsSpreadsheetCommand));
 			MenuData.File.Add(new SeparatorData());
-			MenuData.File.Add(new MenuData("File.ExportAll", DOS2DETooltips.Button_Locale_ExportAllToXML, ExportAllXMLCommand, Key.E, ModifierKeys.Control));
-			MenuData.File.Add(new MenuData("File.ExportSelected", DOS2DETooltips.Button_Locale_ExportSelectedToXML, ExportSelectedXMLCommand, Key.E, ModifierKeys.Control | ModifierKeys.Shift));
+			MenuData.File.Add(new MenuData("File.ExportXMLAll", DOS2DETooltips.Button_Locale_ExportAllToXML, ExportAllXMLCommand, Key.E, ModifierKeys.Control));
+			MenuData.File.Add(new MenuData("File.ExportXMLSelected", DOS2DETooltips.Button_Locale_ExportSelectedToXML, ExportSelectedXMLCommand, Key.E, ModifierKeys.Control | ModifierKeys.Shift));
 
 			//MenuData.File.Add(CreateMenuDataWithLink(() => CanAddFile, "CanAddFile", "File.ImportFile", "Import File", ImportFileCommand));
 			//MenuData.File.Add(CreateMenuDataWithLink(() => CanAddKeys, "CanAddKeys", "File.ImportKeys", "Import File as Keys", ImportKeysCommand));
