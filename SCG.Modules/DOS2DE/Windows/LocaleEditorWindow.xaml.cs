@@ -257,6 +257,7 @@ namespace SCG.Modules.DOS2DE.Windows
 
 			DataContext = ViewModel;
 			ExportWindow.ViewModel = ViewModel;
+			ExportWindow.ResetBindings();
 		}
 
 		private struct ViewObservableProperty

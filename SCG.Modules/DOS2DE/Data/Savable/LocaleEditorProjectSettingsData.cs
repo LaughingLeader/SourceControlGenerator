@@ -12,6 +12,8 @@ namespace SCG.Modules.DOS2DE.Data
 	[DataContract]
 	public class LocaleEditorProjectSettingsData : ReactiveObject
 	{
+		public Action SaveSettings { get; set; }
+
 		private string name;
 
 		public string Name
@@ -65,6 +67,7 @@ namespace SCG.Modules.DOS2DE.Data
 			set
 			{
 				this.RaiseAndSetIfChanged(ref exportKeys, value);
+				this.SaveSettings?.Invoke();
 			}
 		}
 
@@ -77,18 +80,20 @@ namespace SCG.Modules.DOS2DE.Data
 			set
 			{
 				this.RaiseAndSetIfChanged(ref exportSource, value);
+				this.SaveSettings?.Invoke();
 			}
 		}
 
-		private string targetLanguage = "All";
+		private string targetLanguages = "English";
 
 		[DataMember]
-		public string TargetLanguage
+		public string TargetLanguages
 		{
-			get { return targetLanguage; }
+			get { return targetLanguages; }
 			set
 			{
-				this.RaiseAndSetIfChanged(ref targetLanguage, value);
+				this.RaiseAndSetIfChanged(ref targetLanguages, value);
+				this.SaveSettings?.Invoke();
 			}
 		}
 	}

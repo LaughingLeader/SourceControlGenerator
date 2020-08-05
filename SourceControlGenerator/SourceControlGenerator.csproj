@@ -570,6 +570,8 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <Resource Include="Resources\Icons\CopyLongTextToClipboard_16x.png" />
+    <Resource Include="Resources\Icons\CopyToClipboard_16x.png" />
     <Resource Include="Resources\Icons\Archive.png" />
     <Resource Include="Resources\Icons\Activity_16x.png" />
     <Resource Include="Resources\Icons\AddGrey_16x.png" />

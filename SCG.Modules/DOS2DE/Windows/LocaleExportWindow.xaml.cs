@@ -15,6 +15,8 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using ReactiveUI;
+using System.Windows.Controls.Primitives;
+using Xceed.Wpf.Toolkit;
 
 namespace SCG.Modules.DOS2DE.Windows
 {
@@ -29,15 +31,70 @@ namespace SCG.Modules.DOS2DE.Windows
 		{
 			InitializeComponent();
 
-			DataContextChanged += LocaleExportWindow_DataContextChanged;
+			LocationChanged += delegate (object sender, EventArgs args)
+			{
+				var offset = LanguagesPopup.HorizontalOffset;
+				// "bump" the offset to cause the popup to reposition itself
+				//   on its own
+				LanguagesPopup.HorizontalOffset = offset + 1;
+				LanguagesPopup.HorizontalOffset = offset;
+			};
+			// Also handle the window being resized (so the popup's position stays
+			//  relative to its target element if the target element moves upon 
+			//  window resize)
+			SizeChanged += delegate (object sender, SizeChangedEventArgs e2)
+			{
+				var offset = LanguagesPopup.HorizontalOffset;
+				LanguagesPopup.HorizontalOffset = offset + 1;
+				LanguagesPopup.HorizontalOffset = offset;
+			};
+
+			Deactivated += delegate (object sender, EventArgs args)
+			{
+				LanguagesExpander.IsExpanded = false;
+			};
 		}
 
-		private void LocaleExportWindow_DataContextChanged(object sender, DependencyPropertyChangedEventArgs e)
+		private void CreateBinding(string vmProperty, FrameworkElement element, DependencyProperty prop, BindingMode mode = BindingMode.OneWay, object source = null)
 		{
-			if(ViewModel != null && ViewModel.ActiveProjectSettings != null)
+			Binding binding = new Binding(vmProperty);
+			if (source == null)
 			{
-				this.Bind(ViewModel, vm => vm.ActiveProjectSettings.ExportKeys, view => view.ExportKeysCheckBox.IsChecked);
-				this.Bind(ViewModel, vm => vm.ActiveProjectSettings.ExportSource, view => view.ExportSourceCheckBox.IsChecked);
+				binding.Source = ViewModel;
+			}
+			else
+			{
+				binding.Source = source;
+			}
+			binding.Mode = mode;
+			element.SetBinding(prop, binding);
+		}
+
+		private void CreateButtonBinding(string vmProperty, Button button)
+		{
+			Binding binding = new Binding(vmProperty);
+			binding.Source = ViewModel;
+			binding.Mode = BindingMode.OneWay;
+			button.SetBinding(Button.CommandProperty, binding);
+		}
+
+		public void ResetBindings()
+		{
+			if(ViewModel != null)
+			{
+				CreateBinding("Languages", LanguagesChecklistBox, ListBox.ItemsSourceProperty);
+				CreateBinding("LanguageCheckedCommand", LanguagesChecklistBox, CheckListBox.CommandProperty);
+
+				CreateButtonBinding("SaveXMLCommand", SaveButton);
+				CreateButtonBinding("SaveXMLAsCommand", SaveAsButton);
+				CreateButtonBinding("OpenXMLFolderCommand", OpenFolderButton);
+
+				if (ViewModel.ActiveProjectSettings != null)
+				{
+					CreateBinding("ExportKeys", ExportKeysCheckBox, ToggleButton.IsCheckedProperty, BindingMode.TwoWay, ViewModel.ActiveProjectSettings);
+					CreateBinding("ExportSource", ExportSourceCheckBox, ToggleButton.IsCheckedProperty, BindingMode.TwoWay, ViewModel.ActiveProjectSettings);
+					CreateBinding("TargetLanguages", LanguagesChecklistBox, CheckListBox.SelectedValueProperty, BindingMode.TwoWay, ViewModel.ActiveProjectSettings);
+				}
 			}
 		}
 
@@ -48,6 +105,7 @@ namespace SCG.Modules.DOS2DE.Windows
 
 		private void CopyButton_Click(object sender, RoutedEventArgs e)
 		{
+			Log.Here().Activity($"Command check: {this.SaveButton.Command}");
 			if(FindName("OutputTextbox") is TextBox outputTextbox)
 			{
 				if(!String.IsNullOrWhiteSpace(outputTextbox.Text))

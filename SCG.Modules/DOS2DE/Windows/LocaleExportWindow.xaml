@@ -10,6 +10,7 @@
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 	xmlns:vdata="clr-namespace:SCG.Data.View;assembly=SourceControlGenerator"
 	xmlns:win="clr-namespace:SCG.Windows;assembly=SourceControlGenerator"
+	xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
 	Title="Localization Export"
 	Width="600"
 	Height="400"
@@ -27,9 +28,9 @@
 				<Setter Property="VerticalAlignment" Value="Center" />
 				<Setter Property="Margin" Value="2" />
 			</Style>
-			<Style BasedOn="{StaticResource {x:Type Button}}" TargetType="Button">
-				<Setter Property="Margin" Value="2,0,0,0" />
-				<Setter Property="Padding" Value="4,2" />
+			<Style BasedOn="{StaticResource DefaultImageButtonStyle}" TargetType="{x:Type c:ImageButton}">
+				<Setter Property="TintColor" Value="Lime" />
+				<Setter Property="Margin" Value="2" />
 			</Style>
 		</Grid.Resources>
 		<Grid.RowDefinitions>
@@ -41,61 +42,79 @@
 			Grid.Row="0"
 			Margin="4"
 			Orientation="Horizontal">
-			<StackPanel.Resources>
-				<Style TargetType="CheckBox">
-					<Setter Property="VerticalAlignment" Value="Center" />
-					<Setter Property="Margin" Value="2" />
-				</Style>
-				<Style BasedOn="{StaticResource {x:Type Button}}" TargetType="Button">
-					<Setter Property="Margin" Value="2,0,0,0" />
-					<Setter Property="Padding" Value="4,2" />
-				</Style>
-			</StackPanel.Resources>
 			<c:ImageButton
 				x:Name="ExportButton"
-				Command="{Binding GenerateCommand}"
+				Command="{Binding GenerateXMLCommand}"
 				Source="{x:Static vdata:IconPathData.RefreshScript}"
 				ToolTip_Enabled="{x:Static core:DOS2DETooltips.Button_Locale_Export_Generate}" />
 			<c:ImageButton
 				x:Name="SaveButton"
-				Command="{Binding SaveCommand}"
+				Command="{Binding SaveXMLCommand}"
 				Source="{x:Static vdata:IconPathData.Save}"
 				ToolTip_Enabled="{x:Static core:DOS2DETooltips.Button_Locale_Export_Save}" />
 			<c:ImageButton
 				x:Name="SaveAsButton"
-				Command="{Binding SaveAsCommand}"
+				Command="{Binding SaveXMLAsCommand}"
 				Source="{x:Static vdata:IconPathData.SaveAs}"
 				ToolTip_Enabled="{x:Static core:DOS2DETooltips.Button_Locale_Export_SaveAs}" />
-			<ComboBox
-				x:Name="LanguageComboBox"
-				MinWidth="100"
-				ItemsSource="{Binding Languages}"
-				SelectedValuePath="{Binding Path=TargetLanguage, Source=ActiveProjectSettings, FallbackValue='All'}"
-				ToolTip="Target Language" />
-			<Button
+			<c:ImageButton
+				x:Name="OpenFolderButton"
+				Command="{Binding OpenXMLFolderCommand}"
+				Source="{x:Static vdata:IconPathData.OpenFolder}"
+				ToolTip_Enabled="{x:Static core:DOS2DETooltips.Button_Locale_Export_OpenFolder}" />
+			<c:ImageButton
 				x:Name="CopyButton"
-				Padding="4,2"
 				Click="CopyButton_Click"
-				Content="Copy to Clipboard" />
+				Source="{x:Static vdata:IconPathData.CopyLongTextToClipboard}"
+				ToolTip_Enabled="{x:Static core:DOS2DETooltips.Button_Locale_Export_CopyToClipboard}" />
 		</StackPanel>
 		<StackPanel
 			Grid.Row="1"
 			Margin="4"
 			Orientation="Horizontal">
+			<Expander
+				x:Name="LanguagesExpander"
+				ExpandDirection="Down"
+				IsExpanded="False">
+				<Expander.Header>
+					<TextBlock
+						HorizontalAlignment="Center"
+						VerticalAlignment="Center"
+						Text="Languages"
+						TextAlignment="Left" />
+				</Expander.Header>
+				<Popup
+					x:Name="LanguagesPopup"
+					IsOpen="{Binding IsExpanded, ElementName=LanguagesExpander}"
+					Placement="Bottom"
+					PlacementTarget="{Binding ElementName=LanguagesExpander}">
+					<ScrollViewer
+						MinHeight="300"
+						HorizontalAlignment="Stretch"
+						Background="White"
+						ScrollViewer.VerticalScrollBarVisibility="Auto">
+						<ItemsControl>
+							<xctk:CheckListBox
+								x:Name="LanguagesChecklistBox"
+								Command="{Binding LanguageCheckedCommand}"
+								Delimiter=";"
+								IsSelectAllActive="True"
+								ItemsSource="{Binding Languages}"
+								SelectedValue="{Binding ActiveProjectSettings.TargetLanguages, FallbackValue='English;Spanish'}" />
+						</ItemsControl>
+					</ScrollViewer>
+				</Popup>
+			</Expander>
 			<CheckBox
 				x:Name="ExportKeysCheckBox"
 				Content="Export Keys"
-				IsChecked="{Binding Path=ExportKeys, Source=ActiveProjectSettings, Mode=TwoWay}"
+				IsChecked="{Binding Path=ActiveProjectSettings.ExportKeys, Mode=TwoWay}"
 				ToolTip="{x:Static core:DOS2DETooltips.Checkbox_Locale_ExportXML_Keys}" />
 			<CheckBox
 				x:Name="ExportSourceCheckBox"
 				Content="Export Source"
-				IsChecked="{Binding Path=ExportSource, Source=ActiveProjectSettings, Mode=TwoWay}"
+				IsChecked="{Binding Path=ActiveProjectSettings.ExportSource, Mode=TwoWay}"
 				ToolTip="{x:Static core:DOS2DETooltips.Checkbox_Locale_ExportXML_Source}" />
-			<Rectangle
-				Width="1"
-				Margin="2,0"
-				Style="{StaticResource VerticalSeparator}" />
 		</StackPanel>
 		<TextBox
 			x:Name="OutputTextbox"

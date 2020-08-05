@@ -1330,6 +1330,8 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 		public ICommand GenerateXMLCommand { get; private set; }
 		public ICommand SaveXMLCommand { get; private set; }
 		public ICommand SaveXMLAsCommand { get; private set; }
+		public ICommand OpenXMLFolderCommand { get; private set; }
+		public ICommand LanguageCheckedCommand { get; private set; }
 
 		public IObservable<bool> GlobalCanActObservable { get; private set; }
 		public IObservable<bool> SubWindowOpenedObservable { get; private set; }
@@ -1504,14 +1506,13 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			}
 		}
 
-		public List<string> Languages = new List<string>
+		public List<string> Languages { get; set; } = new List<string>
 		{
-			"All",
+			"English",
 			"Amlatspanish",
 			"Chinese",
 			"Chinesetraditional",
 			"Czech",
-			"English",
 			"French",
 			"German",
 			"Italian",
@@ -1582,25 +1583,17 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 				}
 			}
 
-			if (ActiveProjectSettings.TargetLanguage == "All")
+			var languages = ActiveProjectSettings.TargetLanguages.Split(';');
+			foreach(var lan in languages)
 			{
-				foreach (var lan in Languages)
-				{
-					if (lan != "All")
-					{
-						SaveXMLFileTo(localizationRoot, lan, false);
-					}
-				}
-			}
-			else
-			{
-				SaveXMLFileTo(localizationRoot, ActiveProjectSettings.TargetLanguage, true);
+				SaveXMLFileTo(localizationRoot, lan, false);
 			}
 		}
 
 		public void OpenExportWindow(bool exportAll = false)
 		{
 			ActiveProjectSettings = Settings.GetProjectSettings(LinkedProjects.FirstOrDefault());
+			ActiveProjectSettings.SaveSettings = view.SaveSettings;
 
 			ExportText = LocaleEditorCommands.ExportDataAsXML(this, exportAll);
 
@@ -1610,6 +1603,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 				{
 					view.ExportWindow.Show();
 					view.ExportWindow.Owner = view;
+					view.ExportWindow.ResetBindings();
 				}
 				view.ExportWindow.ExportAll = exportAll;
 			}
@@ -2599,6 +2593,51 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			ExportSelectedXMLCommand = ReactiveCommand.Create(() => OpenExportWindow(false)).DisposeWith(disposables);
 			AddFileToGroupCommand = ReactiveCommand.Create<CustomLocaleTabGroup>(AddCustomFileToGroup, CanImportFilesObservable).DisposeWith(disposables);
 
+			GenerateXMLCommand = ReactiveCommand.Create(GenerateXML);
+			SaveXMLCommand = ReactiveCommand.Create(() => SaveXMLFile());
+			SaveXMLAsCommand = ReactiveCommand.Create(() =>
+			{
+				var languages = ActiveProjectSettings.TargetLanguages.Split(';');
+
+				if (languages.Length >= Languages.Count)
+				{
+					string startDirectory = Path.GetFullPath(Path.Combine(this.ModuleData.Settings.DOS2DEDataDirectory, "Mods", GetMainProject().FolderName, "Localization"));
+					FileCommands.Load.OpenFolderDialog(view.ExportWindow, "Save Language XML Files To...", startDirectory, (path) =>
+					{
+						SaveXMLFile(path);
+					});
+				}
+				else
+				{
+					var mainProject = this.GetMainProject();
+					
+					foreach(var lan in languages)
+					{
+						string startDirectory = Path.GetFullPath(Path.Combine(this.ModuleData.Settings.DOS2DEDataDirectory, "Mods", mainProject.FolderName, "Localization", lan));
+						string defaultFileName = lan.ToLower() + ".xml";
+
+						FileCommands.Save.OpenSaveDialog(view.ExportWindow, "Save Language XML As...", (result, path) =>
+						{
+							if (result == FileDialogResult.Ok)
+							{
+								FileCommands.WriteToFile(path, ExportText);
+							}
+						}, defaultFileName, startDirectory, CommonFileFilters.XMLLocaleFile);
+					}
+				}
+			});
+			OpenXMLFolderCommand = ReactiveCommand.Create(() =>
+			{
+				string startDirectory = Path.GetFullPath(Path.Combine(this.ModuleData.Settings.DOS2DEDataDirectory, "Mods", GetMainProject().FolderName, "Localization"));
+				Directory.CreateDirectory(startDirectory);
+				Process.Start("explorer.exe", startDirectory);
+			});
+
+			LanguageCheckedCommand = ReactiveCommand.Create((object item) =>
+			{
+				
+			});
+
 			var canConfirmAddFile = this.WhenAny(vm => vm.NewFileTabName, e => !String.IsNullOrWhiteSpace(e.Value));
 			ConfirmFileAddToGroupCommand = ReactiveCommand.Create(ConfirmCustomFileAddToGroup, canConfirmAddFile).DisposeWith(disposables);
 			CancelFileAddToGroupCommand = ReactiveCommand.Create(() =>
@@ -3032,34 +3071,6 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 							}
 						}
 					}
-				}
-			});
-
-			this.GenerateXMLCommand = ReactiveCommand.Create(GenerateXML);
-			this.SaveXMLCommand = ReactiveCommand.Create(() => SaveXMLFile());
-			this.SaveXMLAsCommand = ReactiveCommand.Create(() =>
-			{
-				if(ActiveProjectSettings.TargetLanguage == "All")
-				{
-					string startDirectory = Path.GetFullPath(Path.Combine(this.ModuleData.Settings.DOS2DEDataDirectory, "Mods", GetMainProject().FolderName, "Localization"));
-					FileCommands.Load.OpenFolderDialog(view.ExportWindow, "Save Language XML Files To...", startDirectory, (path) =>
-					{
-						SaveXMLFile(path);
-					});
-				}
-				else
-				{
-					var mainProject = this.GetMainProject();
-					string startDirectory = Path.GetFullPath(Path.Combine(this.ModuleData.Settings.DOS2DEDataDirectory, "Mods", mainProject.FolderName, "Localization", ActiveProjectSettings.TargetLanguage));
-					string defaultFileName = ActiveProjectSettings.TargetLanguage.ToLower() + ".xml";
-
-					FileCommands.Save.OpenSaveDialog(view.ExportWindow, "Save Language XML As...", (result, path) =>
-					{
-						if (result == FileDialogResult.Ok)
-						{
-							FileCommands.WriteToFile(path, ExportText);
-						}
-					}, defaultFileName, startDirectory, CommonFileFilters.XMLLocaleFile);
 				}
 			});
 

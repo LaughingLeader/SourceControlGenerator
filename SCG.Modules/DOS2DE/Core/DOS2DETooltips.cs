@@ -82,6 +82,8 @@ namespace SCG.Modules.DOS2DE.Core
 		public static string Button_Locale_Export_Generate = "Generate XML Text";
 		public static string Button_Locale_Export_Save = "Save to Language XML";
 		public static string Button_Locale_Export_SaveAs = "Save as...";
+		public static string Button_Locale_Export_OpenFolder = "Open Localization Folder";
+		public static string Button_Locale_Export_CopyToClipboard = "Copy XML Text to Clipboard";
 
 		//public static string Button_Locale_UnsavedChanges_Tab = "Unsaved Changes ";
 

@@ -26,6 +26,8 @@ namespace SCG.Data.View
 		public static readonly string Close2_Red = @"pack://application:,,,/SourceControlGenerator;component/Resources/Icons/Close2_Red_16x.png";
 		public static readonly string ColorPicker = @"pack://application:,,,/SourceControlGenerator;component/Resources/Icons/ColorPicker_16x.png";
 		public static readonly string Convert = @"pack://application:,,,/SourceControlGenerator;component/Resources/Icons/Convert_16x.png";
+		public static readonly string CopyLongTextToClipboard = @"pack://application:,,,/SourceControlGenerator;component/Resources/Icons/CopyLongTextToClipboard_16x.png";
+		public static readonly string CopyToClipboard = @"pack://application:,,,/SourceControlGenerator;component/Resources/Icons/CopyToClipboard_16x.png";
 		public static readonly string CreateListItem = @"pack://application:,,,/SourceControlGenerator;component/Resources/Icons/CreateListItem_16x.png";
 		public static readonly string CustomActionEditor = @"pack://application:,,,/SourceControlGenerator;component/Resources/Icons/CustomActionEditor_16x.png";
 		public static readonly string DeleteDatabase = @"pack://application:,,,/SourceControlGenerator;component/Resources/Icons/DeleteDatabase_16x.png";
