@@ -97,6 +97,12 @@ namespace SCG.Core
 			Values = CombineFilters(TabSeparatedFile, CommaSeparatedFile, NormalTextFile)
 		};
 
+		public static FileBrowserFilter XMLLocaleFile { get; private set; } = new FileBrowserFilter()
+		{
+			Name = "XML Localization file",
+			Values = "*.xml"
+		};
+
 		public static List<FileBrowserFilter> AllLocaleFilesList { get; set; } = new List<FileBrowserFilter>()
 		{
 			DelimitedLocaleFiles,

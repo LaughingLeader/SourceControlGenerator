@@ -1327,6 +1327,10 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 		public ICommand PasteIntoContentCommand { get; private set; }
 		public ICommand PasteIntoHandlesCommand { get; private set; }
 
+		public ICommand GenerateXMLCommand { get; private set; }
+		public ICommand SaveXMLCommand { get; private set; }
+		public ICommand SaveXMLAsCommand { get; private set; }
+
 		public IObservable<bool> GlobalCanActObservable { get; private set; }
 		public IObservable<bool> SubWindowOpenedObservable { get; private set; }
 		public IObservable<bool> CanExecutePopoutContentCommand { get; private set; }
@@ -1497,6 +1501,100 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			set
 			{
 				this.RaiseAndSetIfChanged(ref exportText, value);
+			}
+		}
+
+		public List<string> Languages = new List<string>
+		{
+			"All",
+			"Amlatspanish",
+			"Chinese",
+			"Chinesetraditional",
+			"Czech",
+			"English",
+			"French",
+			"German",
+			"Italian",
+			"Japanese",
+			"Korean",
+			"Polish",
+			"Russian",
+			"Spanish",
+		};
+
+		public void GenerateXML()
+		{
+			if (view != null && view.ExportWindow != null)
+			{
+				ExportText = LocaleEditorCommands.ExportDataAsXML(this, view.ExportWindow.ExportAll);
+			}
+			else
+			{
+				ExportText = LocaleEditorCommands.ExportDataAsXML(this, false);
+			}
+		}
+
+		private void SaveXMLFileTo(string localizationRoot, string language, bool showDialogWhenOverwriting = false)
+		{
+			string target = Path.Combine(localizationRoot, language, language.ToLower() + ".xml");
+
+			bool writeFile = true;
+
+			if (showDialogWhenOverwriting && File.Exists(target))
+			{
+				writeFile = false;
+				var result = MessageBoxEx.Show(view.ExportWindow, $"Overwrite {target}?", "This cannot be undone.", MessageBoxButton.YesNo);
+				if (result == MessageBoxResult.Yes)
+				{
+					writeFile = true;
+				}
+			}
+
+			if (writeFile)
+			{
+				if (FileCommands.WriteToFile(target, ExportText))
+				{
+					OutputText = $"Saved language xml at {target}.";
+					OutputType = LogType.Important;
+				}
+				else
+				{
+					OutputText = $"Error when saving {target}. Chck the log.";
+					OutputType = LogType.Error;
+				}
+			}
+		}
+
+		public void SaveXMLFile(string target = "")
+		{
+			var mainProject = this.GetMainProject();
+			string localizationRoot = Path.GetFullPath(Path.Combine(this.ModuleData.Settings.DOS2DEDataDirectory, "Mods", mainProject.FolderName, "Localization"));
+
+			if (!String.IsNullOrEmpty(target))
+			{
+				if (FileCommands.IsValidFilePath(target))
+				{
+					localizationRoot = Path.GetDirectoryName(target);
+				}
+				else if(FileCommands.IsValidDirectoryPath(target))
+				{
+					localizationRoot = target;
+				}
+			}
+
+			if (ActiveProjectSettings.TargetLanguage == "All")
+			{
+				foreach (var lan in Languages)
+				{
+					if (lan != "All")
+					{
+						SaveXMLFileTo(localizationRoot, lan, false);
+					}
+				}
+			}
+			else
+			{
+				SaveXMLFileTo(localizationRoot, ActiveProjectSettings.TargetLanguage, true);
 			}
 		}
 
@@ -2937,6 +3035,34 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 				}
 			});
 
+			this.GenerateXMLCommand = ReactiveCommand.Create(GenerateXML);
+			this.SaveXMLCommand = ReactiveCommand.Create(() => SaveXMLFile());
+			this.SaveXMLAsCommand = ReactiveCommand.Create(() =>
+			{
+				if(ActiveProjectSettings.TargetLanguage == "All")
+				{
+					string startDirectory = Path.GetFullPath(Path.Combine(this.ModuleData.Settings.DOS2DEDataDirectory, "Mods", GetMainProject().FolderName, "Localization"));
+					FileCommands.Load.OpenFolderDialog(view.ExportWindow, "Save Language XML Files To...", startDirectory, (path) =>
+					{
+						SaveXMLFile(path);
+					});
+				}
+				else
+				{
+					var mainProject = this.GetMainProject();
+					string startDirectory = Path.GetFullPath(Path.Combine(this.ModuleData.Settings.DOS2DEDataDirectory, "Mods", mainProject.FolderName, "Localization", ActiveProjectSettings.TargetLanguage));
+					string defaultFileName = ActiveProjectSettings.TargetLanguage.ToLower() + ".xml";
+
+					FileCommands.Save.OpenSaveDialog(view.ExportWindow, "Save Language XML As...", (result, path) =>
+					{
+						if (result == FileDialogResult.Ok)
+						{
+							FileCommands.WriteToFile(path, ExportText);
+						}
+					}, defaultFileName, startDirectory, CommonFileFilters.XMLLocaleFile);
+				}
+			});
+
 			/*
 			this.WhenAnyValue(x => x.SelectedFile).Throttle(TimeSpan.FromMilliseconds(25)).ObserveOn(RxApp.MainThreadScheduler).Subscribe((x) =>
 			{
@@ -3036,13 +3162,13 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 					void undo()
 					{
 						Clipboard.SetText(current);
-						OutputText = $"Reverted clipboard text.";
+						OutputText = "Reverted clipboard text.";
 						OutputType = LogType.Important;
 					};
 					void redo()
 					{
 						Clipboard.SetText(removedEntriesStr, TextDataFormat.Text);
-						OutputText = $"Copied removed entries to clipboard.";
+						OutputText = "Copied removed entries to clipboard.";
 						OutputType = LogType.Activity;
 					}
 
@@ -3059,13 +3185,13 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 					void undo()
 					{
 						Clipboard.SetText(current);
-						OutputText = $"Reverted clipboard text.";
+						OutputText = "Reverted clipboard text.";
 						OutputType = LogType.Important;
 					};
 					void redo()
 					{
 						Clipboard.SetText(removedEntriesStr, TextDataFormat.Text);
-						OutputText = $"Copied removed entries to clipboard.";
+						OutputText = "Copied removed entries to clipboard.";
 						OutputType = LogType.Activity;
 					}
 

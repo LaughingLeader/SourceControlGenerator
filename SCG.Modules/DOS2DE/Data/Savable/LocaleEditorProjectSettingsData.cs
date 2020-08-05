@@ -79,5 +79,17 @@ namespace SCG.Modules.DOS2DE.Data
 				this.RaiseAndSetIfChanged(ref exportSource, value);
 			}
 		}
+
+		private string targetLanguage = "All";
+
+		[DataMember]
+		public string TargetLanguage
+		{
+			get { return targetLanguage; }
+			set
+			{
+				this.RaiseAndSetIfChanged(ref targetLanguage, value);
+			}
+		}
 	}
 }
