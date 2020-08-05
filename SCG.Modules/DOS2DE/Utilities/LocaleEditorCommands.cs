@@ -1362,6 +1362,34 @@ namespace SCG.Modules.DOS2DE.Utilities
 			return r.Match(line)?.Success == true;
 		}
 
+		private static Dictionary<string,int> GetSheetParamOrder(string line, char delimiter)
+		{
+			var parameters = line.Split(delimiter);
+			Dictionary<string, int> paramOrder = new Dictionary<string, int>();
+			for(int i = 0; i < parameters.Length; i++)
+			{
+				string val = parameters[i];
+				if (!String.IsNullOrWhiteSpace(val))
+				{
+					paramOrder.Add(val.ToLower(), i);
+
+				}
+			}
+			return paramOrder;
+		}
+
+		private static string GetSheetValue(string paramName, Dictionary<string, int> fileParameters, string[] entries, string fallback = "")
+		{
+			if(fileParameters.TryGetValue(paramName, out int index))
+			{
+				if (entries[index] != null)
+				{
+					return entries[index];
+				}
+			}
+			return fallback;
+		}
+
 		private static LocaleNodeFileData CreateNodeFileDataFromTextual(LocaleTabGroup groupData, System.IO.StreamReader stream, string sourceDirectory, string filePath, char delimiter)
 		{
 			//For exporting to lsb later
@@ -1375,47 +1403,28 @@ namespace SCG.Modules.DOS2DE.Utilities
 			fileData.RootRegion.Children.Values.First().Clear();
 
 			int lineNum = 0;
-			string line = String.Empty;
-			string notDelimiter = $"[^{delimiter}]";
-
-			Regex regularModePattern = new Regex($"^(.*){delimiter}+(.*)$", RegexOptions.Singleline);
-			Regex handleModePattern = new Regex($"^({notDelimiter}*?){delimiter}+({notDelimiter}*){delimiter}+({notDelimiter}*?)$", RegexOptions.Singleline);
-
-			Regex r = regularModePattern;
-
-			bool handleMode = false;
-
+			string line;
+			Dictionary<string, int> fileParameters = null;
 			while ((line = stream.ReadLine()) != null)
 			{
 				lineNum += 1;
 				// Skip top line, as it typically describes the columns
 				if (lineNum == 1)
 				{
-					if (delimitStepSkipLine(line, true))
-					{
-						handleMode = true;
-						r = handleModePattern;
-						Log.Here().Activity($"Handle mode activated for '{filePath}'.");
-						continue;
-					}
-					else if (delimitStepSkipLine(line))
-					{
-						r = regularModePattern;
-						continue;
-					}
+					fileParameters = GetSheetParamOrder(line, delimiter);
 				}
-
-				var match = r.Match(line);
-				if(match.Success)
+				else if (!String.IsNullOrWhiteSpace(line) && fileParameters.Count > 0)
 				{
-					string key = match.Groups.Count >= 1 ? match.Groups[1].Value : "NewKey";
-					string content = match.Groups.Count >= 2 ? match.Groups[2].Value : "";
-					string handle = (handleMode && match.Groups.Count >= 3) ? match.Groups[3].Value : "";
+					var lineEntries = line.Split(delimiter);
 
-					Log.Here().Activity($"New entry: {key} => {content}{(handleMode ? "|" + handle : "")}");
+					string key = GetSheetValue("key", fileParameters, lineEntries);
+					string content = GetSheetValue("content", fileParameters, lineEntries);
+					string handle = GetSheetValue("handle", fileParameters, lineEntries);
+
+					Log.Here().Activity($"New entry: {line}");
 
 					var entry = CreateNewLocaleEntry(fileData, key, content);
-					if (handleMode && !String.IsNullOrEmpty(handle)) entry.Handle = handle;
+					if (!String.IsNullOrEmpty(handle)) entry.Handle = handle;
 					entry.ChangesUnsaved = true;
 					fileData.Entries.Add(entry);
 				}
@@ -1526,40 +1535,22 @@ namespace SCG.Modules.DOS2DE.Utilities
 							int lineNum = 0;
 							string line = String.Empty;
 
-							Regex regularModePattern = new Regex($"^(.*){delimiter}+(.*)$", RegexOptions.Singleline);
-							Regex handleModePattern = new Regex($"^({notDelimiter}*?){delimiter}+({notDelimiter}*){delimiter}+({notDelimiter}*?)$", RegexOptions.Singleline);
-
-							Regex r = regularModePattern;
-
-							bool handleMode = false;
-
+							Dictionary<string, int> fileParameters = null;
 							while ((line = stream.ReadLine()) != null)
 							{
 								lineNum += 1;
 								// Skip top line, as it typically describes the columns
 								if (lineNum == 1)
 								{
-									if (delimitStepSkipLine(line, true))
-									{
-										handleMode = true;
-										r = handleModePattern;
-										Log.Here().Activity($"Handle mode activated for '{path}'.");
-										continue;
-									}
-									else if (delimitStepSkipLine(line))
-									{
-										handleMode = false;
-										r = regularModePattern;
-										continue;
-									}
+									fileParameters = GetSheetParamOrder(line, delimiter);
 								}
-
-								var match = r.Match(line);
-								if (match.Success)
+								else if (!String.IsNullOrWhiteSpace(line) && fileParameters.Count > 0)
 								{
-									string key = match.Groups.Count >= 1 ? match.Groups[1].Value : "NewKey";
-									string content = match.Groups.Count >= 2 ? match.Groups[2].Value : "";
-									string handle = (handleMode && match.Groups.Count >= 3) ? match.Groups[3].Value : "";
+									var lineEntries = line.Split(delimiter);
+
+									string key = GetSheetValue("key", fileParameters, lineEntries);
+									string content = GetSheetValue("content", fileParameters, lineEntries);
+									string handle = GetSheetValue("handle", fileParameters, lineEntries);
 
 									bool addNew = true;
 
@@ -1571,7 +1562,7 @@ namespace SCG.Modules.DOS2DE.Utilities
 										{
 											updateEntry = fileData.Entries.FirstOrDefault(e => e.Handle == handle);
 										}
-										if(updateEntry == null) 
+										if (updateEntry == null)
 										{
 											updateEntry = fileData.Entries.FirstOrDefault(e => e.Key == key);
 										}
@@ -1594,12 +1585,13 @@ namespace SCG.Modules.DOS2DE.Utilities
 									if (addNew)
 									{
 										var entry = CreateNewLocaleEntry(fileData, key, content);
-										if (handleMode && !String.IsNullOrEmpty(handle)) entry.Handle = handle;
+										if (!String.IsNullOrWhiteSpace(handle)) entry.Handle = handle;
 										Log.Here().Activity($"Added new entry [{entry.Key}|{entry.Handle}].");
 										newEntryList.Add(entry);
 									}
 								}
 							}
+
 							stream.Close();
 						}
 					}
