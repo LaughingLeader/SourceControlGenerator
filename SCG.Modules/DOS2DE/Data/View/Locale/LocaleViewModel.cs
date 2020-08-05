@@ -1047,6 +1047,15 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 
 					currentGroup.SelectedFileIndex = currentGroup.Tabs.IndexOf(newFile);
 
+					if (currentGroup != CombinedGroup)
+					{
+						CombinedGroup.DataFiles.Add(newFile);
+						CombinedGroup.UpdateCombinedData(true);
+						CombinedGroup.ChangesUnsaved = true;
+
+						SelectedFileChanged(currentGroup, newFile);
+					}
+
 					view.FocusSelectedTab();
 
 					ChangesUnsaved = true;
