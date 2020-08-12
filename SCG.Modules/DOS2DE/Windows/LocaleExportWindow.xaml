@@ -44,7 +44,7 @@
 			Orientation="Horizontal">
 			<c:ImageButton
 				x:Name="ExportButton"
-				Click="ExportButton_Click"
+				Command="{Binding GenerateXMLCommand}"
 				Source="{x:Static vdata:IconPathData.RefreshScript}"
 				ToolTip_Enabled="{x:Static core:DOS2DETooltips.Button_Locale_Export_Generate}" />
 			<c:ImageButton

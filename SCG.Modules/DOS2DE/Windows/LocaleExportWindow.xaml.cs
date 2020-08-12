@@ -88,6 +88,7 @@ namespace SCG.Modules.DOS2DE.Windows
 				CreateButtonBinding("SaveXMLCommand", SaveButton);
 				CreateButtonBinding("SaveXMLAsCommand", SaveAsButton);
 				CreateButtonBinding("OpenXMLFolderCommand", OpenFolderButton);
+				CreateButtonBinding("GenerateXMLCommand", ExportButton);
 
 				if (ViewModel.ActiveProjectSettings != null)
 				{
@@ -132,16 +133,6 @@ namespace SCG.Modules.DOS2DE.Windows
 			set
 			{
 				ViewModel = (LocaleViewModel)value;
-			}
-		}
-
-		private void ExportButton_Click(object sender, RoutedEventArgs e)
-		{
-			if (ViewModel != null && FindName("OutputTextbox") is TextBox outputTextbox)
-			{
-				Log.Here().Activity("Exporting data to xml format.");
-				outputTextbox.Text = "";
-				outputTextbox.Text = LocaleEditorCommands.ExportDataAsXML(ViewModel, ExportAll);
 			}
 		}
 	}

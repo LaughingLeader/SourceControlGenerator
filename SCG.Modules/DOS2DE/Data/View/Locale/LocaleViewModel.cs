@@ -1351,6 +1351,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 		public ICommand ReloadFileLinkDataCommand { get; private set; }
 		public ICommand SetFileLinkDataCommand { get; private set; }
 		public ICommand RemoveFileLinkDataCommand { get; private set; }
+		public ICommand RefreshAllLinkedDataCommand { get; private set; }
 
 		public ICommand OpenPreferencesCommand { get; private set; }
 
@@ -1583,9 +1584,12 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			{
 				ExportText = LocaleEditorCommands.ExportDataAsXML(this, false);
 			}
+			OutputText = $"Generated XML text.";
+			OutputType = LogType.Important;
+			OutputDate = DateTime.Now.ToShortTimeString();
 		}
 
-		private void SaveXMLFileTo(string localizationRoot, string language, bool showDialogWhenOverwriting = false)
+		private bool SaveXMLFileTo(string localizationRoot, string language, bool showDialogWhenOverwriting = false)
 		{
 			string target = Path.Combine(localizationRoot, language, language.ToLower() + ".xml");
 
@@ -1605,15 +1609,15 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			{
 				if (FileCommands.WriteToFile(target, ExportText))
 				{
-					OutputText = $"Saved language xml at {target}.";
-					OutputType = LogType.Important;
+					Log.Here().Important($"Saved language xml at {target}.");
+					return true;
 				}
 				else
 				{
-					OutputText = $"Error when saving {target}. Chck the log.";
-					OutputType = LogType.Error;
+					Log.Here().Error($"Error when saving {target}. Chck the log.");
 				}
 			}
+			return false;
 		}
 
 		public void SaveXMLFile(string target = "")
@@ -1634,9 +1638,25 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			}
 
 			var languages = ActiveProjectSettings.TargetLanguages.Split(';');
+			var totalSuccess = 0;
 			foreach(var lan in languages)
 			{
-				SaveXMLFileTo(localizationRoot, lan, false);
+				if(SaveXMLFileTo(localizationRoot, lan, false))
+				{
+					totalSuccess++;
+				}
+			}
+			if (totalSuccess >= languages.Count())
+			{
+				OutputText = $"Saved all languages files.";
+				OutputType = LogType.Important;
+				OutputDate = DateTime.Now.ToShortTimeString();
+			}
+			else
+			{
+				OutputText = $"Error saving one or more files. Check the log.";
+				OutputType = LogType.Error;
+				OutputDate = DateTime.Now.ToShortTimeString();
 			}
 		}
 
@@ -2196,6 +2216,15 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 				CreateSnapshot(undo, redo);
 				redo();
 			}
+		}
+
+		public void RefreshAllLinkedData()
+		{
+			foreach(var f in CombinedGroup.DataFiles)
+			{
+				RefreshLinkedData(f);
+			}
+			GenerateXML();
 		}
 
 		public void RemoveLinkedData(ILocaleFileData fileData)
@@ -2827,6 +2856,8 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			SetFileLinkDataCommand = ReactiveCommand.Create<ILocaleFileData>(SetLinkedData, FileSelectedObservable).DisposeWith(disposables);
 			RemoveFileLinkDataCommand = ReactiveCommand.Create<ILocaleFileData>(RemoveLinkedData, FileSelectedObservable).DisposeWith(disposables);
 
+			RefreshAllLinkedDataCommand = ReactiveCommand.Create(RefreshAllLinkedData);
+
 			CheckForDuplicateKeysCommand = ReactiveCommand.Create(() =>
 			{
 				List<ILocaleKeyEntry> duplicateEntries = new List<ILocaleKeyEntry>();
@@ -2867,6 +2898,8 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			var SaveCurrentMenuData = new MenuData("SaveCurrent", "Save", SaveCurrentCommand, Key.S, ModifierKeys.Control);
 			MenuData.File.Add(SaveCurrentMenuData);
 			MenuData.File.Add(new MenuData("File.SaveAll", "Save All", SaveAllCommand, Key.S, ModifierKeys.Control | ModifierKeys.Shift));
+			MenuData.File.Add(new SeparatorData());
+			MenuData.File.Add(new MenuData("File.RefreshLinkedData", "Refresh All Linked Data", RefreshAllLinkedDataCommand, Key.F5));
 			MenuData.File.Add(new SeparatorData());
 			MenuData.File.Add(new MenuData("File.ImportFile", "Import File", ImportFileCommand));
 			MenuData.File.Add(new MenuData("File.ImportKeys", "Import File as Keys", ImportKeysCommand));
