@@ -1674,6 +1674,15 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 					view.ExportWindow.Show();
 					view.ExportWindow.Owner = view;
 					view.ExportWindow.ResetBindings();
+					OutputText = "Generated XML text / opened export window.";
+					OutputType = LogType.Important;
+					OutputDate = DateTime.Now.ToShortTimeString();
+				}
+				else
+				{
+					OutputText = "Generated XML text.";
+					OutputType = LogType.Important;
+					OutputDate = DateTime.Now.ToShortTimeString();
 				}
 				view.ExportWindow.ExportAll = exportAll;
 			}
