@@ -239,6 +239,16 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 				this.RaiseAndSetIfChanged(ref dialogGroup, value);
 			}
 		}
+		private LocaleTabGroup journalGroup;
+
+		public LocaleTabGroup JournalGroup
+		{
+			get => journalGroup;
+			set
+			{
+				this.RaiseAndSetIfChanged(ref journalGroup, value);
+			}
+		}
 
 		private LocaleTabGroup publicGroup;
 
@@ -297,7 +307,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 
 		private List<LocaleTabGroup> GetCoreGroups()
 		{
-			return new List<LocaleTabGroup>() { PublicGroup, ModsGroup, DialogGroup, CustomGroup };
+			return new List<LocaleTabGroup>() { PublicGroup, ModsGroup, DialogGroup, JournalGroup, CustomGroup };
 		}
 
 		private LocaleTabGroup combinedGroup;
@@ -567,22 +577,8 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 				CanSave = false;
 			}
 
-			CanAddFile = group != CombinedGroup && group != DialogGroup;
+			CanAddFile = group != CombinedGroup && group != DialogGroup && group != JournalGroup;
 			CanAddKeys = SelectedGroup != null && SelectedGroup.SelectedFile != null && !SelectedGroup.SelectedFile.Locked;
-
-			//view.LocaleEntryDataGrid_BuildIndexes();
-
-			//if (group == DialogGroup)
-			//{
-			//	DOS2DETooltips.Button_Locale_ImportDisabled = "Import Disabled for Dialog";
-			//	DOS2DETooltips.TooltipChanged("Button_Locale_ImportDisabled");
-			//}
-			//else
-			//{
-			//	DOS2DETooltips.Button_Locale_ImportDisabled = "Import Disabled";
-			//	DOS2DETooltips.TooltipChanged("Button_Locale_ImportDisabled");
-			//}
-			//Log.Here().Activity($"Can add file: {CanAddFile}");
 		}
 
 		private string outputDate;
@@ -624,6 +620,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			if (ModsGroup?.DataFiles?.Count > 0) total += 1;
 			if (PublicGroup?.DataFiles?.Count > 0) total += 1;
 			if (DialogGroup?.DataFiles?.Count > 0) total += 1;
+			if (JournalGroup?.DataFiles?.Count > 0) total += 1;
 			return total > 1;
 		}
 
@@ -708,7 +705,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			{
 				tb.Text = LocaleEditorCommands.CreateHandle();
 			}
-			else if (targetObject is ILocaleKeyEntry entry)
+			else if (targetObject is ILocaleKeyEntry entry && entry.HandleIsEditable)
 			{
 				var lastHandle = new LocaleHandleHistory(entry, entry.Handle);
 				var nextHandle = new LocaleHandleHistory(entry, entry.Handle);
@@ -742,16 +739,16 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 				{
 					if (equals)
 					{
-						list = SelectedGroup.SelectedFile.Entries.Where(e => e.Selected && e.Handle.Equals(match)).ToList();
+						list = SelectedGroup.SelectedFile.Entries.Where(e => e.HandleIsEditable && e.Selected && e.Handle.Equals(match)).ToList();
 					}
 					else
 					{
-						list = SelectedGroup.SelectedFile.Entries.Where(e => e.Selected && e.Handle.Contains(match)).ToList();
+						list = SelectedGroup.SelectedFile.Entries.Where(e => e.HandleIsEditable && e.Selected && e.Handle.Contains(match)).ToList();
 					}
 				}
 				else
 				{
-					list = SelectedGroup.SelectedFile.Entries.Where(e => e.Selected).ToList();
+					list = SelectedGroup.SelectedFile.Entries.Where(e => e.HandleIsEditable && e.Selected).ToList();
 				}
 
 				if(list.Count > 0)
@@ -819,6 +816,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			CombinedGroup.DataFiles.AddRange(ModsGroup.DataFiles);
 			CombinedGroup.DataFiles.AddRange(PublicGroup.DataFiles);
 			CombinedGroup.DataFiles.AddRange(DialogGroup.DataFiles);
+			CombinedGroup.DataFiles.AddRange(JournalGroup.DataFiles);
 			if (Settings.LoadRootTemplates) CombinedGroup.DataFiles.AddRange(RootTemplatesGroup.DataFiles);
 			if (Settings.LoadGlobals) CombinedGroup.DataFiles.AddRange(GlobalTemplatesGroup.DataFiles);
 			if (Settings.LoadLevelData) CombinedGroup.DataFiles.AddRange(LevelDataGroup.DataFiles);
@@ -828,29 +826,35 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 
 			if(autoSelectGroup)
 			{
+				var index = 0;
 				if (!CombinedGroup.Visibility)
 				{
 					if (PublicGroup.Visibility)
 					{
-						SelectedGroupIndex = 1;
+						index++;
 					}
 					else if (ModsGroup.Visibility)
 					{
-						SelectedGroupIndex = 2;
+						index++;
 					}
 					else if (DialogGroup.Visibility)
 					{
-						SelectedGroupIndex = 3;
+						index++;
 					}
-					else
+					else if (JournalGroup.Visibility)
 					{
-						SelectedGroupIndex = 0;
+						index++;
+					}
+					else if (RootTemplatesGroup.Visibility)
+					{
+						index++;
+					}
+					else if (LevelDataGroup.Visibility)
+					{
+						index++;
 					}
 				}
-				else
-				{
-					SelectedGroupIndex = 0;
-				}
+				SelectedGroupIndex = index;
 			}
 
 			this.RaisePropertyChanged("CombinedGroup");
@@ -3213,6 +3217,8 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			PublicGroup = new LocaleTabGroup(this, "Locale (Public)");
 			DialogGroup = new LocaleTabGroup(this, "Dialog");
 			DialogGroup.CanAddFiles = false;
+			JournalGroup = new LocaleTabGroup(this, "Journal");
+			JournalGroup.CanAddFiles = false;
 			RootTemplatesGroup = new LocaleTabGroup(this, "RootTemplates");
 			RootTemplatesGroup.CanAddFiles = false;
 			GlobalTemplatesGroup = new LocaleTabGroup(this, "Globals");
@@ -3229,6 +3235,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 				ModsGroup,
 				PublicGroup,
 				DialogGroup,
+				JournalGroup,
 				RootTemplatesGroup,
 				GlobalTemplatesGroup,
 				LevelDataGroup
@@ -3241,6 +3248,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 				ModsGroup,
 				PublicGroup,
 				DialogGroup,
+				JournalGroup,
 				RootTemplatesGroup,
 				GlobalTemplatesGroup,
 				LevelDataGroup,

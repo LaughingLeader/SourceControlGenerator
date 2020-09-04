@@ -39,14 +39,17 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 				{
 					this.CanRename = false;
 
-					if(RootRegion.Children.TryGetValue("GameObjects", out var nodes))
+					if (RootRegion.Children.TryGetValue("GameObjects", out var nodes))
 					{
-						if(nodes.FirstOrDefault().Attributes.TryGetValue("Name", out var nameAtt))
+						if (nodes.FirstOrDefault().Attributes.TryGetValue("Name", out var nameAtt))
 						{
 							this.Name = (string)nameAtt.Value;
 						}
 					}
-					
+
+				}
+				else if (Format == ResourceFormat.LSX)
+				{
 					//TraceRegion();
 				}
 			}

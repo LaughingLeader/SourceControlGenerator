@@ -50,22 +50,25 @@ namespace SCG.Modules.DOS2DE.Utilities
 			//await new SynchronizationContextRemover();
 			localizationData.LinkedProjects.Add(modProject);
 			var success = await LoadProjectLocalizationDataAsync(localizationData, vm, modProject, token);
-			foreach (var g in localizationData.Groups)
+			if (success)
 			{
-				foreach (var f in g.DataFiles)
+				foreach (var g in localizationData.Groups)
 				{
-					foreach (var k in f.Entries)
+					foreach (var f in g.DataFiles)
 					{
-						k.SetHistoryFromObject(localizationData);
+						foreach (var k in f.Entries)
+						{
+							k.SetHistoryFromObject(localizationData);
+						}
 					}
 				}
+
+				List<ILocaleKeyEntry> removedEntries = new List<ILocaleKeyEntry>();
+
+				await LoadLinkedFilesAsync(vm, modProject, localizationData, removedEntries);
+				localizationData.ShowMissingEntriesView(removedEntries);
 			}
-
-			List<ILocaleKeyEntry> removedEntries = new List<ILocaleKeyEntry>();
-
-			await LoadLinkedFilesAsync(vm, modProject, localizationData, removedEntries);
-			localizationData.ShowMissingEntriesView(removedEntries);
-
+			
 			return localizationData;
 		}
 
@@ -138,11 +141,13 @@ namespace SCG.Modules.DOS2DE.Utilities
 				{
 					string modsLocalePath = Path.Combine(modsRoot, "Localization");
 					string dialogLocalePath = Path.Combine(modsRoot, "Story", "Dialogs");
+					string journalPath = Path.Combine(modsRoot, "Story", "Journal");
 					string globalsPath = Path.Combine(modsRoot, "Globals");
 					string levelsPath = Path.Combine(modsRoot, "Levels");
 
 					localizationData.ModsGroup.SourceDirectories.Add(modsLocalePath);
 					localizationData.DialogGroup.SourceDirectories.Add(dialogLocalePath);
+					localizationData.JournalGroup.SourceDirectories.Add(journalPath);
 
 					if (Directory.Exists(modsLocalePath))
 					{
@@ -172,6 +177,22 @@ namespace SCG.Modules.DOS2DE.Utilities
 					{
 						Log.Here().Warning($"Failed to find dialog folder for {modProjectData.DisplayName} at path '{dialogLocalePath}'.");
 						//localizationData.DialogGroup.Visibility = false;
+					}
+
+					if (Directory.Exists(journalPath))
+					{
+						Log.Here().Activity($"Loading journal data from '{journalPath}'.");
+						var data = await LoadFilesAsync(localizationData.JournalGroup, journalPath, modProjectData, token, ".lsx");
+						//Lock dialog files, as adding a new entry is more complicated than simply adding a key.
+						data.ForEach(f => {
+							f.Locked = true;
+							f.CanCreateFileLink = false;
+						});
+						localizationData.JournalGroup.DataFiles.AddRange(data);
+					}
+					else
+					{
+						localizationData.JournalGroup.Visibility = false;
 					}
 
 					if (localizationData.Settings.LoadGlobals && Directory.Exists(globalsPath))
@@ -246,20 +267,6 @@ namespace SCG.Modules.DOS2DE.Utilities
 					var customFiles = await LoadCustomFilesAsync(customLocaleDir, modProjectData);
 					localizationData.CustomGroup.DataFiles.AddRange(customFiles);
 				}
-
-				/*
-				RxApp.MainThreadScheduler.Schedule(() =>
-				{
-					localizationData.ModsGroup.UpdateCombinedData();
-					localizationData.DialogGroup.UpdateCombinedData();
-					localizationData.PublicGroup.UpdateCombinedData();
-					localizationData.CustomGroup.UpdateCombinedData();
-					localizationData.CombinedGroup.UpdateCombinedData();
-					Log.Here().Activity($"Updated all combined data.");
-				});
-				*/
-
-				//localizationData.UpdateCombinedGroup();
 
 				Log.Here().Activity($"Localization loaded.");
 
@@ -470,8 +477,37 @@ namespace SCG.Modules.DOS2DE.Utilities
 					{
 						foreach (var node in entry.Value)
 						{
-							LocaleNodeKeyEntry localeEntry = LoadFromNode(node, resourceFormat);
-							newEntries.Add(localeEntry);
+							if (entry.Key.Contains("Quest"))
+							{
+								foreach (var kvp in node.Attributes)
+								{
+									if (kvp.Value.Type == NodeAttribute.DataType.DT_FixedString)
+									{
+										LocaleNodeKeyEntry key = new LocaleNodeKeyEntry(node);
+										key.KeyIsEditable = false;
+										key.Key = kvp.Key;
+
+										key.TranslatedStringAttribute = kvp.Value;
+										newEntries.Add(key);
+										key.HandleIsEditable = false;
+										key.Handle = entry.Key;
+									}
+									else if (kvp.Value.Type == NodeAttribute.DataType.DT_TranslatedString || kvp.Value.Type == NodeAttribute.DataType.DT_TranslatedFSString)
+									{
+										LocaleNodeKeyEntry key = new LocaleNodeKeyEntry(node);
+										key.KeyIsEditable = false;
+										key.Key = kvp.Key;
+										key.TranslatedStringAttribute = kvp.Value;
+										key.TranslatedString = kvp.Value.Value as TranslatedString;
+										newEntries.Add(key);
+									}
+								}
+							}
+							else
+							{
+								LocaleNodeKeyEntry localeEntry = LoadFromNode(node, resourceFormat);
+								newEntries.Add(localeEntry);
+							}
 						}
 					}
 				}
@@ -1609,25 +1645,25 @@ namespace SCG.Modules.DOS2DE.Utilities
 
 		public static void LoadSettings(DOS2DEModuleData moduleData, LocaleViewModel localeData)
 		{
-			string settingsPath = Path.GetFullPath(DOS2DEDefaultPaths.LocalizationEditorSettings(moduleData));
-
-			if (File.Exists(settingsPath))
+			try
 			{
-				Log.Here().Activity($"Loading localization editor settings from '{settingsPath}'.");
-				try
+				string settingsPath = Path.GetFullPath(DOS2DEDefaultPaths.LocalizationEditorSettings(moduleData));
+				if (File.Exists(settingsPath))
 				{
+					Log.Here().Activity($"Loading localization editor settings from '{settingsPath}'.");
 					localeData.Settings = JsonInterface.DeserializeObject<LocaleEditorSettingsData>(settingsPath);
 					localeData.OnSettingsLoaded();
 				}
-				catch (Exception ex)
+				else
 				{
-					Log.Here().Error($"Error deserializing settings: {ex.ToString()}");
 					localeData.Settings = new LocaleEditorSettingsData();
 				}
 			}
-			else
+			catch (Exception ex)
 			{
+				Log.Here().Error($"Error deserializing settings: {ex.ToString()}");
 				localeData.Settings = new LocaleEditorSettingsData();
+
 			}
 		}
 

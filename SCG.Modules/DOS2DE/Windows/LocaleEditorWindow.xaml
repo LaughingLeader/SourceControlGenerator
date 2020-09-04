@@ -858,6 +858,11 @@
 									CanUserSort="True"
 									Header="Content"
 									SortMemberPath="EntryContent">
+									<DataGridTemplateColumn.CellStyle>
+										<Style BasedOn="{StaticResource CellNoHighlightChangesUnsaved}" TargetType="DataGridCell">
+											<Setter Property="IsEnabled" Value="{Binding ContentIsEditable}" />
+										</Style>
+									</DataGridTemplateColumn.CellStyle>
 									<DataGridTemplateColumn.CellTemplate>
 										<DataTemplate>
 											<c:UnfocusableTextBox
@@ -890,6 +895,11 @@
 									CanUserSort="True"
 									Header="Handle"
 									SortMemberPath="EntryHandle">
+									<DataGridTemplateColumn.CellStyle>
+										<Style BasedOn="{StaticResource CellNoHighlightChangesUnsaved}" TargetType="DataGridCell">
+											<Setter Property="IsEnabled" Value="{Binding HandleIsEditable}" />
+										</Style>
+									</DataGridTemplateColumn.CellStyle>
 									<DataGridTemplateColumn.CellTemplate>
 										<DataTemplate>
 											<Grid>

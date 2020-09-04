@@ -16,6 +16,8 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 	{
 		ILocaleFileData Parent { get; set; }
 		bool KeyIsEditable { get; set; }
+		bool ContentIsEditable { get; set; }
+		bool HandleIsEditable { get; set; }
 		bool Selected { get; set; }
 		bool ChangesUnsaved { get; set; }
 
@@ -56,6 +58,23 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 				this.RaiseAndSetIfChanged(ref keyIsEditable, value);
 			}
 		}
+
+		private bool handleIsEditable = true;
+
+		public bool HandleIsEditable
+		{
+			get => handleIsEditable;
+			set { this.RaiseAndSetIfChanged(ref handleIsEditable, value); }
+		}
+
+		private bool contentIsEditable = true;
+
+		public bool ContentIsEditable
+		{
+			get => contentIsEditable;
+			set { this.RaiseAndSetIfChanged(ref contentIsEditable, value); }
+		}
+
 
 		private bool selected = false;
 

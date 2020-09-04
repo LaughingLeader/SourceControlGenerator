@@ -24,15 +24,23 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			set
 			{
 				keyAttribute = value;
-				if (keyAttribute != null && keyAttribute.Value != null)
+				if (KeyIsEditable && keyAttribute != null && keyAttribute.Value != null)
 				{
+					bool changed = false;
 					if(keyAttribute.Value is TranslatedString translatedString)
 					{
-						Key = translatedString.Value;
+						changed = key != translatedString.Value;
+						key = translatedString.Value;
 					}
 					else if (keyAttribute.Value is string str)
 					{
-						Key = str;
+						changed = key != str;
+						key = str;
+					}
+					if (changed)
+					{
+						this.RaisePropertyChanged("Key");
+						this.RaisePropertyChanged("EntryKey");
 					}
 				}
 			}
@@ -66,28 +74,66 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 
 		public string Content
 		{
-			get { return TranslatedString != null ? TranslatedString.Value : "Content"; }
+			get { 
+				if (TranslatedString != null)
+				{
+					return TranslatedString.Value;
+				}
+				else if(TranslatedStringAttribute.Value != null)
+				{
+					return (string)TranslatedStringAttribute.Value;
+				}
+				else
+				{
+					return "";
+				}
+			}
 			set
 			{
 				if (TranslatedString != null)
 				{
-					//Log.Here().Activity($"Content is changing| {TranslatedString.Value} => {value}");
 					this.RaiseAndSetIfChanged(ref TranslatedString.Value, value);
-					this.RaisePropertyChanged("EntryContent");
 				}
+				else if (TranslatedStringAttribute.Value != null)
+				{
+					TranslatedStringAttribute.Value = value;
+					this.RaisePropertyChanged("Content");
+				}
+				this.RaisePropertyChanged("EntryContent");
 			}
 		}
 
+		private string handle = "";
+
 		public string Handle
 		{
-			get { return TranslatedString != null ? TranslatedString.Handle : LocaleEditorCommands.UnsetHandle; }
+
+			get
+			{
+				if (TranslatedString != null)
+				{
+					return TranslatedString.Handle;
+				}
+				else if (!String.IsNullOrEmpty(handle))
+				{
+					return handle;
+				}
+				else
+				{
+					return LocaleEditorCommands.UnsetHandle;
+				}
+			}
 			set
 			{
 				if (TranslatedString != null)
 				{
 					this.RaiseAndSetIfChanged(ref TranslatedString.Handle, value);
-					this.RaisePropertyChanged("EntryHandle");
 				}
+				else
+				{
+					this.RaiseAndSetIfChanged(ref handle, value);
+				}
+				this.RaisePropertyChanged("EntryHandle");
 			}
 		}
 
@@ -102,16 +148,19 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			get { return key; }
 			set
 			{
-				var last = key;
-				if (this.UpdateWithHistory(ref key, value, "Key"))
+				if (this.KeyIsEditable)
 				{
-					this.RaisePropertyChanged("EntryKey");
-					Parent.AddUnsavedChange(this, LocaleUnsavedChangesData.Create(this, LocaleChangedField.Key, last, value));
-				}
+					var last = key;
+					if (this.UpdateWithHistory(ref key, value, "Key"))
+					{
+						this.RaisePropertyChanged("EntryKey");
+						Parent.AddUnsavedChange(this, LocaleUnsavedChangesData.Create(this, LocaleChangedField.Key, last, value));
+					}
 
-				if (KeyAttribute != null)
-				{
-					KeyAttribute.Value = value;
+					if (KeyAttribute != null)
+					{
+						KeyAttribute.Value = value;
+					}
 				}
 			}
 		}
@@ -121,7 +170,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			get { return Content; }
 			set
 			{
-				if (TranslatedString != null)
+				if (this.ContentIsEditable && TranslatedString != null)
 				{
 					var last = TranslatedString.Value;
 					if(this.UpdateWithHistory(ref TranslatedString.Value, value, "Content"))
@@ -139,7 +188,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			get { return Handle; }
 			set
 			{
-				if (TranslatedString != null)
+				if (this.HandleIsEditable && TranslatedString != null)
 				{
 					var last = TranslatedString.Handle;
 					if (this.UpdateWithHistory(ref TranslatedString.Handle, value, "Handle"))
