@@ -28,7 +28,7 @@ namespace SCG.FileGen
 			return defaultText;
 		}
 
-		public static bool CreateJunctions(string ProjectName, List<JunctionData> SourceFolders, IModuleData moduleData, bool overrideExisting = false)
+		public static bool CreateJunctions(string ProjectName, List<JunctionData> SourceFolders, IModuleData moduleData, bool overrideExisting = false, bool makeReadOnly = false)
 		{
 			if(SourceFolders != null && SourceFolders.Count > 0)
 			{
@@ -56,7 +56,7 @@ namespace SCG.FileGen
 						{
 							try
 							{
-								JunctionHelper.Create(junctionData.SourcePath, junctionTargetDirectory, overrideExisting);
+								JunctionHelper.Create(junctionData.SourcePath, junctionTargetDirectory, overrideExisting, makeReadOnly);
 								junctionsCreated++;
 								Log.Here().Important("Junction successfully created at {0}", junctionTargetDirectory);
 							}

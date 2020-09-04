@@ -216,7 +216,7 @@ namespace SCG.Core
 					AppController.Main.UpdateProgressLog("Creating junctions...");
 
 					var sourceFolders = PrepareDirectories(modProject, Data.Settings.DirectoryLayouts);
-					var result = GitGenerator.CreateJunctions(modProject.ProjectName, sourceFolders, Data);
+					var result = GitGenerator.CreateJunctions(modProject.ProjectName, sourceFolders, Data, true, generationSettings.ReadOnly);
 
 					if (result)
 					{

@@ -56,6 +56,15 @@ namespace SCG.Data
 			}
 		}
 
+		private bool readOnly = true;
+
+		public bool ReadOnly
+		{
+			get => readOnly;
+			set { this.RaiseAndSetIfChanged(ref readOnly, value); }
+		}
+
+
 		private bool initGit = true;
 
 		public bool InitGit

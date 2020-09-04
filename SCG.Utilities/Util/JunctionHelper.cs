@@ -197,7 +197,7 @@ namespace SCG.Util
 		/// <param name="overwrite">If true overwrites an existing reparse point or empty directory</param>
 		/// <exception cref="System.IO.IOException">Thrown when the junction point could not be created or when
 		/// an existing directory was found and <paramref name="overwrite" /> if false</exception>
-		public static void Create(string sourceDir, string targetDir, bool overwrite = false)
+		public static void Create(string sourceDir, string targetDir, bool overwrite = false, bool makeReadOnly = false)
 		{
 			sourceDir = Path.GetFullPath(sourceDir);
 
@@ -242,6 +242,11 @@ namespace SCG.Util
 				{
 					Marshal.FreeHGlobal(inBuffer);
 				}
+			}
+
+			if (makeReadOnly)
+			{
+				File.SetAttributes(targetDir, System.IO.FileAttributes.ReadOnly);
 			}
 		}
 
