@@ -910,14 +910,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 							int result = await LocaleEditorCommands.SaveDataFile(keyFileData);
 							if (result > 0)
 							{
-								if(keyFileData.Format == ResourceFormat.LSX)
-								{
-									OutputText = $"Saved '{Path.ChangeExtension(keyFileData.SourcePath, ".lsb")}'";
-								}
-								else
-								{
-									OutputText = $"Saved '{keyFileData.SourcePath}'";
-								}
+								OutputText = $"Saved '{keyFileData.Name}' to '{Directory.GetParent(keyFileData.SourcePath)}'.";
 								OutputType = LogType.Important;
 
 								keyFileData.SetChangesUnsaved(false, true);
@@ -3154,7 +3147,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 						{
 							if (b)
 							{
-								if (!entry.KeyIsEditable && entry.Key.Equals("GameMasterSpawnSubSection"))
+								if (!entry.KeyIsEditable && entry.Key.Equals("GameMasterSpawnSubSection") || !entry.HandleIsEditable)
 								{
 									entry.Visible = false;
 								}

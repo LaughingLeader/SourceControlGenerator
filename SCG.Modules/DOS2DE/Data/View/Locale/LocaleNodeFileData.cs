@@ -18,6 +18,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 		public Resource Source { get; private set; }
 
 		public ResourceFormat Format { get; set; }
+		public ResourceFormat ExportFormat { get; set; }
 
 		public ModProjectData ModProject { get; set; }
 
@@ -31,7 +32,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			Format = resourceFormat;
 			CanCreateFileLink = true;
 
-			if(res != null)
+			if (res != null)
 			{
 				RootRegion = res.Regions.Values.FirstOrDefault();
 
@@ -50,6 +51,10 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 				}
 				else if (Format == ResourceFormat.LSX)
 				{
+					if (!RootRegion.Name.Contains("Quest"))
+					{
+						ExportFormat = ResourceFormat.LSB;
+					}
 					//TraceRegion();
 				}
 			}
