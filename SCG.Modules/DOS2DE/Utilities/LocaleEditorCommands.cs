@@ -187,6 +187,7 @@ namespace SCG.Modules.DOS2DE.Utilities
 						data.ForEach(f => {
 							f.Locked = true;
 							f.CanCreateFileLink = false;
+							f.ExportFormat = ResourceFormat.LSX;
 						});
 						localizationData.JournalGroup.DataFiles.AddRange(data);
 					}
@@ -464,6 +465,40 @@ namespace SCG.Modules.DOS2DE.Utilities
 			}
 		}
 
+		private static void FindQuestNodes(string nodeName, Node node, List<LocaleNodeKeyEntry> newEntries)
+		{
+			foreach (var kvp in node.Attributes)
+			{
+				if (kvp.Value.Type == NodeAttribute.DataType.DT_FixedString)
+				{
+					LocaleNodeKeyEntry key = new LocaleNodeKeyEntry(node);
+					key.KeyIsEditable = false;
+					key.Key = kvp.Key;
+
+					key.TranslatedStringAttribute = kvp.Value;
+					key.HandleIsEditable = false;
+					key.Handle = nodeName;
+					newEntries.Add(key);
+				}
+				else if (kvp.Value.Type == NodeAttribute.DataType.DT_TranslatedString || kvp.Value.Type == NodeAttribute.DataType.DT_TranslatedFSString)
+				{
+					LocaleNodeKeyEntry key = new LocaleNodeKeyEntry(node);
+					key.KeyIsEditable = false;
+					key.Key = kvp.Key;
+					key.TranslatedStringAttribute = kvp.Value;
+					key.TranslatedString = kvp.Value.Value as TranslatedString;
+					newEntries.Add(key);
+				}
+			}
+			foreach (var kvp in node.Children)
+			{
+				foreach(var n in kvp.Value)
+				{
+					FindQuestNodes(kvp.Key, n, newEntries);
+				}
+			}
+		}
+
 		public static List<LocaleNodeKeyEntry> LoadFromResource(Resource resource, ResourceFormat resourceFormat, bool sort = false)
 		{
 			List<LocaleNodeKeyEntry> newEntries = new List<LocaleNodeKeyEntry>();
@@ -479,29 +514,7 @@ namespace SCG.Modules.DOS2DE.Utilities
 						{
 							if (entry.Key.Contains("Quest"))
 							{
-								foreach (var kvp in node.Attributes)
-								{
-									if (kvp.Value.Type == NodeAttribute.DataType.DT_FixedString)
-									{
-										LocaleNodeKeyEntry key = new LocaleNodeKeyEntry(node);
-										key.KeyIsEditable = false;
-										key.Key = kvp.Key;
-
-										key.TranslatedStringAttribute = kvp.Value;
-										newEntries.Add(key);
-										key.HandleIsEditable = false;
-										key.Handle = entry.Key;
-									}
-									else if (kvp.Value.Type == NodeAttribute.DataType.DT_TranslatedString || kvp.Value.Type == NodeAttribute.DataType.DT_TranslatedFSString)
-									{
-										LocaleNodeKeyEntry key = new LocaleNodeKeyEntry(node);
-										key.KeyIsEditable = false;
-										key.Key = kvp.Key;
-										key.TranslatedStringAttribute = kvp.Value;
-										key.TranslatedString = kvp.Value.Value as TranslatedString;
-										newEntries.Add(key);
-									}
-								}
+								FindQuestNodes(entry.Key, node, newEntries);
 							}
 							else
 							{
@@ -839,11 +852,24 @@ namespace SCG.Modules.DOS2DE.Utilities
 					{
 						Directory.CreateDirectory(parentDir);
 					}
-					var saveFormat = dataFile.Format;
-					if (saveFormat == ResourceFormat.LSX)
+					var saveFormat = dataFile.ExportFormat;
+					if (saveFormat != dataFile.Format)
 					{
-						outputFile = Path.ChangeExtension(dataFile.SourcePath, ".lsb");
-						saveFormat = ResourceFormat.LSB;
+						switch (saveFormat)
+						{
+							case ResourceFormat.LSB:
+								outputFile = Path.ChangeExtension(dataFile.SourcePath, ".lsb");
+								break;
+							case ResourceFormat.LSF:
+								outputFile = Path.ChangeExtension(dataFile.SourcePath, ".lsf");
+								break;
+							case ResourceFormat.LSX:
+								outputFile = Path.ChangeExtension(dataFile.SourcePath, ".lsx");
+								break;
+							case ResourceFormat.LSJ:
+								outputFile = Path.ChangeExtension(dataFile.SourcePath, ".lsj");
+								break;
+						}
 					}
 					Log.Here().Activity($"Saving '{dataFile.Name}' to '{outputFile}'.");
 					await Task.Run(() => LSLib.LS.ResourceUtils.SaveResource(dataFile.Source, outputFile, saveFormat));
@@ -936,7 +962,7 @@ namespace SCG.Modules.DOS2DE.Utilities
 
 		public static bool IgnoreHandle(string handle, ILocaleFileData fileData)
 		{
-			if (handle == UnsetHandle || handle.StartsWith("ResStr_"))
+			if (handle == UnsetHandle || handle.StartsWith("ResStr_") || !handle.StartsWith("h"))
 			{
 				return true;
 			}
