@@ -2419,6 +2419,29 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			});
 		}
 
+		private bool CanDisplayEntry(ILocaleKeyEntry entry)
+		{
+			if ((!entry.KeyIsEditable && entry.Key.Equals("GameMasterSpawnSubSection")) || !entry.HandleIsEditable)
+			{
+				return false;
+			}
+			else
+			{
+				if (entry.Parent is LocaleNodeFileData fileData)
+				{
+					if (fileData.Format == ResourceFormat.LSJ)
+					{
+						return true;
+					}
+					else if (fileData.Format == ResourceFormat.LSX)
+					{
+						return !LocaleEditorCommands.IgnoreHandle(entry.Handle, fileData);
+					}
+				}
+			}
+			return true;
+		}
+
 		private void OnHideExtras(bool enabled)
 		{
 			foreach (var g in Groups)
@@ -2429,16 +2452,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 					{
 						if (enabled)
 						{
-							if ((!entry.KeyIsEditable && entry.Key.Equals("GameMasterSpawnSubSection"))
-								|| !entry.HandleIsEditable
-								|| LocaleEditorCommands.IgnoreHandle(entry.Handle, entry.Parent))
-							{
-								entry.Visible = false;
-							}
-							else
-							{
-								entry.Visible = true;
-							}
+							entry.Visible = CanDisplayEntry(entry);
 						}
 						else
 						{

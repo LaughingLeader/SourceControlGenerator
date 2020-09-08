@@ -32,6 +32,8 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			Format = resourceFormat;
 			CanCreateFileLink = true;
 
+			ExportFormat = Format;
+
 			if (res != null)
 			{
 				RootRegion = res.Regions.Values.FirstOrDefault();
