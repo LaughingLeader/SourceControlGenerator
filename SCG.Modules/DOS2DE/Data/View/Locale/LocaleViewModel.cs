@@ -2384,6 +2384,8 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 						{
 							oldFile.ChangesUnsaved = targetGroup.ChangesUnsaved = ChangesUnsaved = true;
 						}
+
+						OnHideExtras(this.HideExtras);
 					}
 					this.CreateSnapshot(undo, redo);
 					redo();
@@ -2394,6 +2396,36 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 					OutputType = LogType.Activity;
 				}
 			});
+		}
+
+		private void OnHideExtras(bool enabled)
+		{
+			foreach (var g in Groups)
+			{
+				foreach (var f in g.Tabs)
+				{
+					foreach (var entry in f.Entries)
+					{
+						if (enabled)
+						{
+							if ((!entry.KeyIsEditable && entry.Key.Equals("GameMasterSpawnSubSection"))
+								|| !entry.HandleIsEditable
+								|| LocaleEditorCommands.IgnoreHandle(entry.Handle, entry.Parent))
+							{
+								entry.Visible = false;
+							}
+							else
+							{
+								entry.Visible = true;
+							}
+						}
+						else
+						{
+							entry.Visible = true;
+						}
+					}
+				}
+			}
 		}
 
 		public void RefreshFileData(LocaleNodeFileData fileData)
@@ -2551,6 +2583,8 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 								OutputText = "No changes found.";
 								OutputType = LogType.Activity;
 							}
+
+							OnHideExtras(this.HideExtras);
 						}
 						this.CreateSnapshot(undo, redo);
 						redo();
@@ -3152,32 +3186,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 
 			this.WhenAnyValue(x => x.HideExtras).Subscribe((b) =>
 			{
-				foreach(var g in Groups)
-				{
-					foreach(var f in g.Tabs)
-					{
-						foreach(var entry in f.Entries)
-						{
-							if (b)
-							{
-								if ((!entry.KeyIsEditable && entry.Key.Equals("GameMasterSpawnSubSection"))
-									|| !entry.HandleIsEditable 
-									|| LocaleEditorCommands.IgnoreHandle(entry.Handle, entry.Parent))
-								{
-									entry.Visible = false;
-								}
-								else
-								{
-									entry.Visible = true;
-								}
-							}
-							else
-							{
-								entry.Visible = true;
-							}
-						}
-					}
-				}
+				OnHideExtras(b);
 			});
 
 			/*
