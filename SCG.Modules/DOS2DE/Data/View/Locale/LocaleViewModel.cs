@@ -3118,6 +3118,19 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			pasteSubMenu.Add(new MenuData("Edit.Paste.IntoHandle", "Into Handle", PasteIntoHandlesCommand));
 			MenuData.Edit.Add(pasteSubMenu);
 
+			var wordWrapMenuItem = new MenuData("View.WordWrap", "Toggle Word Wrap");
+			var wordWrapCommand = ReactiveCommand.Create(() =>
+			{
+				if (Settings != null)
+				{
+					Settings.WordWrapEnabled = !Settings.WordWrapEnabled;
+					wordWrapMenuItem.IsChecked = Settings.WordWrapEnabled;
+					view.SaveSettings();
+				}
+			});
+			wordWrapMenuItem.ClickCommand = wordWrapCommand;
+			MenuData.View.Add(wordWrapMenuItem);
+
 			MenuData.Tools.Add(new MenuData("Tools.CheckForDuplicates", "Check for Duplicate Keys", CheckForDuplicateKeysCommand));
 
 			MenuData.Settings.Add(new MenuData("Settings.Preferences", "Preferences", OpenPreferencesCommand));

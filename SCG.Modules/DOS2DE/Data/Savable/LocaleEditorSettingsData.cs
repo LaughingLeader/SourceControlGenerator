@@ -57,6 +57,16 @@ namespace SCG.Modules.DOS2DE.Data
 			}
 		}
 
+		private bool wordWrapEnabled = false;
+
+		[DataMember]
+		public bool WordWrapEnabled
+		{
+			get => wordWrapEnabled;
+			set { this.RaiseAndSetIfChanged(ref wordWrapEnabled, value); }
+		}
+
+
 		public LocaleEditorProjectSettingsData GetProjectSettings(ModProjectData modProjectData)
 		{
 			if(modProjectData != null)

@@ -49,6 +49,7 @@
 	<cv:FormatterToFormatterDataConverter x:Key="FormatterToFormatterDataConverter" />
 	<cv:MarkdownToFlowDocumentConverter x:Key="MarkdownToFlowDocumentConverter" />
 	<cv:HtmlToFlowDocumentConverter x:Key="HtmlToFlowDocumentConverter" />
+	<cv:BoolToTextWrappingConverter x:Key="BoolToTextWrappingConverter" />
 
 	<Style TargetType="{x:Type c:TemplateKeywordControl}" />
 	<Style TargetType="{x:Type ListViewItem}" />
@@ -329,6 +330,7 @@
 			Command="{Binding ClickCommand}"
 			Header="{Binding Header}"
 			InputGestureText="{Binding ShortcutText}"
+			IsChecked="{Binding IsChecked}"
 			IsEnabled="{Binding IsEnabled}"
 			ItemContainerTemplateSelector="{StaticResource MenuItemContainerTemplateSelector}"
 			UsesItemContainerTemplate="True" />

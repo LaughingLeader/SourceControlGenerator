@@ -78,6 +78,15 @@ namespace SCG.Data.View
 			}
 		}
 
+		private bool isChecked = false;
+
+		public bool IsChecked
+		{
+			get => isChecked;
+			set { this.RaiseAndSetIfChanged(ref isChecked, value); }
+		}
+
+
 		public List<MenuShortcutInputBinding> Shortcuts { get; set; } = new List<MenuShortcutInputBinding>();
 		public ObservableCollectionExtended<IMenuData> MenuItems { get; set; } = new ObservableCollectionExtended<IMenuData>();
 

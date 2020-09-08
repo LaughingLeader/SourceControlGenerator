@@ -871,7 +871,8 @@
 												LostFocus="EntryContent_LostFocus"
 												SelectionChanged="EntryContent_SelectionChanged"
 												Tag="{Binding Path=DataContext, RelativeSource={RelativeSource AncestorType={x:Type Window}}}"
-												Text="{Binding EntryContent, UpdateSourceTrigger=LostFocus}" />
+												Text="{Binding EntryContent, UpdateSourceTrigger=LostFocus}"
+												TextWrapping="{Binding Path=DataContext.Settings.WordWrapEnabled, RelativeSource={RelativeSource AncestorType={x:Type Window}}, Converter={StaticResource BoolToTextWrappingConverter}, NotifyOnSourceUpdated=True}" />
 											<!--<Grid>
 												<Grid.ColumnDefinitions>
 													<ColumnDefinition Width="*" />

@@ -319,7 +319,8 @@ namespace SCG.Modules.DOS2DE.Utilities
 			var targetFiles = new ConcurrentBag<string>(lsbFiles);
 			foreach (var filePath in targetFiles)
 			{
-				var data = await LoadResourceAsync(groupData, filePath);
+				bool isJournal = Path.GetFileName(Path.GetDirectoryName(filePath)) == "Journal";
+				var data = await LoadResourceAsync(groupData, filePath, isJournal);
 				if(data != null)
 				{
 					data.ModProject = modProjectData;
@@ -387,16 +388,16 @@ namespace SCG.Modules.DOS2DE.Utilities
 			}
 		}
 
-		public static async Task<LocaleNodeFileData> LoadResourceAsync(LocaleTabGroup groupData, string path, CancellationToken? token = null)
+		public static async Task<LocaleNodeFileData> LoadResourceAsync(LocaleTabGroup groupData, string path, bool isJournal = false, CancellationToken? token = null)
 		{
 			return await Task.Run(() =>
 			{
 				if (token != null && token.Value.IsCancellationRequested) return null;
-				return LoadResource(groupData, path);
+				return LoadResource(groupData, path, isJournal);
 			});
 		}
 
-		public static LocaleNodeFileData LoadResource(LocaleTabGroup groupData, string path)
+		public static LocaleNodeFileData LoadResource(LocaleTabGroup groupData, string path, bool isJournal = false)
 		{
 			try
 			{
@@ -417,7 +418,7 @@ namespace SCG.Modules.DOS2DE.Utilities
 				var resource = LSLib.LS.ResourceUtils.LoadResource(path, resourceFormat);
 
 				var data = new LocaleNodeFileData(groupData, resourceFormat, resource, path, Path.GetFileNameWithoutExtension(path));
-				var entries = LoadFromResource(resource, resourceFormat);
+				var entries = LoadFromResource(resource, resourceFormat, false, isJournal);
 				if (entries.Count <= 0 && resourceFormat == ResourceFormat.LSF) // Root templates without any translated string nodes
 				{
 					return null;
@@ -499,7 +500,7 @@ namespace SCG.Modules.DOS2DE.Utilities
 			}
 		}
 
-		public static List<LocaleNodeKeyEntry> LoadFromResource(Resource resource, ResourceFormat resourceFormat, bool sort = false)
+		public static List<LocaleNodeKeyEntry> LoadFromResource(Resource resource, ResourceFormat resourceFormat, bool sort = false, bool isJournal = false)
 		{
 			List<LocaleNodeKeyEntry> newEntries = new List<LocaleNodeKeyEntry>();
 
@@ -512,7 +513,7 @@ namespace SCG.Modules.DOS2DE.Utilities
 					{
 						foreach (var node in entry.Value)
 						{
-							if (entry.Key.Contains("Quest"))
+							if (isJournal)
 							{
 								FindQuestNodes(entry.Key, node, newEntries);
 							}
@@ -977,7 +978,9 @@ namespace SCG.Modules.DOS2DE.Utilities
 				}
 			}
 			//Larian handles for empty GMSpawnSubsection
-			if(handle == "heee99d71g1f41g4ba2g8adbg98fad94256ca" || handle == "hfeccb8bbgf99fg4028gb187g607c18c2cbaa")
+			if(handle == "heee99d71g1f41g4ba2g8adbg98fad94256ca" 
+				|| handle == "hfeccb8bbgf99fg4028gb187g607c18c2cbaa" 
+				|| handle == "h248966eag678eg4ad8g8f2agd2910d0087c5") // Empty MysteryDescription
 			{
 				return true;
 			}
@@ -1507,7 +1510,7 @@ namespace SCG.Modules.DOS2DE.Utilities
 			{
 				if (FileCommands.FileExtensionFound(path, ".lsb", ".lsj", ".lsx"))
 				{
-					Task<ILocaleFileData> task = Task.Run<ILocaleFileData>(async () => await LoadResourceAsync(groupData, path));
+					Task<ILocaleFileData> task = Task.Run<ILocaleFileData>(async () => await LoadResourceAsync(groupData, path, groupData.Name == "Journal"));
 					if (task != null && task.Result != null)
 					{
 						newFileDataList.Add(task.Result);
@@ -1577,8 +1580,8 @@ namespace SCG.Modules.DOS2DE.Utilities
 					if (FileCommands.FileExtensionFound(path, ".lsb", ".lsj"))
 					{
 						Log.Here().Activity($"Creating entries from resource.");
-
-						Task<ILocaleFileData> task = Task.Run<ILocaleFileData>(async () => await LoadResourceAsync(fileData.Parent, path).ConfigureAwait(false));
+						bool isJournal = Path.GetFileName(Path.GetDirectoryName(path)) == "Journal";
+						Task<ILocaleFileData> task = Task.Run<ILocaleFileData>(async () => await LoadResourceAsync(fileData.Parent, path, isJournal).ConfigureAwait(false));
 						if (task != null && task.Result != null)
 						{
 							newEntryList.AddRange(task.Result.Entries);

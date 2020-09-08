@@ -298,6 +298,7 @@
     <Compile Include="Controls\SortableDataGrid.cs" />
     <Compile Include="Controls\UnfocusableTextBox.cs" />
     <Compile Include="Converters\BindingFallbackConverter.cs" />
+    <Compile Include="Converters\BoolToTextWrappingConverter.cs" />
     <Compile Include="Converters\ColorToBrushConverter.cs" />
     <Compile Include="Converters\GrayscaleTintImageConverter.cs" />
     <Compile Include="Converters\HtmlToFlowDocumentConverter.cs" />
