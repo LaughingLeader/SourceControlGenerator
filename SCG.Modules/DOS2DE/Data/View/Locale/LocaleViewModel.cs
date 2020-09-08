@@ -3160,7 +3160,9 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 						{
 							if (b)
 							{
-								if (!entry.KeyIsEditable && entry.Key.Equals("GameMasterSpawnSubSection") || !entry.HandleIsEditable)
+								if ((!entry.KeyIsEditable && entry.Key.Equals("GameMasterSpawnSubSection"))
+									|| !entry.HandleIsEditable 
+									|| LocaleEditorCommands.IgnoreHandle(entry.Handle, entry.Parent))
 								{
 									entry.Visible = false;
 								}
