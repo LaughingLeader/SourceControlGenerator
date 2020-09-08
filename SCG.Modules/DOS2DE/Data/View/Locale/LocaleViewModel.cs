@@ -2360,7 +2360,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 
 					void redo()
 					{
-						var newFile = LocaleEditorCommands.LoadResource(oldFile.Parent, oldFile.SourcePath);
+						var newFile = LocaleEditorCommands.LoadResource(oldFile.Parent, oldFile.SourcePath, oldFile.Parent.Name == "Journal");
 						var oldEntries = oldFile.Entries.ToList();
 						oldFile.Entries.Clear();
 						oldFile.Entries.AddRange(newFile.Entries);
@@ -2404,7 +2404,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 				{
 					var selectedGroup = SelectedGroup;
 					string lastFileSource = fileData.SourcePath;
-					var entries = LocaleEditorCommands.LoadFromResource(fileData.Source, fileData.Format);
+					var entries = LocaleEditorCommands.LoadFromResource(fileData.Source, fileData.Format, false, fileData.Parent.Name == "Journal");
 
 					if (entries.Count > 0)
 					{
