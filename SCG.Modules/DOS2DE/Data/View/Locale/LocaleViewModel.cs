@@ -173,6 +173,8 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 					{
 						nextIndex = nextGroup.SelectedFileIndex;
 					}
+
+					CanRefreshFile = false;
 				}
 				
 				//Log.Here().Activity($"{nextGroup.Name}: {nextGroup.SelectedFileIndex} => {nextIndex}");
@@ -214,6 +216,14 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 		{
 			get => newFileTargetProjectIndex;
 			set { this.RaiseAndSetIfChanged(ref newFileTargetProjectIndex, value); }
+		}
+
+		private bool canRefreshFile = true;
+
+		public bool CanRefreshFile
+		{
+			get => canRefreshFile;
+			set { this.RaiseAndSetIfChanged(ref canRefreshFile, value); }
 		}
 
 		private LocaleTabGroup newFileTabTargetGroup;
@@ -343,7 +353,10 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			get => selectedFile;
 			set
 			{
-				if (selectedFile != null && selectedFile != value && selectedFile.IsRenaming) selectedFile.IsRenaming = false;
+				if (selectedFile != null && selectedFile != value)
+				{
+					selectedFile.IsRenaming = false;
+				}
 				this.RaiseAndSetIfChanged(ref selectedFile, value);
 			}
 		}
@@ -579,6 +592,14 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 
 			CanAddFile = group != CombinedGroup && group != DialogGroup && group != JournalGroup;
 			CanAddKeys = SelectedGroup != null && SelectedGroup.SelectedFile != null && !SelectedGroup.SelectedFile.Locked;
+			if (SelectedFile is LocaleNodeFileData fileData)
+			{
+				CanRefreshFile = fileData.Format != ResourceFormat.LSX;
+			}
+			else
+			{
+				CanRefreshFile = false;
+			}
 		}
 
 		private string outputDate;
@@ -2459,7 +2480,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 
 							if (existingEntry != null)
 							{
-								if(!existingEntry.ValuesMatch(entry))
+								if (!existingEntry.ValuesMatch(entry))
 								{
 									lastEntries.Add(new LocaleEntryHistory
 									{
@@ -2529,6 +2550,10 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 										{
 											existingEntry = fileData.Entries.FirstOrDefault(x => x.Content == entry.Content || (x.Handle == entry.Handle &&
 												x.Handle != LocaleEditorCommands.UnsetHandle));
+										}
+										else if(fileData.Format == ResourceFormat.LSX)
+										{
+											existingEntry = fileData.Entries.FirstOrDefault(x => x.Key == entry.Key && x.Handle == entry.Handle && entry.Content == x.Content);
 										}
 										else
 										{

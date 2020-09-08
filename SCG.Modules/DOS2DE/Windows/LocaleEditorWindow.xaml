@@ -210,7 +210,8 @@
 						Command="{Binding Path=DataContext.RefreshFileCommand, RelativeSource={RelativeSource AncestorType={x:Type Window}}}"
 						CommandParameter="{Binding}"
 						Source="{x:Static vdata:IconPathData.Refresh}"
-						ToolTip="{x:Static core:DOS2DETooltips.Button_Locale_RefreshFile}" />
+						ToolTip="{x:Static core:DOS2DETooltips.Button_Locale_RefreshFile}"
+						Visibility="{Binding Path=DataContext.CanRefreshFile, RelativeSource={RelativeSource AncestorType={x:Type Window}}, Converter={StaticResource BoolToVisibilityConverter}}" />
 					<c:ImageButton
 						cb:ImageButtonHoverOnDisabled.Enable="True"
 						Command="{Binding Path=DataContext.ReloadFileCommand, RelativeSource={RelativeSource AncestorType={x:Type Window}}}"
