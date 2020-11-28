@@ -1597,14 +1597,10 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			if (view != null && view.ExportWindow != null)
 			{
 				ExportText = LocaleEditorCommands.ExportDataAsXML(this, view.ExportWindow.ExportAll);
+				OutputText = $"Generated XML text.";
+				OutputType = LogType.Important;
+				OutputDate = DateTime.Now.ToShortTimeString();
 			}
-			else
-			{
-				ExportText = LocaleEditorCommands.ExportDataAsXML(this, false);
-			}
-			OutputText = $"Generated XML text.";
-			OutputType = LogType.Important;
-			OutputDate = DateTime.Now.ToShortTimeString();
 		}
 
 		private bool SaveXMLFileTo(string localizationRoot, string language, bool showDialogWhenOverwriting = false)
@@ -2251,7 +2247,6 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			{
 				RefreshLinkedData(f);
 			}
-			GenerateXML();
 		}
 
 		public void RemoveLinkedData(ILocaleFileData fileData)

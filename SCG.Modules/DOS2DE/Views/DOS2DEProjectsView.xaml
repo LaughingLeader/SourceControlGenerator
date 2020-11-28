@@ -16,6 +16,7 @@
 	xmlns:reactiveui="http://reactiveui.net"
 	xmlns:scg="clr-namespace:SCG;assembly=SourceControlGenerator"
 	xmlns:scgcore="clr-namespace:SCG.Core;assembly=SourceControlGenerator"
+	xmlns:scm="clr-namespace:System.ComponentModel;assembly=WindowsBase"
 	xmlns:vdata="clr-namespace:SCG.Data.View;assembly=SourceControlGenerator"
 	d:DesignHeight="500"
 	d:DesignWidth="900"
@@ -33,7 +34,11 @@
 			<ResourceDictionary.MergedDictionaries>
 				<ResourceDictionary Source="pack://application:,,,/SourceControlGenerator;component/ThemeSystem/ResourceDictionary/MainAppDictionary.xaml" />
 			</ResourceDictionary.MergedDictionaries>
-			<CollectionViewSource x:Key="ManagedProjectDataView" Source="{Binding ManagedProjects}" />
+			<CollectionViewSource x:Key="ManagedProjectDataView" Source="{Binding ManagedProjects}">
+				<CollectionViewSource.SortDescriptions>
+					<scm:SortDescription Direction="Descending" PropertyName="ModuleInfo.ModifiedDate" />
+				</CollectionViewSource.SortDescriptions>
+			</CollectionViewSource>
 			<data:ModProjectDataComparer x:Key="ModProjectDataComparer" />
 			<Style
 				x:Key="DataGrid_NoHighlight"
