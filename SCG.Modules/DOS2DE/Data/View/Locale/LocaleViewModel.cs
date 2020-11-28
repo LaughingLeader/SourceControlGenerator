@@ -317,7 +317,11 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 
 		private List<LocaleTabGroup> GetCoreGroups()
 		{
+#if DEBUG
 			return new List<LocaleTabGroup>() { PublicGroup, ModsGroup, DialogGroup, JournalGroup, CustomGroup };
+#else
+			return new List<LocaleTabGroup>() { PublicGroup, ModsGroup, DialogGroup, JournalGroup };
+#endif
 		}
 
 		private LocaleTabGroup combinedGroup;
@@ -3303,7 +3307,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 				RootTemplatesGroup,
 				GlobalTemplatesGroup,
 				LevelDataGroup,
-				CustomGroup
+				//CustomGroup
 			};
 #endif
 			foreach (var g in Groups)
