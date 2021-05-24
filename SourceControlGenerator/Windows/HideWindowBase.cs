@@ -60,10 +60,21 @@ namespace SCG.Windows
 			return IntPtr.Zero;
 		}
 
+		private bool isDestroying = false;
+
 		public virtual void HideWindow_Closing(object sender, CancelEventArgs e)
 		{
-			e.Cancel = true;
-			Hide();
+			if(!isDestroying)
+			{
+				e.Cancel = true;
+				Hide();
+			}
+		}
+
+		public void Dispose()
+		{
+			isDestroying = true;
+			this.Close();
 		}
 	}
 }
