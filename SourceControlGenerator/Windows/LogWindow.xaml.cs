@@ -37,7 +37,11 @@ namespace SCG.Windows
 	public partial class LogWindow : HideWindowBase, IToolWindow, IViewFor<LogWindowViewData>
 	{
 		public LogWindowViewData ViewModel { get; set; }
-		object IViewFor.ViewModel { get; set; }
+		object IViewFor.ViewModel
+		{
+			get => ViewModel;
+			set => ViewModel = (LogWindowViewData)value;
+		}
 
 		private MainWindow mainWindow;
 

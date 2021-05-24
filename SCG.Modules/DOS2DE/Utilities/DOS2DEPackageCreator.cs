@@ -158,6 +158,11 @@ namespace SCG.Modules.DOS2DE.Utilities
 				{
 					try
 					{
+						if (token.IsCancellationRequested)
+						{
+							return false;
+						}
+
 						var packager = new Packager();
 						packager.UncompressPackage(pakPath, outputDirectory, null);
 						return true;

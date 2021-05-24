@@ -44,6 +44,8 @@ namespace SCG.Core
 	{
 		private DOS2DEProjectsView projectViewControl;
 
+		private PakExtractionSelectionWindow pakExtractionSelectionWindow;
+
 		public MainAppData MainAppData { get; set; }
 		public DOS2DEModuleData Data { get; set; }
 
@@ -1336,6 +1338,56 @@ namespace SCG.Core
 			});
 		}
 
+		private void ExtractGameData_Start()
+		{
+			if(Directory.Exists(Data.Settings.DOS2DEDataDirectory))
+			{
+				ExtractGameData_OnDialogDone(Data.Settings.DOS2DEDataDirectory);
+			}
+			else
+			{
+				FileCommands.Load.OpenFolderDialog(this.projectViewControl.MainWindow, "Select DOS2DE Game Data Path...",
+					Environment.CurrentDirectory, ExtractGameData_OnDialogDone, false);
+			}
+		}
+
+		//private Regex isMultiPak = new Regex("_d+");
+
+		private DirectoryEnumerationFilters pakFilter = new DirectoryEnumerationFilters
+		{
+			InclusionFilter = (f) =>
+			{
+				return f.Extension.Equals(".pak", StringComparison.OrdinalIgnoreCase);
+			}
+		};
+
+		private void ExtractGameData_OnDialogDone(string gameDataPath)
+		{
+			var gamePaks = Directory.EnumerateFiles(gameDataPath, DirectoryEnumerationOptions.Files, pakFilter).ToList();
+			var localeDirectory = Path.Combine(gameDataPath, "Localization");
+			if(Directory.Exists(localeDirectory))
+			{
+				gamePaks.AddRange(Directory.EnumerateFiles(localeDirectory, DirectoryEnumerationOptions.Files | DirectoryEnumerationOptions.Recursive, pakFilter));
+			}
+			if(gamePaks.Count > 0)
+			{
+				ExtractGameData(gameDataPath, gamePaks);
+			}
+		}
+
+		private void ExtractGameData(string gameDataPath, List<string> gamePaks)
+		{
+			pakExtractionSelectionWindow.Owner = projectViewControl.MainWindow;
+			pakExtractionSelectionWindow.ViewModel.Add(gamePaks.Select(x => new PakExtractionEntry
+			{
+				FullPath = x,
+				Name = Path.GetFileNameWithoutExtension(x),
+				IsChecked = true
+			}).ToList());
+			pakExtractionSelectionWindow.Show();
+		}
+
+
 		private async Task<bool> CreateEditorProjectFromPakAsync(string path)
 		{
 			string outputDirectory = Data.Settings.DOS2DEDataDirectory;
@@ -1516,7 +1568,9 @@ namespace SCG.Core
 				OpenLocalizationEditorMenuData,
 				new SeparatorData(),
 				new MenuData("DOS2DE.CreateEditorProject",
-				"Create Editor Project from Pak...", ReactiveCommand.Create(CreateEditorProjectFromPak_Start))
+				"Create Editor Project from Pak...", ReactiveCommand.Create(CreateEditorProjectFromPak_Start)),
+				new MenuData("DOS2DE.ExtractGameData",
+				"Extract Game Data...", ReactiveCommand.Create(ExtractGameData_Start))
 			);
 
 			Data.OnLockScreenChangedAction = new Action<System.Windows.Visibility, bool>((v, b) =>
@@ -1530,6 +1584,9 @@ namespace SCG.Core
 					}
 				}
 			});
+
+			pakExtractionSelectionWindow = new PakExtractionSelectionWindow();
+			pakExtractionSelectionWindow.Hide();
 		}
 
 		public void Start()
@@ -1538,7 +1595,7 @@ namespace SCG.Core
 
 			LoadDataDirectory();
 			LoadDirectoryLayout();
-			InitModuleKeywords();
+			InitModuleKeywords();			
 #if Debug
 			var watch = new System.Diagnostics.Stopwatch();
 			watch.Start();
@@ -1589,6 +1646,8 @@ namespace SCG.Core
 		public void Unload()
 		{
 			MainAppData.MenuBarData.RemoveAllModuleMenus(Data.ModuleName);
+
+			pakExtractionSelectionWindow.Dispose();
 		}
 	}
 }
