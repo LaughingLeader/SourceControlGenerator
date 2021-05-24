@@ -28,6 +28,8 @@ using ReactiveUI;
 using System.Reactive.Concurrency;
 using SCG.Converters.Json;
 using AutoUpdaterDotNET;
+using System.Reactive.Disposables;
+using System.Threading;
 
 namespace SCG.Core
 {
@@ -286,12 +288,46 @@ namespace SCG.Core
 				Data.ProgressCancelButtonVisibility = ShowCancelButton ? Visibility.Visible : Visibility.Collapsed;
 				//mainWindow.IsEnabled = false;
 
-				mainWindow.Dispatcher.Invoke(new Action(() =>
+				Data.ProgressActive = true;
+
+				RxApp.MainThreadScheduler.Schedule(() =>
 				{
 					StartAction();
-				}), DispatcherPriority.ApplicationIdle);
+				});
+
+
+				//mainWindow.Dispatcher.Invoke(new Action(() =>
+				//{
+
+				//}), DispatcherPriority.ApplicationIdle);
+			}
+		}
+
+		public void StartProgressAsync(string Title, Func<CancellationToken, Task> StartAction, string StartMessage = "", int StartValue = 0, bool ShowCancelButton = false, Action CancelAction = null)
+		{
+			if(!Data.ProgressActive)
+			{
+				Data.ProgressTitle = Title;
+				Data.ProgressMessage = StartMessage;
+				Data.ProgressValue = StartValue;
+				Data.ProgressLog = "";
+				Data.ProgressVisiblity = System.Windows.Visibility.Visible;
+				Data.ProgressCancelCommand.SetCallback(CancelAction);
+				Data.ProgressCancelButtonVisibility = ShowCancelButton ? Visibility.Visible : Visibility.Collapsed;
+				//mainWindow.IsEnabled = false;
 
 				Data.ProgressActive = true;
+
+				RxApp.TaskpoolScheduler.ScheduleAsync(async (s, t) =>
+				{
+					await StartAction(t);
+					return Disposable.Empty;
+				});
+
+				//mainWindow.Dispatcher.Invoke(new Action(() =>
+				//{
+
+				//}), DispatcherPriority.ApplicationIdle);
 			}
 		}
 
