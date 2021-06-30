@@ -207,10 +207,17 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Core\DOS2DECommands.cs" />
+    <Compile Include="Core\DOS2DEDefaultPaths.cs" />
     <Compile Include="Core\DOS2DEFileFilters.cs" />
+    <Compile Include="Core\DOS2DEProjectController.cs" />
+    <Compile Include="Core\DOS2DETooltips.cs" />
+    <Compile Include="Data\Savable\DOS2DESettingsData.cs" />
+    <Compile Include="Data\Savable\LocaleEditorProjectSettingsData.cs" />
     <Compile Include="Data\Savable\LocaleEditorSettingsData.cs" />
     <Compile Include="Data\Savable\LocaleProjectLinkData.cs" />
     <Compile Include="Data\View\DOS2DEDebugData.cs" />
+    <Compile Include="Data\View\DOS2DEModuleData.cs" />
     <Compile Include="Data\View\Locale\BaseLocaleFileData.cs" />
     <Compile Include="Data\View\Locale\BaseLocaleKeyEntry.cs" />
     <Compile Include="Data\View\Locale\CustomLocaleTabGroup.cs" />
@@ -218,29 +225,22 @@
     <Compile Include="Data\View\Locale\LocaleCustomFileData.cs" />
     <Compile Include="Data\View\Locale\LocaleCustomKeyEntry.cs" />
     <Compile Include="Data\View\Locale\LocaleEditorDesignData.cs" />
-    <Compile Include="Data\Savable\LocaleEditorProjectSettingsData.cs" />
     <Compile Include="Data\View\Locale\LocaleEntryHistory.cs" />
-    <Compile Include="Data\View\Locale\LocaleNodeFileData.cs" />
     <Compile Include="Data\View\Locale\LocaleHandleHistory.cs" />
-    <Compile Include="Data\View\Locale\LocaleNodeKeyEntry.cs" />
     <Compile Include="Data\View\Locale\LocaleMenuData.cs" />
+    <Compile Include="Data\View\Locale\LocaleNodeFileData.cs" />
+    <Compile Include="Data\View\Locale\LocaleNodeKeyEntry.cs" />
     <Compile Include="Data\View\Locale\LocaleTabGroup.cs" />
     <Compile Include="Data\View\Locale\LocaleUnsavedChangesData.cs" />
     <Compile Include="Data\View\Locale\LocaleViewModel.cs" />
+    <Compile Include="Data\View\ModProjectData.cs" />
     <Compile Include="Data\View\ModProjectDataComparer.cs" />
     <Compile Include="Data\View\PakExtractionEntry.cs" />
     <Compile Include="Data\View\ProjectVersionData.cs" />
-    <Compile Include="Module.cs" />
-    <Compile Include="Core\DOS2DECommands.cs" />
-    <Compile Include="Core\DOS2DEDefaultPaths.cs" />
-    <Compile Include="Core\DOS2DEProjectController.cs" />
-    <Compile Include="Core\DOS2DETooltips.cs" />
-    <Compile Include="Data\Savable\DOS2DESettingsData.cs" />
-    <Compile Include="Data\View\DOS2DEModuleData.cs" />
-    <Compile Include="Data\View\ModProjectData.cs" />
     <Compile Include="Data\Xml\DependencyInfo.cs" />
     <Compile Include="Data\Xml\ModuleInfo.cs" />
     <Compile Include="Data\Xml\ProjectInfo.cs" />
+    <Compile Include="Module.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
