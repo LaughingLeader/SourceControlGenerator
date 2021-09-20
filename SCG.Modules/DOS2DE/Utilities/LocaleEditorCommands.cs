@@ -873,7 +873,8 @@ namespace SCG.Modules.DOS2DE.Utilities
 						}
 					}
 					Log.Here().Activity($"Saving '{dataFile.Name}' to '{outputFile}'.");
-					await Task.Run(() => LSLib.LS.ResourceUtils.SaveResource(dataFile.Source, outputFile, saveFormat));
+					var exportParams = ResourceConversionParameters.FromGameVersion(Game.DivinityOriginalSin2DE);
+					await Task.Run(() => LSLib.LS.ResourceUtils.SaveResource(dataFile.Source, outputFile, saveFormat, exportParams));
 					Log.Here().Important($"Saved '{outputFile}'.");
 					dataFile.UnsavedChanges.Clear();
 					dataFile.ChangesUnsaved = false;
