@@ -8,7 +8,7 @@ using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SCG.Modules.DOS2DE.Data.Savable
+namespace SCG.Modules.DOS2DE.LocalizationEditor.Models
 {
 	[DataContract]
 	public class LocaleProjectLinkData

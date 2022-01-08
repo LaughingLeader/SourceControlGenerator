@@ -13,7 +13,7 @@ using DynamicData;
 using System.Windows.Input;
 using SCG.Modules.DOS2DE.Data.View.Locale;
 
-namespace SCG.Modules.DOS2DE.Data
+namespace SCG.Modules.DOS2DE.LocalizationEditor.Models
 {
 	[DataContract]
 	public class LocaleEditorSettingsData : ReactiveObject
@@ -69,7 +69,7 @@ namespace SCG.Modules.DOS2DE.Data
 
 		public LocaleEditorProjectSettingsData GetProjectSettings(ModProjectData modProjectData)
 		{
-			if(modProjectData != null)
+			if (modProjectData != null)
 			{
 				var entry = Projects.FirstOrDefault(x => x.FolderName == modProjectData.FolderName);
 				if (entry == null)

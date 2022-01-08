@@ -24,8 +24,8 @@ using System.Windows.Threading;
 using System.ComponentModel;
 using Alphaleonis.Win32.Filesystem;
 using System.Reactive.Concurrency;
-using SCG.Modules.DOS2DE.Utilities;
 using System.Reactive.Disposables;
+using SCG.Modules.DOS2DE.LocalizationEditor.Utilities;
 
 namespace SCG.Modules.DOS2DE.Data.View
 {

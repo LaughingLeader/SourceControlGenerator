@@ -1,6 +1,6 @@
 ﻿using ReactiveUI;
 
-using SCG.Modules.DOS2DE.Data;
+using SCG.Modules.DOS2DE.LocalizationEditor.Models;
 using SCG.Windows;
 
 using System;

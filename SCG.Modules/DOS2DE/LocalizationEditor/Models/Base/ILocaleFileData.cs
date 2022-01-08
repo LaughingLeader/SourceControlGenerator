@@ -1,6 +1,5 @@
 ﻿using DynamicData.Binding;
 
-using SCG.Modules.DOS2DE.Data.Savable;
 using SCG.Modules.DOS2DE.Data.View.Locale;
 
 using System;
@@ -33,6 +32,7 @@ namespace SCG.Modules.DOS2DE.LocalizationEditor.Models
 		bool IsRenaming { get; set; }
 		bool HasFileLink { get; set; }
 		bool CanCreateFileLink { get; set; }
+		bool IsCustom { get; }
 
 		void SelectAll();
 		void SelectNone();

@@ -2,7 +2,6 @@
 using Newtonsoft.Json;
 using ReactiveUI;
 using SCG.Data;
-using SCG.Modules.DOS2DE.Data.Savable;
 using System;
 using System.Reactive;
 using System.Collections.Generic;
@@ -19,7 +18,7 @@ using SCG.Modules.DOS2DE.Data.View.Locale;
 
 namespace SCG.Modules.DOS2DE.LocalizationEditor.Models
 {
-	public class BaseLocaleFileData : ReactiveObject, ILocaleFileData
+	public class BaseLocaleFileData : ReactiveObject
 	{
 		public ObservableCollectionExtended<ILocaleKeyEntry> Entries { get; set; } = new ObservableCollectionExtended<ILocaleKeyEntry>();
 

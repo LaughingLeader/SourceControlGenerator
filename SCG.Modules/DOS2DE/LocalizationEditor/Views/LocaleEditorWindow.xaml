@@ -8,14 +8,15 @@
 	xmlns:conv="clr-namespace:SCG.Converters;assembly=SourceControlGenerator"
 	xmlns:core="clr-namespace:SCG.Modules.DOS2DE.Core"
 	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-	xmlns:data="clr-namespace:SCG.Modules.DOS2DE.Data.View.Locale"
+	xmlns:data="clr-namespace:SCG.Modules.DOS2DE.LocalizationEditor.Models"
 	xmlns:html="clr-namespace:TheArtOfDev.HtmlRenderer.WPF;assembly=HtmlRenderer.WPF"
 	xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
-	xmlns:local="clr-namespace:SCG.Modules.DOS2DE.Windows"
+	xmlns:local="clr-namespace:SCG.Modules.DOS2DE.LocalizationEditor.Views"
+	xmlns:vm="clr-namespace:SCG.Modules.DOS2DE.LocalizationEditor.ViewModels"
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 	xmlns:reactiveui="http://reactiveui.net"
 	xmlns:s="clr-namespace:System;assembly=mscorlib"
-	xmlns:util="clr-namespace:SCG.Modules.DOS2DE.Utilities"
+	xmlns:util="clr-namespace:SCG.Modules.DOS2DE.LocalizationEditor.Utilities"
 	xmlns:vdata="clr-namespace:SCG.Data.View;assembly=SourceControlGenerator"
 	xmlns:win="clr-namespace:SCG.Windows;assembly=SourceControlGenerator"
 	xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
@@ -47,7 +48,7 @@
 				font-size: 18;
 				}
 			</clr:String>
-			<local:LocaleEditorDebugViewModel x:Key="DebugData" />
+			<vm:LocaleEditorDebugViewModel x:Key="DebugData" />
 			<Style x:Key="ShortcutButton" TargetType="Button">
 				<Setter Property="MinHeight" Value="16" />
 				<Setter Property="MinWidth" Value="16" />
@@ -1625,8 +1626,7 @@
 			x:Name="RemovedEntriesGrid"
 			Grid.Row="2"
 			Panel.ZIndex="99"
-			d:DataContext="{d:DesignInstance local:LocaleEditorDebugViewModel,
-			                                 IsDesignTimeCreatable=true}"
+			d:DataContext="{d:DesignInstance vm:LocaleEditorDebugViewModel, IsDesignTimeCreatable=true}"
 			Visibility="{Binding MissingEntriesViewVisible, FallbackValue=Collapsed}">
 			<Grid.RowDefinitions>
 				<RowDefinition Height="Auto" />

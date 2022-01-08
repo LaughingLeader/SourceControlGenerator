@@ -28,7 +28,6 @@ using System.Windows.Threading;
 using SCG.Util;
 using SCG.Collections;
 using ReactiveUI;
-using SCG.Modules.DOS2DE.Utilities;
 using System.Reactive;
 using System.Reactive.Linq;
 using DynamicData;
@@ -37,6 +36,8 @@ using System.Reactive.Disposables;
 using System.Reactive.Concurrency;
 using System.Collections;
 using SCG.Modules.DOS2DE.LocalizationEditor.ViewModels;
+using SCG.Modules.DOS2DE.LocalizationEditor.Utilities;
+using SCG.Modules.DOS2DE.LocalizationEditor.Views;
 
 namespace SCG.Modules.DOS2DE.Views
 {
@@ -45,7 +46,7 @@ namespace SCG.Modules.DOS2DE.Views
 	/// </summary>
 	public class DOS2DEProjectsViewBase : ReactiveUserControl<DOS2DEModuleData>
 	{
-		
+
 	}
 
 	/// <summary>
@@ -236,9 +237,9 @@ namespace SCG.Modules.DOS2DE.Views
 
 		private void AvailableProjectsList_TargetUpdated(object sender, DataTransferEventArgs e)
 		{
-			if(sender is ListBox listBox)
+			if (sender is ListBox listBox)
 			{
-				if(listBox.Items.Count > 0)
+				if (listBox.Items.Count > 0)
 				{
 					listBox.ScrollIntoView(listBox.Items[0]);
 				}
@@ -476,7 +477,7 @@ namespace SCG.Modules.DOS2DE.Views
 			{
 				double availableSpace = this.ActualWidth;
 
-				foreach(var column in grid.Columns)
+				foreach (var column in grid.Columns)
 				{
 					if (column.Header is string headerName)
 					{
@@ -513,7 +514,7 @@ namespace SCG.Modules.DOS2DE.Views
 
 		private void ProjectView_KeyDown(object sender, KeyEventArgs e)
 		{
-			if(e.Key == Key.LeftShift || e.Key == Key.RightShift)
+			if (e.Key == Key.LeftShift || e.Key == Key.RightShift)
 			{
 				ShiftKeyDown += 1;
 			}

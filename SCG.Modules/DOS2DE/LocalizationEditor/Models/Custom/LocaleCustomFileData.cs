@@ -14,11 +14,13 @@ using System.Threading.Tasks;
 namespace SCG.Modules.DOS2DE.LocalizationEditor.Models
 {
 	[JsonObject(MemberSerialization.OptIn)]
-	public class LocaleCustomFileData : BaseLocaleFileData
+	public class LocaleCustomFileData : BaseLocaleFileData, ILocaleFileData
 	{
 		public ModProjectData Project { get; set; }
 
-		[Reactive] public EnumLocaleLanguages Language { get; set; }
+		[Reactive] public EnumLocaleLanguages Language { get; set; } = EnumLocaleLanguages.All;
+
+		public bool IsCustom => true;
 
 		public LocaleCustomFileData(LocaleTabGroup parent, string name = "") : base(parent, name)
 		{

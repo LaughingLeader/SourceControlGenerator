@@ -12,9 +12,10 @@ using LSLib.LS.Enums;
 
 using SCG.Data.View;
 using SCG.Modules.DOS2DE.Data.View;
-using SCG.Modules.DOS2DE.Utilities;
 using SCG.Modules.DOS2DE.LocalizationEditor.Views;
 using SCG.Modules.DOS2DE.LocalizationEditor.Models;
+using SCG.Modules.DOS2DE.LocalizationEditor.Utilities;
+using SCG.Modules.DOS2DE.LocalizationEditor.Models.Design;
 
 namespace SCG.Modules.DOS2DE.LocalizationEditor.ViewModels
 {
@@ -30,20 +31,20 @@ namespace SCG.Modules.DOS2DE.LocalizationEditor.ViewModels
 			//Data = result.Data;
 			//Name = result.Error;
 
-			ModsGroup.DataFiles.Add(new BaseLocaleFileData(ModsGroup, "Skills") { ChangesUnsaved = true });
-			ModsGroup.DataFiles.Add(new BaseLocaleFileData(ModsGroup, "Statuses"));
+			ModsGroup.DataFiles.Add(new LocaleTestFileData(ModsGroup, "Skills") { ChangesUnsaved = true });
+			ModsGroup.DataFiles.Add(new LocaleTestFileData(ModsGroup, "Statuses"));
 			for (var i = 1; i < 4; i++)
 			{
-				ModsGroup.DataFiles.Add(new BaseLocaleFileData(ModsGroup, "Potionslalalalala" + i));
+				ModsGroup.DataFiles.Add(new LocaleTestFileData(ModsGroup, "Potionslalalalala" + i));
 			}
 
-			PublicGroup.DataFiles.Add(new BaseLocaleFileData(ModsGroup, "Skills"));
-			PublicGroup.DataFiles.Add(new BaseLocaleFileData(ModsGroup, "Statuses"));
-			PublicGroup.DataFiles.Add(new BaseLocaleFileData(ModsGroup, "Potions"));
+			PublicGroup.DataFiles.Add(new LocaleTestFileData(ModsGroup, "Skills"));
+			PublicGroup.DataFiles.Add(new LocaleTestFileData(ModsGroup, "Statuses"));
+			PublicGroup.DataFiles.Add(new LocaleTestFileData(ModsGroup, "Potions"));
 
 			for (var i = 1; i < 5; i++)
 			{
-				CustomGroup.DataFiles.Add(new BaseLocaleFileData(ModsGroup, "Custom" + i));
+				CustomGroup.DataFiles.Add(new LocaleTestFileData(ModsGroup, "Custom" + i));
 			}
 
 			foreach (var d in ModsGroup.DataFiles)

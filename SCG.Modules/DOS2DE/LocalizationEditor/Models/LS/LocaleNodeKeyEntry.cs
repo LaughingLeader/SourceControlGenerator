@@ -7,8 +7,8 @@ using System.Text;
 using System.Threading.Tasks;
 using ReactiveUI;
 using LSLib.LS;
-using SCG.Modules.DOS2DE.Utilities;
 using SCG.Modules.DOS2DE.Data.View.Locale;
+using SCG.Modules.DOS2DE.LocalizationEditor.Utilities;
 
 namespace SCG.Modules.DOS2DE.LocalizationEditor.Models
 {

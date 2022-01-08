@@ -22,5 +22,6 @@ namespace SCG.Modules.DOS2DE.LocalizationEditor
 		Polish,
 		Russian,
 		Spanish,
+		None
 	}
 }

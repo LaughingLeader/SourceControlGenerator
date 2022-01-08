@@ -5,13 +5,11 @@ using SCG.Data;
 using System.Collections.ObjectModel;
 using System.Windows.Input;
 using SCG.Commands;
-using SCG.Modules.DOS2DE.Utilities;
 using System.Windows;
 using SCG.Data.View;
 using LSLib.LS;
 using SCG.Modules.DOS2DE.Windows;
 using SCG.Modules.DOS2DE.Core;
-using SCG.Modules.DOS2DE.Data;
 using Alphaleonis.Win32;
 using Alphaleonis.Win32.Filesystem;
 using SCG.Core;
@@ -24,7 +22,6 @@ using System.Windows.Media;
 using SCG.Windows;
 using System.Threading.Tasks;
 using System.Reactive.Disposables;
-using SCG.Modules.DOS2DE.Data.Savable;
 using SCG.FileGen;
 using DynamicData;
 using System.Reactive.Linq;
@@ -37,6 +34,7 @@ using SCG.Modules.DOS2DE.LocalizationEditor.Models;
 using SCG.Modules.DOS2DE.Data.View;
 using SCG.Modules.DOS2DE.Data.View.Locale;
 using SCG.Modules.DOS2DE.LocalizationEditor.Views;
+using SCG.Modules.DOS2DE.LocalizationEditor.Utilities;
 
 namespace SCG.Modules.DOS2DE.LocalizationEditor.ViewModels
 {
@@ -1115,6 +1113,8 @@ namespace SCG.Modules.DOS2DE.LocalizationEditor.ViewModels
 				var lastImportPath = CurrentImportPath;
 				var lastLinked = LinkedLocaleData.ToList();
 
+				var lastCustom = ActiveProjectSettings.CustomFiles.ToList();
+
 				void undo()
 				{
 					foreach (var entry in newFileDataList)
@@ -1126,6 +1126,12 @@ namespace SCG.Modules.DOS2DE.LocalizationEditor.ViewModels
 					currentGroup.SelectLast();
 					currentGroup.ChangesUnsaved = lastChangesUnsaved;
 					view.FocusSelectedTab();
+
+					if (currentGroup.IsCustom)
+					{
+						ActiveProjectSettings.CustomFiles.Clear();
+						ActiveProjectSettings.CustomFiles.AddRange(lastCustom);
+					}
 
 					if (currentGroup != CombinedGroup)
 					{
@@ -1184,6 +1190,11 @@ namespace SCG.Modules.DOS2DE.LocalizationEditor.ViewModels
 							CombinedGroup.ChangesUnsaved = true;
 
 							SelectedFileChanged(currentGroup, newFile);
+						}
+
+						if (currentGroup.IsCustom)
+						{
+							ActiveProjectSettings.CustomFiles.Add(newFile.SourcePath);
 						}
 
 						ChangesUnsaved = true;
@@ -1610,7 +1621,7 @@ namespace SCG.Modules.DOS2DE.LocalizationEditor.ViewModels
 		{
 			if (view != null && view.ExportWindow != null)
 			{
-				ExportText = LocaleEditorCommands.ExportDataAsXML(this, view.ExportWindow.ExportAll);
+				ExportText = LocaleEditorCommands.ExportDataAsXML(this, view.ExportWindow.ExportAll, EnumLocaleLanguages.None);
 				OutputText = $"Generated XML text.";
 				OutputType = LogType.Important;
 				OutputDate = DateTime.Now.ToShortTimeString();
@@ -1620,6 +1631,7 @@ namespace SCG.Modules.DOS2DE.LocalizationEditor.ViewModels
 		private bool SaveXMLFileTo(string localizationRoot, string language, bool showDialogWhenOverwriting = false)
 		{
 			string target = Path.Combine(localizationRoot, language, language.ToLower() + ".xml");
+			EnumLocaleLanguages lang = (EnumLocaleLanguages)Enum.Parse(typeof(EnumLocaleLanguages), language);
 
 			bool writeFile = true;
 
@@ -1635,6 +1647,7 @@ namespace SCG.Modules.DOS2DE.LocalizationEditor.ViewModels
 
 			if (writeFile)
 			{
+				ExportText = LocaleEditorCommands.ExportDataAsXML(this, view.ExportWindow.ExportAll, lang);
 				if (FileCommands.WriteToFile(target, ExportText))
 				{
 					Log.Here().Important($"Saved language xml at {target}.");
@@ -2079,7 +2092,7 @@ namespace SCG.Modules.DOS2DE.LocalizationEditor.ViewModels
 			MissingEntries.Clear();
 		}
 
-		private string GetLastFileImportPath(ILocaleFileData fileData = null)
+		public string GetLastFileImportPath(ILocaleFileData fileData = null)
 		{
 			ModProjectData project = null;
 

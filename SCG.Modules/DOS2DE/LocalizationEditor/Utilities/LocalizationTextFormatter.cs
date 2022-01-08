@@ -1,4 +1,5 @@
-﻿using System;
+﻿
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
@@ -6,9 +7,10 @@ using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Documents;
 using System.Windows.Media;
+
 using Xceed.Wpf.Toolkit;
 
-namespace SCG.Modules.DOS2DE.Utilities
+namespace SCG.Modules.DOS2DE.LocalizationEditor.Utilities
 {
 	public struct LocaleLocalizationFontTextRange
 	{
@@ -83,7 +85,7 @@ namespace SCG.Modules.DOS2DE.Utilities
 				//if the text is null/empty clear the contents of the RTB. If you were to pass a null/empty string
 				//to the TextRange.Load method an exception would occur.
 
-				if (String.IsNullOrEmpty(text))
+				if (string.IsNullOrEmpty(text))
 				{
 					document.Blocks.Clear();
 				}
@@ -99,7 +101,7 @@ namespace SCG.Modules.DOS2DE.Utilities
 					}
 				}
 			}
-			catch(NullReferenceException ex)
+			catch (NullReferenceException ex)
 			{
 				Log.Here().Error($"Error formatting text: {ex.ToString()}");
 			}

@@ -19,7 +19,7 @@ using System.Threading.Tasks;
 
 namespace SCG.Modules.DOS2DE.LocalizationEditor.Models
 {
-	public class LocaleNodeFileData : BaseLocaleFileData
+	public class LocaleNodeFileData : BaseLocaleFileData, ILocaleFileData
 	{
 		public Resource Source { get; private set; }
 
@@ -29,6 +29,8 @@ namespace SCG.Modules.DOS2DE.LocalizationEditor.Models
 		public ModProjectData ModProject { get; set; }
 
 		public Region RootRegion { get; private set; }
+
+		public bool IsCustom => false;
 
 		public LocaleNodeFileData(LocaleTabGroup parent, ResourceFormat resourceFormat,
 			Resource res, string sourcePath, string name = "") : base(parent, name)
