@@ -28,6 +28,8 @@ using System.Reactive.Concurrency;
 using System.Text.RegularExpressions;
 using SCG.Modules.DOS2DE.Data.Savable;
 using SCG.Extensions;
+using SCG.Modules.DOS2DE.LocalizationEditor.Models;
+using SCG.Modules.DOS2DE.LocalizationEditor.ViewModels;
 
 namespace SCG.Modules.DOS2DE.Utilities
 {
@@ -68,7 +70,7 @@ namespace SCG.Modules.DOS2DE.Utilities
 				await LoadLinkedFilesAsync(vm, modProject, localizationData, removedEntries);
 				localizationData.ShowMissingEntriesView(removedEntries);
 			}
-			
+
 			return localizationData;
 		}
 
@@ -153,7 +155,7 @@ namespace SCG.Modules.DOS2DE.Utilities
 					{
 						Log.Here().Activity($"Loading localization data from '{modsLocalePath}'.");
 						var modsLocaleData = await LoadFilesAsync(localizationData.ModsGroup, modsLocalePath, modProjectData, token, ".lsb");
-						
+
 						localizationData.ModsGroup.DataFiles.AddRange(modsLocaleData);
 					}
 					else
@@ -167,7 +169,8 @@ namespace SCG.Modules.DOS2DE.Utilities
 						Log.Here().Activity($"Loading dialog localization data from '{dialogLocalePath}'.");
 						var dialogLocaleData = await LoadFilesAsync(localizationData.DialogGroup, dialogLocalePath, modProjectData, token, ".lsj");
 						//Lock dialog files, as adding a new entry is more complicated than simply adding a key.
-						dialogLocaleData.ForEach(f => {
+						dialogLocaleData.ForEach(f =>
+						{
 							f.Locked = true;
 							f.CanCreateFileLink = false;
 						});
@@ -184,7 +187,8 @@ namespace SCG.Modules.DOS2DE.Utilities
 						Log.Here().Activity($"Loading journal data from '{journalPath}'.");
 						var data = await LoadFilesAsync(localizationData.JournalGroup, journalPath, modProjectData, token, ".lsx");
 						//Lock dialog files, as adding a new entry is more complicated than simply adding a key.
-						data.ForEach(f => {
+						data.ForEach(f =>
+						{
 							f.Locked = true;
 							f.CanCreateFileLink = false;
 							f.ExportFormat = ResourceFormat.LSX;
@@ -201,7 +205,8 @@ namespace SCG.Modules.DOS2DE.Utilities
 						Log.Here().Activity($"Loading global root template data from '{globalsPath}'.");
 						var globalTemplatesData = await LoadFilesAsync(localizationData.RootTemplatesGroup, globalsPath, modProjectData, token, ".lsf");
 						//Lock lsf files, as adding a new entry is more complicated than simply adding a key.
-						globalTemplatesData.ForEach(f => {
+						globalTemplatesData.ForEach(f =>
+						{
 							f.Locked = true;
 							f.CanCreateFileLink = false;
 						});
@@ -213,7 +218,8 @@ namespace SCG.Modules.DOS2DE.Utilities
 						Log.Here().Activity($"Loading level data from '{levelsPath}'.");
 						var levelData = await LoadFilesAsync(localizationData.RootTemplatesGroup, levelsPath, modProjectData, token, ".lsf");
 						//Lock lsf files, as adding a new entry is more complicated than simply adding a key.
-						levelData.ForEach(f => {
+						levelData.ForEach(f =>
+						{
 							f.Locked = true;
 							f.CanCreateFileLink = false;
 						});
@@ -243,7 +249,7 @@ namespace SCG.Modules.DOS2DE.Utilities
 
 						Log.Here().Warning($"Failed to find locale folder for {modProjectData.DisplayName} at path '{publicLocalePath}'.");
 					}
-					
+
 					string publicRootTemplatePath = Path.Combine(publicRoot, "RootTemplates");
 					localizationData.RootTemplatesGroup.SourceDirectories.Add(publicRootTemplatePath);
 
@@ -251,7 +257,8 @@ namespace SCG.Modules.DOS2DE.Utilities
 					{
 						Log.Here().Activity($"Loading localization data from '{publicRootTemplatePath}'.");
 						var publicRootTemplatesLocaleData = await LoadFilesAsync(localizationData.RootTemplatesGroup, publicRootTemplatePath, modProjectData, token, ".lsf");
-						publicRootTemplatesLocaleData.ForEach(f => {
+						publicRootTemplatesLocaleData.ForEach(f =>
+						{
 							f.Locked = true;
 							f.CanCreateFileLink = false;
 						});
@@ -263,7 +270,7 @@ namespace SCG.Modules.DOS2DE.Utilities
 					}
 				}
 
-				if(customExists)
+				if (customExists)
 				{
 					var customFiles = await LoadCustomFilesAsync(customLocaleDir, modProjectData);
 					localizationData.CustomGroup.DataFiles.AddRange(customFiles);
@@ -321,7 +328,7 @@ namespace SCG.Modules.DOS2DE.Utilities
 			{
 				bool isJournal = Path.GetFileName(Path.GetDirectoryName(filePath)) == "Journal";
 				var data = await LoadResourceAsync(groupData, filePath, isJournal);
-				if(data != null)
+				if (data != null)
 				{
 					data.ModProject = modProjectData;
 					stringKeyData.Add(data);
@@ -442,9 +449,9 @@ namespace SCG.Modules.DOS2DE.Utilities
 
 		private static void LoadFromNode_Recursive(List<LocaleNodeKeyEntry> newEntries, Node node, ResourceFormat resourceFormat)
 		{
-			if(node.Attributes.TryGetValue("Type", out var nodeTypeAttribute))
+			if (node.Attributes.TryGetValue("Type", out var nodeTypeAttribute))
 			{
-				if(nodeTypeAttribute.Value.GetType() == typeof(string))
+				if (nodeTypeAttribute.Value.GetType() == typeof(string))
 				{
 					string nodeType = (string)nodeTypeAttribute.Value;
 					if (!nodeType.Equals("character", StringComparison.OrdinalIgnoreCase) && !nodeType.Equals("item", StringComparison.OrdinalIgnoreCase))
@@ -454,11 +461,11 @@ namespace SCG.Modules.DOS2DE.Utilities
 				}
 			}
 			newEntries.AddRange(LoadAllFromNodeAttributes(node, resourceFormat, false));
-			if(node.Children.Count > 0)
+			if (node.Children.Count > 0)
 			{
-				foreach(var nList in node.Children.Values)
+				foreach (var nList in node.Children.Values)
 				{
-					foreach(var n in nList)
+					foreach (var n in nList)
 					{
 						LoadFromNode_Recursive(newEntries, n, resourceFormat);
 					}
@@ -493,7 +500,7 @@ namespace SCG.Modules.DOS2DE.Utilities
 			}
 			foreach (var kvp in node.Children)
 			{
-				foreach(var n in kvp.Value)
+				foreach (var n in kvp.Value)
 				{
 					FindQuestNodes(kvp.Key, n, newEntries);
 				}
@@ -529,7 +536,7 @@ namespace SCG.Modules.DOS2DE.Utilities
 				{
 					var rootNode = resource.Regions.First().Value;
 
-					if(rootNode != null)
+					if (rootNode != null)
 					{
 						foreach (var nList in rootNode.Children.Values)
 						{
@@ -567,7 +574,7 @@ namespace SCG.Modules.DOS2DE.Utilities
 					newEntries = newEntries.OrderBy(e => e.Key).ToList();
 				}
 			}
-			catch(Exception ex)
+			catch (Exception ex)
 			{
 				Log.Here().Error($"Error loading from resource: {ex.ToString()}");
 			}
@@ -590,7 +597,7 @@ namespace SCG.Modules.DOS2DE.Utilities
 					localeEntry.TranslatedStringAttribute = kvp.Value;
 					localeEntry.TranslatedString = kvp.Value.Value as TranslatedString;
 
-					if(generateNewHandle) localeEntry.Handle = CreateHandle();
+					if (generateNewHandle) localeEntry.Handle = CreateHandle();
 
 					newEntries.Add(localeEntry);
 				}
@@ -605,7 +612,7 @@ namespace SCG.Modules.DOS2DE.Utilities
 				LocaleNodeKeyEntry localeEntry = new LocaleNodeKeyEntry(node);
 				NodeAttribute keyAtt = null;
 				NodeAttribute contentAtt = null;
-				if(node.Attributes.TryGetValue("UUID", out keyAtt))
+				if (node.Attributes.TryGetValue("UUID", out keyAtt))
 				{
 					localeEntry.KeyAttribute = keyAtt;
 				}
@@ -614,7 +621,7 @@ namespace SCG.Modules.DOS2DE.Utilities
 					keyAtt = new NodeAttribute(NodeAttribute.DataType.DT_FixedString);
 					localeEntry.KeyAttribute = keyAtt;
 				}
-				if(!node.Attributes.TryGetValue("Content", out contentAtt))
+				if (!node.Attributes.TryGetValue("Content", out contentAtt))
 				{
 					contentAtt = new NodeAttribute(NodeAttribute.DataType.DT_TranslatedString);
 					if (contentAtt.Value is TranslatedString translatedString)
@@ -624,7 +631,7 @@ namespace SCG.Modules.DOS2DE.Utilities
 						localeEntry.TranslatedString = translatedString;
 					}
 				}
-				
+
 				localeEntry.KeyIsEditable = true;
 
 				localeEntry.TranslatedStringAttribute = contentAtt;
@@ -640,12 +647,12 @@ namespace SCG.Modules.DOS2DE.Utilities
 			else if (resourceFormat == ResourceFormat.LSJ)
 			{
 				LocaleNodeKeyEntry localeEntry = new LocaleNodeKeyEntry(node);
-				
+
 				localeEntry.KeyIsEditable = false;
 				localeEntry.Key = resourceFormat == ResourceFormat.LSJ ? "TagText" : "";
 
 				NodeAttribute contentAtt = null;
-				
+
 				if (!node.Attributes.TryGetValue("TagText", out contentAtt))
 				{
 					contentAtt = new NodeAttribute(NodeAttribute.DataType.DT_TranslatedString);
@@ -681,7 +688,7 @@ namespace SCG.Modules.DOS2DE.Utilities
 			List<Node> nodes = new List<Node>();
 			foreach (var att in node.Attributes)
 			{
-				if(att.Value.Value is TranslatedString translatedString)
+				if (att.Value.Value is TranslatedString translatedString)
 				{
 					nodes.Add(node);
 					break;
@@ -721,10 +728,10 @@ namespace SCG.Modules.DOS2DE.Utilities
 					{
 						Regex regex = new Regex(@"(.*Divinity Original Sin 2\\DefEd\\Data\\)", RegexOptions.IgnoreCase);
 						var m = regex.Match(f.SourcePath);
-						if(m.Success)
+						if (m.Success)
 						{
 							var val = m.Groups[1].Value;
-							if(!replacePaths.Contains(val))
+							if (!replacePaths.Contains(val))
 							{
 								replacePaths.Add(val);
 							}
@@ -791,7 +798,7 @@ namespace SCG.Modules.DOS2DE.Utilities
 		{
 			if (data.SelectedGroup == null) return -1;
 
-			foreach(var dir in data.SelectedGroup.SourceDirectories)
+			foreach (var dir in data.SelectedGroup.SourceDirectories)
 			{
 				if (!Directory.Exists(dir))
 				{
@@ -901,11 +908,11 @@ namespace SCG.Modules.DOS2DE.Utilities
 				if (dataFile.SourcePath.EndsWith(".tsv"))
 				{
 					string output = "Key\tContent\tHandle\n";
-					for(int i = 0; i < dataFile.Entries.Count; i++)
+					for (int i = 0; i < dataFile.Entries.Count; i++)
 					{
 						var entry = dataFile.Entries[i];
 						output += $"{entry.Key}\t{entry.Content}{entry.Handle}";
-						if(i < dataFile.Entries.Count - 1)
+						if (i < dataFile.Entries.Count - 1)
 						{
 							output += Environment.NewLine;
 						}
@@ -973,14 +980,14 @@ namespace SCG.Modules.DOS2DE.Utilities
 			if (fileData.IsCombinedData)
 			{
 				// The real file that contains this handle is allowing overrides.
-				if(fileData.Parent.DataFiles.Any(f => f.CanOverride && f.Entries.Any(x => x.Handle == handle)))
+				if (fileData.Parent.DataFiles.Any(f => f.CanOverride && f.Entries.Any(x => x.Handle == handle)))
 				{
 					return false;
 				}
 			}
 			//Larian handles for empty GMSpawnSubsection
-			if(handle == "heee99d71g1f41g4ba2g8adbg98fad94256ca" 
-				|| handle == "hfeccb8bbgf99fg4028gb187g607c18c2cbaa" 
+			if (handle == "heee99d71g1f41g4ba2g8adbg98fad94256ca"
+				|| handle == "hfeccb8bbgf99fg4028gb187g607c18c2cbaa"
 				|| handle == "h248966eag678eg4ad8g8f2agd2910d0087c5") // Empty MysteryDescription
 			{
 				return true;
@@ -1002,7 +1009,7 @@ namespace SCG.Modules.DOS2DE.Utilities
 					bool findActualSource = fileData == data.SelectedGroup.CombinedEntries;
 
 					IEnumerable<ILocaleKeyEntry> exportedKeys = null;
-					if(!exportAll)
+					if (!exportAll)
 					{
 						exportedKeys = fileData.Entries.Where(fd => fd.Selected && !IgnoreHandle(fd.Handle, fileData)).DistinctBy(x => x.Handle);
 					}
@@ -1032,7 +1039,7 @@ namespace SCG.Modules.DOS2DE.Utilities
 					}
 					else if (exportSource && exportKeys)
 					{
-						exportedKeys = exportedKeys.OrderBy(x => 
+						exportedKeys = exportedKeys.OrderBy(x =>
 							GetSourceFileName(fileData, findActualSource, data, x)).ThenBy(x => x.EntryKey);
 					}
 					else
@@ -1205,7 +1212,7 @@ namespace SCG.Modules.DOS2DE.Utilities
 		public static void SaveLinkedData(DOS2DEModuleData moduleData, LocaleProjectLinkData linkFile)
 		{
 			var dir = DOS2DEDefaultPaths.LocalizationEditorLinkFolder(moduleData);
-			if(!Directory.Exists(dir))
+			if (!Directory.Exists(dir))
 			{
 				Directory.CreateDirectory(dir);
 			}
@@ -1290,7 +1297,7 @@ namespace SCG.Modules.DOS2DE.Utilities
 								string handle = (handleMode && match.Groups.Count >= 3) ? match.Groups[3].Value : "";
 
 								//Log.Here().Activity($"New entry: {key} => {content}{(handleMode ? "|" + handle : "")}");
-	
+
 								if (!String.IsNullOrWhiteSpace(key))
 								{
 									entries.Add(new TextualLocaleEntry { Key = key, Content = content, Handle = handle });
@@ -1298,10 +1305,10 @@ namespace SCG.Modules.DOS2DE.Utilities
 							}
 						}
 
-						if(entries.Count > 0)
+						if (entries.Count > 0)
 						{
 							bool changesUnsaved = false;
-							foreach(var entry in entries)
+							foreach (var entry in entries)
 							{
 								var existingEntry = fileData.Entries.FirstOrDefault(x => x.Key.Equals(entry.Key, StringComparison.OrdinalIgnoreCase));
 								if (existingEntry != null)
@@ -1315,7 +1322,7 @@ namespace SCG.Modules.DOS2DE.Utilities
 										changesUnsaved = true;
 									}
 
-									if(!String.IsNullOrWhiteSpace(entry.Handle) && entry.Handle != existingEntry.Handle)
+									if (!String.IsNullOrWhiteSpace(entry.Handle) && entry.Handle != existingEntry.Handle)
 									{
 										Log.Here().Activity($"Updated entry handle: {existingEntry.Handle} => {entry.Handle}");
 										existingEntry.Handle = entry.Handle;
@@ -1325,7 +1332,7 @@ namespace SCG.Modules.DOS2DE.Utilities
 								}
 								else
 								{
-									if(fileData is LocaleNodeFileData nodeFileData)
+									if (fileData is LocaleNodeFileData nodeFileData)
 									{
 										var newEntry = CreateNewLocaleEntry(nodeFileData, entry.Key, entry.Content);
 										if (!String.IsNullOrWhiteSpace(entry.Handle))
@@ -1349,7 +1356,7 @@ namespace SCG.Modules.DOS2DE.Utilities
 						}
 					}
 				}
-				
+
 			}
 			return allMissingEntries;
 		}
@@ -1375,7 +1382,7 @@ namespace SCG.Modules.DOS2DE.Utilities
 			Region parent = null;
 			ResourceFormat format = ResourceFormat.LSB;
 
-			if(fileData is LocaleNodeFileData nodeFileData)
+			if (fileData is LocaleNodeFileData nodeFileData)
 			{
 				parent = nodeFileData.RootRegion;
 			}
@@ -1405,7 +1412,7 @@ namespace SCG.Modules.DOS2DE.Utilities
 			node.Attributes.Add("Content", translatedStringAtt);
 			node.Attributes.Add("ExtraData", new NodeAttribute(NodeAttribute.DataType.DT_LSString) { Value = "" });
 			node.Attributes.Add("Speaker", new NodeAttribute(NodeAttribute.DataType.DT_FixedString) { Value = "" });
-			node.Attributes.Add("Stub", new NodeAttribute(NodeAttribute.DataType.DT_Bool) { Value = false});
+			node.Attributes.Add("Stub", new NodeAttribute(NodeAttribute.DataType.DT_Bool) { Value = false });
 			node.Attributes.Add("UUID", keyAtt);
 
 			LocaleNodeKeyEntry localeEntry = LoadFromNode(node, format);
@@ -1428,11 +1435,11 @@ namespace SCG.Modules.DOS2DE.Utilities
 			return r.Match(line)?.Success == true;
 		}
 
-		private static Dictionary<string,int> GetSheetParamOrder(string line, char delimiter)
+		private static Dictionary<string, int> GetSheetParamOrder(string line, char delimiter)
 		{
 			var parameters = line.Split(delimiter);
 			Dictionary<string, int> paramOrder = new Dictionary<string, int>();
-			for(int i = 0; i < parameters.Length; i++)
+			for (int i = 0; i < parameters.Length; i++)
 			{
 				string val = parameters[i];
 				if (!String.IsNullOrWhiteSpace(val))
@@ -1446,7 +1453,7 @@ namespace SCG.Modules.DOS2DE.Utilities
 
 		private static string GetSheetValue(string paramName, Dictionary<string, int> fileParameters, string[] entries, string fallback = "")
 		{
-			if(fileParameters.TryGetValue(paramName, out int index))
+			if (fileParameters.TryGetValue(paramName, out int index))
 			{
 				if (entries[index] != null)
 				{
@@ -1527,7 +1534,7 @@ namespace SCG.Modules.DOS2DE.Utilities
 						foreach (var sourceDir in groupData.SourceDirectories)
 						{
 							ILocaleFileData fileData = null;
-							if(!groupData.IsCustom)
+							if (!groupData.IsCustom)
 							{
 								var newFileData = CreateNodeFileDataFromTextual(groupData, stream, sourceDir, path, delimiter);
 								// Automatically create linked data
@@ -1537,13 +1544,13 @@ namespace SCG.Modules.DOS2DE.Utilities
 									TargetFile = newFileData.SourcePath
 								};
 								fileData = newFileData;
-								if(linkedProjects.Count == 1)
+								if (linkedProjects.Count == 1)
 								{
 									newFileData.ModProject = linkedProjects.First();
 								}
 								else
 								{
-									foreach(var project in linkedProjects)
+									foreach (var project in linkedProjects)
 									{
 										if (sourceDir.Contains(project.FolderName))
 										{
@@ -1560,7 +1567,7 @@ namespace SCG.Modules.DOS2DE.Utilities
 									SourcePath = path
 								};
 							}
-							
+
 							newFileDataList.Add(fileData);
 						}
 					}
@@ -1574,7 +1581,7 @@ namespace SCG.Modules.DOS2DE.Utilities
 			List<ILocaleKeyEntry> newEntryList = new List<ILocaleKeyEntry>();
 			try
 			{
-				foreach(var path in files)
+				foreach (var path in files)
 				{
 					Log.Here().Activity($"Checking file '{path}'");
 
@@ -1699,9 +1706,9 @@ namespace SCG.Modules.DOS2DE.Utilities
 
 		public static void LoadProjectSettings(DOS2DEModuleData moduleData, LocaleViewModel localeData)
 		{
-			if(localeData.Settings != null)
+			if (localeData.Settings != null)
 			{
-				if(localeData.Settings.Projects.Count > 0)
+				if (localeData.Settings.Projects.Count > 0)
 				{
 					foreach (var entry in localeData.Settings.Projects)
 					{
@@ -1831,7 +1838,7 @@ namespace SCG.Modules.DOS2DE.Utilities
 			}
 		}
 		#endregion
-	
+
 		public static async Task<HashSet<string>> LoadIgnoredHandlesAsync(string path)
 		{
 			HashSet<string> handles = new HashSet<string>();

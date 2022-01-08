@@ -28,7 +28,6 @@ using System.Windows.Threading;
 using SCG.Util;
 using SCG.Collections;
 using ReactiveUI;
-using SCG.Modules.DOS2DE.Data.View.Locale;
 using SCG.Modules.DOS2DE.Utilities;
 using System.Reactive;
 using System.Reactive.Linq;
@@ -37,6 +36,7 @@ using System.Windows.Media.Animation;
 using System.Reactive.Disposables;
 using System.Reactive.Concurrency;
 using System.Collections;
+using SCG.Modules.DOS2DE.LocalizationEditor.ViewModels;
 
 namespace SCG.Modules.DOS2DE.Views
 {

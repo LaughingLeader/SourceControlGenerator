@@ -10,6 +10,7 @@ using ReactiveUI;
 using System.ComponentModel;
 using SCG.Interfaces;
 using ReactiveUI.Fody.Helpers;
+using SCG.Modules.DOS2DE.LocalizationEditor.Models;
 
 namespace SCG.Modules.DOS2DE.Data.View.Locale
 {

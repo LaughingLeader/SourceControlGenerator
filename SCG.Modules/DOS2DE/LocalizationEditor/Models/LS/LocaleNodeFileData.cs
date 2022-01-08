@@ -1,9 +1,15 @@
 ﻿using Alphaleonis.Win32.Filesystem;
+
 using DynamicData.Binding;
+
 using LSLib.LS;
 using LSLib.LS.Enums;
+
 using SCG.Data;
+using SCG.Modules.DOS2DE.Data.View;
+using SCG.Modules.DOS2DE.Data.View.Locale;
 using SCG.Modules.DOS2DE.Utilities;
+
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -11,7 +17,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SCG.Modules.DOS2DE.Data.View.Locale
+namespace SCG.Modules.DOS2DE.LocalizationEditor.Models
 {
 	public class LocaleNodeFileData : BaseLocaleFileData
 	{
@@ -24,7 +30,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 
 		public Region RootRegion { get; private set; }
 
-		public LocaleNodeFileData(LocaleTabGroup parent, ResourceFormat resourceFormat, 
+		public LocaleNodeFileData(LocaleTabGroup parent, ResourceFormat resourceFormat,
 			Resource res, string sourcePath, string name = "") : base(parent, name)
 		{
 			Source = res;
@@ -40,13 +46,13 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 
 				if (Format == ResourceFormat.LSF)
 				{
-					this.CanRename = false;
+					CanRename = false;
 
 					if (RootRegion.Children.TryGetValue("GameObjects", out var nodes))
 					{
 						if (nodes.FirstOrDefault().Attributes.TryGetValue("Name", out var nameAtt))
 						{
-							this.Name = (string)nameAtt.Value;
+							Name = (string)nameAtt.Value;
 						}
 					}
 
@@ -79,7 +85,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			{
 				var nodeList = RootRegion.Children.Values.Where(x => x.Count > 0).OrderBy(x => x.Count).FirstOrDefault();
 
-				Log.Here().Activity($"Parsing region for {this.SourcePath}.");
+				Log.Here().Activity($"Parsing region for {SourcePath}.");
 
 				foreach (var kvp in RootRegion.Children)
 				{
@@ -94,7 +100,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 						}
 						foreach (var nodekvp in x.Children)
 						{
-							Log.Here().Activity($"   Nodes: {nodekvp.Key} => {String.Join(",", nodekvp.Value.Select(n => n.Name))}");
+							Log.Here().Activity($"   Nodes: {nodekvp.Key} => {string.Join(",", nodekvp.Value.Select(n => n.Name))}");
 						}
 					}
 				}

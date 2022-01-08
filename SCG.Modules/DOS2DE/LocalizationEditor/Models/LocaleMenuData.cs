@@ -1,6 +1,8 @@
 ﻿using ReactiveUI;
+
 using SCG.Data;
 using SCG.Data.View;
+
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -10,7 +12,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 
-namespace SCG.Modules.DOS2DE.Data.View.Locale
+namespace SCG.Modules.DOS2DE.LocalizationEditor.Models
 {
 	public class LocaleMenuData : ReactiveObject
 	{

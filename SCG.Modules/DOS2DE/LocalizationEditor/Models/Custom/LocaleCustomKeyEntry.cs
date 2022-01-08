@@ -1,6 +1,5 @@
 ﻿using SCG.Data;
 using SCG.Modules.DOS2DE.Windows;
-using SCG.Modules.DOS2DE.Data.View;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,8 +7,9 @@ using System.Text;
 using System.Threading.Tasks;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
+using SCG.Modules.DOS2DE.Data.View.Locale;
 
-namespace SCG.Modules.DOS2DE.Data.View.Locale
+namespace SCG.Modules.DOS2DE.LocalizationEditor.Models
 {
 	public class LocaleCustomKeyEntry : BaseLocaleKeyEntry, ILocaleKeyEntry
 	{
@@ -53,7 +53,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			get => key;
 			set
 			{
-				if (this.UpdateWithHistory(ref key, value))
+				if (UpdateWithHistory(ref key, value))
 				{
 					ChangesUnsaved = true;
 					this.RaisePropertyChanged("Key");
@@ -65,7 +65,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			get => content;
 			set
 			{
-				if (this.UpdateWithHistory(ref content, value))
+				if (UpdateWithHistory(ref content, value))
 				{
 					ChangesUnsaved = true;
 					this.RaisePropertyChanged("Content");
@@ -77,7 +77,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			get => handle;
 			set
 			{
-				if (this.UpdateWithHistory(ref handle, value))
+				if (UpdateWithHistory(ref handle, value))
 				{
 					ChangesUnsaved = true;
 					this.RaisePropertyChanged("Handle");

@@ -1,6 +1,5 @@
 ﻿using SCG.Data;
 using SCG.Modules.DOS2DE.Windows;
-using SCG.Modules.DOS2DE.Data.View;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,16 +8,17 @@ using System.Threading.Tasks;
 using ReactiveUI;
 using LSLib.LS;
 using SCG.Modules.DOS2DE.Utilities;
+using SCG.Modules.DOS2DE.Data.View.Locale;
 
-namespace SCG.Modules.DOS2DE.Data.View.Locale
+namespace SCG.Modules.DOS2DE.LocalizationEditor.Models
 {
 	public class LocaleNodeKeyEntry : BaseLocaleKeyEntry, ILocaleKeyEntry
 	{
-		public LSLib.LS.Node Node { get; set; }
+		public Node Node { get; set; }
 
-		private LSLib.LS.NodeAttribute keyAttribute;
+		private NodeAttribute keyAttribute;
 
-		public LSLib.LS.NodeAttribute KeyAttribute
+		public NodeAttribute KeyAttribute
 		{
 			get { return keyAttribute; }
 			set
@@ -27,7 +27,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 				if (KeyIsEditable && keyAttribute != null && keyAttribute.Value != null)
 				{
 					bool changed = false;
-					if(keyAttribute.Value is TranslatedString translatedString)
+					if (keyAttribute.Value is TranslatedString translatedString)
 					{
 						changed = key != translatedString.Value;
 						key = translatedString.Value;
@@ -46,9 +46,9 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			}
 		}
 
-		public LSLib.LS.NodeAttribute TranslatedStringAttribute { get; set; }
+		public NodeAttribute TranslatedStringAttribute { get; set; }
 
-		public LSLib.LS.TranslatedString TranslatedString { get; set; }
+		public TranslatedString TranslatedString { get; set; }
 
 		public override void OnSelected(bool isSelected)
 		{
@@ -74,12 +74,13 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 
 		public string Content
 		{
-			get { 
+			get
+			{
 				if (TranslatedString != null)
 				{
 					return TranslatedString.Value;
 				}
-				else if(TranslatedStringAttribute.Value != null)
+				else if (TranslatedStringAttribute.Value != null)
 				{
 					return (string)TranslatedStringAttribute.Value;
 				}
@@ -114,7 +115,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 				{
 					return TranslatedString.Handle;
 				}
-				else if (!String.IsNullOrEmpty(handle))
+				else if (!string.IsNullOrEmpty(handle))
 				{
 					return handle;
 				}
@@ -148,10 +149,10 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			get { return key; }
 			set
 			{
-				if (this.KeyIsEditable)
+				if (KeyIsEditable)
 				{
 					var last = key;
-					if (this.UpdateWithHistory(ref key, value, "Key"))
+					if (UpdateWithHistory(ref key, value, "Key"))
 					{
 						this.RaisePropertyChanged("EntryKey");
 						Parent.AddUnsavedChange(this, LocaleUnsavedChangesData.Create(this, LocaleChangedField.Key, last, value));
@@ -170,10 +171,10 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			get { return Content; }
 			set
 			{
-				if (this.ContentIsEditable && TranslatedString != null)
+				if (ContentIsEditable && TranslatedString != null)
 				{
 					var last = TranslatedString.Value;
-					if(this.UpdateWithHistory(ref TranslatedString.Value, value, "Content"))
+					if (UpdateWithHistory(ref TranslatedString.Value, value, "Content"))
 					{
 						//Log.Here().Activity($"Saving history for EntryContent| {last} => {value}");
 						this.RaisePropertyChanged("EntryContent");
@@ -188,10 +189,10 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			get { return Handle; }
 			set
 			{
-				if (this.HandleIsEditable && TranslatedString != null)
+				if (HandleIsEditable && TranslatedString != null)
 				{
 					var last = TranslatedString.Handle;
-					if (this.UpdateWithHistory(ref TranslatedString.Handle, value, "Handle"))
+					if (UpdateWithHistory(ref TranslatedString.Handle, value, "Handle"))
 					{
 						this.RaisePropertyChanged("EntryHandle");
 						Parent.AddUnsavedChange(this, LocaleUnsavedChangesData.Create(this, LocaleChangedField.Handle, last, value));
@@ -202,11 +203,11 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 
 		#endregion
 
-		public LocaleNodeKeyEntry(LSLib.LS.Node resNode) : base()
+		public LocaleNodeKeyEntry(Node resNode) : base()
 		{
 			Node = resNode;
 		}
-		public LocaleNodeKeyEntry(LSLib.LS.Node resNode, ILocaleFileData parent) : base(parent)
+		public LocaleNodeKeyEntry(Node resNode, ILocaleFileData parent) : base(parent)
 		{
 			Node = resNode;
 		}

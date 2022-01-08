@@ -1,6 +1,8 @@
 ﻿using ReactiveUI;
+
 using SCG.Modules.DOS2DE.Data;
 using SCG.Windows;
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,7 +17,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 
-namespace SCG.Modules.DOS2DE.Windows
+namespace SCG.Modules.DOS2DE.LocalizationEditor.Views
 {
 	/// <summary>
 	/// Interaction logic for LocaleOptionsWindow.xaml

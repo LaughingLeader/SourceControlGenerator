@@ -15,8 +15,9 @@ using DynamicData;
 using DynamicData.List;
 using System.Reactive.Linq;
 using ReactiveUI.Fody.Helpers;
+using SCG.Modules.DOS2DE.Data.View.Locale;
 
-namespace SCG.Modules.DOS2DE.Data.View.Locale
+namespace SCG.Modules.DOS2DE.LocalizationEditor.Models
 {
 	public class BaseLocaleFileData : ReactiveObject, ILocaleFileData
 	{
@@ -154,7 +155,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 				UpdateDisplayName();
 			});
 
-			this.WhenAnyValue(x => x.FileLinkData.ReadFrom, (f) => !String.IsNullOrEmpty(f)).ToProperty(this, x => x.HasFileLink);
+			this.WhenAnyValue(x => x.FileLinkData.ReadFrom, (f) => !string.IsNullOrEmpty(f)).ToProperty(this, x => x.HasFileLink);
 
 			var entryChangeSet = Entries.ToObservableChangeSet();
 			//Setting ChangesUnsaved to true when any item in entries is unsaved

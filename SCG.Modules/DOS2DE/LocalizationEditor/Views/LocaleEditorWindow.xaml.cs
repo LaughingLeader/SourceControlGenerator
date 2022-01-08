@@ -27,8 +27,10 @@ using SCG.Controls;
 using SCG.Modules.DOS2DE.Core;
 using TheArtOfDev.HtmlRenderer.WPF;
 using DynamicData.Binding;
+using SCG.Modules.DOS2DE.LocalizationEditor.Models;
+using SCG.Modules.DOS2DE.LocalizationEditor.ViewModels;
 
-namespace SCG.Modules.DOS2DE.Windows
+namespace SCG.Modules.DOS2DE.LocalizationEditor.Views
 {
 	public class LocaleEditorDebugViewModel : ReactiveObject
 	{
@@ -70,7 +72,7 @@ namespace SCG.Modules.DOS2DE.Windows
 	/// </summary>
 	public partial class LocaleEditorWindow : ClipboardMonitorWindow, IViewFor<LocaleViewModel>, IActivatableView
 	{
-		
+
 		/*
 		public LocaleViewData ViewModel
 		{
@@ -178,9 +180,9 @@ namespace SCG.Modules.DOS2DE.Windows
 
 		private void LocaleEditorWindow_KeyDown(object sender, KeyEventArgs e)
 		{
-			if(ViewModel.IsAddingNewFileTab)
+			if (ViewModel.IsAddingNewFileTab)
 			{
-				
+
 			}
 		}
 
@@ -200,7 +202,7 @@ namespace SCG.Modules.DOS2DE.Windows
 
 		public void PopoutContentWindow(ILocaleKeyEntry entry)
 		{
-			if(ContentWindow.ViewModel == null)
+			if (ContentWindow.ViewModel == null)
 			{
 				ContentWindow.ViewModel = new LocaleContentWindowViewModel()
 				{
@@ -220,7 +222,7 @@ namespace SCG.Modules.DOS2DE.Windows
 
 		public void TogglePreferencesWindow()
 		{
-			if(!OptionsWindow.IsVisible)
+			if (!OptionsWindow.IsVisible)
 			{
 				OptionsWindow.LoadData(ViewModel.Settings);
 				OptionsWindow.Show();
@@ -302,7 +304,7 @@ namespace SCG.Modules.DOS2DE.Windows
 
 		private void OnLocaleTextboxGotKeyboardFocus(object sender, KeyboardFocusChangedEventArgs e)
 		{
-			if(sender is TextBox tb)
+			if (sender is TextBox tb)
 			{
 				ViewModel.CurrentTextBox = tb;
 				e.Handled = true;
@@ -322,7 +324,7 @@ namespace SCG.Modules.DOS2DE.Windows
 
 		private void Entries_SelectAll(object sender, RoutedEventArgs e)
 		{
-			
+
 		}
 
 		private void Entries_SelectNone(object sender, RoutedEventArgs e)
@@ -332,7 +334,7 @@ namespace SCG.Modules.DOS2DE.Windows
 
 		private void DataGrid_Loaded(object sender, RoutedEventArgs e)
 		{
-			if(sender is DataGrid grid)
+			if (sender is DataGrid grid)
 			{
 				foreach (var column in grid.Columns)
 				{
@@ -361,9 +363,9 @@ namespace SCG.Modules.DOS2DE.Windows
 		private void EntryDataGrid_RowFocused(object sender, RoutedEventArgs e)
 		{
 			//Log.Here().Activity($"EntryDataGrid_RowFocused: {sender} | {e.Source}");
-			if(sender is DataGridRow row)
+			if (sender is DataGridRow row)
 			{
-				if(row.DataContext is LocaleNodeKeyEntry localeKeyEntry)
+				if (row.DataContext is LocaleNodeKeyEntry localeKeyEntry)
 				{
 					ViewModel.SelectedEntry = localeKeyEntry;
 				}
@@ -399,7 +401,7 @@ namespace SCG.Modules.DOS2DE.Windows
 				lastFocusedRichTextBox = null;
 			}
 
-			if(lastFocusedContentBox == null && lastFocusedRichTextBox == null)
+			if (lastFocusedContentBox == null && lastFocusedRichTextBox == null)
 			{
 				ViewModel.ContentFocused = false;
 				ViewModel.ContentSelected = false;
@@ -411,7 +413,7 @@ namespace SCG.Modules.DOS2DE.Windows
 			if (sender is Xceed.Wpf.Toolkit.RichTextBox richTextBox)
 			{
 				ViewModel.ContentSelected = richTextBox.Selection?.Text != string.Empty;
-				if(richTextBox.Selection != null)
+				if (richTextBox.Selection != null)
 				{
 					ViewModel.SelectedText = richTextBox.Selection.Text;
 				}
@@ -428,7 +430,7 @@ namespace SCG.Modules.DOS2DE.Windows
 
 		private void FontColorPicker_Loaded(object sender, RoutedEventArgs e)
 		{
-			if(sender is Xceed.Wpf.Toolkit.ColorPicker cp)
+			if (sender is Xceed.Wpf.Toolkit.ColorPicker cp)
 			{
 				colorPicker = cp;
 
@@ -474,9 +476,9 @@ namespace SCG.Modules.DOS2DE.Windows
 
 		private void FileDataTab_LostFocus(object sender, RoutedEventArgs e)
 		{
-			if(sender is TabItem tb)
+			if (sender is TabItem tb)
 			{
-				if(tb.DataContext is ILocaleFileData fileData)
+				if (tb.DataContext is ILocaleFileData fileData)
 				{
 					fileData.IsRenaming = false;
 
@@ -489,7 +491,7 @@ namespace SCG.Modules.DOS2DE.Windows
 
 		public void FocusSelectedTab()
 		{
-			if(fileTabControl != null)
+			if (fileTabControl != null)
 			{
 				Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Background, new Action(async () =>
 				{
@@ -517,7 +519,7 @@ namespace SCG.Modules.DOS2DE.Windows
 								}
 							}
 						}
-						
+
 					}
 				}));
 			}
@@ -559,7 +561,7 @@ namespace SCG.Modules.DOS2DE.Windows
 		//RemovedEntriesListViewCheckboxHeader
 		private void RemovedEntriesListViewCheckboxHeader_Checked(object sender, RoutedEventArgs e)
 		{
-			if(ViewModel.MissingEntries != null)
+			if (ViewModel.MissingEntries != null)
 			{
 				foreach (var entry in ViewModel.MissingEntries)
 				{
@@ -609,7 +611,7 @@ namespace SCG.Modules.DOS2DE.Windows
 
 					string sortHeader = header;
 
-					switch(header)
+					switch (header)
 					{
 						case "File":
 							sortHeader = "Parent.Name";
@@ -622,7 +624,7 @@ namespace SCG.Modules.DOS2DE.Windows
 							break;
 					}
 
-					if(sortHeader != "") RemovedEntriesListView_Sort(sortHeader, direction, sender);
+					if (sortHeader != "") RemovedEntriesListView_Sort(sortHeader, direction, sender);
 
 					_lastHeaderClicked = headerClicked;
 					_lastDirection = direction;
@@ -661,9 +663,9 @@ namespace SCG.Modules.DOS2DE.Windows
 
 		private void EntryHandleTextBox_GotFocus(object sender, RoutedEventArgs e)
 		{
-			if(sender is TextBox tb)
+			if (sender is TextBox tb)
 			{
-				if(tb.Text == LocaleEditorCommands.UnsetHandle || String.IsNullOrWhiteSpace(tb.Text))
+				if (tb.Text == LocaleEditorCommands.UnsetHandle || String.IsNullOrWhiteSpace(tb.Text))
 				{
 					//Delay so the selector can enter the textbox
 					RxApp.MainThreadScheduler.Schedule(TimeSpan.FromMilliseconds(50), _ =>
@@ -676,9 +678,9 @@ namespace SCG.Modules.DOS2DE.Windows
 
 		private void LocaleEntryGridContentPresenter_Loaded(object sender, RoutedEventArgs e)
 		{
-			if(sender is ContentPresenter cp)
+			if (sender is ContentPresenter cp)
 			{
-				if(cp.Content != KeyActionsGrid)
+				if (cp.Content != KeyActionsGrid)
 				{
 					cp.Content = KeyActionsGrid;
 				}
@@ -733,7 +735,7 @@ namespace SCG.Modules.DOS2DE.Windows
 			}
 
 			var lastEntry = e.AddedItems.OfType<ILocaleKeyEntry>().LastOrDefault();
-			if(lastEntry != null)
+			if (lastEntry != null)
 			{
 				ViewModel.SelectedEntry = lastEntry;
 			}

@@ -1,7 +1,9 @@
 ﻿using ReactiveUI;
+
 using SCG.Data;
 using SCG.Modules.DOS2DE.Data.View.Locale;
 using SCG.Windows;
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,7 +19,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 
-namespace SCG.Modules.DOS2DE.Windows
+namespace SCG.Modules.DOS2DE.LocalizationEditor.Views
 {
 	public class LocaleContentWindowViewModel : HistoryBaseViewModel
 	{
@@ -116,7 +118,8 @@ namespace SCG.Modules.DOS2DE.Windows
 		{
 			AddFontTagCommand = ReactiveCommand.Create(AddFontTag).DisposeWith(disposables);
 			ToggleContentLightModeCommand = ReactiveCommand.Create(() => ContentLightMode = !ContentLightMode).DisposeWith(disposables);
-			ChangeContentFontSizeCommand = ReactiveCommand.Create<string>((fontSizeStr) => {
+			ChangeContentFontSizeCommand = ReactiveCommand.Create<string>((fontSizeStr) =>
+			{
 				this.RaisePropertyChanging("ContentFontSize");
 				if (int.TryParse(fontSizeStr, out contentFontSize))
 				{
@@ -129,10 +132,10 @@ namespace SCG.Modules.DOS2DE.Windows
 	/// Interaction logic for LocaleContentWindow.xaml
 	/// </summary>
 	public partial class LocaleContentWindow : HideWindowBase, IViewFor<LocaleContentWindowViewModel>
-    {
-        public LocaleContentWindow()
-        {
-            InitializeComponent();
+	{
+		public LocaleContentWindow()
+		{
+			InitializeComponent();
 
 			this.WhenActivated((disposables) =>
 			{
@@ -141,7 +144,7 @@ namespace SCG.Modules.DOS2DE.Windows
 				ViewModel?.OnActivated(disposables);
 				DataContext = ViewModel;
 			});
-        }
+		}
 
 		private LocaleContentWindowViewModel vm;
 

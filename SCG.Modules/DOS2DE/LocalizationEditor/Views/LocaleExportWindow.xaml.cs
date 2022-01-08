@@ -1,5 +1,4 @@
 ﻿using SCG.Modules.DOS2DE.Utilities;
-using SCG.Modules.DOS2DE.Data.View.Locale;
 using SCG.Windows;
 using System;
 using System.Collections.Generic;
@@ -17,8 +16,9 @@ using System.Windows.Shapes;
 using ReactiveUI;
 using System.Windows.Controls.Primitives;
 using Xceed.Wpf.Toolkit;
+using SCG.Modules.DOS2DE.LocalizationEditor.ViewModels;
 
-namespace SCG.Modules.DOS2DE.Windows
+namespace SCG.Modules.DOS2DE.LocalizationEditor.Views
 {
 	/// <summary>
 	/// Interaction logic for LocaleExportWindow.xaml
@@ -80,7 +80,7 @@ namespace SCG.Modules.DOS2DE.Windows
 
 		public void ResetBindings()
 		{
-			if(ViewModel != null)
+			if (ViewModel != null)
 			{
 				CreateBinding("Languages", LanguagesChecklistBox, ListBox.ItemsSourceProperty);
 				CreateBinding("LanguageCheckedCommand", LanguagesChecklistBox, CheckListBox.CommandProperty);
@@ -107,9 +107,9 @@ namespace SCG.Modules.DOS2DE.Windows
 		private void CopyButton_Click(object sender, RoutedEventArgs e)
 		{
 			Log.Here().Activity($"Command check: {this.SaveButton.Command}");
-			if(FindName("OutputTextbox") is TextBox outputTextbox)
+			if (FindName("OutputTextbox") is TextBox outputTextbox)
 			{
-				if(!String.IsNullOrWhiteSpace(outputTextbox.Text))
+				if (!String.IsNullOrWhiteSpace(outputTextbox.Text))
 				{
 					Clipboard.SetText(outputTextbox.Text);
 				}

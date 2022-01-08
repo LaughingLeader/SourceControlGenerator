@@ -10,6 +10,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using SCG.Modules.DOS2DE.LocalizationEditor.ViewModels;
+using SCG.Modules.DOS2DE.LocalizationEditor.Models;
 
 namespace SCG.Modules.DOS2DE.Data.View.Locale
 {
@@ -75,11 +77,11 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 				if (SelectedFile != null) SelectedFile.Selected = false;
 				this.RaiseAndSetIfChanged(ref selectedfileIndex, value);
 				this.RaisePropertyChanged("SelectedFile");
-				if(SelectedFileChanged != null)
+				if (SelectedFileChanged != null)
 				{
 					SelectedFileChanged.Invoke(this, SelectedFile);
 				}
-				else if (SelectedFile != null) 
+				else if (SelectedFile != null)
 				{
 					SelectedFile.Selected = true;
 				}
@@ -125,7 +127,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 
 		public void UpdateCombinedData(bool all = false)
 		{
-			if(all || (Tabs.Count == 0 || CombinedEntries.Entries.Count == 0))
+			if (all || (Tabs.Count == 0 || CombinedEntries.Entries.Count == 0))
 			{
 				CombinedEntries.Entries.Clear();
 				foreach (var obj in DataFiles)
@@ -152,7 +154,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			}
 			else
 			{
-				if(CombinedEntries.Entries.Count != DataFiles.Count || CombinedEntries.Entries.Count == 0)
+				if (CombinedEntries.Entries.Count != DataFiles.Count || CombinedEntries.Entries.Count == 0)
 				{
 					CombinedEntries.Entries.Clear();
 					foreach (var obj in DataFiles.OrderBy(x => x.Name))

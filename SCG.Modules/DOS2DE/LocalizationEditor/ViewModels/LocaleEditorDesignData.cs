@@ -5,12 +5,18 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
-using Alphaleonis.Win32.Filesystem;
-using LSLib.LS.Enums;
-using SCG.Data.View;
-using SCG.Modules.DOS2DE.Utilities;
 
-namespace SCG.Modules.DOS2DE.Data.View.Locale
+using Alphaleonis.Win32.Filesystem;
+
+using LSLib.LS.Enums;
+
+using SCG.Data.View;
+using SCG.Modules.DOS2DE.Data.View;
+using SCG.Modules.DOS2DE.Utilities;
+using SCG.Modules.DOS2DE.LocalizationEditor.Views;
+using SCG.Modules.DOS2DE.LocalizationEditor.Models;
+
+namespace SCG.Modules.DOS2DE.LocalizationEditor.ViewModels
 {
 	public class LocaleEditorDesignData : LocaleViewModel
 	{
@@ -26,7 +32,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 
 			ModsGroup.DataFiles.Add(new BaseLocaleFileData(ModsGroup, "Skills") { ChangesUnsaved = true });
 			ModsGroup.DataFiles.Add(new BaseLocaleFileData(ModsGroup, "Statuses"));
-			for(var i = 1; i < 4; i++)
+			for (var i = 1; i < 4; i++)
 			{
 				ModsGroup.DataFiles.Add(new BaseLocaleFileData(ModsGroup, "Potionslalalalala" + i));
 			}
