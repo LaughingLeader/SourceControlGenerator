@@ -5,7 +5,7 @@ using System.Runtime.InteropServices;
 using System.Windows;
 
 [assembly: AssemblyTitle("Source Control Generator")]
-[assembly: AssemblyDescription("Create git projects and backup multiple projects with a centralized interface.")]
+[assembly: AssemblyDescription("Generate git repositories for mod projects with a centralized interface.")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("Source Control Generator")]
@@ -17,8 +17,8 @@ using System.Windows;
 [assembly: ComVisible(false)]
 
 [assembly: ThemeInfo(
-    ResourceDictionaryLocation.None,
-    ResourceDictionaryLocation.SourceAssembly
+	ResourceDictionaryLocation.None,
+	ResourceDictionaryLocation.SourceAssembly
 )]
-[assembly: AssemblyVersion("1.7.9.0")]
-[assembly: AssemblyFileVersion("1.7.9.0")]
+[assembly: AssemblyVersion("1.7.10.0")]
+[assembly: AssemblyFileVersion("1.7.10.0")] 

@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using ReactiveUI;
 using System.ComponentModel;
 using SCG.Interfaces;
+using ReactiveUI.Fody.Helpers;
 
 namespace SCG.Modules.DOS2DE.Data.View.Locale
 {
@@ -48,83 +49,47 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 	{
 		public ILocaleFileData Parent { get; set; }
 
-		private bool keyIsEditable = true;
+		[Reactive] public bool KeyIsEditable { get; set; } = true;
 
-		public bool KeyIsEditable
-		{
-			get { return keyIsEditable; }
-			set
-			{
-				this.RaiseAndSetIfChanged(ref keyIsEditable, value);
-			}
-		}
+		[Reactive] public bool HandleIsEditable { get; set; } = true;
 
-		private bool handleIsEditable = true;
+		[Reactive] public bool ContentIsEditable { get; set; } = true;
 
-		public bool HandleIsEditable
-		{
-			get => handleIsEditable;
-			set { this.RaiseAndSetIfChanged(ref handleIsEditable, value); }
-		}
+		[Reactive] public bool Selected { get; set; } = false;
 
-		private bool contentIsEditable = true;
+		[Reactive] public int Index { get; set; } = -1;
 
-		public bool ContentIsEditable
-		{
-			get => contentIsEditable;
-			set { this.RaiseAndSetIfChanged(ref contentIsEditable, value); }
-		}
-
-
-		private bool selected = false;
-
-		public bool Selected
-		{
-			get { return selected; }
-			set
-			{
-				if (Visible)
-				{
-					this.RaiseAndSetIfChanged(ref selected, value);
-					OnSelected(selected);
-				}
-				else
-				{
-					if(Selected)
-					{
-						this.RaiseAndSetIfChanged(ref selected, false);
-						OnSelected(false);
-					}
-				}
-			}
-		}
-
-		private int index = -1;
-
-		public int Index
-		{
-			get => index;
-			set { this.RaiseAndSetIfChanged(ref index, value); }
-		}
-
-		private bool visibile = true;
-
-		public bool Visible
-		{
-			get => visibile;
-			set { this.RaiseAndSetIfChanged(ref visibile, value); }
-		}
+		[Reactive] public bool Visible { get; set; } = true;
 
 		public virtual void OnSelected(bool isSelected)
 		{
 			//Parent.OnSelectedKeyChanged(this, isSelected);
 		}
 
-		public BaseLocaleKeyEntry() { }
+		private void Init()
+		{
+			this.WhenAnyValue(x => x.Selected).Subscribe(b =>
+			{
+				if (Visible)
+				{
+					OnSelected(b);
+				}
+				else if (Selected)
+				{
+					OnSelected(false);
+				}
+			});
+		}
+
+		public BaseLocaleKeyEntry()
+		{
+			Init();
+		}
 
 		public BaseLocaleKeyEntry(ILocaleFileData parent)
 		{
 			Parent = parent;
+			Init();
 		}
 	}
 }

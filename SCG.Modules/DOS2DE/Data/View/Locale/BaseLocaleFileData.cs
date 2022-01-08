@@ -14,6 +14,7 @@ using System.Threading.Tasks;
 using DynamicData;
 using DynamicData.List;
 using System.Reactive.Linq;
+using ReactiveUI.Fody.Helpers;
 
 namespace SCG.Modules.DOS2DE.Data.View.Locale
 {
@@ -28,42 +29,35 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 
 		public string SourcePath { get; set; }
 
-		private LocaleFileLinkData fileLinkData;
+		[Reactive] public LocaleFileLinkData FileLinkData { get; set; }
 
-		public LocaleFileLinkData FileLinkData
-		{
-			get => fileLinkData;
-			set
-			{
-				this.RaiseAndSetIfChanged(ref fileLinkData, value);
-				HasFileLink = !String.IsNullOrEmpty(fileLinkData.ReadFrom);
-			}
-		}
+		[Reactive] public string Name { get; set; }
 
+		[Reactive] public bool ChangesUnsaved { get; set; }
 
-		private string name;
+		[Reactive] public string DisplayName { get; set; }
 
-		public string Name
-		{
-			get { return name; }
-			set
-			{
-				this.RaiseAndSetIfChanged(ref name, value);
-				UpdateDisplayName();
-				renamingName = name;
-			}
-		}
+		[Reactive] public bool Selected { get; set; }
 
-		private string displayName;
+		[Reactive] public bool Locked { get; set; }
 
-		public string DisplayName
-		{
-			get { return displayName; }
-			private set
-			{
-				this.RaiseAndSetIfChanged(ref displayName, value);
-			}
-		}
+		[Reactive] public bool CanClose { get; set; }
+
+		[Reactive] public bool CanRename { get; set; }
+
+		[Reactive] public bool CanOverride { get; set; }
+
+		[Reactive] public bool IsRenaming { get; set; }
+
+		[Reactive] public string RenameText { get; set; }
+
+		[Reactive] public bool HasFileLink { get; set; }
+
+		[Reactive] public bool CanCreateFileLink { get; set; }
+
+		[Reactive] public bool IsCombinedData { get; set; }
+
+		public List<LocaleUnsavedChangesData> UnsavedChanges = new List<LocaleUnsavedChangesData>();
 
 		private void UpdateDisplayName()
 		{
@@ -73,114 +67,14 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			DisplayName = !ChangesUnsaved ? Name : "*" + Name;
 		}
 
-		private bool selected = false;
-
-		public bool Selected
-		{
-			get { return selected; }
-			set
-			{
-				this.RaiseAndSetIfChanged(ref selected, value);
-			}
-		}
-
-		private bool locked = false;
-
-		public bool Locked
-		{
-			get { return locked; }
-			set
-			{
-				this.RaiseAndSetIfChanged(ref locked, value);
-			}
-		}
-
-		private bool changesUnsaved = false;
-
-		public bool ChangesUnsaved
-		{
-			get { return changesUnsaved; }
-			set
-			{
-				this.RaiseAndSetIfChanged(ref changesUnsaved, value);
-				UpdateDisplayName();
-			}
-		}
-
-		private bool canClose = false;
-
-		public bool CanClose
-		{
-			get => canClose;
-			set { this.RaiseAndSetIfChanged(ref canClose, value); }
-		}
-
-		private bool canRename = true;
-
-		public bool CanRename
-		{
-			get => canRename;
-			set { this.RaiseAndSetIfChanged(ref canRename, value); }
-		}
-
-		private bool canOverride = false;
-
-		public bool CanOverride
-		{
-			get => canOverride;
-			set { this.RaiseAndSetIfChanged(ref canOverride, value); }
-		}
-
-		private bool isRenaming = false;
-
-		public bool IsRenaming
-		{
-			get => isRenaming;
-			set { this.RaiseAndSetIfChanged(ref isRenaming, value); }
-		}
-
-		private string renamingName;
-
-		public string RenameText
-		{
-			get => renamingName;
-			set { this.RaiseAndSetIfChanged(ref renamingName, value); }
-		}
-
-		private bool hasFileLink;
-
-		public bool HasFileLink
-		{
-			get => hasFileLink;
-			set { this.RaiseAndSetIfChanged(ref hasFileLink, value); }
-		}
-
-		private bool canCreateFileLink;
-
-		public bool CanCreateFileLink
-		{
-			get => canCreateFileLink;
-			set { this.RaiseAndSetIfChanged(ref canCreateFileLink, value); }
-		}
-
-		private bool isCombinedData = false;
-
-		public bool IsCombinedData
-		{
-			get => isCombinedData;
-			set { this.RaiseAndSetIfChanged(ref isCombinedData, value); }
-		}
-
-		public List<LocaleUnsavedChangesData> UnsavedChanges = new List<LocaleUnsavedChangesData>();
-
 		public void SetChangesUnsaved(bool b, bool clearUnsaved = true)
 		{
-			if(!b && clearUnsaved)
+			if (!b && clearUnsaved)
 			{
 				UnsavedChanges.Clear();
 			}
 
-			foreach(var key in Entries)
+			foreach (var key in Entries)
 			{
 				key.ChangesUnsaved = false;
 			}
@@ -226,7 +120,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 		{
 			// Remove this unsaved change if it matches a previous one
 			var matchedChange = UnsavedChanges.FirstOrDefault(x => LocaleUnsavedChangeMatch(x, unsavedChange));
-			if(matchedChange != null)
+			if (matchedChange != null)
 			{
 				//Log.Here().Activity($"Removing unsaved change as it matches a previous value '{matchedChange.ChangeType} | {matchedChange.LastValue} => {matchedChange.NewValue}'.");
 				RemoveUnsavedChange(matchedChange);
@@ -242,7 +136,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 
 		public void RemoveUnsavedChange(LocaleUnsavedChangesData change)
 		{
-			if(UnsavedChanges.Remove(change))
+			if (UnsavedChanges.Remove(change))
 			{
 				Parent?.UpdateUnsavedChanges();
 				ChangesUnsaved = UnsavedChanges.Count > 0;
@@ -253,16 +147,25 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 		{
 			Name = name;
 			Parent = parent;
+
+			this.WhenAnyValue(x => x.Name, x => x.ChangesUnsaved).Subscribe((obs) =>
+			{
+				RenameText = obs.Item1;
+				UpdateDisplayName();
+			});
+
+			this.WhenAnyValue(x => x.FileLinkData.ReadFrom, (f) => !String.IsNullOrEmpty(f)).ToProperty(this, x => x.HasFileLink);
+
 			var entryChangeSet = Entries.ToObservableChangeSet();
 			//Setting ChangesUnsaved to true when any item in entries is unsaved
 			var anyChanged = entryChangeSet.AutoRefresh(x => x.ChangesUnsaved).ToCollection();
 			anyChanged.Any(x => x.Any(y => y.ChangesUnsaved == true)).ToProperty(this, x => x.ChangesUnsaved);
 			entryChangeSet.AutoRefresh(x => x.Visible).Filter(x => x.Visible == true).ObserveOn(RxApp.MainThreadScheduler).Bind(out visibleEntries).Subscribe();
 
-			this.WhenAnyValue(x => x.VisibleEntries.Count, x => x.Selected, (x,y) => x > 0 && y).
+			this.WhenAnyValue(x => x.VisibleEntries.Count, x => x.Selected, (x, y) => x > 0 && y).
 				ObserveOn(RxApp.MainThreadScheduler).Subscribe((x) =>
 			{
-				if(Selected && VisibleEntries.Count > 0)
+				if (Selected && VisibleEntries.Count > 0)
 				{
 					int index = 1;
 					for (var i = 0; i < VisibleEntries.Count; i++)
