@@ -1,4 +1,7 @@
 ﻿using Newtonsoft.Json;
+
+using ReactiveUI.Fody.Helpers;
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,6 +14,8 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 	public class LocaleCustomFileData : BaseLocaleFileData
 	{
 		public ModProjectData Project { get; set; }
+
+		[Reactive] public EnumLocaleLanguages Language { get; set; }
 
 		public LocaleCustomFileData(LocaleTabGroup parent, string name = "") : base(parent, name)
 		{

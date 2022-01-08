@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using ReactiveUI;
+using ReactiveUI.Fody.Helpers;
 
 namespace SCG.Modules.DOS2DE.Data.View.Locale
 {
@@ -47,39 +48,36 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 				this.RaisePropertyChanged("EntryHandle");
 			}
 		}
-
 		public string EntryKey
 		{
 			get => key;
 			set
 			{
-				if(this.UpdateWithHistory(ref key, value))
+				if (this.UpdateWithHistory(ref key, value))
 				{
 					ChangesUnsaved = true;
 					this.RaisePropertyChanged("Key");
 				}
 			}
 		}
-
 		public string EntryContent
 		{
 			get => content;
 			set
 			{
-				if(this.UpdateWithHistory(ref content, value))
+				if (this.UpdateWithHistory(ref content, value))
 				{
 					ChangesUnsaved = true;
 					this.RaisePropertyChanged("Content");
 				}
 			}
 		}
-
 		public string EntryHandle
 		{
 			get => handle;
 			set
 			{
-				if(this.UpdateWithHistory(ref handle, value))
+				if (this.UpdateWithHistory(ref handle, value))
 				{
 					ChangesUnsaved = true;
 					this.RaisePropertyChanged("Handle");
