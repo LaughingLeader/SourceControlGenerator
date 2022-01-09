@@ -22,7 +22,7 @@ namespace SCG.Modules.DOS2DE.ViewModels
 {
 	public class PakExtractionViewModel
 	{
-		private readonly SourceList<PakExtractionEntry> _items;
+		private readonly SourceList<PakExtractionEntry> _items = new SourceList<PakExtractionEntry>();
 
 		private readonly ReadOnlyObservableCollection<PakExtractionEntry> _paks;
 		public ReadOnlyObservableCollection<PakExtractionEntry> Paks => _paks;
@@ -30,7 +30,7 @@ namespace SCG.Modules.DOS2DE.ViewModels
 		[Reactive] public bool ExtractInOrder { get; set; } = true;
 		[Reactive] public bool ExtractToIndividualFolders { get; set; } = false;
 		[Reactive] public string ExportDirectory { get; set; }
-		
+
 		public ICommand ExtractPaksCommand { get; private set; }
 
 		private List<string> _extractOrder = new List<string>()
@@ -99,7 +99,7 @@ namespace SCG.Modules.DOS2DE.ViewModels
 		public void StartExtract()
 		{
 			var selectedPaks = Paks.Where(x => x.IsChecked).ToList();
-			if(ExtractInOrder)
+			if (ExtractInOrder)
 			{
 				selectedPaks = selectedPaks.OrderBy(x => _extractOrder.IndexOf(x.Name)).ToList();
 			}
@@ -107,12 +107,12 @@ namespace SCG.Modules.DOS2DE.ViewModels
 			AppController.Main.StartProgressAsync($"Extracing paks... ", async (t) => await ExtractAsync(selectedPaks, t), "", 0, true);
 		}
 
-		private async Task<bool> ExtractAsync(List<PakExtractionEntry> selectedPaks,  CancellationToken token)
+		private async Task<bool> ExtractAsync(List<PakExtractionEntry> selectedPaks, CancellationToken token)
 		{
-			foreach(var entry in selectedPaks)
+			foreach (var entry in selectedPaks)
 			{
 				var exportDir = ExportDirectory;
-				if(ExtractToIndividualFolders)
+				if (ExtractToIndividualFolders)
 				{
 					exportDir = Path.Combine(ExportDirectory, entry.Name);
 				}
