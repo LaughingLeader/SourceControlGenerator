@@ -73,14 +73,15 @@
     <Reference Include="HtmlRenderer.WPF, Version=1.5.0.6, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\..\packages\HtmlRenderer.WPF.1.5.0.6\lib\net45\HtmlRenderer.WPF.dll</HintPath>
     </Reference>
-    <Reference Include="LSLib">
+    <Reference Include="LSLib, Version=1.15.10.0, Culture=neutral, processorArchitecture=AMD64">
+      <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\lslib\LSLib\bin\Release\LSLib.dll</HintPath>
     </Reference>
     <Reference Include="Markdig, Version=0.26.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Markdig.0.26.0\lib\net452\Markdig.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Xaml.Behaviors, Version=1.1.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Microsoft.Xaml.Behaviors.Wpf.1.1.31\lib\net45\Microsoft.Xaml.Behaviors.dll</HintPath>
+      <HintPath>..\..\packages\Microsoft.Xaml.Behaviors.Wpf.1.1.39\lib\net45\Microsoft.Xaml.Behaviors.dll</HintPath>
     </Reference>
     <Reference Include="Neo.Markdig.Xaml, Version=1.0.10.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Neo.Markdig.Xaml.1.0.10\lib\net47\Neo.Markdig.Xaml.dll</HintPath>
@@ -177,7 +178,6 @@
     <Reference Include="System.Web.Extensions" />
     <Reference Include="System.Windows" />
     <Reference Include="System.Windows.Forms" />
-    <Reference Include="System.Windows.Interactivity, Version=4.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Core" />
@@ -313,17 +313,9 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\DirectoryLayout.txt" />
-  </ItemGroup>
-  <ItemGroup>
     <Resource Include="Resources\DefaultAttributes.txt" />
-  </ItemGroup>
-  <ItemGroup>
     <Resource Include="Resources\DefaultChangelog.txt" />
-  </ItemGroup>
-  <ItemGroup>
     <Resource Include="Resources\DefaultGitIgnore.txt" />
-  </ItemGroup>
-  <ItemGroup>
     <Resource Include="Resources\DefaultReadme.txt" />
   </ItemGroup>
   <ItemGroup>
@@ -369,13 +361,12 @@
     <Folder Include="Data\App\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <PropertyGroup>
-    <PostBuildEvent>xcopy "$(TargetDir)$(TargetFileName)" "$(SolutionDir)Modules_Export\" /Y
-xcopy "$(TargetDir)$(TargetFileName)" "D:\Projects\_Visual_Studio\SourceControlGenerator\SourceControlGenerator\bin\Debug\Modules\" /Y
-
-xcopy "$(TargetDir)$(TargetFileName)" "$(SolutionDir)Modules_Export\" /Y
-xcopy "$(TargetDir)$(TargetFileName)" "D:\Projects\_Visual_Studio\SourceControlGenerator\SourceControlGenerator\bin\Release\Modules\" /Y</PostBuildEvent>
-  </PropertyGroup>
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <ItemGroup>
+      <FilesToMove Include="$(OutputPath)\**" />
+    </ItemGroup>
+    <Copy SourceFiles="@(FilesToMove)" DestinationFolder="$(SolutionDir)SourceControlGenerator\bin\$(Configuration)\Modules\%(RecursiveDir)" OverwriteReadOnlyFiles="true" />
+  </Target>
   <Import Project="..\..\packages\Microsoft.NETFramework.ReferenceAssemblies.net472.1.0.2\build\Microsoft.NETFramework.ReferenceAssemblies.net472.targets" Condition="Exists('..\..\packages\Microsoft.NETFramework.ReferenceAssemblies.net472.1.0.2\build\Microsoft.NETFramework.ReferenceAssemblies.net472.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>

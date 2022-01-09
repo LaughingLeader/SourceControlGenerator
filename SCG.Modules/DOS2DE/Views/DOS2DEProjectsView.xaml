@@ -9,7 +9,7 @@
 	xmlns:cv="clr-namespace:SCG.Converters;assembly=SourceControlGenerator"
 	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
 	xmlns:data="clr-namespace:SCG.Modules.DOS2DE.Data.View"
-	xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
+	xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
 	xmlns:local="clr-namespace:SCG.Modules.DOS2DE.Views"
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 	xmlns:proxy="clr-namespace:SCG.Data.Proxy;assembly=SourceControlGenerator"

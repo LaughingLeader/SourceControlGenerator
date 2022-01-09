@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Microsoft.Xaml.Behaviors;
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,7 +8,6 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
-using System.Windows.Interactivity;
 using System.Windows.Media.Animation;
 
 namespace SCG.Controls.Behavior
@@ -57,13 +58,13 @@ namespace SCG.Controls.Behavior
 		protected override void OnAttached()
 		{
 			base.OnAttached();
-			
-			if(buttonWrapper == null)
+
+			if (buttonWrapper == null)
 			{
 				buttonWrapper = new ContentControl();
 
 				var parent = this.AssociatedObject.Parent;
-				if(parent is StackPanel stackPanel)
+				if (parent is StackPanel stackPanel)
 				{
 					var index = stackPanel.Children.IndexOf(AssociatedObject);
 					stackPanel.Children.RemoveAt(index);
@@ -88,7 +89,7 @@ namespace SCG.Controls.Behavior
 				{
 					var index = stackPanel.Children.IndexOf(buttonWrapper);
 					stackPanel.Children.RemoveAt(index);
-					if(binding != null)
+					if (binding != null)
 					{
 						BindingOperations.ClearBinding(AssociatedObject, ImageButton.IsHoveredProperty);
 						binding = null;

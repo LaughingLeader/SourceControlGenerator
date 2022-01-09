@@ -8,7 +8,7 @@
 	xmlns:cv="clr-namespace:SCG.Converters"
 	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
 	xmlns:fc="clr-namespace:SCG.Commands"
-	xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
+	xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
 	xmlns:listview="clr-namespace:Itenso.Windows.Controls.ListViewLayout"
 	xmlns:local="clr-namespace:SCG"
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
