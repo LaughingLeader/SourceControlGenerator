@@ -175,7 +175,6 @@ namespace SCG.Controls
 
 			if (_owner != null)
 			{
-				System.Threading.Thread.CurrentThread.ManagedThreadId
 				_hHook = SetWindowsHookEx(WH_CALLWNDPROCRET, _hookProc, IntPtr.Zero, GetCurrentThreadId());
 			}
 		}

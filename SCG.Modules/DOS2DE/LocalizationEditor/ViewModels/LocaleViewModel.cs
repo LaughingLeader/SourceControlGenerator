@@ -319,11 +319,7 @@ namespace SCG.Modules.DOS2DE.LocalizationEditor.ViewModels
 
 		private List<LocaleTabGroup> GetCoreGroups()
 		{
-#if DEBUG
 			return new List<LocaleTabGroup>() { PublicGroup, ModsGroup, DialogGroup, JournalGroup, CustomGroup };
-#else
-			return new List<LocaleTabGroup>() { PublicGroup, ModsGroup, DialogGroup, JournalGroup };
-#endif
 		}
 
 		private LocaleTabGroup combinedGroup;
@@ -965,6 +961,10 @@ namespace SCG.Modules.DOS2DE.LocalizationEditor.ViewModels
 						return Disposable.Empty;
 					});
 				}
+				else if (SelectedFile.IsCustom)
+				{
+					//TODO
+				}
 				else
 				{
 					Log.Here().Warning($"Selected file saving of type [{SelectedFile.GetType()}] is not currently supported.");
@@ -1112,6 +1112,12 @@ namespace SCG.Modules.DOS2DE.LocalizationEditor.ViewModels
 				var lastFiles = currentGroup.DataFiles.ToList();
 				var lastImportPath = CurrentImportPath;
 				var lastLinked = LinkedLocaleData.ToList();
+
+				if (ActiveProjectSettings == null)
+				{
+					ActiveProjectSettings = Settings.GetProjectSettings(LinkedProjects.FirstOrDefault());
+					ActiveProjectSettings.SaveSettings = view.SaveSettings;
+				}
 
 				var lastCustom = ActiveProjectSettings.CustomFiles.ToList();
 
@@ -2378,7 +2384,7 @@ namespace SCG.Modules.DOS2DE.LocalizationEditor.ViewModels
 			ChangesUnsaved = Groups.Any(g => g.ChangesUnsaved == true);
 		}
 
-		public void ReloadFileData(LocaleNodeFileData fileData)
+		public void ReloadFileData(ILocaleFileData fileData)
 		{
 			FileCommands.OpenConfirmationDialog(view, "Reload Data?", "This current file will be reverted to what is saved, potentially restoring or changing keys.", "Unsaved changes will be lost.", (b) =>
 			{
@@ -2390,6 +2396,7 @@ namespace SCG.Modules.DOS2DE.LocalizationEditor.ViewModels
 					var oldFile = fileData;
 					int index = targetGroup.DataFiles.IndexOf(fileData);
 					int selectedIndex = selectedGroup.SelectedFileIndex;
+					bool isNodeTypeFile = fileData is LocaleNodeFileData;
 
 					void undo()
 					{
@@ -2404,32 +2411,50 @@ namespace SCG.Modules.DOS2DE.LocalizationEditor.ViewModels
 
 					void redo()
 					{
-						var newFile = LocaleEditorCommands.LoadResource(oldFile.Parent, oldFile.SourcePath, oldFile.Parent.Name == "Journal");
-						var oldEntries = oldFile.Entries.ToList();
-						oldFile.Entries.Clear();
-						oldFile.Entries.AddRange(newFile.Entries);
-						var changesUnsaved = 0;
-						foreach (var entry in oldFile.Entries)
+						ILocaleFileData newFile = null;
+						
+						if(isNodeTypeFile)
 						{
-							if (!oldEntries.Any(x => x.ValuesMatch(entry)))
+							newFile = LocaleEditorCommands.LoadResource(oldFile.Parent, oldFile.SourcePath, oldFile.Parent.Name == "Journal");
+						}
+						else
+						{
+							var files = LocaleEditorCommands.ImportFilesAsData(new List<string> { oldFile.SourcePath }, oldFile.Parent, LinkedProjects);
+							newFile = files.FirstOrDefault();
+						}
+
+						if(newFile != null)
+						{
+							var oldEntries = oldFile.Entries.ToList();
+							oldFile.Entries.Clear();
+							oldFile.Entries.AddRange(newFile.Entries);
+							var changesUnsaved = 0;
+							foreach (var entry in oldFile.Entries)
 							{
-								entry.ChangesUnsaved = true;
-								changesUnsaved++;
+								if (!oldEntries.Any(x => x.ValuesMatch(entry)))
+								{
+									entry.ChangesUnsaved = true;
+									changesUnsaved++;
+								}
 							}
+							targetGroup.UpdateCombinedData();
+							if (selectedGroup != targetGroup) selectedGroup.UpdateCombinedData();
+							selectedGroup.SelectedFileIndex = selectedIndex;
+
+							OutputText = $"Reloaded file '{newFile.SourcePath}'";
+							OutputType = LogType.Important;
+
+							if (changesUnsaved > 0)
+							{
+								oldFile.ChangesUnsaved = targetGroup.ChangesUnsaved = ChangesUnsaved = true;
+							}
+
+							OnHideExtras(HideExtras);
 						}
-						targetGroup.UpdateCombinedData();
-						if (selectedGroup != targetGroup) selectedGroup.UpdateCombinedData();
-						selectedGroup.SelectedFileIndex = selectedIndex;
-
-						OutputText = $"Reloaded file '{newFile.SourcePath}'";
-						OutputType = LogType.Important;
-
-						if (changesUnsaved > 0)
+						else
 						{
-							oldFile.ChangesUnsaved = targetGroup.ChangesUnsaved = ChangesUnsaved = true;
+							Log.Here().Error($"Failed to reload file {oldFile.SourcePath}");
 						}
-
-						OnHideExtras(HideExtras);
 					}
 					CreateSnapshot(undo, redo);
 					redo();
@@ -2954,10 +2979,7 @@ namespace SCG.Modules.DOS2DE.LocalizationEditor.ViewModels
 
 			ReloadFileCommand = ReactiveCommand.Create((ILocaleFileData fileData) =>
 			{
-				if (fileData is LocaleNodeFileData nodeFile)
-				{
-					ReloadFileData(nodeFile);
-				}
+				ReloadFileData(fileData);
 			}, FileSelectedObservable).DisposeWith(disposables);
 
 			ReloadFileLinkDataCommand = ReactiveCommand.Create<ILocaleFileData>(RefreshLinkedData, FileSelectedObservable).DisposeWith(disposables);
@@ -3315,20 +3337,6 @@ namespace SCG.Modules.DOS2DE.LocalizationEditor.ViewModels
 			CustomGroup = new CustomLocaleTabGroup(this, "Custom");
 			CustomGroup.IsCustom = true;
 
-#if Debug
-			Groups = new ObservableCollectionExtended<LocaleTabGroup>
-			{
-				CombinedGroup,
-				ModsGroup,
-				PublicGroup,
-				DialogGroup,
-				JournalGroup,
-				RootTemplatesGroup,
-				GlobalTemplatesGroup,
-				LevelDataGroup
-				CustomGroup
-			};
-#else
 			Groups = new ObservableCollectionExtended<LocaleTabGroup>
 			{
 				CombinedGroup,
@@ -3339,9 +3347,9 @@ namespace SCG.Modules.DOS2DE.LocalizationEditor.ViewModels
 				RootTemplatesGroup,
 				GlobalTemplatesGroup,
 				LevelDataGroup,
-				//CustomGroup
+				CustomGroup
 			};
-#endif
+
 			foreach (var g in Groups)
 			{
 				g.SelectedFileChanged = SelectedFileChanged;

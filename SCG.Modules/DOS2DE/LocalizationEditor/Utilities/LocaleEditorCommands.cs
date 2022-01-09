@@ -1497,7 +1497,7 @@ namespace SCG.Modules.DOS2DE.LocalizationEditor.Utilities
 			return r.Match(line)?.Success == true;
 		}
 
-		private static Dictionary<string, int> GetSheetParamOrder(string line, char delimiter)
+		public static Dictionary<string, int> GetSheetParamOrder(string line, char delimiter)
 		{
 			var parameters = line.Split(delimiter);
 			Dictionary<string, int> paramOrder = new Dictionary<string, int>();
@@ -1513,7 +1513,7 @@ namespace SCG.Modules.DOS2DE.LocalizationEditor.Utilities
 			return paramOrder;
 		}
 
-		private static string GetSheetValue(string paramName, Dictionary<string, int> fileParameters, string[] entries, string fallback = "")
+		public static string GetSheetValue(string paramName, Dictionary<string, int> fileParameters, string[] entries, string fallback = "")
 		{
 			if (fileParameters.TryGetValue(paramName, out int index))
 			{
@@ -1605,46 +1605,37 @@ namespace SCG.Modules.DOS2DE.LocalizationEditor.Utilities
 					char delimiter = '\t';
 					if (FileCommands.FileExtensionFound(path, ".csv")) delimiter = ',';
 
+					var firstProject = linkedProjects.FirstOrDefault();
+					var sourceDir = groupData.SourceDirectories.FirstOrDefault(x => x.Contains(firstProject.FolderName));
+
 					using (var stream = new System.IO.StreamReader(path))
 					{
-						foreach (var sourceDir in groupData.SourceDirectories)
+						ILocaleFileData fileData = null;
+						if (!groupData.IsCustom)
 						{
-							ILocaleFileData fileData = null;
-							if (!groupData.IsCustom)
+							var newFileData = CreateNodeFileDataFromTextual(groupData, stream, sourceDir, path, delimiter);
+							// Automatically create linked data
+							newFileData.FileLinkData = new LocaleFileLinkData()
 							{
-								var newFileData = CreateNodeFileDataFromTextual(groupData, stream, sourceDir, path, delimiter);
-								// Automatically create linked data
-								newFileData.FileLinkData = new LocaleFileLinkData()
-								{
-									ReadFrom = path,
-									TargetFile = newFileData.SourcePath
-								};
-								fileData = newFileData;
-								if (linkedProjects.Count == 1)
-								{
-									newFileData.ModProject = linkedProjects.First();
-								}
-								else
-								{
-									foreach (var project in linkedProjects)
-									{
-										if (sourceDir.Contains(project.FolderName))
-										{
-											newFileData.ModProject = project;
-											break;
-										}
-									}
-								}
-							}
-							else
+								ReadFrom = path,
+								TargetFile = newFileData.SourcePath,
+							};
+							newFileData.ModProject = firstProject;
+							fileData = newFileData;
+						}
+						else
+						{
+							var customFile = new LocaleCustomFileData(groupData, Path.GetFileNameWithoutExtension(path))
 							{
-								fileData = new LocaleCustomFileData(groupData, Path.GetFileNameWithoutExtension(path))
-								{
-									SourcePath = path,
-									Language = FindLanguage(path)
-								};
-							}
+								SourcePath = path,
+								Language = FindLanguage(path)
+							};
+							customFile.LoadFromTextualStream(stream, delimiter);
+							fileData = customFile;
+						}
 
+						if (fileData != null)
+						{
 							newFileDataList.Add(fileData);
 						}
 					}
