@@ -2028,6 +2028,7 @@ namespace SCG.Modules.DOS2DE.LocalizationEditor.ViewModels
 										}
 										catch (Exception ex)
 										{
+											Log.Here().Error($"Error inserting file entry: {ex}");
 											fileEntry.Entries.Add(x.Entry);
 										}
 									}
@@ -2564,7 +2565,10 @@ namespace SCG.Modules.DOS2DE.LocalizationEditor.ViewModels
 												nodeFileData.RootRegion.AppendChild(nodeKeyEntry.Node);
 											}
 										}
-										catch (Exception ex) { }
+										catch (Exception ex)
+										{
+											Log.Here().Error($"Appending locale node to region: {ex}");
+										}
 									}
 
 									fileEntry.ChangesUnsaved = x.ParentChangesUnsaved;

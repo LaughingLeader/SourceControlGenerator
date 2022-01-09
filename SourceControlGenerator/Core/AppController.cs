@@ -33,7 +33,7 @@ using System.Threading;
 
 namespace SCG.Core
 {
-   public class AppController
+	public class AppController
 	{
 		private static AppController _instance;
 
@@ -177,7 +177,7 @@ namespace SCG.Core
 				}
 			}
 
-			if(nextProjectController != null)
+			if (nextProjectController != null)
 			{
 				return SetModule(nextProjectController);
 			}
@@ -227,7 +227,7 @@ namespace SCG.Core
 
 				return true;
 			}
-			catch(Exception ex)
+			catch (Exception ex)
 			{
 				Log.Here().Error($"Error loading module: {ex.ToString()}");
 				return false;
@@ -237,9 +237,9 @@ namespace SCG.Core
 		private void OnSetupComplete()
 		{
 			Data.LockScreenVisibility = Visibility.Collapsed;
-			if(CurrentModule != null)
+			if (CurrentModule != null)
 			{
-				if(CurrentModule.ModuleData != null)
+				if (CurrentModule.ModuleData != null)
 				{
 					if (CurrentModule.ModuleData.ModuleSettings != null)
 					{
@@ -253,7 +253,7 @@ namespace SCG.Core
 
 		public void UnloadCurrentModule()
 		{
-			if(CurrentModule != null)
+			if (CurrentModule != null)
 			{
 				if (CurrentModule.ModuleData != null)
 				{
@@ -277,7 +277,7 @@ namespace SCG.Core
 
 		public void StartProgress(string Title, Action StartAction, string StartMessage = "", int StartValue = 0, bool ShowCancelButton = false, Action CancelAction = null)
 		{
-			if(!Data.ProgressActive)
+			if (!Data.ProgressActive)
 			{
 				Data.ProgressTitle = Title;
 				Data.ProgressMessage = StartMessage;
@@ -305,7 +305,7 @@ namespace SCG.Core
 
 		public void StartProgressAsync(string Title, Func<CancellationToken, Task> StartAction, string StartMessage = "", int StartValue = 0, bool ShowCancelButton = false, Action CancelAction = null)
 		{
-			if(!Data.ProgressActive)
+			if (!Data.ProgressActive)
 			{
 				Data.ProgressTitle = Title;
 				Data.ProgressMessage = StartMessage;
@@ -442,7 +442,7 @@ namespace SCG.Core
 					Data.AppSettings = settings;
 					Log.Enabled = !Data.AppSettings.LogDisabled;
 				}
-				catch(Exception ex)
+				catch (Exception ex)
 				{
 					Log.Here().Error($"Error loading main app settings from {DefaultPaths.MainAppSettingsFile}: {ex.ToString()}");
 				}
@@ -480,16 +480,16 @@ namespace SCG.Core
 			_instance.ProjectControllers.Add(Name, projectController);
 
 			Uri logoUri = null;
-			
-			if(!String.IsNullOrEmpty(Logo))
+
+			if (!String.IsNullOrEmpty(Logo))
 			{
 				try
 				{
 					logoUri = new Uri(Logo);
 				}
-				catch(Exception ex)
+				catch (Exception ex)
 				{
-
+					Log.Here().Error($"Error parsing uri string ({Logo}): {ex}");
 				}
 			}
 
@@ -500,7 +500,7 @@ namespace SCG.Core
 				Logo = logoUri?.LocalPath
 			};
 
-			if(logoUri != null)
+			if (logoUri != null)
 			{
 				selectionData.LogoExists = Visibility.Visible;
 			}
@@ -571,7 +571,7 @@ namespace SCG.Core
 		public void MenuAction_SaveLog()
 		{
 			string logContent = "";
-			foreach(var data in mainWindow.LogWindow.ViewModel.Logs.Items)
+			foreach (var data in mainWindow.LogWindow.ViewModel.Logs.Items)
 			{
 				logContent += data.Output + Environment.NewLine;
 			}
@@ -579,7 +579,8 @@ namespace SCG.Core
 			string sysFormat = CultureInfo.CurrentCulture.DateTimeFormat.ShortDatePattern.Replace("/", "-");
 			string fileName = "SourceControlGenerator_Log_" + DateTime.Now.ToString(sysFormat + "_HH-mm") + ".txt";
 
-			FileCommands.Save.OpenDialog_Old(mainWindow, "Save Log File...", Data.AppSettings.LastLogPath, (string logPath) => {
+			FileCommands.Save.OpenDialog_Old(mainWindow, "Save Log File...", Data.AppSettings.LastLogPath, (string logPath) =>
+			{
 				if (FileCommands.WriteToFile(logPath, logContent))
 				{
 					Log.Here().Activity($"Saved log file to {logPath}.");
@@ -612,7 +613,7 @@ namespace SCG.Core
 
 		public void MenuAction_ToggleMarkdownWindow()
 		{
-			if(!mainWindow.MarkdownConverterWindow.IsVisible)
+			if (!mainWindow.MarkdownConverterWindow.IsVisible)
 			{
 				mainWindow.MarkdownConverterWindow.Show();
 			}
@@ -655,9 +656,9 @@ namespace SCG.Core
 
 		public void RegisterMenuShortcuts()
 		{
-			if(Data.MenuBarData != null)
+			if (Data.MenuBarData != null)
 			{
-				foreach(var menu in Data.MenuBarData.Menus)
+				foreach (var menu in Data.MenuBarData.Menus)
 				{
 					menu.RegisterInputBinding(mainWindow.InputBindings);
 				}
@@ -679,7 +680,7 @@ namespace SCG.Core
 		private void OnSettingsReverted(object settingsData, EventArgs e)
 		{
 			ListView listView = (ListView)mainWindow.FindName("ModuleSettingsListView");
-			if(listView != null)
+			if (listView != null)
 			{
 				listView.GetBindingExpression(ListView.ItemsSourceProperty).UpdateTarget();
 			}
@@ -719,7 +720,7 @@ namespace SCG.Core
 		public void MakeSettingsFolderPortable()
 		{
 			DefaultPaths.RootFolder = DefaultPaths.DefaultPortableRootFolder;
-			if(CurrentModule != null && CurrentModule.ModuleData != null && CurrentModule.ModuleData.ModuleSettings != null)
+			if (CurrentModule != null && CurrentModule.ModuleData != null && CurrentModule.ModuleData.ModuleSettings != null)
 			{
 				CurrentModule.ModuleData.ModuleSettings.SetToDefault(CurrentModule.ModuleData);
 			}
@@ -729,7 +730,7 @@ namespace SCG.Core
 		public void SwitchSettingsFoldersToMyDocuments()
 		{
 			var myDocumentsRoot = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
-			if(Directory.Exists(myDocumentsRoot))
+			if (Directory.Exists(myDocumentsRoot))
 			{
 				DefaultPaths.RootFolder = Path.Combine(myDocumentsRoot, DefaultPaths.DefaultMyDocumentsRootFolder);
 				if (CurrentModule != null && CurrentModule.ModuleData != null && CurrentModule.ModuleData.ModuleSettings != null)
@@ -737,7 +738,7 @@ namespace SCG.Core
 					CurrentModule.ModuleData.ModuleSettings.SetToDefault(CurrentModule.ModuleData);
 				}
 			}
-			
+
 		}
 
 		public void OpenProjectReadmeInMarkdownConverter(object obj)
@@ -875,7 +876,7 @@ namespace SCG.Core
 					}
 				}
 			}
-			catch(Exception ex)
+			catch (Exception ex)
 			{
 				Log.Here().Error($"Error loading TextGenerator data file: {ex.ToString()}");
 			}
@@ -930,7 +931,7 @@ namespace SCG.Core
 
 		public void OnAppLoaded()
 		{
-			if(CurrentModule != null && CurrentModule.ModuleData != null)
+			if (CurrentModule != null && CurrentModule.ModuleData != null)
 			{
 				if (CurrentModule.ModuleData.ModuleSettings.FirstTimeSetup)
 				{
@@ -948,7 +949,7 @@ namespace SCG.Core
 		{
 			AutoUpdater.CheckForUpdateEvent -= AutoUpdater_CheckForUpdateEvent;
 			AutoUpdater.ReportErrors = false;
-			if(args == null || (args != null && !args.IsUpdateAvailable))
+			if (args == null || (args != null && !args.IsUpdateAvailable))
 			{
 				Log.Here().Important("No updates found.");
 				MessageBoxEx.Show(mainWindow, "No updates found.");
@@ -957,7 +958,7 @@ namespace SCG.Core
 
 		public void CheckForUpdates(bool force = false)
 		{
-			if(force)
+			if (force)
 			{
 				Log.Here().Important("Checking for updates.");
 				AutoUpdater.ReportErrors = true;
@@ -986,7 +987,7 @@ namespace SCG.Core
 			*/
 
 			LogMenuData = new MenuData(MenuID.OpenLog, "Open Log Window", new ActionCommand(MenuAction_ToggleLogWindow), Key.F8);
-			DebugWindowMenuData = new MenuData(MenuID.ToggleDebugWindow, "Open Debug Window", 
+			DebugWindowMenuData = new MenuData(MenuID.ToggleDebugWindow, "Open Debug Window",
 				new ActionCommand(MenuAction_ToggleDebugWindow), Key.F8, ModifierKeys.Alt);
 
 			//LogMenuData.SetHeaderBinding(mainWindow.LogWindow.Data, "LogVisibleText");

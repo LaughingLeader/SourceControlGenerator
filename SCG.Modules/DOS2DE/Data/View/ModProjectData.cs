@@ -116,7 +116,7 @@ namespace SCG.Modules.DOS2DE.Data.View
 		{
 			get
 			{
-				if(this.ModuleInfo != null)
+				if (this.ModuleInfo != null)
 				{
 					return ModuleInfo.Folder;
 				}
@@ -130,7 +130,7 @@ namespace SCG.Modules.DOS2DE.Data.View
 		{
 			get
 			{
-				if(shortDescription == null)
+				if (shortDescription == null)
 				{
 					shortDescription = ModuleInfo.Description.Truncate(30, "...");
 					this.RaisePropertyChanged("ShortDescription");
@@ -204,7 +204,7 @@ namespace SCG.Modules.DOS2DE.Data.View
 		{
 			get
 			{
-				if(LastBackup != null)
+				if (LastBackup != null)
 				{
 					return LastBackup.ToString();
 				}
@@ -351,7 +351,7 @@ namespace SCG.Modules.DOS2DE.Data.View
 			var build = (ModuleInfo.Version & 0xFFFF);
 			Version = String.Format("{0}.{1}.{2}.{3}", major, minor, revision, build);
 			*/
-			if(VersionData == null) VersionData = new ProjectVersionData();
+			if (VersionData == null) VersionData = new ProjectVersionData();
 			VersionData.ParseInt(ModuleInfo.Version);
 		}
 
@@ -396,7 +396,7 @@ namespace SCG.Modules.DOS2DE.Data.View
 			{
 				InclusionFilter = (f) =>
 				{
-					if(!foundThumbnail && f.FileName.IndexOf("thumbnail", StringComparison.OrdinalIgnoreCase) > -1 && FileCommands.IsValidImage(f.FullPath))
+					if (!foundThumbnail && f.FileName.IndexOf("thumbnail", StringComparison.OrdinalIgnoreCase) > -1 && FileCommands.IsValidImage(f.FullPath))
 					{
 						//Log.Here().Activity($"Thumbnail! {f?.FullPath} | {f?.FileName}");
 						foundThumbnail = true;
@@ -408,7 +408,7 @@ namespace SCG.Modules.DOS2DE.Data.View
 
 			string thumbnail = null;
 
-			if(Directory.Exists(projectDirectory))
+			if (Directory.Exists(projectDirectory))
 			{
 				thumbnail = Directory.EnumerateFiles(projectDirectory, DirectoryEnumerationOptions.Files, filter, PathFormat.FullPath).FirstOrDefault();
 			}
@@ -511,7 +511,7 @@ namespace SCG.Modules.DOS2DE.Data.View
 							}
 						});
 
-						if(projectMetaFiles.Count() > 0)
+						if (projectMetaFiles.Count() > 0)
 						{
 							Regex regex = new Regex("^.*Module.*value=\"([^\"]+)\".* $", RegexOptions.IgnoreCase | RegexOptions.Multiline);
 
@@ -519,10 +519,10 @@ namespace SCG.Modules.DOS2DE.Data.View
 							{
 								string contents = await FileCommands.ReadFileAsync(f);
 								var match = regex.Match(contents);
-								if(match.Success)
+								if (match.Success)
 								{
 									string modUUID = match.Groups[1].Value;
-									if(modUUID.Equals(this.UUID, StringComparison.OrdinalIgnoreCase))
+									if (modUUID.Equals(this.UUID, StringComparison.OrdinalIgnoreCase))
 									{
 										projectDirectory = Path.GetDirectoryName(f);
 										Log.Here().Important($"Found project folder by UUID {this.UUID} at {projectDirectory}.");
@@ -538,7 +538,7 @@ namespace SCG.Modules.DOS2DE.Data.View
 					ProjectFolder = ProjectName;
 				}
 
-				if(Directory.Exists(projectDirectory))
+				if (Directory.Exists(projectDirectory))
 				{
 					string projectMetaFilePath = Path.ChangeExtension(Path.Combine(projectDirectory, "meta"), "lsx");
 					ProjectMetaFilePath = Path.GetFullPath(projectMetaFilePath);
@@ -561,8 +561,9 @@ namespace SCG.Modules.DOS2DE.Data.View
 							dates.Sort();
 							ProjectInfo.CreationDate = dates.First();
 						}
-						catch(Exception ex)
+						catch (Exception ex)
 						{
+							Log.Here().Error($"Error checking project creation date: {ex}");
 							ProjectInfo.CreationDate = DateTime.Now;
 						}
 
@@ -591,7 +592,7 @@ namespace SCG.Modules.DOS2DE.Data.View
 				await LoadModMetaAsync(metaFilePath);
 				await LoadProjectMetaAsync(projectsFolderPath);
 			}
-			catch(Exception ex)
+			catch (Exception ex)
 			{
 				Log.Here().Error("Error loading mod data:");
 				Log.Here().Error(ex.ToString());
@@ -655,7 +656,8 @@ namespace SCG.Modules.DOS2DE.Data.View
 
 		public void LoadAllData(string metaFilePath, string projectsFolderPath)
 		{
-			RxApp.MainThreadScheduler.ScheduleAsync(async (s,t) => {
+			RxApp.MainThreadScheduler.ScheduleAsync(async (s, t) =>
+			{
 				await LoadModMetaAsync(metaFilePath);
 				await LoadProjectMetaAsync(projectsFolderPath);
 				return Disposable.Empty;
@@ -666,7 +668,7 @@ namespace SCG.Modules.DOS2DE.Data.View
 		{
 			Init();
 
-			if(DebugMode)
+			if (DebugMode)
 			{
 				ModuleInfo = new ModuleInfo()
 				{
@@ -687,7 +689,7 @@ namespace SCG.Modules.DOS2DE.Data.View
 				//ThumbnailPath = @"G:\Divinity Original Sin 2\DefEd\Data\Projects\LeaderLib\thumbnail.png";
 				ThumbnailExists = false;
 			}
-			
+
 		}
 
 		#region IDisposable Support
