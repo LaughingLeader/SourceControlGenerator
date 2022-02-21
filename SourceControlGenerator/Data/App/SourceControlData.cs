@@ -4,8 +4,11 @@ using System.Linq;
 using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
+
 using Alphaleonis.Win32.Filesystem;
+
 using Newtonsoft.Json;
+
 using SCG.FileGen;
 
 namespace SCG.Data

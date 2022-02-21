@@ -203,7 +203,7 @@ namespace SCG.Modules.DOS2DE.Core
 								}
 								//await s.Yield();
 								return Disposable.Empty;
-							});	
+							});
 						}
 					}
 				};
@@ -226,10 +226,19 @@ namespace SCG.Modules.DOS2DE.Core
 				foreach (var project in modProjects)
 				{
 					var sourceControlData = projectFiles.FirstOrDefault(x => x.ProjectUUID == project.UUID);
-					if(sourceControlData != null)
+					if (sourceControlData != null)
 					{
 						project.GitData = sourceControlData;
 						project.GitGenerated = true;
+						var gitDirectory = Path.Combine(Path.GetDirectoryName(sourceControlData.SourceFile), ".git");
+						if (Directory.Exists(gitDirectory))
+						{
+							var lastModifiedDate = File.GetLastWriteTime(gitDirectory);
+							if (lastModifiedDate != null && project.ModuleInfo.ModifiedDate.Ticks < lastModifiedDate.Ticks)
+							{
+								project.ModuleInfo.ModifiedDate = lastModifiedDate;
+							}
+						}
 						totalSuccess += 1;
 					}
 				}
@@ -355,7 +364,7 @@ namespace SCG.Modules.DOS2DE.Core
 										}
 									}
 								}
-								catch(Exception ex)
+								catch (Exception ex)
 								{
 									Log.Here().Error($"Error parsing mod folder ${modFolder}:");
 									Log.Here().Error(ex.ToString());
@@ -494,7 +503,7 @@ namespace SCG.Modules.DOS2DE.Core
 					};
 				}
 			}
-			catch(Exception ex)
+			catch (Exception ex)
 			{
 				Log.Here().Error("Error loading managed projects:");
 				Log.Here().Error(ex.ToString());
@@ -517,7 +526,6 @@ namespace SCG.Modules.DOS2DE.Core
 					foreach (var folder in folders)
 					{
 						var sourceFile = Path.Combine(folder, "SourceControlGenerator.json");
-						Log.Here().Activity(sourceFile);
 						if (File.Exists(sourceFile))
 						{
 							sourceFiles.Add(await SourceControlData.FromPathAsync(sourceFile));
@@ -526,11 +534,20 @@ namespace SCG.Modules.DOS2DE.Core
 
 					foreach (var project in modProjects)
 					{
-						var sourceControlData = sourceFiles.FirstOrDefault(x => x.ProjectUUID == project.UUID);
+						var sourceControlData = sourceFiles.FirstOrDefault(x => x.ProjectUUID == project.UUID || x.ProjectUUID == project.ProjectInfo.UUID);
 						if (sourceControlData != null)
 						{
 							project.GitData = sourceControlData;
 							project.GitGenerated = true;
+							var gitDirectory = Path.Combine(Path.GetDirectoryName(sourceControlData.SourceFile), ".git");
+							if (Directory.Exists(gitDirectory))
+							{
+								var lastModifiedDate = File.GetLastWriteTime(gitDirectory);
+								if (lastModifiedDate != null && project.ModuleInfo.ModifiedDate.Ticks < lastModifiedDate.Ticks)
+								{
+									project.ModuleInfo.ModifiedDate = lastModifiedDate;
+								}
+							}
 							totalSuccess += 1;
 						}
 					}
@@ -538,7 +555,7 @@ namespace SCG.Modules.DOS2DE.Core
 					return totalSuccess > 0;
 				}
 			}
-			catch(Exception ex)
+			catch (Exception ex)
 			{
 				Log.Here().Error("Error loading source control data:");
 				Log.Here().Error(ex.ToString());
@@ -565,7 +582,7 @@ namespace SCG.Modules.DOS2DE.Core
 			{
 				Data.ModProjects.AddRange(newMods);
 			}
-			
+
 			await LoadManagedProjectsAsync(Data, newMods, true);
 			return true;
 		}
@@ -636,7 +653,7 @@ namespace SCG.Modules.DOS2DE.Core
 
 		public static void OpenBackupFolder(ModProjectData modProjectData)
 		{
-			if(MainData != null)
+			if (MainData != null)
 			{
 				string directory = Path.Combine(Path.GetFullPath(MainData.Settings.BackupRootDirectory), modProjectData.ProjectName);
 				if (!Directory.Exists(directory))
@@ -689,7 +706,7 @@ namespace SCG.Modules.DOS2DE.Core
 				}
 				else
 				{
-					if(Directory.Exists(startPath))
+					if (Directory.Exists(startPath))
 					{
 						Process.Start(startPath);
 					}
@@ -755,7 +772,7 @@ namespace SCG.Modules.DOS2DE.Core
 			{
 				string startPath = Path.Combine(MainData.Settings.DOS2DEDataDirectory, "Projects");
 				string directory = Path.Combine(Path.GetFullPath(startPath), modProjectData.ProjectFolder);
-				if(!Directory.Exists(directory))
+				if (!Directory.Exists(directory))
 				{
 					directory = Path.Combine(Path.GetFullPath(startPath), modProjectData.ModuleInfo.Folder); // Imported projects
 				}

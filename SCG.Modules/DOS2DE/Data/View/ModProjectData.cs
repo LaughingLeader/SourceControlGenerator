@@ -450,7 +450,11 @@ namespace SCG.Modules.DOS2DE.Data.View
 
 						Log.Here().Important("[{0}] All mod data loaded.", this.ModuleInfo.Name);
 
-						ModuleInfo.ModifiedDate = File.GetLastWriteTime(metaFilePath);
+						try
+						{
+							ModuleInfo.ModifiedDate = File.GetLastWriteTime(metaFilePath);
+						}
+						catch (Exception) { }
 					}
 					else
 					{
