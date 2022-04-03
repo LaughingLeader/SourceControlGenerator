@@ -999,7 +999,7 @@ namespace SCG.Modules.DOS2DE.LocalizationEditor.Utilities
 
 		static bool CanExportEntry(ILocaleKeyEntry entry, ILocaleFileData fileData, EnumLocaleLanguages language)
 		{
-			if (!fileData.IsCustom)
+			if (fileData.IsCustom)
 			{
 				return false;
 			}
