@@ -28,6 +28,28 @@ namespace SCG.Modules.DOS2DE.Utilities
 			return false;
 		}
 
+		/// <summary>
+		/// Checks if a file is ready
+		/// </summary>
+		/// <param name="sFilename"></param>
+		/// <returns></returns>
+		public static bool IsFileReady(string sFilename)
+		{
+			// If the file can be opened for exclusive access it means that the file
+			// is no longer locked by another process.
+			try
+			{
+				using (System.IO.FileStream inputStream = File.Open(sFilename, System.IO.FileMode.Open, System.IO.FileAccess.Read, System.IO.FileShare.None))
+				{
+					return inputStream.Length > 0;
+				}
+			}
+			catch (Exception)
+			{
+				return false;
+			}
+		}
+
 		public static async Task<bool> CreatePackage(string dataRootPath, List<string> inputPaths, string outputPath, List<string> ignoredFiles, CancellationToken? token = null)
 		{
 			try
@@ -67,7 +89,7 @@ namespace SCG.Modules.DOS2DE.Utilities
 				Log.Here().Activity($"Package successfully created at {outputPath}");
 				return true;
 			}
-			catch(Exception ex)
+			catch (Exception ex)
 			{
 				if (!token.Value.IsCancellationRequested)
 				{
@@ -81,7 +103,7 @@ namespace SCG.Modules.DOS2DE.Utilities
 			}
 		}
 
-		private static Task AddFilesToPackage(Package package, string path, string dataRootPath, string outputPath, List<string>ignoredFiles, CancellationToken token)
+		private static Task AddFilesToPackage(Package package, string path, string dataRootPath, string outputPath, List<string> ignoredFiles, CancellationToken token)
 		{
 			Task task = null;
 
@@ -108,7 +130,6 @@ namespace SCG.Modules.DOS2DE.Utilities
 					{
 						throw new TaskCanceledException(task);
 					}
-
 					FilesystemFileInfo fileInfo = FilesystemFileInfo.CreateFromEntry(file.Value, file.Key);
 					package.Files.Add(fileInfo);
 				}
@@ -132,8 +153,9 @@ namespace SCG.Modules.DOS2DE.Utilities
 						writer.CompressionLevel = CompressionLevel.MaxCompression;
 						writer.Write();
 					}
-					catch (Exception)
+					catch (Exception ex)
 					{
+						Log.Here().Error($"{ex}");
 						// ignored because an exception on a cancellation request 
 						// cannot be avoided if the stream gets disposed afterwards 
 					}

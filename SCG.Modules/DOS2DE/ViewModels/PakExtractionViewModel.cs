@@ -32,6 +32,7 @@ namespace SCG.Modules.DOS2DE.ViewModels
 		[Reactive] public string ExportDirectory { get; set; }
 
 		public ICommand ExtractPaksCommand { get; private set; }
+		public ICommand CancelCommand { get; private set; }
 
 		private List<string> _extractOrder = new List<string>()
 		{
@@ -94,6 +95,7 @@ namespace SCG.Modules.DOS2DE.ViewModels
 
 			var canExtract = connection.WhenValueChanged(x => x.IsChecked).Any(b => b);
 			ExtractPaksCommand = ReactiveCommand.Create(StartExtract, canExtract);
+			CancelCommand = ReactiveCommand.Create(CancelExtract);
 		}
 
 		public void StartExtract()
@@ -105,6 +107,11 @@ namespace SCG.Modules.DOS2DE.ViewModels
 			}
 			AppController.Main.Data.ProgressValueMax = 100;
 			AppController.Main.StartProgressAsync($"Extracing paks... ", async (t) => await ExtractAsync(selectedPaks, t), "", 0, true);
+		}
+
+		public void CancelExtract()
+		{
+			AppController.Main.CancelProgress();
 		}
 
 		private async Task<bool> ExtractAsync(List<PakExtractionEntry> selectedPaks, CancellationToken token)
