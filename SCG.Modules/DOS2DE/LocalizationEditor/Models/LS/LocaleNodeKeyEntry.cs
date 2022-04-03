@@ -52,7 +52,7 @@ namespace SCG.Modules.DOS2DE.LocalizationEditor.Models
 
 		public override void OnSelected(bool isSelected)
 		{
-			Parent.OnSelectedKeyChanged(this, isSelected);
+			Parent?.OnSelectedKeyChanged(this, isSelected);
 		}
 
 		private string key = "None";
