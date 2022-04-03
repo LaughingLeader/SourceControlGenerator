@@ -240,7 +240,6 @@ namespace SCG.Data.View
 			{
 				this.RaiseAndSetIfChanged(ref progressValue, value);
 				ProgressValueTaskBar = ProgressValue > 0 ? ((double)ProgressValue / (double)ProgressValueMax) : 0d;
-				Log.Here().Activity($"Progress Taskbar: {ProgressValueTaskBar}");
 			}
 		}
 
@@ -253,7 +252,6 @@ namespace SCG.Data.View
 			{
 				this.RaiseAndSetIfChanged(ref progressValueMax, value);
 				ProgressValueTaskBar = ProgressValue > 0 ? ((double)ProgressValue / (double)ProgressValueMax) : 0d;
-				Log.Here().Activity($"Progress Taskbar: {ProgressValueTaskBar}");
 			}
 		}
 
@@ -348,7 +346,7 @@ namespace SCG.Data.View
 			{
 				this.RaiseAndSetIfChanged(ref lockScreenVisibility, value);
 				IsUnlocked = value != Visibility.Visible;
-				if(this.ModuleIsLoaded)
+				if (this.ModuleIsLoaded)
 				{
 					CurrentModuleData.OnLockScreenChanged(value, IsUnlocked);
 				}
@@ -392,7 +390,7 @@ namespace SCG.Data.View
 
 		public void MergeKeyLists()
 		{
-			if(CurrentModuleData != null && CurrentModuleData.KeyList != null)
+			if (CurrentModuleData != null && CurrentModuleData.KeyList != null)
 			{
 				ModuleNameKeyword.KeywordValue = CurrentModuleName;
 				AppKeyList.DoOperation(list => list.Clear().AddRange(GlobalKeyList).AddRange(CurrentModuleData.KeyList));
@@ -433,7 +431,7 @@ namespace SCG.Data.View
 			DateKeyList.Add(new KeywordData()
 			{
 				KeywordName = "$Date",
-				KeywordValue =  DateTime.Now.ToString("d"),
+				KeywordValue = DateTime.Now.ToString("d"),
 				Replace = (o) => { return DateTime.Now.ToString("d"); }
 			});
 			DateKeyList.Add(new KeywordData()

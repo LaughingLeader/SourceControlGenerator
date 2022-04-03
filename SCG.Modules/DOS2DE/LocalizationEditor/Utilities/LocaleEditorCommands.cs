@@ -312,7 +312,6 @@ namespace SCG.Modules.DOS2DE.LocalizationEditor.Utilities
 				},
 				RecursionFilter = f =>
 				{
-					Log.Here().Activity("Recursing: " + f.FileName);
 					return true;
 				}
 			};
