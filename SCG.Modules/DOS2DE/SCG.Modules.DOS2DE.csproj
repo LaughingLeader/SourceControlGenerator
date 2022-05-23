@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="..\..\packages\ReactiveUI.Fody.17.1.17\build\ReactiveUI.Fody.props" Condition="Exists('..\..\packages\ReactiveUI.Fody.17.1.17\build\ReactiveUI.Fody.props')" />
+  <Import Project="..\..\packages\ReactiveUI.Fody.18.0.10\build\ReactiveUI.Fody.props" Condition="Exists('..\..\packages\ReactiveUI.Fody.18.0.10\build\ReactiveUI.Fody.props')" />
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -13,7 +13,7 @@
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <WarningLevel>4</WarningLevel>
-    <TargetFrameworkProfile />
+    <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
   </PropertyGroup>
@@ -61,24 +61,24 @@
     <Reference Include="AlphaFS, Version=2.2.0.0, Culture=neutral, PublicKeyToken=4d31a58f7d7ad5c9, processorArchitecture=MSIL">
       <HintPath>..\..\packages\AlphaFS.2.2.6\lib\net452\AlphaFS.dll</HintPath>
     </Reference>
-    <Reference Include="ControlzEx, Version=5.0.0.0, Culture=neutral, PublicKeyToken=69f1c32f803d307e, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\ControlzEx.5.0.1\lib\net462\ControlzEx.dll</HintPath>
+    <Reference Include="ControlzEx, Version=6.0.0.0, Culture=neutral, PublicKeyToken=69f1c32f803d307e, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\ControlzEx.6.0.0-alpha0218\lib\net462\ControlzEx.dll</HintPath>
     </Reference>
-    <Reference Include="DynamicData, Version=7.4.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\DynamicData.7.4.9\lib\net461\DynamicData.dll</HintPath>
+    <Reference Include="DynamicData, Version=7.8.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\DynamicData.7.8.1\lib\net462\DynamicData.dll</HintPath>
     </Reference>
-    <Reference Include="HtmlRenderer, Version=1.5.0.6, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\HtmlRenderer.Core.1.5.0.6\lib\net45\HtmlRenderer.dll</HintPath>
+    <Reference Include="HtmlRenderer, Version=1.5.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\HtmlRenderer.Core.1.5.1-beta1\lib\net45\HtmlRenderer.dll</HintPath>
     </Reference>
-    <Reference Include="HtmlRenderer.WPF, Version=1.5.0.6, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\HtmlRenderer.WPF.1.5.0.6\lib\net45\HtmlRenderer.WPF.dll</HintPath>
+    <Reference Include="HtmlRenderer.WPF, Version=1.5.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\HtmlRenderer.WPF.1.5.1-beta1\lib\net45\HtmlRenderer.WPF.dll</HintPath>
     </Reference>
     <Reference Include="LSLib, Version=1.15.10.0, Culture=neutral, processorArchitecture=AMD64">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\lslib\LSLib\bin\Release\LSLib.dll</HintPath>
     </Reference>
-    <Reference Include="Markdig, Version=0.26.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Markdig.0.26.0\lib\net452\Markdig.dll</HintPath>
+    <Reference Include="Markdig, Version=0.30.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Markdig.0.30.2\lib\net452\Markdig.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Xaml.Behaviors, Version=1.1.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Microsoft.Xaml.Behaviors.Wpf.1.1.39\lib\net45\Microsoft.Xaml.Behaviors.dll</HintPath>
@@ -87,7 +87,7 @@
       <HintPath>..\..\packages\Neo.Markdig.Xaml.1.0.10\lib\net47\Neo.Markdig.Xaml.dll</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Newtonsoft.Json.13.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <HintPath>..\..\packages\Newtonsoft.Json.13.0.2-beta1\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="Pharmacist.Common, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Pharmacist.Common.2.0.8\lib\net472\Pharmacist.Common.dll</HintPath>
@@ -96,39 +96,39 @@
     <Reference Include="ReactiveHistory, Version=0.10.7.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\..\packages\ReactiveHistory.0.10.7\lib\net461\ReactiveHistory.dll</HintPath>
     </Reference>
-    <Reference Include="ReactiveProperty, Version=8.0.3.0, Culture=neutral, PublicKeyToken=910d1732782c71cb, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\ReactiveProperty.8.0.3\lib\net461\ReactiveProperty.dll</HintPath>
+    <Reference Include="ReactiveProperty, Version=8.1.0.0, Culture=neutral, PublicKeyToken=910d1732782c71cb, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\ReactiveProperty.8.1.0\lib\net472\ReactiveProperty.dll</HintPath>
     </Reference>
-    <Reference Include="ReactiveProperty.Core, Version=8.0.3.0, Culture=neutral, PublicKeyToken=910d1732782c71cb, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\ReactiveProperty.Core.8.0.3\lib\netstandard2.0\ReactiveProperty.Core.dll</HintPath>
+    <Reference Include="ReactiveProperty.Core, Version=8.1.0.0, Culture=neutral, PublicKeyToken=910d1732782c71cb, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\ReactiveProperty.Core.8.1.0\lib\net472\ReactiveProperty.Core.dll</HintPath>
     </Reference>
-    <Reference Include="ReactiveUI, Version=17.1.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\ReactiveUI.17.1.17\lib\net472\ReactiveUI.dll</HintPath>
+    <Reference Include="ReactiveUI, Version=18.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\ReactiveUI.18.0.10\lib\net472\ReactiveUI.dll</HintPath>
     </Reference>
     <Reference Include="ReactiveUI.Events.WPF, Version=15.1.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\..\packages\ReactiveUI.Events.WPF.15.1.1\lib\net472\ReactiveUI.Events.WPF.dll</HintPath>
     </Reference>
-    <Reference Include="ReactiveUI.Fody.Helpers, Version=17.1.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\ReactiveUI.Fody.17.1.17\lib\net472\ReactiveUI.Fody.Helpers.dll</HintPath>
+    <Reference Include="ReactiveUI.Fody.Helpers, Version=18.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\ReactiveUI.Fody.18.0.10\lib\net472\ReactiveUI.Fody.Helpers.dll</HintPath>
     </Reference>
-    <Reference Include="ReactiveUI.Wpf, Version=17.1.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\ReactiveUI.WPF.17.1.17\lib\net472\ReactiveUI.Wpf.dll</HintPath>
+    <Reference Include="ReactiveUI.Wpf, Version=18.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\ReactiveUI.WPF.18.0.10\lib\net472\ReactiveUI.Wpf.dll</HintPath>
     </Reference>
-    <Reference Include="Splat, Version=14.1.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Splat.14.1.17\lib\netstandard2.0\Splat.dll</HintPath>
+    <Reference Include="Splat, Version=14.2.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Splat.14.2.8\lib\netstandard2.0\Splat.dll</HintPath>
     </Reference>
-    <Reference Include="Splat.Drawing, Version=14.1.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Splat.Drawing.14.1.17\lib\net472\Splat.Drawing.dll</HintPath>
+    <Reference Include="Splat.Drawing, Version=14.2.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Splat.Drawing.14.2.8\lib\net472\Splat.Drawing.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Buffers, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\..\packages\System.Buffers.4.5.1\lib\net461\System.Buffers.dll</HintPath>
     </Reference>
-    <Reference Include="System.Collections.Immutable, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\System.Collections.Immutable.6.0.0\lib\net461\System.Collections.Immutable.dll</HintPath>
+    <Reference Include="System.Collections.Immutable, Version=7.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\System.Collections.Immutable.7.0.0-preview.4.22229.4\lib\net462\System.Collections.Immutable.dll</HintPath>
     </Reference>
     <Reference Include="System.ComponentModel.Annotations, Version=4.2.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\System.ComponentModel.Annotations.5.0.0\lib\net461\System.ComponentModel.Annotations.dll</HintPath>
+      <HintPath>..\..\packages\System.ComponentModel.Annotations.6.0.0-preview.4.21253.7\lib\net461\System.ComponentModel.Annotations.dll</HintPath>
     </Reference>
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Data" />
@@ -163,8 +163,8 @@
     <Reference Include="System.Reactive.Windows.Threading, Version=3.0.6000.0, Culture=neutral, PublicKeyToken=94bc3704cddfc263, processorArchitecture=MSIL">
       <HintPath>..\..\packages\System.Reactive.Windows.Threading.5.0.0\lib\net472\System.Reactive.Windows.Threading.dll</HintPath>
     </Reference>
-    <Reference Include="System.Runtime.CompilerServices.Unsafe, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\System.Runtime.CompilerServices.Unsafe.6.0.0\lib\net461\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
+    <Reference Include="System.Runtime.CompilerServices.Unsafe, Version=7.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\System.Runtime.CompilerServices.Unsafe.7.0.0-preview.2.22152.2\lib\net462\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
     </Reference>
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Threading.Tasks.Extensions, Version=4.2.0.1, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
@@ -190,20 +190,20 @@
     <Reference Include="WindowsBase" />
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
-    <Reference Include="Xceed.Wpf.AvalonDock, Version=4.2.0.0, Culture=neutral, PublicKeyToken=3e4669d2f30244f4, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Extended.Wpf.Toolkit.4.2.0\lib\net40\Xceed.Wpf.AvalonDock.dll</HintPath>
+    <Reference Include="Xceed.Wpf.AvalonDock, Version=4.3.0.0, Culture=neutral, PublicKeyToken=3e4669d2f30244f4, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Extended.Wpf.Toolkit.4.3.0\lib\net40\Xceed.Wpf.AvalonDock.dll</HintPath>
     </Reference>
-    <Reference Include="Xceed.Wpf.AvalonDock.Themes.Aero, Version=4.2.0.0, Culture=neutral, PublicKeyToken=3e4669d2f30244f4, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Extended.Wpf.Toolkit.4.2.0\lib\net40\Xceed.Wpf.AvalonDock.Themes.Aero.dll</HintPath>
+    <Reference Include="Xceed.Wpf.AvalonDock.Themes.Aero, Version=4.3.0.0, Culture=neutral, PublicKeyToken=3e4669d2f30244f4, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Extended.Wpf.Toolkit.4.3.0\lib\net40\Xceed.Wpf.AvalonDock.Themes.Aero.dll</HintPath>
     </Reference>
-    <Reference Include="Xceed.Wpf.AvalonDock.Themes.Metro, Version=4.2.0.0, Culture=neutral, PublicKeyToken=3e4669d2f30244f4, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Extended.Wpf.Toolkit.4.2.0\lib\net40\Xceed.Wpf.AvalonDock.Themes.Metro.dll</HintPath>
+    <Reference Include="Xceed.Wpf.AvalonDock.Themes.Metro, Version=4.3.0.0, Culture=neutral, PublicKeyToken=3e4669d2f30244f4, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Extended.Wpf.Toolkit.4.3.0\lib\net40\Xceed.Wpf.AvalonDock.Themes.Metro.dll</HintPath>
     </Reference>
-    <Reference Include="Xceed.Wpf.AvalonDock.Themes.VS2010, Version=4.2.0.0, Culture=neutral, PublicKeyToken=3e4669d2f30244f4, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Extended.Wpf.Toolkit.4.2.0\lib\net40\Xceed.Wpf.AvalonDock.Themes.VS2010.dll</HintPath>
+    <Reference Include="Xceed.Wpf.AvalonDock.Themes.VS2010, Version=4.3.0.0, Culture=neutral, PublicKeyToken=3e4669d2f30244f4, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Extended.Wpf.Toolkit.4.3.0\lib\net40\Xceed.Wpf.AvalonDock.Themes.VS2010.dll</HintPath>
     </Reference>
-    <Reference Include="Xceed.Wpf.Toolkit, Version=4.2.0.0, Culture=neutral, PublicKeyToken=3e4669d2f30244f4, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Extended.Wpf.Toolkit.4.2.0\lib\net40\Xceed.Wpf.Toolkit.dll</HintPath>
+    <Reference Include="Xceed.Wpf.Toolkit, Version=4.3.0.0, Culture=neutral, PublicKeyToken=3e4669d2f30244f4, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Extended.Wpf.Toolkit.4.3.0\lib\net40\Xceed.Wpf.Toolkit.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -364,7 +364,7 @@
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
     <ItemGroup>
       <FilesToMove Include="$(OutputPath)$(AssemblyName).dll" />
-      <LSLib Include="$(OutputPath)LSLib.dll" />
+      <LSLib Include="$(OutputPath)LSLib.dll;$(OutputPath)LSLibNative.dll;$(OutputPath)LZ4.dll;$(OutputPath)OpenTK.dll;$(OutputPath)QUT.ShiftReduceParser.dll;$(OutputPath)zlib.net.dll" />
     </ItemGroup>
     <Copy SourceFiles="@(FilesToMove)" DestinationFolder="$(SolutionDir)SourceControlGenerator\bin\$(Configuration)\Modules\" OverwriteReadOnlyFiles="true" />
     <Copy SourceFiles="@(LSLib)" DestinationFolder="$(SolutionDir)SourceControlGenerator\bin\$(Configuration)\_Lib\" OverwriteReadOnlyFiles="true" />
@@ -375,8 +375,8 @@
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
     <Error Condition="!Exists('..\..\packages\Microsoft.NETFramework.ReferenceAssemblies.net472.1.0.2\build\Microsoft.NETFramework.ReferenceAssemblies.net472.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\Microsoft.NETFramework.ReferenceAssemblies.net472.1.0.2\build\Microsoft.NETFramework.ReferenceAssemblies.net472.targets'))" />
-    <Error Condition="!Exists('..\..\packages\Fody.6.6.0\build\Fody.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\Fody.6.6.0\build\Fody.targets'))" />
-    <Error Condition="!Exists('..\..\packages\ReactiveUI.Fody.17.1.17\build\ReactiveUI.Fody.props')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\ReactiveUI.Fody.17.1.17\build\ReactiveUI.Fody.props'))" />
+    <Error Condition="!Exists('..\..\packages\ReactiveUI.Fody.18.0.10\build\ReactiveUI.Fody.props')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\ReactiveUI.Fody.18.0.10\build\ReactiveUI.Fody.props'))" />
+    <Error Condition="!Exists('..\..\packages\Fody.6.6.2\build\Fody.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\Fody.6.6.2\build\Fody.targets'))" />
   </Target>
-  <Import Project="..\..\packages\Fody.6.6.0\build\Fody.targets" Condition="Exists('..\..\packages\Fody.6.6.0\build\Fody.targets')" />
+  <Import Project="..\..\packages\Fody.6.6.2\build\Fody.targets" Condition="Exists('..\..\packages\Fody.6.6.2\build\Fody.targets')" />
 </Project>
