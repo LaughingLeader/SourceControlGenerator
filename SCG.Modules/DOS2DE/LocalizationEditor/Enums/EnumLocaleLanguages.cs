@@ -20,6 +20,7 @@ namespace SCG.Modules.DOS2DE.LocalizationEditor
 		Japanese,
 		Korean,
 		Polish,
+		Portuguesebrazil,
 		Russian,
 		Spanish,
 		None
