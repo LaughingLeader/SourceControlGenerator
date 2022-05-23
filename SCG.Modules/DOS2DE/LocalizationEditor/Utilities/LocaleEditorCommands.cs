@@ -1039,7 +1039,7 @@ namespace SCG.Modules.DOS2DE.LocalizationEditor.Utilities
 
 		public static string ExportDataAsXML(LocaleViewModel data, bool exportAll = false, EnumLocaleLanguages language = EnumLocaleLanguages.None)
 		{
-			string output = "<contentList>\n{0}</contentList>";
+			string output = "<contentList>\n{0}\n</contentList>";
 			List<string> lines = new List<string>();
 
 			if (data.SelectedGroup != null)
@@ -1323,8 +1323,8 @@ namespace SCG.Modules.DOS2DE.LocalizationEditor.Utilities
 
 						List<TextualLocaleEntry> entries = new List<TextualLocaleEntry>();
 
-						Regex regularModePattern = new Regex($"^({notDelimiter}*){delimiter}+(.*)$", RegexOptions.Singleline);
-						Regex handleModePattern = new Regex($"^({notDelimiter}*?){delimiter}+({notDelimiter}*){delimiter}+({notDelimiter}*?)$", RegexOptions.Singleline);
+						Regex regularModePattern = new Regex($"^({notDelimiter}*){delimiter}+(.*)", RegexOptions.Singleline);
+						Regex handleModePattern = new Regex($"^({notDelimiter}*?){delimiter}+({notDelimiter}*){delimiter}+({notDelimiter}*?)", RegexOptions.Singleline);
 
 						Regex r = regularModePattern;
 
