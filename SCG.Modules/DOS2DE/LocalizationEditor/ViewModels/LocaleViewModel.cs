@@ -2412,8 +2412,8 @@ namespace SCG.Modules.DOS2DE.LocalizationEditor.ViewModels
 					void redo()
 					{
 						ILocaleFileData newFile = null;
-						
-						if(isNodeTypeFile)
+
+						if (isNodeTypeFile)
 						{
 							newFile = LocaleEditorCommands.LoadResource(oldFile.Parent, oldFile.SourcePath, oldFile.Parent.Name == "Journal");
 						}
@@ -2423,7 +2423,7 @@ namespace SCG.Modules.DOS2DE.LocalizationEditor.ViewModels
 							newFile = files.FirstOrDefault();
 						}
 
-						if(newFile != null)
+						if (newFile != null)
 						{
 							var oldEntries = oldFile.Entries.ToList();
 							oldFile.Entries.Clear();
@@ -2688,6 +2688,37 @@ namespace SCG.Modules.DOS2DE.LocalizationEditor.ViewModels
 			ClipboardHasText = Clipboard.ContainsText() && !string.IsNullOrEmpty(Clipboard.GetText());
 		}
 
+		public void Clear()
+		{
+			LinkedProjects.Clear();
+			LinkedLocaleData.Clear();
+
+			foreach (var g in Groups)
+			{
+				g.Clear();
+			}
+		}
+
+		public void Reload()
+		{
+			LocaleEditorCommands.LoadProjectSettings(ModuleData, this);
+			UpdateCombinedGroup(true);
+
+			SelectedGroup = CombinedGroup;
+			SelectedFile = CombinedGroup.CombinedEntries;
+			SelectedFile.Selected = true;
+
+			if (openMissingEntriesViewOnLoad)
+			{
+				RxApp.MainThreadScheduler.Schedule(TimeSpan.FromMilliseconds(150), () =>
+				{
+					openMissingEntriesViewOnLoad = false;
+					ShowMissingEntriesView(addMissingEntriesOnLoad);
+					addMissingEntriesOnLoad = null;
+				});
+			}
+		}
+
 		public void OnViewLoaded(LocaleEditorWindow v, DOS2DEModuleData moduleData, CompositeDisposable disposables)
 		{
 			view = v;
@@ -2794,10 +2825,6 @@ namespace SCG.Modules.DOS2DE.LocalizationEditor.ViewModels
 			this.WhenAnyValue(vm => vm.SelectedFile, vm => vm.SelectedGroup).Subscribe((o) => clearSelectedEntry()).DisposeWith(disposables);
 
 			CanExecutePopoutContentCommand = this.WhenAny(vm => vm.SelectedEntry, e => e.Value != null);
-
-			LocaleEditorCommands.LoadProjectSettings(ModuleData, this);
-
-			UpdateCombinedGroup(true);
 
 			//ExportXMLCommand = ReactiveCommand.Create<bool>(OpenExportWindow, AnySelectedEntryObservable).DisposeWith(disposables);
 			ExportAllXMLCommand = ReactiveCommand.Create(() => OpenExportWindow(true)).DisposeWith(disposables);
@@ -3295,20 +3322,6 @@ namespace SCG.Modules.DOS2DE.LocalizationEditor.ViewModels
 				}
 			}).DisposeWith(disposables);
 			*/
-
-			SelectedGroup = CombinedGroup;
-			SelectedFile = CombinedGroup.CombinedEntries;
-			SelectedFile.Selected = true;
-
-			if (openMissingEntriesViewOnLoad)
-			{
-				RxApp.MainThreadScheduler.Schedule(TimeSpan.FromMilliseconds(150), () =>
-				{
-					openMissingEntriesViewOnLoad = false;
-					ShowMissingEntriesView(addMissingEntriesOnLoad);
-					addMissingEntriesOnLoad = null;
-				});
-			}
 
 			//this.WhenAnyValue(x => x.Groups.WhenAnyValue(c => c.Select(g => g.ChangesUnsaved));
 		}

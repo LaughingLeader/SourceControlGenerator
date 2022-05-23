@@ -191,6 +191,14 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			Parent?.UpdateUnsavedChanges();
 		}
 
+		public void Clear()
+		{
+			SourceDirectories.Clear();
+			CombinedEntries.Entries.Clear();
+			DataFiles.Clear();
+			Tabs.Clear();
+		}
+
 		public LocaleTabGroup(LocaleViewModel parent, string name = "")
 		{
 			Parent = parent;

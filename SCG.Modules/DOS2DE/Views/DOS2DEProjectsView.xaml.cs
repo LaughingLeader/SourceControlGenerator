@@ -146,7 +146,10 @@ namespace SCG.Modules.DOS2DE.Views
 
 			if (!LocaleEditorWindow.IsVisible)
 			{
-				OpenLocalizationEditorAsync();
+				RxApp.TaskpoolScheduler.ScheduleAsync(async (s, t) =>
+				{
+					await OpenLocalizationEditorAsync();
+				});
 			}
 			else
 			{
@@ -159,38 +162,69 @@ namespace SCG.Modules.DOS2DE.Views
 			_instance?.ToggleLocalizationEditor();
 		}
 
-		public void OpenLocalizationEditorWithData(LocaleViewModel data)
+		public void OpenLocalizationEditor()
 		{
 			if (LocaleEditorWindow == null) InitLocalizationEditor();
-			LocaleEditorWindow.LoadData(data);
-			if (!LocaleEditorWindow.IsVisible)
+			if (LocaleEditorWindow != null)
 			{
-				LocaleEditorWindow.Show();
+				if (!LocaleEditorWindow.IsVisible)
+				{
+					LocaleEditorWindow.Show();
+				}
+				else
+				{
+					LocaleEditorWindow.LoadData();
+				}
 			}
+		}
+
+		private async Task<Unit> OpenLocalizationEditorAsync()
+		{
+			await Observable.Start(() =>
+			{
+				if (_instance.LocaleEditorWindow == null)
+				{
+					_instance.InitLocalizationEditor();
+				}
+				else
+				{
+					_instance.LocaleEditorWindow.ViewModel.Clear();
+				}
+				return Unit.Default;
+			}, RxApp.MainThreadScheduler);
+
+			LocaleEditorCommands.LoadSettings(ViewModel, LocaleEditorWindow.ViewModel);
+			await LocaleEditorCommands.LoadLocalizationDataAsync(LocaleEditorWindow.ViewModel, ViewModel, ViewModel.ManagedProjects.Where(p => p.Selected));
+			RxApp.MainThreadScheduler.Schedule(_ =>
+			{
+				OpenLocalizationEditor();
+			});
+			return Unit.Default;
 		}
 
 		public static async Task<Unit> OpenLocalizationEditorForProject(ModProjectData modData)
 		{
 			Log.Here().Activity($"Opening locale editor for project {modData.DisplayName}");
-			LocaleViewModel localizationData = new LocaleViewModel();
-			LocaleEditorCommands.LoadSettings(_instance.ViewModel, localizationData);
-			await LocaleEditorCommands.LoadLocalizationDataAsync(localizationData, _instance.ViewModel, modData);
+			await Observable.Start(() =>
+			{
+				if (_instance.LocaleEditorWindow == null)
+				{
+					_instance.InitLocalizationEditor();
+				}
+				else
+				{
+					_instance.LocaleEditorWindow.ViewModel.Clear();
+				}
+				return Unit.Default;
+			}, RxApp.MainThreadScheduler);
+
+			LocaleEditorCommands.LoadSettings(_instance.ViewModel, _instance.LocaleEditorWindow.ViewModel);
+			await LocaleEditorCommands.LoadLocalizationDataAsync(_instance.LocaleEditorWindow.ViewModel, _instance.ViewModel, modData);
 			RxApp.MainThreadScheduler.Schedule(_ =>
 			{
-				_instance.OpenLocalizationEditorWithData(localizationData);
+				_instance.OpenLocalizationEditor();
 			});
 			return Unit.Default;
-		}
-
-		private async void OpenLocalizationEditorAsync()
-		{
-			LocaleViewModel localizationData = new LocaleViewModel();
-			LocaleEditorCommands.LoadSettings(_instance.ViewModel, localizationData);
-			await LocaleEditorCommands.LoadLocalizationDataAsync(localizationData, ViewModel, ViewModel.ManagedProjects.Where(p => p.Selected));
-			RxApp.MainThreadScheduler.Schedule(_ =>
-			{
-				_instance.OpenLocalizationEditorWithData(localizationData);
-			});
 		}
 
 		private void LocalizationEditorWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)

@@ -60,7 +60,11 @@ namespace SCG.Modules.DOS2DE.LocalizationEditor.Views
 		private object KeyActionsGrid;
 
 		public LocaleViewModel ViewModel { get; set; }
-		object IViewFor.ViewModel { get; set; }
+		object IViewFor.ViewModel
+		{
+			get => ViewModel;
+			set => ViewModel = value as LocaleViewModel;
+		}
 
 		public LocaleEditorWindow()
 		{
@@ -124,6 +128,8 @@ namespace SCG.Modules.DOS2DE.LocalizationEditor.Views
 				}
 
 				Log.Here().Important("Activated LocaleEditorWindow");
+
+				LoadData();
 			});
 		}
 
@@ -151,11 +157,21 @@ namespace SCG.Modules.DOS2DE.LocalizationEditor.Views
 			}
 		}
 
+		public void LoadData()
+		{
+			ExportWindow.ResetBindings();
+			ViewModel.Reload();
+		}
+
 		private void Init()
 		{
 			InitializeComponent();
 
+			ViewModel = new LocaleViewModel();
+			DataContext = ViewModel;
+
 			ExportWindow = new LocaleExportWindow();
+			ExportWindow.ViewModel = ViewModel;
 			ExportWindow.Hide();
 
 			OptionsWindow = new LocaleOptionsWindow();
@@ -216,15 +232,6 @@ namespace SCG.Modules.DOS2DE.LocalizationEditor.Views
 		{
 			var element = this.FindName(name);
 			return (T)element;
-		}
-
-		public void LoadData(LocaleViewModel data)
-		{
-			ViewModel = data;
-
-			DataContext = ViewModel;
-			ExportWindow.ViewModel = ViewModel;
-			ExportWindow.ResetBindings();
 		}
 
 		private struct ViewObservableProperty
@@ -496,14 +503,17 @@ namespace SCG.Modules.DOS2DE.LocalizationEditor.Views
 			{
 				RxApp.MainThreadScheduler.Schedule(TimeSpan.FromMilliseconds(10), _ =>
 				{
-					var fileTabControl = tc.FindVisualChildren<TabControl>().First();
-					if (fileTabControl != null && fileTabControl.Items.Count > 19)
+					if (tc != null && tc.HasItems)
 					{
-						var tab = fileTabControl.FindVisualChildren<TabItem>().FirstOrDefault(x => x.DataContext == fileTabControl.SelectedItem);
-						//var tab = fileTabControl.SelectedValue as TabItem;
-						if (tab != null)
+						var fileTabControl = tc.FindVisualChildren<TabControl>().FirstOrDefault();
+						if (fileTabControl != null && fileTabControl.Items.Count > 19)
 						{
-							tab.BringIntoView();
+							var tab = fileTabControl.FindVisualChildren<TabItem>().FirstOrDefault(x => x.DataContext == fileTabControl.SelectedItem);
+							//var tab = fileTabControl.SelectedValue as TabItem;
+							if (tab != null)
+							{
+								tab.BringIntoView();
+							}
 						}
 					}
 				});
