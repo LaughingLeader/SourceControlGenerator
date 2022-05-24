@@ -128,7 +128,7 @@ namespace SCG.Core
 
 			var sortedProjects = Data.GitGenerationSettings.ExportProjects.OrderBy(p => p.ProjectName).ToImmutableList();
 
-			if(Data.GitGenerationSettings.ExportProjects.TryOperation(c => c.Clear()))
+			if (Data.GitGenerationSettings.ExportProjects.TryOperation(c => c.Clear()))
 			{
 				Data.GitGenerationSettings.ExportProjects.DoOperation(c => c.AddRange(sortedProjects));
 			}
@@ -194,7 +194,7 @@ namespace SCG.Core
 					AppController.Main.UpdateProgressLog("Initializing git repo...");
 
 					var author = Data.Settings.DefaultAuthor;
-					if(modProject.ModuleInfo != null && !String.IsNullOrWhiteSpace(modProject.ModuleInfo.Author))
+					if (modProject.ModuleInfo != null && !String.IsNullOrWhiteSpace(modProject.ModuleInfo.Author))
 					{
 						author = modProject.ModuleInfo.Author;
 					}
@@ -397,7 +397,7 @@ namespace SCG.Core
 
 		private void CancelBackupProgress()
 		{
-			if(cancellationTokenSource != null)
+			if (cancellationTokenSource != null)
 			{
 				Log.Here().Warning("Cancelling backup progress...");
 				cancellationTokenSource.Cancel();
@@ -701,7 +701,7 @@ namespace SCG.Core
 				}
 			}
 
-			if(!cancellationTokenSource.IsCancellationRequested)
+			if (!cancellationTokenSource.IsCancellationRequested)
 			{
 				AppController.Main.UpdateProgressTitle((selectedProjects.Count > 1 ? "Packaging projects..." : $"Packaging project... ") + $"{selectedProjects.Count}/{selectedProjects.Count}");
 				AppController.Main.UpdateProgressMessage("Finishing up...");
@@ -779,12 +779,12 @@ namespace SCG.Core
 				}
 
 				var ignoredFiles = IgnoredPackageFiles.ToList();
-				if(modProject.ModuleInfo != null && modProject.ModuleInfo.Type.Equals("Add-on", StringComparison.OrdinalIgnoreCase))
+				if (modProject.ModuleInfo != null && modProject.ModuleInfo.Type.Equals("Add-on", StringComparison.OrdinalIgnoreCase))
 				{
 					ignoredFiles.Add("story.div.osi");
 				}
 
-				var result = await DOS2DEPackageCreator.CreatePackage(Data.Settings.DOS2DEDataDirectory.Replace("/", "\\"), 
+				var result = await DOS2DEPackageCreator.CreatePackage(Data.Settings.DOS2DEDataDirectory.Replace("/", "\\"),
 					sourceFolders, outputPackage, ignoredFiles, cancellationTokenSource.Token);
 				if (result)
 				{
@@ -871,7 +871,7 @@ namespace SCG.Core
 				AppController.Main.UpdateProgressMessage($"Creating zip for project package {mod.ProjectName}...");
 
 				string zipName = mod.ProjectFolder.Replace(mod.UUID, "");
-				if(!zipName.EndsWith("_"))
+				if (!zipName.EndsWith("_"))
 				{
 					zipName = zipName + "_";
 				}
@@ -911,11 +911,11 @@ namespace SCG.Core
 			{
 				if (!cancellationTokenSource.IsCancellationRequested)
 				{
-					MainWindow.FooterError($"Problem occured when releasing selected projects. Check the log. {successCount}/{selectedProjects.Count*4} releases were created.");
+					MainWindow.FooterError($"Problem occured when releasing selected projects. Check the log. {successCount}/{selectedProjects.Count * 4} releases were created.");
 				}
 				else
 				{
-					MainWindow.FooterLog($"Packaging/Zipping was cancelled. {successCount}/{selectedProjects.Count*4} releases were created.");
+					MainWindow.FooterLog($"Packaging/Zipping was cancelled. {successCount}/{selectedProjects.Count * 4} releases were created.");
 				}
 			}
 
@@ -937,7 +937,7 @@ namespace SCG.Core
 			foreach (string uuid in selectedItems)
 			{
 				ModProjectData modData = Data.ModProjects.Items.FirstOrDefault(m => m.UUID == uuid);
-				if(modData != null)
+				if (modData != null)
 				{
 					Log.Here().Activity($"Adding project {modData.DisplayName} data to managed projects.");
 					modData.IsManaged = true;
@@ -959,7 +959,7 @@ namespace SCG.Core
 			if (bSaveData)
 			{
 				Data.ManagedProjectsData.Sort();
-				
+
 				if (DOS2DECommands.SaveManagedProjects(Data))
 				{
 					MainWindow.FooterLog("Saved Managed Projects data to {0}.", Data.Settings.AddedProjectsFile);
@@ -1089,7 +1089,8 @@ namespace SCG.Core
 		{
 			if (Thread.CurrentThread.IsBackground)
 			{
-				await Observable.Start(() => {
+				await Observable.Start(() =>
+				{
 					Data.ModProjects.Clear();
 					return Unit.Default;
 				}, RxApp.MainThreadScheduler);
@@ -1105,7 +1106,8 @@ namespace SCG.Core
 
 			if (Thread.CurrentThread.IsBackground)
 			{
-				return await Observable.Start(() => {
+				return await Observable.Start(() =>
+				{
 					Data.ModProjects.AddRange(newMods);
 					projectViewControl.FadeLoadingPanel(true, () => { Data.CanClickRefresh = true; });
 					Data.UpdateManageButtonsText();
@@ -1125,7 +1127,8 @@ namespace SCG.Core
 			await DOS2DECommands.RefreshManagedProjects(Data);
 			if (Thread.CurrentThread.IsBackground)
 			{
-				return await Observable.Start(() => {
+				return await Observable.Start(() =>
+				{
 					projectViewControl.FadeLoadingPanel(true, () => { Data.CanClickRefresh = true; });
 					return Unit.Default;
 				}, RxApp.MainThreadScheduler);
@@ -1275,12 +1278,12 @@ namespace SCG.Core
 		{
 			List<ModProjectData> selectedProjects = Data.ManagedProjects.Where(x => x.Selected).ToList();
 
-			foreach(var modProject in selectedProjects)
+			foreach (var modProject in selectedProjects)
 			{
 				Log.Here().Important($"Rebuilding junctions for project '{modProject.ProjectName}'.");
 				var sourceFolders = PrepareDirectories(modProject, Data.Settings.DirectoryLayouts);
 				var result = GitGenerator.CreateJunctions(modProject.ProjectFolder, sourceFolders, Data, true);
-				if(result)
+				if (result)
 				{
 					Log.Here().Activity($"Rebuilt junction for '{modProject.ProjectName}'.");
 				}
@@ -1340,7 +1343,7 @@ namespace SCG.Core
 
 		private void ExtractGameData_Start()
 		{
-			if(Directory.Exists(Data.Settings.DOS2DEDataDirectory))
+			if (Directory.Exists(Data.Settings.DOS2DEDataDirectory))
 			{
 				ExtractGameData_OnDialogDone(Data.Settings.DOS2DEDataDirectory);
 			}
@@ -1365,11 +1368,11 @@ namespace SCG.Core
 		{
 			var gamePaks = Directory.EnumerateFiles(gameDataPath, DirectoryEnumerationOptions.Files, pakFilter).ToList();
 			var localeDirectory = Path.Combine(gameDataPath, "Localization");
-			if(Directory.Exists(localeDirectory))
+			if (Directory.Exists(localeDirectory))
 			{
 				gamePaks.AddRange(Directory.EnumerateFiles(localeDirectory, DirectoryEnumerationOptions.Files | DirectoryEnumerationOptions.Recursive, pakFilter));
 			}
-			if(gamePaks.Count > 0)
+			if (gamePaks.Count > 0)
 			{
 				ExtractGameData(gameDataPath, gamePaks);
 			}
@@ -1442,7 +1445,7 @@ namespace SCG.Core
 						}
 					}
 
-					if(moduleInfo != null && !String.IsNullOrWhiteSpace(moduleInfo.UUID) && !String.IsNullOrWhiteSpace(moduleInfo.Folder))
+					if (moduleInfo != null && !String.IsNullOrWhiteSpace(moduleInfo.UUID) && !String.IsNullOrWhiteSpace(moduleInfo.Folder))
 					{
 						AppController.Main.UpdateProgressMessage($"Preparing pak extraction...");
 
@@ -1533,7 +1536,8 @@ namespace SCG.Core
 			OpenLocalModsFolderMenuData = new MenuData("DOS2DE.OpenLocalModsFolder")
 			{
 				Header = "Open Local Mods Folder...",
-				ClickCommand = new ActionCommand(() => {
+				ClickCommand = new ActionCommand(() =>
+				{
 					OpenFolder(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), @"Larian Studios\Divinity Original Sin 2 Definitive Edition\Local Mods"));
 				}),
 				IsEnabled = true
@@ -1559,8 +1563,8 @@ namespace SCG.Core
 				new SeparatorData(),
 				new MenuData("DOS2DE.RebuildJunctions", "Rebuild Junctions for Selected...", ReactiveCommand.Create(RebuildJunctions, anySelected))
 			);
-			OpenLocalizationEditorMenuData = new MenuData("DOS2DE.LocalizationEditor", 
-				"Localization Editor", ReactiveCommand.Create(DOS2DEProjectsView.ToggleDOS2DELocalizationEditor), System.Windows.Input.Key.F7);
+			OpenLocalizationEditorMenuData = new MenuData("DOS2DE.LocalizationEditor",
+				"Open Localization Editor", ReactiveCommand.Create(DOS2DEProjectsView.OpenDOS2DELocalizationEditor), System.Windows.Input.Key.F7);
 			OpenLocalizationEditorMenuData.IsEnabled = false;
 
 			MainAppData.MenuBarData.Tools.Register(Data.ModuleName,
@@ -1575,9 +1579,9 @@ namespace SCG.Core
 
 			Data.OnLockScreenChangedAction = new Action<System.Windows.Visibility, bool>((v, b) =>
 			{
-				if(projectViewControl != null && projectViewControl.LocaleEditorWindow != null)
+				if (projectViewControl != null && projectViewControl.LocaleEditorWindow != null)
 				{
-					if(projectViewControl.LocaleEditorWindow.ViewModel != null)
+					if (projectViewControl.LocaleEditorWindow.ViewModel != null)
 					{
 						projectViewControl.LocaleEditorWindow.ViewModel.LockScreenVisibility = v;
 						Log.Here().Activity("Lock screen changed");
@@ -1595,7 +1599,7 @@ namespace SCG.Core
 
 			LoadDataDirectory();
 			LoadDirectoryLayout();
-			InitModuleKeywords();			
+			InitModuleKeywords();
 #if Debug
 			var watch = new System.Diagnostics.Stopwatch();
 			watch.Start();

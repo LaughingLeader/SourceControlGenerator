@@ -157,9 +157,15 @@ namespace SCG.Modules.DOS2DE.Views
 			}
 		}
 
-		public static void ToggleDOS2DELocalizationEditor()
+		public static void OpenDOS2DELocalizationEditor()
 		{
-			_instance?.ToggleLocalizationEditor();
+			if (_instance != null)
+			{
+				RxApp.TaskpoolScheduler.ScheduleAsync(async (s, t) =>
+				{
+					await _instance.OpenLocalizationEditorAsync();
+				});
+			}
 		}
 
 		public void OpenLocalizationEditor()
