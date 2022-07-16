@@ -35,6 +35,7 @@ using SCG.Modules.DOS2DE.Data.View;
 using SCG.Modules.DOS2DE.Data.View.Locale;
 using SCG.Modules.DOS2DE.LocalizationEditor.Views;
 using SCG.Modules.DOS2DE.LocalizationEditor.Utilities;
+using ReactiveUI.Fody.Helpers;
 
 namespace SCG.Modules.DOS2DE.LocalizationEditor.ViewModels
 {
@@ -399,114 +400,29 @@ namespace SCG.Modules.DOS2DE.LocalizationEditor.ViewModels
 			}
 		}
 
-		private bool subWindowOpen = false;
+		[Reactive] public bool IsSubWindowOpen { get; set; } = false;
 
-		public bool IsSubWindowOpen
-		{
-			get => subWindowOpen;
-			set { this.RaiseAndSetIfChanged(ref subWindowOpen, value); }
-		}
+		[Reactive] public bool CanSave { get; set; } = false;
 
-		private bool canSave = false;
+		[Reactive] public bool CanAddFile { get; set; } = false;
 
-		public bool CanSave
-		{
-			get => canSave;
-			set
-			{
-				this.RaiseAndSetIfChanged(ref canSave, value);
-			}
-		}
+		[Reactive] public bool CanAddKeys { get; set; } = false;
+		[Reactive] public bool CanCreateFileLink { get; set; } = false;
+		[Reactive] public bool HasFileLink { get; set; } = false;
 
-		private bool canAddFile = false;
+		[Reactive] public bool AnyEntrySelected { get; set; } = false;
 
-		public bool CanAddFile
-		{
-			get => canAddFile;
-			set
-			{
-				this.RaiseAndSetIfChanged(ref canAddFile, value);
-			}
-		}
+		[Reactive] public bool AnyFileSelected { get; set; } = false;
 
-		private bool canAddKeys = false;
+		[Reactive] public bool ContentSelected { get; set; } = false;
 
-		public bool CanAddKeys
-		{
-			get => canAddKeys;
-			set
-			{
-				this.RaiseAndSetIfChanged(ref canAddKeys, value);
-			}
-		}
+		[Reactive] public bool ContentFocused { get; set; } = false;
 
-		private bool anyEntrySelected = false;
+		[Reactive] public bool AnyTextBoxFocused { get; set; } = false;
 
-		public bool AnyEntrySelected
-		{
-			get => anyEntrySelected;
-			set
-			{
-				this.RaiseAndSetIfChanged(ref anyEntrySelected, value);
-			}
-		}
+		[Reactive] public bool ClipboardHasText { get; set; } = false;
 
-		private bool anyFileSelected = false;
-
-		public bool AnyFileSelected
-		{
-			get => anyFileSelected;
-			set
-			{
-				this.RaiseAndSetIfChanged(ref anyFileSelected, value);
-			}
-		}
-
-		private bool contentSelected = false;
-
-		public bool ContentSelected
-		{
-			get => contentSelected;
-			set
-			{
-				this.RaiseAndSetIfChanged(ref contentSelected, value);
-			}
-		}
-
-		private bool contentFocused = false;
-
-		public bool ContentFocused
-		{
-			get => contentFocused;
-			set
-			{
-				this.RaiseAndSetIfChanged(ref contentFocused, value);
-			}
-		}
-
-		private bool anyTextBoxFocused = false;
-
-		public bool AnyTextBoxFocused
-		{
-			get => anyTextBoxFocused;
-			set { this.RaiseAndSetIfChanged(ref anyTextBoxFocused, value); }
-		}
-
-		private bool clipboardHasText = false;
-
-		public bool ClipboardHasText
-		{
-			get => clipboardHasText;
-			set { this.RaiseAndSetIfChanged(ref clipboardHasText, value); }
-		}
-
-		private bool hideExtras = true;
-
-		public bool HideExtras
-		{
-			get => hideExtras;
-			set { this.RaiseAndSetIfChanged(ref hideExtras, value); }
-		}
+		[Reactive] public bool HideExtras { get; set; } = true;
 
 
 		public TextBox CurrentTextBox { get; set; }
@@ -525,27 +441,9 @@ namespace SCG.Modules.DOS2DE.LocalizationEditor.ViewModels
 
 		public bool CanEditContentPreview => !ContentPreviewModeEnabled;
 
-		private bool contentLightMode = true;
+		[Reactive] public bool ContentLightMode { get; set; } = true;
 
-		public bool ContentLightMode
-		{
-			get => contentLightMode;
-			set
-			{
-				this.RaiseAndSetIfChanged(ref contentLightMode, value);
-			}
-		}
-
-		private int contentFontSize = 12;
-
-		public int ContentFontSize
-		{
-			get => contentFontSize;
-			set
-			{
-				this.RaiseAndSetIfChanged(ref contentFontSize, value);
-			}
-		}
+		[Reactive] public int ContentFontSize { get; set; } = 12;
 
 		private Color? selectedColor;
 
@@ -558,24 +456,9 @@ namespace SCG.Modules.DOS2DE.LocalizationEditor.ViewModels
 			}
 		}
 
-		private string selectedText = "";
+		[Reactive] public string SelectedText { get; set; } = "";
 
-		public string SelectedText
-		{
-			get => selectedText;
-			set
-			{
-				this.RaiseAndSetIfChanged(ref selectedText, value);
-			}
-		}
-
-		private bool missingKeyEntrySelected = false;
-
-		public bool MissingKeyEntrySelected
-		{
-			get => missingKeyEntrySelected;
-			set { this.RaiseAndSetIfChanged(ref missingKeyEntrySelected, value); }
-		}
+		[Reactive] public bool MissingKeyEntrySelected { get; set; } = false;
 
 
 		private void SelectedFileChanged(LocaleTabGroup group, ILocaleFileData keyFileData)
@@ -604,38 +487,11 @@ namespace SCG.Modules.DOS2DE.LocalizationEditor.ViewModels
 			}
 		}
 
-		private string outputDate;
+		[Reactive] public string OutputDate { get; set; }
 
-		public string OutputDate
-		{
-			get => outputDate;
-			set
-			{
-				this.RaiseAndSetIfChanged(ref outputDate, value);
-			}
-		}
+		[Reactive] public string OutputText { get; set; }
 
-		private string outputText;
-
-		public string OutputText
-		{
-			get => outputText;
-			set
-			{
-				this.RaiseAndSetIfChanged(ref outputText, value);
-			}
-		}
-
-		private LogType outputType;
-
-		public LogType OutputType
-		{
-			get => outputType;
-			set
-			{
-				this.RaiseAndSetIfChanged(ref outputType, value);
-			}
-		}
+		[Reactive] public LogType OutputType { get; set; }
 
 		private bool MultipleGroupsEntriesFilled()
 		{
@@ -1606,22 +1462,7 @@ namespace SCG.Modules.DOS2DE.LocalizationEditor.ViewModels
 			}
 		}
 
-		public List<string> Languages { get; set; } = new List<string>
-		{
-			"English",
-			"Amlatspanish",
-			"Chinese",
-			"Chinesetraditional",
-			"Czech",
-			"French",
-			"German",
-			"Italian",
-			"Japanese",
-			"Korean",
-			"Polish",
-			"Russian",
-			"Spanish",
-		};
+		public List<string> Languages { get; set; } = Enum.GetNames(typeof(EnumLocaleLanguages)).Where(x => x != "All" && x != "None").ToList();
 
 		public void GenerateXML()
 		{
@@ -2719,7 +2560,7 @@ namespace SCG.Modules.DOS2DE.LocalizationEditor.ViewModels
 			}
 		}
 
-		public void OnViewLoaded(LocaleEditorWindow v, DOS2DEModuleData moduleData, CompositeDisposable disposables)
+		public void OnViewLoaded(LocaleEditorWindow v, DOS2DEModuleData moduleData, CompositeDisposable d)
 		{
 			view = v;
 			ModuleData = moduleData;
@@ -2728,7 +2569,7 @@ namespace SCG.Modules.DOS2DE.LocalizationEditor.ViewModels
 			AppController.Main.Data.WhenAnyValue(x => x.LockScreenVisibility).Subscribe((visibility) =>
 			{
 				LockScreenVisibility = visibility;
-			}).DisposeWith(disposables);
+			}).DisposeWith(d);
 
 			SubWindowOpenedObservable = this.WhenAnyValue(vm => vm.IsSubWindowOpen);
 
@@ -2738,13 +2579,18 @@ namespace SCG.Modules.DOS2DE.LocalizationEditor.ViewModels
 			CanImportFilesObservable = this.WhenAnyValue(vm => vm.CanAddFile);
 			CanImportKeysObservable = this.WhenAnyValue(vm => vm.CanAddKeys);
 
+			//this.WhenAnyValue(x => x.SelectedGroup.SelectedFile).BindTo(this, x => x.SelectedFile).DisposeWith(d);
+
+			this.WhenAnyValue(x => x.SelectedFile.HasFileLink).StartWith(false).BindTo(this, x => x.HasFileLink).DisposeWith(d);
+			this.WhenAny(x => x.SelectedFile.CanCreateFileLink, x => x.SelectedFile.HasFileLink, (b1,b2) => b1.Value && !b2.Value).StartWith(false).BindTo(this, x => x.CanCreateFileLink).DisposeWith(d);
+
 			this.WhenAny(vm => vm.SelectedFile.IsRenaming, b => b.Value == true).Subscribe((b) =>
 			{
 				if (b)
 				{
 					view.FocusSelectedTab();
 				}
-			}).DisposeWith(disposables);
+			}).DisposeWith(d);
 
 			this.WhenAnyValue(vm => vm.ChangesUnsaved).Subscribe((b) =>
 			{
@@ -2756,20 +2602,20 @@ namespace SCG.Modules.DOS2DE.LocalizationEditor.ViewModels
 				{
 					WindowTitle = "Localization Editor";
 				}
-			}).DisposeWith(disposables);
+			}).DisposeWith(d);
 
 			//this.WhenAnyValue(vm => vm.SelectedGroup.SelectedFile).BindTo(this, vm => vm.SelectedFile).DisposeWith(disposables);
 
 			FileSelectedObservable = this.WhenAnyValue(vm => vm.SelectedGroup, vm => vm.SelectedFile, (g, f) => f != null && g != null && f != g.CombinedEntries);
-			FileSelectedObservable.BindTo(this, vm => vm.AnyFileSelected).DisposeWith(disposables);
+			FileSelectedObservable.BindTo(this, vm => vm.AnyFileSelected).DisposeWith(d);
 			FileSelectedObservable.Subscribe((b) =>
 			{
 				//Log.Here().Activity($"AnyFileSelected? Subscribe: {b} AnyFileSelected: {AnyFileSelected}");
-			}).DisposeWith(disposables);
+			}).DisposeWith(d);
 
 			var onCancel = new Action<string, FileDialogResult>((s, r) => IsSubWindowOpen = false);
 
-			AddFileCommand = ReactiveCommand.Create(AddNewFile, CanAddFileObservable).DisposeWith(disposables);
+			AddFileCommand = ReactiveCommand.Create(AddNewFile, CanAddFileObservable).DisposeWith(d);
 
 			ImportFileCommand = ReactiveCommand.Create(() =>
 			{
@@ -2778,7 +2624,7 @@ namespace SCG.Modules.DOS2DE.LocalizationEditor.ViewModels
 				FileCommands.Load.OpenMultiFileDialog(view, DOS2DETooltips.Button_Locale_ImportFile,
 					entryImportPath, ImportFilesAsFileData, "", onCancel, DOS2DEFileFilters.AllLocaleFilesList.ToArray());
 				view.ResizeEntryKeyColumn();
-			}, CanImportFilesObservable).DisposeWith(disposables);
+			}, CanImportFilesObservable).DisposeWith(d);
 
 			ImportKeysCommand = ReactiveCommand.Create(() =>
 			{
@@ -2787,30 +2633,24 @@ namespace SCG.Modules.DOS2DE.LocalizationEditor.ViewModels
 				IsSubWindowOpen = true;
 				FileCommands.Load.OpenMultiFileDialog(view, DOS2DETooltips.Button_Locale_ImportKeys,
 					entryImportPath, ImportFilesAsKeys, "", onCancel, DOS2DEFileFilters.AllLocaleFilesList.ToArray());
-			}, CanImportKeysObservable).DisposeWith(disposables);
+			}, CanImportKeysObservable).DisposeWith(d);
 
-			ExportFileAsTextualCommand = ReactiveCommand.Create(() => ExportFileAsText(SelectedFile), FileSelectedObservable).DisposeWith(disposables);
-			ExportAllAsSpreadsheetCommand = ReactiveCommand.Create(ExportAllToSpreadsheet).DisposeWith(disposables);
+			ExportFileAsTextualCommand = ReactiveCommand.Create(() => ExportFileAsText(SelectedFile), FileSelectedObservable).DisposeWith(d);
+			ExportAllAsSpreadsheetCommand = ReactiveCommand.Create(ExportAllToSpreadsheet).DisposeWith(d);
 
-			OpenPreferencesCommand = ReactiveCommand.Create(() => { view.TogglePreferencesWindow(); }, GlobalCanActObservable).DisposeWith(disposables);
+			OpenPreferencesCommand = ReactiveCommand.Create(() => { view.TogglePreferencesWindow(); }, GlobalCanActObservable).DisposeWith(d);
 
 			DeleteKeysCommand = ReactiveCommand.Create(() =>
 			{
 				IsSubWindowOpen = true;
 				FileCommands.OpenConfirmationDialog(view, "Delete Keys", "Delete selected keys?", "Changes will be lost.", DeleteSelectedKeys);
-			}, AnySelectedEntryObservable).DisposeWith(disposables);
-
-			//var selectedGroupObservable = this.WhenAny(vm => vm.SelectedGroup, x => x.Value);
-
-			//var selectedFileObservable = this.WhenAny(vm => vm.SelectedGroup.SelectedFile, x => x.Value);
-			//selectedFileObservable.Subscribe();
-			//selectedFileObservable.ToProperty(this, vm => vm.SelectedFile, _selectedItem).DisposeWith(disposables);
+			}, AnySelectedEntryObservable).DisposeWith(d);
 
 			this.WhenAny(vm => vm.SelectedEntry.EntryContent, vm => vm.Value).Subscribe((o) =>
 			{
 				this.RaisePropertyChanged("SelectedEntryContent");
 				this.RaisePropertyChanged("SelectedEntryHtmlContent");
-			}).DisposeWith(disposables);
+			}).DisposeWith(d);
 
 			void clearSelectedEntry()
 			{
@@ -2822,14 +2662,14 @@ namespace SCG.Modules.DOS2DE.LocalizationEditor.ViewModels
 				}
 			}
 
-			this.WhenAnyValue(vm => vm.SelectedFile, vm => vm.SelectedGroup).Subscribe((o) => clearSelectedEntry()).DisposeWith(disposables);
+			this.WhenAnyValue(vm => vm.SelectedFile, vm => vm.SelectedGroup).Subscribe((o) => clearSelectedEntry()).DisposeWith(d);
 
 			CanExecutePopoutContentCommand = this.WhenAny(vm => vm.SelectedEntry, e => e.Value != null);
 
 			//ExportXMLCommand = ReactiveCommand.Create<bool>(OpenExportWindow, AnySelectedEntryObservable).DisposeWith(disposables);
-			ExportAllXMLCommand = ReactiveCommand.Create(() => OpenExportWindow(true)).DisposeWith(disposables);
-			ExportSelectedXMLCommand = ReactiveCommand.Create(() => OpenExportWindow(false)).DisposeWith(disposables);
-			AddFileToGroupCommand = ReactiveCommand.Create<CustomLocaleTabGroup>(AddCustomFileToGroup, CanImportFilesObservable).DisposeWith(disposables);
+			ExportAllXMLCommand = ReactiveCommand.Create(() => OpenExportWindow(true)).DisposeWith(d);
+			ExportSelectedXMLCommand = ReactiveCommand.Create(() => OpenExportWindow(false)).DisposeWith(d);
+			AddFileToGroupCommand = ReactiveCommand.Create<CustomLocaleTabGroup>(AddCustomFileToGroup, CanImportFilesObservable).DisposeWith(d);
 
 			GenerateXMLCommand = ReactiveCommand.Create(GenerateXML);
 			SaveXMLCommand = ReactiveCommand.Create(() => SaveXMLFile());
@@ -2877,7 +2717,7 @@ namespace SCG.Modules.DOS2DE.LocalizationEditor.ViewModels
 			});
 
 			var canConfirmAddFile = this.WhenAny(vm => vm.NewFileTabName, e => !string.IsNullOrWhiteSpace(e.Value));
-			ConfirmFileAddToGroupCommand = ReactiveCommand.Create(ConfirmCustomFileAddToGroup, canConfirmAddFile).DisposeWith(disposables);
+			ConfirmFileAddToGroupCommand = ReactiveCommand.Create(ConfirmCustomFileAddToGroup, canConfirmAddFile).DisposeWith(d);
 			CancelFileAddToGroupCommand = ReactiveCommand.Create(() =>
 			{
 				if (IsAddingNewFileTab)
@@ -2886,9 +2726,9 @@ namespace SCG.Modules.DOS2DE.LocalizationEditor.ViewModels
 					NewFileTabName = "";
 					newFileTabTargetGroup = null;
 				}
-			}).DisposeWith(disposables);
+			}).DisposeWith(d);
 
-			CloseFileCommand = ReactiveCommand.Create<ILocaleFileData>(CloseFileInGroup, GlobalCanActObservable).DisposeWith(disposables);
+			CloseFileCommand = ReactiveCommand.Create<ILocaleFileData>(CloseFileInGroup, GlobalCanActObservable).DisposeWith(d);
 			ToggleRenameFileTabCommand = ReactiveCommand.Create((ILocaleFileData fileData) =>
 			{
 				fileData.IsRenaming = !fileData.IsRenaming;
@@ -2896,40 +2736,39 @@ namespace SCG.Modules.DOS2DE.LocalizationEditor.ViewModels
 				{
 					SelectedGroup.SelectedFileIndex = SelectedGroup.Tabs.IndexOf(fileData);
 				}
-			}, GlobalCanActObservable).DisposeWith(disposables);
+			}, GlobalCanActObservable).DisposeWith(d);
 
-			ConfirmRenameFileTabCommand = ReactiveCommand.Create<ILocaleFileData>(ConfirmRenaming).DisposeWith(disposables);
-			CancelRenamingFileTabCommand = ReactiveCommand.Create<ILocaleFileData>(CancelRenaming).DisposeWith(disposables);
+			ConfirmRenameFileTabCommand = ReactiveCommand.Create<ILocaleFileData>(ConfirmRenaming).DisposeWith(d);
+			CancelRenamingFileTabCommand = ReactiveCommand.Create<ILocaleFileData>(CancelRenaming).DisposeWith(d);
 
-			SaveAllCommand = ReactiveCommand.Create(SaveAll, GlobalCanActObservable).DisposeWith(disposables);
-			SaveCurrentCommand = ReactiveCommand.Create(SaveCurrent, GlobalCanActObservable).DisposeWith(disposables);
+			SaveAllCommand = ReactiveCommand.Create(SaveAll, GlobalCanActObservable).DisposeWith(d);
+			SaveCurrentCommand = ReactiveCommand.Create(SaveCurrent, GlobalCanActObservable).DisposeWith(d);
 
-			SaveSettingsCommand = ReactiveCommand.Create(view.SaveSettings).DisposeWith(disposables);
+			SaveSettingsCommand = ReactiveCommand.Create(view.SaveSettings).DisposeWith(d);
 			Settings.SaveCommand = SaveSettingsCommand;
 
-			GenerateHandlesCommand = ReactiveCommand.Create(() => { GenerateHandles(); }, AnySelectedEntryObservable).DisposeWith(disposables);
+			GenerateHandlesCommand = ReactiveCommand.Create(() => { GenerateHandles(); }, AnySelectedEntryObservable).DisposeWith(d);
 			ForceGenerateHandlesCommand = ReactiveCommand.Create(() =>
 			{
 				FileCommands.OpenConfirmationDialog(view, "Regenerate Handles Confirmation", "Replace all selected entry handles with new handles?", "", (b) =>
 				{
 					if (b) GenerateHandles(true);
 				});
-			}, AnySelectedEntryObservable).DisposeWith(disposables);
-			OverrideResHandlesCommand = ReactiveCommand.Create(OverrideResHandles, AnySelectedEntryObservable).DisposeWith(disposables);
-			NewHandleCommand = ReactiveCommand.Create<object>(GenerateHandle).DisposeWith(disposables);
-			AddNewKeyCommand = ReactiveCommand.Create(AddNewKey, CanImportKeysObservable).DisposeWith(disposables);
+			}, AnySelectedEntryObservable).DisposeWith(d);
+			OverrideResHandlesCommand = ReactiveCommand.Create(OverrideResHandles, AnySelectedEntryObservable).DisposeWith(d);
+			NewHandleCommand = ReactiveCommand.Create<object>(GenerateHandle).DisposeWith(d);
+			AddNewKeyCommand = ReactiveCommand.Create(AddNewKey, CanImportKeysObservable).DisposeWith(d);
 
-			AddFontTagCommand = ReactiveCommand.Create(AddFontTag, AnySelectedEntryObservable).DisposeWith(disposables);
+			AddFontTagCommand = ReactiveCommand.Create(AddFontTag, AnySelectedEntryObservable).DisposeWith(d);
 
-			ToggleContentLightModeCommand = ReactiveCommand.Create(() => ContentLightMode = !ContentLightMode, GlobalCanActObservable).DisposeWith(disposables);
+			ToggleContentLightModeCommand = ReactiveCommand.Create(() => ContentLightMode = !ContentLightMode, GlobalCanActObservable).DisposeWith(d);
 			ChangeContentFontSizeCommand = ReactiveCommand.Create<string>((fontSizeStr) =>
 			{
-				this.RaisePropertyChanging("ContentFontSize");
-				if (int.TryParse(fontSizeStr, out contentFontSize))
+				if (int.TryParse(fontSizeStr, out var fontSize))
 				{
-					this.RaisePropertyChanged("ContentFontSize");
+					ContentFontSize = fontSize;
 				}
-			}, GlobalCanActObservable).DisposeWith(disposables);
+			}, GlobalCanActObservable).DisposeWith(d);
 
 			IObservable<bool> canSelectNone = this.WhenAnyValue(vm => vm.SelectedText, (text) => text != string.Empty);
 
@@ -2943,7 +2782,7 @@ namespace SCG.Modules.DOS2DE.LocalizationEditor.ViewModels
 				{
 					tb.Select(tb.CaretIndex, 0);
 				}
-			}, canSelectNone).DisposeWith(disposables);
+			}, canSelectNone).DisposeWith(d);
 
 			ResetHandleCommand = ReactiveCommand.Create<object>((targetObject) =>
 			{
@@ -2951,7 +2790,7 @@ namespace SCG.Modules.DOS2DE.LocalizationEditor.ViewModels
 				{
 					tb.Text = LocaleEditorCommands.UnsetHandle;
 				}
-			}).DisposeWith(disposables);
+			}).DisposeWith(d);
 
 			OpenFileInExplorerCommand = ReactiveCommand.Create<string>((path) =>
 			{
@@ -2994,7 +2833,7 @@ namespace SCG.Modules.DOS2DE.LocalizationEditor.ViewModels
 					CreateSnapshot(undo, redo);
 					redo();
 				}
-			}, GlobalCanActObservable).DisposeWith(disposables);
+			}, GlobalCanActObservable).DisposeWith(d);
 
 			RefreshFileCommand = ReactiveCommand.Create((ILocaleFileData fileData) =>
 			{
@@ -3002,16 +2841,16 @@ namespace SCG.Modules.DOS2DE.LocalizationEditor.ViewModels
 				{
 					RefreshFileData(nodeFile);
 				}
-			}, FileSelectedObservable).DisposeWith(disposables);
+			}, FileSelectedObservable).DisposeWith(d);
 
 			ReloadFileCommand = ReactiveCommand.Create((ILocaleFileData fileData) =>
 			{
 				ReloadFileData(fileData);
-			}, FileSelectedObservable).DisposeWith(disposables);
+			}, FileSelectedObservable).DisposeWith(d);
 
-			ReloadFileLinkDataCommand = ReactiveCommand.Create<ILocaleFileData>(RefreshLinkedData, FileSelectedObservable).DisposeWith(disposables);
-			SetFileLinkDataCommand = ReactiveCommand.Create<ILocaleFileData>(SetLinkedData, FileSelectedObservable).DisposeWith(disposables);
-			RemoveFileLinkDataCommand = ReactiveCommand.Create<ILocaleFileData>(RemoveLinkedData, FileSelectedObservable).DisposeWith(disposables);
+			ReloadFileLinkDataCommand = ReactiveCommand.Create<ILocaleFileData>(RefreshLinkedData, FileSelectedObservable).DisposeWith(d);
+			SetFileLinkDataCommand = ReactiveCommand.Create<ILocaleFileData>(SetLinkedData, FileSelectedObservable).DisposeWith(d);
+			RemoveFileLinkDataCommand = ReactiveCommand.Create<ILocaleFileData>(RemoveLinkedData, FileSelectedObservable).DisposeWith(d);
 
 			RefreshAllLinkedDataCommand = ReactiveCommand.Create(RefreshAllLinkedData);
 
@@ -3048,7 +2887,7 @@ namespace SCG.Modules.DOS2DE.LocalizationEditor.ViewModels
 				{
 					ShowMissingEntriesView(duplicateEntries, true);
 				}
-			}).DisposeWith(disposables);
+			}).DisposeWith(d);
 
 			MenuData.File.Add(new MenuData("File.AddNewFile", "Add New File", AddFileCommand, Key.N, ModifierKeys.Control));
 			MenuData.File.Add(new SeparatorData());
@@ -3133,7 +2972,7 @@ namespace SCG.Modules.DOS2DE.LocalizationEditor.ViewModels
 			canPasteObservable.Subscribe((b) =>
 			{
 				pasteSubMenu.IsEnabled = b;
-			}).DisposeWith(disposables);
+			}).DisposeWith(d);
 
 			PasteIntoKeysCommand = ReactiveCommand.Create(() =>
 			{
@@ -3176,7 +3015,7 @@ namespace SCG.Modules.DOS2DE.LocalizationEditor.ViewModels
 						redo();
 					}
 				}
-			}, canPasteObservable).DisposeWith(disposables);
+			}, canPasteObservable).DisposeWith(d);
 
 			PasteIntoContentCommand = ReactiveCommand.Create(() =>
 			{
@@ -3219,7 +3058,7 @@ namespace SCG.Modules.DOS2DE.LocalizationEditor.ViewModels
 						redo();
 					}
 				}
-			}, canPasteObservable).DisposeWith(disposables);
+			}, canPasteObservable).DisposeWith(d);
 
 			PasteIntoHandlesCommand = ReactiveCommand.Create(() =>
 			{
@@ -3264,7 +3103,7 @@ namespace SCG.Modules.DOS2DE.LocalizationEditor.ViewModels
 						redo();
 					}
 				}
-			}, canPasteObservable).DisposeWith(disposables);
+			}, canPasteObservable).DisposeWith(d);
 
 			pasteSubMenu.Add(new MenuData("Edit.Paste.IntoKey", "Into Key", PasteIntoKeysCommand));
 			pasteSubMenu.Add(new MenuData("Edit.Paste.IntoContent", "Into Content", PasteIntoContentCommand));

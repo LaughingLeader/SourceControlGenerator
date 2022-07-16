@@ -139,7 +139,7 @@ namespace SCG.Modules.DOS2DE.LocalizationEditor.Views
 
 			this.WhenActivated((disposables) =>
 			{
-				this.WhenAnyValue(v => v.EntryContentRichTextBox.Selection.Text).ToProperty(ViewModel, "SelectedText").DisposeWith(disposables);
+				this.WhenAnyValue(v => v.EntryContentRichTextBox.Selection.Text).BindTo(ViewModel, x => x.SelectedText).DisposeWith(disposables);
 
 				ViewModel?.OnActivated(disposables);
 				DataContext = ViewModel;

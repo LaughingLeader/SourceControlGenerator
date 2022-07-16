@@ -1259,7 +1259,10 @@ namespace SCG.Modules.DOS2DE.LocalizationEditor.Utilities
 						};
 					}
 
-					linkedList.Links.Add(fileData.FileLinkData);
+					if(!linkedList.Links.Any(x => x.ReadFrom == fileData.FileLinkData.ReadFrom))
+					{
+						linkedList.Links.Add(fileData.FileLinkData);
+					}
 
 					SaveLinkedData(moduleData, linkedList);
 				}

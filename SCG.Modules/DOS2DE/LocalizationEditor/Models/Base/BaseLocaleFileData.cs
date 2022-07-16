@@ -154,12 +154,12 @@ namespace SCG.Modules.DOS2DE.LocalizationEditor.Models
 				UpdateDisplayName();
 			});
 
-			this.WhenAnyValue(x => x.FileLinkData.ReadFrom, (f) => !string.IsNullOrEmpty(f)).ToProperty(this, x => x.HasFileLink);
+			this.WhenAnyValue(x => x.FileLinkData.ReadFrom, (f) => !string.IsNullOrEmpty(f)).BindTo(this, x => x.HasFileLink);
 
 			var entryChangeSet = Entries.ToObservableChangeSet();
 			//Setting ChangesUnsaved to true when any item in entries is unsaved
 			var anyChanged = entryChangeSet.AutoRefresh(x => x.ChangesUnsaved).ToCollection();
-			anyChanged.Any(x => x.Any(y => y.ChangesUnsaved == true)).ToProperty(this, x => x.ChangesUnsaved);
+			anyChanged.Any(x => x.Any(y => y.ChangesUnsaved == true)).BindTo(this, x => x.ChangesUnsaved);
 			entryChangeSet.AutoRefresh(x => x.Visible).Filter(x => x.Visible == true).ObserveOn(RxApp.MainThreadScheduler).Bind(out visibleEntries).Subscribe();
 
 			this.WhenAnyValue(x => x.VisibleEntries.Count, x => x.Selected, (x, y) => x > 0 && y).
