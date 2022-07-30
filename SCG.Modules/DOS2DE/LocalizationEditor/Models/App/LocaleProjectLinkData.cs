@@ -21,7 +21,7 @@ namespace SCG.Modules.DOS2DE.LocalizationEditor.Models
 	}
 
 	[DataContract]
-	public struct LocaleFileLinkData
+	public class LocaleFileLinkData
 	{
 		[DataMember]
 		[Reactive]

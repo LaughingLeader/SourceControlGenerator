@@ -12,34 +12,17 @@ using System.Threading.Tasks;
 using System.Windows.Input;
 using SCG.Modules.DOS2DE.LocalizationEditor.ViewModels;
 using SCG.Modules.DOS2DE.LocalizationEditor.Models;
+using ReactiveUI.Fody.Helpers;
 
 namespace SCG.Modules.DOS2DE.Data.View.Locale
 {
 	public class LocaleTabGroup : ReactiveObject
 	{
-		private string name;
-
-		public string Name
-		{
-			get { return name; }
-			set
-			{
-				this.RaiseAndSetIfChanged(ref name, value);
-			}
-		}
+		[Reactive] public string Name { get; set; }
 
 		public List<string> SourceDirectories { get; set; } = new List<string>();
 
-		private bool changesUnsaved = true;
-
-		public bool ChangesUnsaved
-		{
-			get { return changesUnsaved; }
-			set
-			{
-				this.RaiseAndSetIfChanged(ref changesUnsaved, value);
-			}
-		}
+		[Reactive] public bool ChangesUnsaved { get; set; }
 
 		private ObservableCollectionExtended<ILocaleFileData> dataFiles;
 
@@ -98,32 +81,11 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 
 		public ICommand UpdateAllCommand { get; set; }
 
-		private bool visibility = true;
+		[Reactive] public bool Visibility { get; set; } = true;
 
-		public bool Visibility
-		{
-			get { return visibility; }
-			set
-			{
-				this.RaiseAndSetIfChanged(ref visibility, value);
-			}
-		}
+		[Reactive] public bool CanAddFiles { get; set; }
 
-		private bool canAddFiles = false;
-
-		public bool CanAddFiles
-		{
-			get => canAddFiles;
-			set { this.RaiseAndSetIfChanged(ref canAddFiles, value); }
-		}
-
-		private bool isCustom = false;
-
-		public bool IsCustom
-		{
-			get => isCustom;
-			set { this.RaiseAndSetIfChanged(ref isCustom, value); }
-		}
+		[Reactive] public bool IsCustom { get; set; }
 
 		public void UpdateCombinedData(bool all = false)
 		{
@@ -166,6 +128,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 					Log.Here().Activity($"Updated combined entries for '{Name}'.");
 				}
 			}
+			this.UpdateUnsavedChanges();
 		}
 
 		public void SelectFirst()
@@ -187,8 +150,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 
 		public void UpdateUnsavedChanges()
 		{
-			ChangesUnsaved = Tabs.Any(f => f.ChangesUnsaved == true);
-			Parent?.UpdateUnsavedChanges();
+			ChangesUnsaved = Tabs.Any(f => f != CombinedEntries && f.ChangesUnsaved == true);
 		}
 
 		public void Clear()
@@ -206,6 +168,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 			CombinedEntries = new CombinedLocaleVirtualFileData(this, "All");
 			CombinedEntries.IsCombinedData = true;
 			CombinedEntries.Locked = true;
+			this.WhenAnyValue(x => x.ChangesUnsaved).BindTo(CombinedEntries, x => x.ChangesUnsaved);
 			DataFiles = new ObservableCollectionExtended<ILocaleFileData>();
 			Tabs = new ObservableCollectionExtended<ILocaleFileData>();
 			UpdateAllCommand = ReactiveCommand.Create(() => UpdateCombinedData(true));

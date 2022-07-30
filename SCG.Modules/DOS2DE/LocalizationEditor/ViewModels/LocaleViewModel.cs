@@ -36,6 +36,8 @@ using SCG.Modules.DOS2DE.Data.View.Locale;
 using SCG.Modules.DOS2DE.LocalizationEditor.Views;
 using SCG.Modules.DOS2DE.LocalizationEditor.Utilities;
 using ReactiveUI.Fody.Helpers;
+using Newtonsoft.Json.Linq;
+using System.Windows.Markup;
 
 namespace SCG.Modules.DOS2DE.LocalizationEditor.ViewModels
 {
@@ -68,13 +70,7 @@ namespace SCG.Modules.DOS2DE.LocalizationEditor.ViewModels
 			LevelDataGroup.Visibility = Settings.LoadLevelData;
 		}
 
-		private LocaleEditorProjectSettingsData activeProjectSettings;
-
-		public LocaleEditorProjectSettingsData ActiveProjectSettings
-		{
-			get => activeProjectSettings;
-			set { this.RaiseAndSetIfChanged(ref activeProjectSettings, value); }
-		}
+		public LocaleEditorProjectSettingsData ActiveProjectSettings { get; set; }
 
 		public DOS2DEModuleData ModuleData { get; set; }
 
@@ -424,6 +420,12 @@ namespace SCG.Modules.DOS2DE.LocalizationEditor.ViewModels
 
 		[Reactive] public bool HideExtras { get; set; } = true;
 
+		readonly ObservableAsPropertyHelper<bool> anyChangesUnsaved;
+		public bool ChangesUnsaved
+		{
+			get { return anyChangesUnsaved.Value; }
+		}
+
 
 		public TextBox CurrentTextBox { get; set; }
 
@@ -763,9 +765,10 @@ namespace SCG.Modules.DOS2DE.LocalizationEditor.ViewModels
 				{
 					int total = SelectedGroup.DataFiles.Where(f => f.ChangesUnsaved).Count();
 					var successes = await LocaleEditorCommands.SaveDataFiles(this);
-					Log.Here().Important($"Saved {successes} localization files.");
-					OutputText = $"Saved {successes}/{total} files.";
+					Log.Here().Important($"Saved {successes} localization file(s).");
+					OutputText = $"Saved {successes}/{total} file(s).";
 					OutputType = LogType.Important;
+					UpdateSelectedGroupCombinedData(false);
 				}
 				else
 				{
@@ -798,7 +801,6 @@ namespace SCG.Modules.DOS2DE.LocalizationEditor.ViewModels
 
 								keyFileData.SetChangesUnsaved(false, true);
 								UpdateSelectedGroupCombinedData(false);
-								ChangesUnsaved = false;
 							}
 							else
 							{
@@ -817,9 +819,30 @@ namespace SCG.Modules.DOS2DE.LocalizationEditor.ViewModels
 						return Disposable.Empty;
 					});
 				}
-				else if (SelectedFile.IsCustom)
+				else if (SelectedFile.IsCustom && SelectedFile is LocaleCustomFileData customFileData)
 				{
-					//TODO
+					string targetDirectory = Path.GetDirectoryName(customFileData.SourcePath);
+					if (Directory.Exists(targetDirectory))
+					{
+						RxApp.TaskpoolScheduler.ScheduleAsync(async (s, t) =>
+						{
+							var result = await LocaleEditorCommands.SaveDataFile(customFileData, targetDirectory, t);
+							if (result > 0)
+							{
+								OutputText = $"Saved '{customFileData.Name}' to '{Directory.GetParent(targetDirectory)}'.";
+								OutputType = LogType.Important;
+
+								customFileData.SetChangesUnsaved(false, true);
+								UpdateSelectedGroupCombinedData(false);
+							}
+							else
+							{
+								OutputText = $"Error saving '{customFileData.Name}' to '{Directory.GetParent(targetDirectory)}'. Check the log.";
+								OutputType = LogType.Error;
+							}
+							OutputDate = DateTime.Now.ToShortTimeString();
+						});
+					}
 				}
 				else
 				{
@@ -905,7 +928,6 @@ namespace SCG.Modules.DOS2DE.LocalizationEditor.ViewModels
 				string futurePath = FileCommands.EnsureExtension(Path.Combine(currentGroup.SourceDirectories.First(), "NewFile" + totalFiles), ".lsb");
 				var newFile = LocaleEditorCommands.CreateFileData(currentGroup, futurePath, "NewFile" + totalFiles);
 				bool lastChangesUnsaved = currentGroup.ChangesUnsaved;
-				bool lastGlobalChangesUnsaved = ChangesUnsaved;
 
 				void undo()
 				{
@@ -917,8 +939,6 @@ namespace SCG.Modules.DOS2DE.LocalizationEditor.ViewModels
 					currentGroup.UpdateCombinedData();
 					currentGroup.SelectLast();
 					view.FocusSelectedTab();
-
-					ChangesUnsaved = lastGlobalChangesUnsaved;
 				}
 
 				void redo()
@@ -942,8 +962,6 @@ namespace SCG.Modules.DOS2DE.LocalizationEditor.ViewModels
 
 					view.FocusSelectedTab();
 
-					ChangesUnsaved = true;
-
 					newFile.ChangesUnsaved = true;
 					newFile.IsRenaming = true;
 				}
@@ -963,7 +981,6 @@ namespace SCG.Modules.DOS2DE.LocalizationEditor.ViewModels
 				var newFileDataList = LocaleEditorCommands.ImportFilesAsData(files, SelectedGroup, LinkedProjects);
 
 				var lastGroupChangesUnsaved = currentGroup.ChangesUnsaved;
-				var lastChangesUnsaved = ChangesUnsaved;
 
 				var lastFiles = currentGroup.DataFiles.ToList();
 				var lastImportPath = CurrentImportPath;
@@ -986,7 +1003,7 @@ namespace SCG.Modules.DOS2DE.LocalizationEditor.ViewModels
 					currentGroup.DataFiles = new ObservableCollectionExtended<ILocaleFileData>(lastFiles);
 					currentGroup.UpdateCombinedData(true);
 					currentGroup.SelectLast();
-					currentGroup.ChangesUnsaved = lastChangesUnsaved;
+					currentGroup.ChangesUnsaved = lastGroupChangesUnsaved;
 					view.FocusSelectedTab();
 
 					if (currentGroup.IsCustom)
@@ -1000,8 +1017,6 @@ namespace SCG.Modules.DOS2DE.LocalizationEditor.ViewModels
 						CombinedGroup.UpdateCombinedData(true);
 						currentGroup.ChangesUnsaved = true;
 					}
-
-					ChangesUnsaved = lastChangesUnsaved;
 
 					SaveLastFileImportPath(lastImportPath);
 
@@ -1058,8 +1073,6 @@ namespace SCG.Modules.DOS2DE.LocalizationEditor.ViewModels
 						{
 							ActiveProjectSettings.CustomFiles.Add(newFile.SourcePath);
 						}
-
-						ChangesUnsaved = true;
 					}
 
 					string lastImport = files.FirstOrDefault();
@@ -1226,8 +1239,6 @@ namespace SCG.Modules.DOS2DE.LocalizationEditor.ViewModels
 
 				this.RaisePropertyChanged("CurrentImportPath");
 				this.RaisePropertyChanged("CurrentEntryImportPath");
-
-				ChangesUnsaved = true;
 			}
 		}
 
@@ -2091,7 +2102,7 @@ namespace SCG.Modules.DOS2DE.LocalizationEditor.ViewModels
 
 		public void RefreshLinkedData(ILocaleFileData fileData)
 		{
-			if (!string.IsNullOrEmpty(fileData.FileLinkData.ReadFrom))
+			if (fileData.FileLinkData != null && !string.IsNullOrEmpty(fileData.FileLinkData.ReadFrom))
 			{
 				List<TextualLocaleEntry> lastValues = fileData.Entries.Select(x => new TextualLocaleEntry { Key = x.Key, Content = x.Content, Handle = x.Handle }).ToList();
 				void undo()
@@ -2215,14 +2226,9 @@ namespace SCG.Modules.DOS2DE.LocalizationEditor.ViewModels
 
 				fileData.ChangesUnsaved = true;
 				if (fileData.Parent != null) fileData.Parent.ChangesUnsaved = true;
-				ChangesUnsaved = true;
 			}
 			CreateSnapshot(undo, redo);
 			redo();
-		}
-		public void UpdateUnsavedChanges()
-		{
-			ChangesUnsaved = Groups.Any(g => g.ChangesUnsaved == true);
 		}
 
 		public void ReloadFileData(ILocaleFileData fileData)
@@ -2287,7 +2293,7 @@ namespace SCG.Modules.DOS2DE.LocalizationEditor.ViewModels
 
 							if (changesUnsaved > 0)
 							{
-								oldFile.ChangesUnsaved = targetGroup.ChangesUnsaved = ChangesUnsaved = true;
+								oldFile.ChangesUnsaved = targetGroup.ChangesUnsaved = true;
 							}
 
 							OnHideExtras(HideExtras);
@@ -2498,7 +2504,7 @@ namespace SCG.Modules.DOS2DE.LocalizationEditor.ViewModels
 
 								if (changes > 0)
 								{
-									fileData.ChangesUnsaved = fileData.Parent.ChangesUnsaved = ChangesUnsaved = true;
+									fileData.ChangesUnsaved = fileData.Parent.ChangesUnsaved = true;
 
 									OutputText = $"Refreshed file. Found {changes} changes.";
 									OutputType = LogType.Important;
@@ -2529,7 +2535,7 @@ namespace SCG.Modules.DOS2DE.LocalizationEditor.ViewModels
 			ClipboardHasText = Clipboard.ContainsText() && !string.IsNullOrEmpty(Clipboard.GetText());
 		}
 
-		public void Clear()
+		public override void Clear()
 		{
 			LinkedProjects.Clear();
 			LinkedLocaleData.Clear();
@@ -2538,6 +2544,8 @@ namespace SCG.Modules.DOS2DE.LocalizationEditor.ViewModels
 			{
 				g.Clear();
 			}
+
+			base.Clear();
 		}
 
 		public void Reload()
@@ -3207,7 +3215,11 @@ namespace SCG.Modules.DOS2DE.LocalizationEditor.ViewModels
 				g.SelectedFileChanged = SelectedFileChanged;
 			}
 
-			Groups.ToObservableChangeSet().Filter(x => x.Visibility == true).ObserveOn(RxApp.MainThreadScheduler).Bind(out visibleGroups).Subscribe();
+			var groupsObvs = Groups.ToObservableChangeSet();
+
+			groupsObvs.Filter(x => x.Visibility == true).ObserveOn(RxApp.MainThreadScheduler).Bind(out visibleGroups).Subscribe();
+
+			anyChangesUnsaved = groupsObvs.AutoRefresh(g => g.ChangesUnsaved).ToCollection().Any(g => g.Any(t => t.ChangesUnsaved == true)).ObserveOn(RxApp.MainThreadScheduler).ToProperty(this, x => x.ChangesUnsaved);
 
 			var canRemoveEntries = this.WhenAnyValue(x => x.MissingKeyEntrySelected);
 
@@ -3265,6 +3277,4 @@ namespace SCG.Modules.DOS2DE.LocalizationEditor.ViewModels
 			OnClipboardChangedCommand = ReactiveCommand.Create(OnClipboardChanged);
 		}
 	}
-
-
 }

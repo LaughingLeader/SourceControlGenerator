@@ -12,11 +12,15 @@ using System.Threading.Tasks;
 
 namespace SCG.Data
 {
-	public interface IPropertyChangedHistoryBase
+	public interface IHistoryKeeper
+	{
+		IHistory History { get; set; }
+	}
+
+	public interface IPropertyChangedHistoryBase : IHistoryKeeper
 	{
 		bool ChangesUnsaved { get; set; }
-		IHistory History { get; set; }
-		void SetHistoryFromObject(IPropertyChangedHistoryBase obj);
+		void SetHistoryFromObject(IHistoryKeeper obj);
 	}
 
 	public abstract class PropertyChangedHistoryBase : ReactiveObject, IPropertyChangedHistoryBase
@@ -33,7 +37,7 @@ namespace SCG.Data
 			set { this.RaiseAndSetIfChanged(ref changedUnsaved, value); }
 		}
 
-		public void SetHistoryFromObject(IPropertyChangedHistoryBase obj)
+		public void SetHistoryFromObject(IHistoryKeeper obj)
 		{
 			History = obj.History;
 		}

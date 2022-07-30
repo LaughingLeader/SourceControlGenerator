@@ -1215,7 +1215,7 @@ namespace SCG.Modules.DOS2DE.LocalizationEditor.Utilities
 							Log.Here().Activity($"Line file loaded: '{filePath}' => {data.ProjectUUID}.");
 
 							// Ignore duplicates
-							var distinctLinks = data.Links.DistinctBy(x => x.TargetFile).ToList();
+							var distinctLinks = data.Links.DistinctBy(x => x.TargetFile).DistinctBy(x => x.ReadFrom).ToList();
 							data.Links = distinctLinks;
 
 							foreach (var link in data.Links)

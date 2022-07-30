@@ -1,4 +1,6 @@
-﻿using SCG.Modules.DOS2DE.Data.View.Locale;
+﻿using ReactiveUI;
+
+using SCG.Modules.DOS2DE.Data.View.Locale;
 
 using System;
 using System.Collections.Generic;
@@ -12,6 +14,7 @@ namespace SCG.Modules.DOS2DE.LocalizationEditor.Models
 	{
 		public CombinedLocaleVirtualFileData(LocaleTabGroup parent, string name = "") : base(parent, name)
 		{
+
 		}
 
 		public bool IsCustom => false;

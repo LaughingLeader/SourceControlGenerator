@@ -34,7 +34,7 @@ namespace SCG.Modules.DOS2DE.Data.View.Locale
 		string EntryHandle { get; set; }
 		bool Visible { get; set; }
 
-		void SetHistoryFromObject(IPropertyChangedHistoryBase obj);
+		void SetHistoryFromObject(IHistoryKeeper obj);
 	}
 
 	public static class LocaleKeyEntryExtensions

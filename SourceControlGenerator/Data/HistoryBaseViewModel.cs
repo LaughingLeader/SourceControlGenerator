@@ -2,23 +2,27 @@
 using System.ComponentModel;
 using System.Reactive.Disposables;
 using System.Runtime.CompilerServices;
-using Reactive.Bindings;
-using Reactive.Bindings.Extensions;
 using ReactiveHistory;
 using System.Reflection;
 using System.Windows.Input;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Serialization;
+using ReactiveUI;
+using Reactive.Bindings.Extensions;
+using System.Runtime.ConstrainedExecution;
 
 namespace SCG.Data
 {
-	public abstract class HistoryBaseViewModel : PropertyChangedHistoryBase, IDisposable
+	public abstract class HistoryBaseViewModel : ReactiveObject, IHistoryKeeper, IDisposable
 	{
 		private CompositeDisposable Disposable { get; set; }
 
 		public ICommand UndoCommand { get; set; }
 		public ICommand RedoCommand { get; set; }
 		public ICommand ClearCommand { get; set; }
+
+		public IHistory History { get; set; }
 
 		public void CreateSnapshot(Action undo, Action redo)
 		{
@@ -74,25 +78,22 @@ namespace SCG.Data
 			//Log.Here().Activity($"Redo command called. canUndo: {canUndo}");
 		}
 
+		public virtual void Clear()
+		{
+			History.Clear();
+		}
+
 		public HistoryBaseViewModel()
 		{
 			Disposable = new CompositeDisposable();
 
 			var history = new StackHistory().AddTo(Disposable);
 			History = history;
-			
 
-			var undo = new ReactiveCommand(History.CanUndo, false);
-			undo.Subscribe(_ => Undo()).AddTo(this.Disposable);
-			UndoCommand = undo;
 
-			var redo = new ReactiveCommand(History.CanRedo, false);
-			redo.Subscribe(_ => Redo()).AddTo(this.Disposable);
-			RedoCommand = redo;
-
-			var clear = new ReactiveCommand(History.CanClear, false);
-			clear.Subscribe(_ => History.Clear()).AddTo(this.Disposable);
-			ClearCommand = clear;
+			UndoCommand = ReactiveCommand.Create(Undo, History.CanUndo).DisposeWith(Disposable);
+			RedoCommand = ReactiveCommand.Create(Redo, History.CanRedo).DisposeWith(Disposable);
+			ClearCommand = ReactiveCommand.Create(Clear, History.CanClear).DisposeWith(Disposable);
 		}
 
 		public void Dispose()
