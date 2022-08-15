@@ -70,23 +70,19 @@ namespace SCG
 			{
 				if (File.Exists(filePath))
 				{
-					var result = File.Copy(filePath, nextFilePath, CopyOptions.FailIfExists);
-					if(!result.IsCanceled && result.IsFile)
-					{
-						Microsoft.VisualBasic.FileIO.FileSystem.DeleteFile(filePath, 
-							Microsoft.VisualBasic.FileIO.UIOption.OnlyErrorDialogs, Microsoft.VisualBasic.FileIO.RecycleOption.SendToRecycleBin);
-						Log.Here().Activity($"Renamed \"{filePath}\" to \"{nextFilePath}\".");
-						return true;
-					}
+					var file = new FileInfo(filePath);
+					file.MoveTo(nextFilePath);
+					Log.Here().Activity($"Renamed \"{filePath}\" to \"{nextFilePath}\".");
+					return true;
 				}
 				else
 				{
-					Log.Here().Warning("File \"{0}\" does not exist.", filePath);
+					Log.Here().Warning($"File \"{filePath}\" does not exist.");
 				}
 			}
 			catch (Exception e)
 			{
-				Log.Here().Error("Error reading file at {0} - {1}", filePath, e.ToString());
+				Log.Here().Error($"Error renaming file at {filePath}:\n{e}");
 			}
 			return false;
 		}

@@ -83,12 +83,10 @@
       <SubType>Designer</SubType>
     </Page>
   </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <PropertyGroup>
-    <PostBuildEvent>xcopy "$(TargetDir)$(TargetFileName)" "$(SolutionDir)Modules_Export\" /Y
-xcopy "$(TargetDir)$(TargetFileName)" "D:\Projects\_Visual_Studio\SourceControlGenerator\SourceControlGenerator\bin\Debug\Modules\" /Y
-
-xcopy "$(TargetDir)$(TargetFileName)" "$(SolutionDir)Modules_Export\" /Y
-xcopy "$(TargetDir)$(TargetFileName)" "D:\Projects\_Visual_Studio\SourceControlGenerator\SourceControlGenerator\bin\Release\Modules\" /Y</PostBuildEvent>
-  </PropertyGroup>
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <ItemGroup>
+      <FilesToMove Include="$(OutputPath)$(AssemblyName).dll" />
+    </ItemGroup>
+    <Copy SourceFiles="@(FilesToMove)" DestinationFolder="$(SolutionDir)bin\$(Configuration)\Modules\" OverwriteReadOnlyFiles="true" />
+  </Target>
 </Project>
