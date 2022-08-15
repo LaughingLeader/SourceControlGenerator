@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace SCG.Util
+﻿namespace SCG.Util
 {
 	public class PropertyCopier<TParent, TChild> where TParent : class
 											where TChild : class

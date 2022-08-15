@@ -1,9 +1,8 @@
-﻿using System.Runtime.CompilerServices;
-using Alphaleonis.Win32.Filesystem;
-using System.Diagnostics;
-using SCG.Util;
+﻿using Alphaleonis.Win32.Filesystem;
+
 using System;
-using System.ComponentModel;
+using System.Diagnostics;
+using System.Runtime.CompilerServices;
 
 namespace SCG
 {

@@ -1,12 +1,13 @@
 ﻿using Alphaleonis.Win32.Filesystem;
+
+using Gameloop.Vdf;
+using Gameloop.Vdf.Linq;
+
 using Microsoft.Win32;
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Gameloop.Vdf;
-using Gameloop.Vdf.Linq;
 
 namespace SCG.Util
 {
@@ -110,10 +111,11 @@ namespace SCG.Util
 								{
 									if (token.Key != "TimeNextStatsReport" && token.Key != "ContentStatsID")
 									{
-										if (token.Value is VValue innerValue)
+										var path = token.Value.Children().Cast<VProperty>().FirstOrDefault(x => x.Key == "path");
+										if (path != null && path.Value is VValue innerValue)
 										{
 											var p = innerValue.Value<string>();
-											if (Directory.Exists(p))
+											if (!String.IsNullOrEmpty(p) && Directory.Exists(p))
 											{
 												Log.Here().Activity($"Found steam library folder at '{p}'.");
 												libraryFolders.Add(p);
@@ -124,7 +126,7 @@ namespace SCG.Util
 							}
 							catch (Exception ex)
 							{
-								Log.Here().Activity($"Error parsing steam library file at '{libraryFile}': {ex.ToString()}");
+								Log.Here().Error($"Error parsing steam library file at '{libraryFile}':\n{ex}");
 							}
 
 							foreach (var folderPath in libraryFolders)
@@ -152,7 +154,7 @@ namespace SCG.Util
 			}
 			catch (Exception ex)
 			{
-				Log.Here().Activity($"[*ERROR*] Error finding DOS2 path: {ex.ToString()}");
+				Log.Here().Error($"[*ERROR*] Error finding DOS2 path:\n{ex}");
 			}
 
 			return "";
