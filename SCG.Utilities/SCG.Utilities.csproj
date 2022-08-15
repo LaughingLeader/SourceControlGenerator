@@ -19,6 +19,7 @@
 		<DefineConstants>TRACE</DefineConstants>
 		<DebugType>pdbonly</DebugType>
 		<Optimize>true</Optimize>
+		<Platforms>x64</Platforms>
 	</PropertyGroup>
 	<PropertyGroup Condition="'$(Configuration)' == 'Debug'">
 		<OutputPath>bin\Debug\</OutputPath>

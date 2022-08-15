@@ -5,9 +5,9 @@ VisualStudioVersion = 17.4.32804.182
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SourceControlGenerator", "SourceControlGenerator\SourceControlGenerator.csproj", "{E96F2EEB-E207-4AB6-9B85-F86B3F386117}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SCG.MarkdownConverter", "SCG.MarkdownConverter\SCG.MarkdownConverter.csproj", "{139A1053-E54E-4FD7-B64A-A3F0A2CAE350}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SCG.MarkdownConverter", "SCG.MarkdownConverter\SCG.MarkdownConverter.csproj", "{139A1053-E54E-4FD7-B64A-A3F0A2CAE350}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SCG.Utilities", "SCG.Utilities\SCG.Utilities.csproj", "{2709C5C0-66AE-49DC-A65B-391163A39602}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SCG.Utilities", "SCG.Utilities\SCG.Utilities.csproj", "{2709C5C0-66AE-49DC-A65B-391163A39602}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SCG.Modules.DOS2DE", "SCG.Modules\DOS2DE\SCG.Modules.DOS2DE.csproj", "{98B933B0-0536-46EC-A587-D57D8580FCFD}"
 EndProject
@@ -18,30 +18,18 @@ Global
 		Release|x64 = Release|x64
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{E96F2EEB-E207-4AB6-9B85-F86B3F386117}.Debug|x64.ActiveCfg = Debug|x64
-		{E96F2EEB-E207-4AB6-9B85-F86B3F386117}.Debug|x64.Build.0 = Debug|x64
-		{E96F2EEB-E207-4AB6-9B85-F86B3F386117}.Publish|x64.ActiveCfg = Release|x64
-		{E96F2EEB-E207-4AB6-9B85-F86B3F386117}.Publish|x64.Build.0 = Release|x64
-		{E96F2EEB-E207-4AB6-9B85-F86B3F386117}.Release|x64.ActiveCfg = Release|x64
-		{E96F2EEB-E207-4AB6-9B85-F86B3F386117}.Release|x64.Build.0 = Release|x64
 		{139A1053-E54E-4FD7-B64A-A3F0A2CAE350}.Debug|x64.ActiveCfg = Debug|x64
 		{139A1053-E54E-4FD7-B64A-A3F0A2CAE350}.Debug|x64.Build.0 = Debug|x64
-		{139A1053-E54E-4FD7-B64A-A3F0A2CAE350}.Publish|x64.ActiveCfg = Release|x64
-		{139A1053-E54E-4FD7-B64A-A3F0A2CAE350}.Publish|x64.Build.0 = Release|x64
-		{139A1053-E54E-4FD7-B64A-A3F0A2CAE350}.Release|x64.ActiveCfg = Release|Any CPU
-		{139A1053-E54E-4FD7-B64A-A3F0A2CAE350}.Release|x64.Build.0 = Release|Any CPU
+		{139A1053-E54E-4FD7-B64A-A3F0A2CAE350}.Publish|x64.ActiveCfg = Debug|x64
+		{139A1053-E54E-4FD7-B64A-A3F0A2CAE350}.Publish|x64.Build.0 = Debug|x64
+		{139A1053-E54E-4FD7-B64A-A3F0A2CAE350}.Release|x64.ActiveCfg = Release|x64
+		{139A1053-E54E-4FD7-B64A-A3F0A2CAE350}.Release|x64.Build.0 = Release|x64
 		{2709C5C0-66AE-49DC-A65B-391163A39602}.Debug|x64.ActiveCfg = Debug|x64
 		{2709C5C0-66AE-49DC-A65B-391163A39602}.Debug|x64.Build.0 = Debug|x64
-		{2709C5C0-66AE-49DC-A65B-391163A39602}.Publish|x64.ActiveCfg = Release|x64
-		{2709C5C0-66AE-49DC-A65B-391163A39602}.Publish|x64.Build.0 = Release|x64
-		{2709C5C0-66AE-49DC-A65B-391163A39602}.Release|x64.ActiveCfg = Release|Any CPU
-		{2709C5C0-66AE-49DC-A65B-391163A39602}.Release|x64.Build.0 = Release|Any CPU
-		{98B933B0-0536-46EC-A587-D57D8580FCFD}.Debug|x64.ActiveCfg = Debug|x64
-		{98B933B0-0536-46EC-A587-D57D8580FCFD}.Debug|x64.Build.0 = Debug|x64
-		{98B933B0-0536-46EC-A587-D57D8580FCFD}.Publish|x64.ActiveCfg = Release|x64
-		{98B933B0-0536-46EC-A587-D57D8580FCFD}.Publish|x64.Build.0 = Release|x64
-		{98B933B0-0536-46EC-A587-D57D8580FCFD}.Release|x64.ActiveCfg = Release|x64
-		{98B933B0-0536-46EC-A587-D57D8580FCFD}.Release|x64.Build.0 = Release|x64
+		{2709C5C0-66AE-49DC-A65B-391163A39602}.Publish|x64.ActiveCfg = Debug|x64
+		{2709C5C0-66AE-49DC-A65B-391163A39602}.Publish|x64.Build.0 = Debug|x64
+		{2709C5C0-66AE-49DC-A65B-391163A39602}.Release|x64.ActiveCfg = Release|x64
+		{2709C5C0-66AE-49DC-A65B-391163A39602}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
