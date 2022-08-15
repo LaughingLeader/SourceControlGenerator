@@ -144,10 +144,12 @@ namespace SCG.Modules.DOS2DE.LocalizationEditor.Utilities
 					string journalPath = Path.Combine(modsRoot, "Story", "Journal");
 					string globalsPath = Path.Combine(modsRoot, "Globals");
 					string levelsPath = Path.Combine(modsRoot, "Levels");
+					string characterCreationPath = Path.Combine(modsRoot, "CharacterCreation");
 
 					localizationData.ModsGroup.SourceDirectories.Add(modsLocalePath);
 					localizationData.DialogGroup.SourceDirectories.Add(dialogLocalePath);
 					localizationData.JournalGroup.SourceDirectories.Add(journalPath);
+					localizationData.CharacterCreationGroup.SourceDirectories.Add(characterCreationPath);
 
 					if (Directory.Exists(modsLocalePath))
 					{

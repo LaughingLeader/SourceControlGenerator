@@ -227,108 +227,23 @@ namespace SCG.Modules.DOS2DE.LocalizationEditor.ViewModels
 
 		private LocaleTabGroup newFileTabTargetGroup;
 
-		private LocaleTabGroup modsGroup;
+		public LocaleTabGroup ModsGroup { get; private set; }
 
-		public LocaleTabGroup ModsGroup
-		{
-			get => modsGroup;
-			set
-			{
-				this.RaiseAndSetIfChanged(ref modsGroup, value);
-			}
-		}
-
-		private LocaleTabGroup dialogGroup;
-
-		public LocaleTabGroup DialogGroup
-		{
-			get => dialogGroup;
-			set
-			{
-				this.RaiseAndSetIfChanged(ref dialogGroup, value);
-			}
-		}
-		private LocaleTabGroup journalGroup;
-
-		public LocaleTabGroup JournalGroup
-		{
-			get => journalGroup;
-			set
-			{
-				this.RaiseAndSetIfChanged(ref journalGroup, value);
-			}
-		}
-
-		private LocaleTabGroup publicGroup;
-
-		public LocaleTabGroup PublicGroup
-		{
-			get => publicGroup;
-			set
-			{
-				this.RaiseAndSetIfChanged(ref publicGroup, value);
-			}
-		}
-
-		private LocaleTabGroup rootTemplatesGroup;
-
-		public LocaleTabGroup RootTemplatesGroup
-		{
-			get => rootTemplatesGroup;
-			set
-			{
-				this.RaiseAndSetIfChanged(ref rootTemplatesGroup, value);
-			}
-		}
-
-		private LocaleTabGroup globalTemplatesGroup;
-
-		public LocaleTabGroup GlobalTemplatesGroup
-		{
-			get => globalTemplatesGroup;
-			set
-			{
-				this.RaiseAndSetIfChanged(ref globalTemplatesGroup, value);
-			}
-		}
-
-		private LocaleTabGroup levelDataGroup;
-
-		public LocaleTabGroup LevelDataGroup
-		{
-			get => levelDataGroup;
-			set
-			{
-				this.RaiseAndSetIfChanged(ref levelDataGroup, value);
-			}
-		}
-
-		private CustomLocaleTabGroup customGroup;
-
-		public CustomLocaleTabGroup CustomGroup
-		{
-			get => customGroup;
-			set
-			{
-				this.RaiseAndSetIfChanged(ref customGroup, value);
-			}
-		}
+		public LocaleTabGroup DialogGroup { get; private set; }
+		public LocaleTabGroup JournalGroup { get; private set; }
+		public LocaleTabGroup CharacterCreationGroup { get; private set; }
+		public LocaleTabGroup PublicGroup { get; private set; }
+		public LocaleTabGroup RootTemplatesGroup { get; private set; }
+		public LocaleTabGroup GlobalTemplatesGroup { get; private set; }
+		public LocaleTabGroup LevelDataGroup { get; private set; }
+		public CustomLocaleTabGroup CustomGroup { get; private set; }
 
 		private List<LocaleTabGroup> GetCoreGroups()
 		{
-			return new List<LocaleTabGroup>() { PublicGroup, ModsGroup, DialogGroup, JournalGroup, CustomGroup };
+			return new List<LocaleTabGroup>() { PublicGroup, ModsGroup, CharacterCreationGroup, DialogGroup, JournalGroup, CustomGroup };
 		}
 
-		private LocaleTabGroup combinedGroup;
-
-		public LocaleTabGroup CombinedGroup
-		{
-			get => combinedGroup;
-			private set
-			{
-				this.RaiseAndSetIfChanged(ref combinedGroup, value);
-			}
-		}
+		public LocaleTabGroup CombinedGroup { get; private set; }
 
 		private LocaleTabGroup selectedGroup;
 
@@ -3184,6 +3099,8 @@ namespace SCG.Modules.DOS2DE.LocalizationEditor.ViewModels
 			CombinedGroup = new LocaleTabGroup(this, "All");
 			ModsGroup = new LocaleTabGroup(this, "Locale (Mods)");
 			PublicGroup = new LocaleTabGroup(this, "Locale (Public)");
+			CharacterCreationGroup = new LocaleTabGroup(this, "Character Creation");
+			CharacterCreationGroup.CanAddFiles = false;
 			DialogGroup = new LocaleTabGroup(this, "Dialog");
 			DialogGroup.CanAddFiles = false;
 			JournalGroup = new LocaleTabGroup(this, "Journal");
