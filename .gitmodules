@@ -1,0 +1,3 @@
+[submodule "lslib"]
+	path = External/lslib
+	url = https://github.com/LaughingLeader/lslib
