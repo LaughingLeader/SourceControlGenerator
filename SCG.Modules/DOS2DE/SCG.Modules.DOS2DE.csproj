@@ -1,363 +1,68 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">x64</Platform>
-    <ProjectGuid>{98B933B0-0536-46EC-A587-D57D8580FCFD}</ProjectGuid>
-    <PlatformTarget>x64</PlatformTarget>
-    <OutputType>library</OutputType>
-    <RootNamespace>SCG.Modules.DOS2DE</RootNamespace>
-    <AssemblyName>SCG.Modules.DOS2DE</AssemblyName>
-    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
-    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
-    <FileAlignment>512</FileAlignment>
-    <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
-    <WarningLevel>4</WarningLevel>
-    <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
-    <RunPostBuildEvent>Always</RunPostBuildEvent>
-    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
-    <OutputPath>bin\Debug\</OutputPath>
-    <DebugSymbols>true</DebugSymbols>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <DebugType>full</DebugType>
-    <PlatformTarget>x64</PlatformTarget>
-    <LangVersion>7.3</LangVersion>
-    <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-    <Prefer32Bit>true</Prefer32Bit>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
-    <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <Optimize>true</Optimize>
-    <DebugType>pdbonly</DebugType>
-    <PlatformTarget>x64</PlatformTarget>
-    <LangVersion>7.3</LangVersion>
-    <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-    <Prefer32Bit>true</Prefer32Bit>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Publish|x64'">
-    <OutputPath>bin\Publish\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <Optimize>true</Optimize>
-    <DebugType>pdbonly</DebugType>
-    <PlatformTarget>x64</PlatformTarget>
-    <LangVersion>7.3</LangVersion>
-    <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-    <Prefer32Bit>true</Prefer32Bit>
-  </PropertyGroup>
-  <ItemGroup>
-    <Reference Include="AlphaFS, Version=2.2.0.0, Culture=neutral, PublicKeyToken=4d31a58f7d7ad5c9, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\AlphaFS.2.2.6\lib\net452\AlphaFS.dll</HintPath>
-    </Reference>
-    <Reference Include="ControlzEx, Version=6.0.0.0, Culture=neutral, PublicKeyToken=69f1c32f803d307e, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\ControlzEx.6.0.0-alpha0218\lib\net462\ControlzEx.dll</HintPath>
-    </Reference>
-    <Reference Include="DynamicData, Version=7.9.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\DynamicData.7.9.7\lib\net462\DynamicData.dll</HintPath>
-    </Reference>
-    <Reference Include="HtmlRenderer, Version=1.5.1.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\HtmlRenderer.Core.1.5.1-beta1\lib\net45\HtmlRenderer.dll</HintPath>
-    </Reference>
-    <Reference Include="HtmlRenderer.WPF, Version=1.5.1.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\HtmlRenderer.WPF.1.5.1-beta1\lib\net45\HtmlRenderer.WPF.dll</HintPath>
-    </Reference>
-    <Reference Include="LSLib, Version=1.15.10.0, Culture=neutral, processorArchitecture=AMD64">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\lslib\LSLib\bin\Release\LSLib.dll</HintPath>
-    </Reference>
-    <Reference Include="Markdig, Version=0.30.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Markdig.0.30.3\lib\net452\Markdig.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.Xaml.Behaviors, Version=1.1.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Microsoft.Xaml.Behaviors.Wpf.1.1.39\lib\net45\Microsoft.Xaml.Behaviors.dll</HintPath>
-    </Reference>
-    <Reference Include="Neo.Markdig.Xaml, Version=1.0.10.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Neo.Markdig.Xaml.1.0.10\lib\net47\Neo.Markdig.Xaml.dll</HintPath>
-    </Reference>
-    <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Newtonsoft.Json.13.0.2-beta1\lib\net45\Newtonsoft.Json.dll</HintPath>
-    </Reference>
-    <Reference Include="Pharmacist.Common, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Pharmacist.Common.2.0.8\lib\net472\Pharmacist.Common.dll</HintPath>
-    </Reference>
-    <Reference Include="PresentationFramework.Aero" />
-    <Reference Include="ReactiveHistory, Version=0.10.7.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\ReactiveHistory.0.10.7\lib\net461\ReactiveHistory.dll</HintPath>
-    </Reference>
-    <Reference Include="ReactiveProperty, Version=8.1.2.0, Culture=neutral, PublicKeyToken=910d1732782c71cb, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\ReactiveProperty.8.1.2\lib\net472\ReactiveProperty.dll</HintPath>
-    </Reference>
-    <Reference Include="ReactiveProperty.Core, Version=8.1.2.0, Culture=neutral, PublicKeyToken=910d1732782c71cb, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\ReactiveProperty.Core.8.1.2\lib\net472\ReactiveProperty.Core.dll</HintPath>
-    </Reference>
-    <Reference Include="ReactiveUI, Version=18.3.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\ReactiveUI.18.3.1\lib\net472\ReactiveUI.dll</HintPath>
-    </Reference>
-    <Reference Include="ReactiveUI.Events.WPF, Version=15.1.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\ReactiveUI.Events.WPF.15.1.1\lib\net48\ReactiveUI.Events.WPF.dll</HintPath>
-    </Reference>
-    <Reference Include="ReactiveUI.Fody.Helpers, Version=18.3.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\ReactiveUI.Fody.18.3.1\lib\net472\ReactiveUI.Fody.Helpers.dll</HintPath>
-    </Reference>
-    <Reference Include="ReactiveUI.Wpf, Version=18.3.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\ReactiveUI.WPF.18.3.1\lib\net48\ReactiveUI.Wpf.dll</HintPath>
-    </Reference>
-    <Reference Include="Splat, Version=14.4.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Splat.14.4.1\lib\netstandard2.0\Splat.dll</HintPath>
-    </Reference>
-    <Reference Include="Splat.Drawing, Version=14.4.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Splat.Drawing.14.4.1\lib\net472\Splat.Drawing.dll</HintPath>
-    </Reference>
-    <Reference Include="System" />
-    <Reference Include="System.Buffers, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\System.Buffers.4.5.1\lib\net461\System.Buffers.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Collections.Immutable, Version=7.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\System.Collections.Immutable.7.0.0-preview.4.22229.4\lib\net462\System.Collections.Immutable.dll</HintPath>
-    </Reference>
-    <Reference Include="System.ComponentModel.Annotations, Version=4.2.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\System.ComponentModel.Annotations.6.0.0-preview.4.21253.7\lib\net461\System.ComponentModel.Annotations.dll</HintPath>
-    </Reference>
-    <Reference Include="System.ComponentModel.DataAnnotations" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Drawing" />
-    <Reference Include="System.Drawing.Primitives, Version=4.0.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\System.Drawing.Primitives.4.3.0\lib\net45\System.Drawing.Primitives.dll</HintPath>
-      <Private>True</Private>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="System.Memory, Version=4.0.1.2, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\System.Memory.4.5.5\lib\net461\System.Memory.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Numerics" />
-    <Reference Include="System.Numerics.Vectors, Version=4.1.4.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\System.Numerics.Vectors.4.5.0\lib\net46\System.Numerics.Vectors.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Reactive, Version=5.0.0.0, Culture=neutral, PublicKeyToken=94bc3704cddfc263, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\System.Reactive.5.0.0\lib\net472\System.Reactive.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Reactive.Core, Version=3.0.6000.0, Culture=neutral, PublicKeyToken=94bc3704cddfc263, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\System.Reactive.Core.5.0.0\lib\net472\System.Reactive.Core.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Reactive.Interfaces, Version=3.0.6000.0, Culture=neutral, PublicKeyToken=94bc3704cddfc263, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\System.Reactive.Interfaces.5.0.0\lib\net472\System.Reactive.Interfaces.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Reactive.Linq, Version=3.0.6000.0, Culture=neutral, PublicKeyToken=94bc3704cddfc263, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\System.Reactive.Linq.5.0.0\lib\net472\System.Reactive.Linq.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Reactive.PlatformServices, Version=3.0.6000.0, Culture=neutral, PublicKeyToken=94bc3704cddfc263, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\System.Reactive.PlatformServices.5.0.0\lib\net472\System.Reactive.PlatformServices.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Reactive.Windows.Threading, Version=3.0.6000.0, Culture=neutral, PublicKeyToken=94bc3704cddfc263, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\System.Reactive.Windows.Threading.5.0.0\lib\net472\System.Reactive.Windows.Threading.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Runtime.CompilerServices.Unsafe, Version=7.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\System.Runtime.CompilerServices.Unsafe.7.0.0-preview.2.22152.2\lib\net462\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Runtime.Serialization" />
-    <Reference Include="System.Threading.Tasks.Extensions, Version=4.2.0.1, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\System.Threading.Tasks.Extensions.4.5.4\lib\net461\System.Threading.Tasks.Extensions.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Transactions" />
-    <Reference Include="System.ValueTuple, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\System.ValueTuple.4.5.0\lib\net47\System.ValueTuple.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Web" />
-    <Reference Include="System.Web.Extensions" />
-    <Reference Include="System.Windows" />
-    <Reference Include="System.Windows.Forms" />
-    <Reference Include="System.Xml" />
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="System.Net.Http" />
-    <Reference Include="System.Xaml">
-      <RequiredTargetFramework>4.0</RequiredTargetFramework>
-    </Reference>
-    <Reference Include="WindowsBase" />
-    <Reference Include="PresentationCore" />
-    <Reference Include="PresentationFramework" />
-    <Reference Include="Xceed.Wpf.AvalonDock, Version=4.4.0.0, Culture=neutral, PublicKeyToken=3e4669d2f30244f4, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Extended.Wpf.Toolkit.4.4.0\lib\net40\Xceed.Wpf.AvalonDock.dll</HintPath>
-    </Reference>
-    <Reference Include="Xceed.Wpf.AvalonDock.Themes.Aero, Version=4.4.0.0, Culture=neutral, PublicKeyToken=3e4669d2f30244f4, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Extended.Wpf.Toolkit.4.4.0\lib\net40\Xceed.Wpf.AvalonDock.Themes.Aero.dll</HintPath>
-    </Reference>
-    <Reference Include="Xceed.Wpf.AvalonDock.Themes.Metro, Version=4.4.0.0, Culture=neutral, PublicKeyToken=3e4669d2f30244f4, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Extended.Wpf.Toolkit.4.4.0\lib\net40\Xceed.Wpf.AvalonDock.Themes.Metro.dll</HintPath>
-    </Reference>
-    <Reference Include="Xceed.Wpf.AvalonDock.Themes.VS2010, Version=4.4.0.0, Culture=neutral, PublicKeyToken=3e4669d2f30244f4, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Extended.Wpf.Toolkit.4.4.0\lib\net40\Xceed.Wpf.AvalonDock.Themes.VS2010.dll</HintPath>
-    </Reference>
-    <Reference Include="Xceed.Wpf.Toolkit, Version=4.4.0.0, Culture=neutral, PublicKeyToken=3e4669d2f30244f4, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Extended.Wpf.Toolkit.4.4.0\lib\net40\Xceed.Wpf.Toolkit.dll</HintPath>
-    </Reference>
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="Core\DOS2DECommands.cs" />
-    <Compile Include="Core\DOS2DEDefaultPaths.cs" />
-    <Compile Include="Core\DOS2DEFileFilters.cs" />
-    <Compile Include="Core\DOS2DEProjectController.cs" />
-    <Compile Include="Core\DOS2DETooltips.cs" />
-    <Compile Include="Data\Savable\DOS2DESettingsData.cs" />
-    <Compile Include="LocalizationEditor\Models\App\LocaleEditorProjectSettingsData.cs" />
-    <Compile Include="LocalizationEditor\Models\App\LocaleEditorSettingsData.cs" />
-    <Compile Include="LocalizationEditor\Models\App\LocaleProjectLinkData.cs" />
-    <Compile Include="Data\View\DOS2DEDebugData.cs" />
-    <Compile Include="Data\View\DOS2DEModuleData.cs" />
-    <Compile Include="LocalizationEditor\Models\Base\BaseLocaleFileData.cs" />
-    <Compile Include="LocalizationEditor\Models\Base\BaseLocaleKeyEntry.cs" />
-    <Compile Include="LocalizationEditor\Models\Base\CombinedLocaleVirtualFileData.cs" />
-    <Compile Include="LocalizationEditor\Models\Custom\CustomLocaleTabGroup.cs" />
-    <Compile Include="LocalizationEditor\Enums\EnumLocaleLanguages.cs" />
-    <Compile Include="LocalizationEditor\Models\Base\ILocaleFileData.cs" />
-    <Compile Include="LocalizationEditor\Models\Custom\LocaleCustomFileData.cs" />
-    <Compile Include="LocalizationEditor\Models\Custom\LocaleCustomKeyEntry.cs" />
-    <Compile Include="LocalizationEditor\Models\Design\LocaleTestFileData.cs" />
-    <Compile Include="LocalizationEditor\ViewModels\LocaleCommands.cs" />
-    <Compile Include="LocalizationEditor\ViewModels\LocaleEditorDebugViewModel.cs" />
-    <Compile Include="LocalizationEditor\ViewModels\LocaleEditorDesignData.cs" />
-    <Compile Include="LocalizationEditor\Models\History\LocaleEntryHistory.cs" />
-    <Compile Include="LocalizationEditor\Models\History\LocaleHandleHistory.cs" />
-    <Compile Include="LocalizationEditor\Models\LocaleMenuData.cs" />
-    <Compile Include="LocalizationEditor\Models\LS\LocaleNodeFileData.cs" />
-    <Compile Include="LocalizationEditor\Models\LS\LocaleNodeKeyEntry.cs" />
-    <Compile Include="LocalizationEditor\Models\Base\LocaleTabGroup.cs" />
-    <Compile Include="LocalizationEditor\Models\History\LocaleUnsavedChangesData.cs" />
-    <Compile Include="LocalizationEditor\ViewModels\LocaleViewModel.cs" />
-    <Compile Include="Data\View\ModProjectData.cs" />
-    <Compile Include="Data\View\ModProjectDataComparer.cs" />
-    <Compile Include="Data\View\PakExtractionEntry.cs" />
-    <Compile Include="Data\View\ProjectVersionData.cs" />
-    <Compile Include="Data\Xml\DependencyInfo.cs" />
-    <Compile Include="Data\Xml\ModuleInfo.cs" />
-    <Compile Include="Data\Xml\ProjectInfo.cs" />
-    <Compile Include="Module.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Properties\Resources.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Resources.resx</DependentUpon>
-    </Compile>
-    <Compile Include="Properties\Settings.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Settings.settings</DependentUpon>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-    </Compile>
-    <Compile Include="Utilities\DOS2DEPackageCreator.cs" />
-    <Compile Include="Utilities\DOS2DERegistryHelper.cs" />
-    <Compile Include="Utilities\DOS2DEXMLUtils.cs" />
-    <Compile Include="LocalizationEditor\Utilities\LocaleEditorCommands.cs" />
-    <Compile Include="LocalizationEditor\Utilities\LocalizationTextFormatter.cs" />
-    <Compile Include="ViewModels\PakExtractionViewModel.cs" />
-    <Compile Include="Views\DOS2DEProjectsView.xaml.cs">
-      <DependentUpon>DOS2DEProjectsView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\PakExtractionSelectionWindow.xaml.cs">
-      <DependentUpon>PakExtractionSelectionWindow.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Windows\EditVersionWindow.xaml.cs">
-      <DependentUpon>EditVersionWindow.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="LocalizationEditor\Views\LocaleContentWindow.xaml.cs">
-      <DependentUpon>LocaleContentWindow.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="LocalizationEditor\Views\LocaleEditorWindow.xaml.cs">
-      <DependentUpon>LocaleEditorWindow.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="LocalizationEditor\Views\LocaleExportWindow.xaml.cs">
-      <DependentUpon>LocaleExportWindow.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="LocalizationEditor\Views\LocaleOptionsWindow.xaml.cs">
-      <DependentUpon>LocaleOptionsWindow.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Windows\SetupWindow.xaml.cs">
-      <DependentUpon>SetupWindow.xaml</DependentUpon>
-    </Compile>
-    <EmbeddedResource Include="Properties\Resources.resx">
-      <Generator>PublicResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-    <None Include="app.config" />
-    <None Include="packages.config" />
-    <None Include="Properties\Settings.settings">
-      <Generator>SettingsSingleFileGenerator</Generator>
-      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
-    </None>
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\SCG.Utilities\SCG.Utilities.csproj">
-      <Project>{2709c5c0-66ae-49dc-a65b-391163a39602}</Project>
-      <Name>SCG.Utilities</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\SourceControlGenerator\SourceControlGenerator.csproj">
-      <Project>{e96f2eeb-e207-4ab6-9b85-f86b3f386117}</Project>
-      <Name>SourceControlGenerator</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\DirectoryLayout.txt" />
-    <Resource Include="Resources\DefaultAttributes.txt" />
-    <Resource Include="Resources\DefaultChangelog.txt" />
-    <Resource Include="Resources\DefaultGitIgnore.txt" />
-    <Resource Include="Resources\DefaultReadme.txt" />
-  </ItemGroup>
-  <ItemGroup>
-    <Page Include="Views\DOS2DEProjectsView.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Views\PakExtractionSelectionWindow.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Windows\EditVersionWindow.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="LocalizationEditor\Views\LocaleContentWindow.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="LocalizationEditor\Views\LocaleEditorWindow.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="LocalizationEditor\Views\LocaleExportWindow.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="LocalizationEditor\Views\LocaleOptionsWindow.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Windows\SetupWindow.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\DefaultLocaleResource.lsx">
-      <SubType>Designer</SubType>
-    </Resource>
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Data\App\" />
-  </ItemGroup>
-  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <ItemGroup>
-      <FilesToMove Include="$(OutputPath)$(AssemblyName).dll" />
-      <LSLib Include="$(OutputPath)LSLib.dll;$(OutputPath)LSLibNative.dll;$(OutputPath)LZ4.dll;$(OutputPath)OpenTK.dll;$(OutputPath)QUT.ShiftReduceParser.dll;$(OutputPath)zlib.net.dll" />
-    </ItemGroup>
-    <Copy SourceFiles="@(FilesToMove)" DestinationFolder="$(SolutionDir)bin\$(Configuration)\Modules\" OverwriteReadOnlyFiles="true" />
-    <Copy SourceFiles="@(LSLib)" DestinationFolder="$(SolutionDir)bin\$(Configuration)\_Lib\" OverwriteReadOnlyFiles="true" />
-  </Target>
+﻿<Project Sdk="Microsoft.NET.Sdk">
+	<PropertyGroup>
+		<TargetFramework>net48</TargetFramework>
+		<LangVersion>latest</LangVersion>
+		<UseWPF>true</UseWPF>
+
+		<Nullable>enable</Nullable>
+		<ImplicitUsings>enable</ImplicitUsings>
+
+		<Platforms>x64</Platforms>
+		<PlatformTarget>x64</PlatformTarget>
+
+		<RootNamespace>SCG.Modules.DOS2DE</RootNamespace>
+		<AssemblyName>SCG.Modules.DOS2DE</AssemblyName>
+
+		<AssemblyTitle>SCG-DOS2</AssemblyTitle>
+		<AssemblyProduct>SCG-DOS2</AssemblyProduct>
+		<AssemblyDescription>Divinity: Original Sin 2 - Definitive Edition support for Source Control Generator.</AssemblyDescription>
+		<AssemblyCompany>LaughingLeader</AssemblyCompany>
+		<AssemblyCopyright>Copyright © LaughingLeader 2018</AssemblyCopyright>
+		<AssemblyVersion>1.1.5.0</AssemblyVersion>
+		<AssemblyFileVersion>1.1.5.0</AssemblyFileVersion>
+	</PropertyGroup>
+
+	<ItemGroup Label="Global Usings">
+		<Using Include="ReactiveUI" />
+		<Using Include="ReactiveUI.Fody.Helpers" />
+		<Using Include="System.Reactive" />
+		<Using Include="System.Reactive.Concurrency" />
+		<Using Include="System.Reactive.Concurrency" />
+		<Using Include="System.Reactive.Disposables" />
+		<Using Include="System.Reactive.Linq" />
+		<Using Include="System.Threading" />
+		<Using Include="System.Threading.Tasks" />
+		<Using Include="ReactiveUI.ReactiveCommand&lt;System.Reactive.Unit, System.Reactive.Unit&gt;" Alias="RxCommandUnit" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\..\SCG.Utilities\SCG.Utilities.csproj" Private="False" />
+		<ProjectReference Include="..\..\SourceControlGenerator\SourceControlGenerator.csproj" Private="False" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="AlphaFS" Version="2.2.6" />
+		<PackageReference Include="ControlzEx" Version="6.0.0" />
+		<PackageReference Include="ReactiveUI" Version="20.1.63" />
+		<PackageReference Include="ReactiveUI.Fody" Version="19.5.41" />
+		<PackageReference Include="ReactiveHistory" Version="0.10.7" />
+		<PackageReference Include="ReactiveUI.Events.WPF" Version="15.1.1" />
+		<PackageReference Include="ReactiveUI.WPF" Version="20.1.63" />
+		<PackageReference Include="SharpCompress" Version="0.38.0" />
+		<PackageReference Include="Markdig" Version="0.37.0" />
+		<PackageReference Include="Extended.Wpf.Toolkit" Version="4.6.1" />
+		<PackageReference Include="ConfigureAwait.Fody" Version="3.3.2" PrivateAssets="all" />
+		<PackageReference Include="DynamicData" Version="9.0.4" />
+		<PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+		<PackageReference Include="Splat" Version="15.2.22" />
+	</ItemGroup>
+
+	<Target Name="PostBuild" AfterTargets="PostBuildEvent">
+		<ItemGroup>
+			<FilesToMove Include="$(OutputPath)$(AssemblyName).dll" />
+			<LSLib Include="$(OutputPath)LSLib.dll;$(OutputPath)LSLibNative.dll;$(OutputPath)LZ4.dll;$(OutputPath)OpenTK.dll;$(OutputPath)QUT.ShiftReduceParser.dll;$(OutputPath)zlib.net.dll" />
+		</ItemGroup>
+		<Copy SourceFiles="@(FilesToMove)" DestinationFolder="$(SolutionDir)bin\$(Configuration)\Modules\" OverwriteReadOnlyFiles="true" />
+		<Copy SourceFiles="@(LSLib)" DestinationFolder="$(SolutionDir)bin\$(Configuration)\_Lib\" OverwriteReadOnlyFiles="true" />
+	</Target>
 </Project>

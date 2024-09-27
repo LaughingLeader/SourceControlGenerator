@@ -1,695 +1,79 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">x64</Platform>
-    <ProjectGuid>{E96F2EEB-E207-4AB6-9B85-F86B3F386117}</ProjectGuid>
-    <OutputType>WinExe</OutputType>
-    <RootNamespace>SCG</RootNamespace>
-    <AssemblyName>SourceControlGenerator</AssemblyName>
-    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
-    <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
-    <WarningLevel>4</WarningLevel>
-    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
-    <IsWebBootstrapper>false</IsWebBootstrapper>
-    <SupportedCultures>en-US</SupportedCultures>
-    <PublishUrl>publish\</PublishUrl>
-    <PlatformTarget>x64</PlatformTarget>
-    <Install>true</Install>
-    <InstallFrom>Disk</InstallFrom>
-    <UpdateEnabled>false</UpdateEnabled>
-    <UpdateMode>Foreground</UpdateMode>
-    <UpdateInterval>7</UpdateInterval>
-    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
-    <UpdatePeriodically>false</UpdatePeriodically>
-    <UpdateRequired>false</UpdateRequired>
-    <MapFileExtensions>false</MapFileExtensions>
-    <ProductName>Source Control Generator</ProductName>
-    <PublisherName>LaughingLeader</PublisherName>
-    <OpenBrowserOnPublish>false</OpenBrowserOnPublish>
-    <ApplicationRevision>0</ApplicationRevision>
-    <ApplicationVersion>1.5.0.0</ApplicationVersion>
-    <UseApplicationTrust>false</UseApplicationTrust>
-    <BootstrapperEnabled>false</BootstrapperEnabled>
-    <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
-    <ApplicationIcon>SourceControlGenerator_Icon.ico</ApplicationIcon>
-    <SignManifests>false</SignManifests>
-    <StartupObject>SCG.App</StartupObject>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
-    <DebugSymbols>true</DebugSymbols>
-    <OutputPath>..\bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <DebugType>full</DebugType>
-    <PlatformTarget>x64</PlatformTarget>
-    <LangVersion>7.3</LangVersion>
-    <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-    <Prefer32Bit>true</Prefer32Bit>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
-    <OutputPath>..\bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <Optimize>true</Optimize>
-    <DebugType>pdbonly</DebugType>
-    <PlatformTarget>x64</PlatformTarget>
-    <LangVersion>7.3</LangVersion>
-    <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-    <Prefer32Bit>true</Prefer32Bit>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Publish|x64'">
-    <OutputPath>..\bin\Publish\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <Optimize>true</Optimize>
-    <DebugType>pdbonly</DebugType>
-    <PlatformTarget>x64</PlatformTarget>
-    <LangVersion>7.3</LangVersion>
-    <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-    <Prefer32Bit>true</Prefer32Bit>
-    <!-- <PostBuildEvent>powershell start-process python -WindowStyle hidden -argumentlist "$(SolutionDir)BuildRelease.py","@(VersionNumber)"</PostBuildEvent> -->
-  </PropertyGroup>
-  <ItemGroup>
-    <Reference Include="AlphaFS, Version=2.2.0.0, Culture=neutral, PublicKeyToken=4d31a58f7d7ad5c9, processorArchitecture=MSIL">
-      <HintPath>..\packages\AlphaFS.2.2.6\lib\net452\AlphaFS.dll</HintPath>
-    </Reference>
-    <Reference Include="AutoUpdater.NET, Version=1.7.4.0, Culture=neutral, PublicKeyToken=501435c91b35f4bc, processorArchitecture=MSIL">
-      <HintPath>..\packages\Autoupdater.NET.Official.1.7.4\lib\net45\AutoUpdater.NET.dll</HintPath>
-    </Reference>
-    <Reference Include="Common.Functions.GetRelativePath, Version=1.0.1.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\CDorst.Common.Functions.GetRelativePath.1.0.1\lib\netstandard2.0\Common.Functions.GetRelativePath.dll</HintPath>
-    </Reference>
-    <Reference Include="ControlzEx, Version=6.0.0.0, Culture=neutral, PublicKeyToken=69f1c32f803d307e, processorArchitecture=MSIL">
-      <HintPath>..\packages\ControlzEx.6.0.0-alpha0218\lib\net462\ControlzEx.dll</HintPath>
-    </Reference>
-    <Reference Include="DynamicData, Version=7.9.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\DynamicData.7.9.7\lib\net462\DynamicData.dll</HintPath>
-    </Reference>
-    <Reference Include="HtmlRenderer, Version=1.5.1.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\HtmlRenderer.Core.1.5.1-beta1\lib\net45\HtmlRenderer.dll</HintPath>
-    </Reference>
-    <Reference Include="HtmlRenderer.WPF, Version=1.5.1.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\HtmlRenderer.WPF.1.5.1-beta1\lib\net45\HtmlRenderer.WPF.dll</HintPath>
-    </Reference>
-    <Reference Include="Markdig, Version=0.30.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Markdig.0.30.3\lib\net452\Markdig.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.Web.WebView2.Core, Version=1.0.1293.44, Culture=neutral, PublicKeyToken=2a8ab48044d2601e, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.Web.WebView2.1.0.1293.44\lib\net45\Microsoft.Web.WebView2.Core.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.Web.WebView2.Wpf, Version=1.0.1293.44, Culture=neutral, PublicKeyToken=2a8ab48044d2601e, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.Web.WebView2.1.0.1293.44\lib\net45\Microsoft.Web.WebView2.Wpf.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.WindowsAPICodePack, Version=1.1.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.WindowsAPICodePack-Core.1.1.0.2\lib\Microsoft.WindowsAPICodePack.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.WindowsAPICodePack.Shell, Version=1.1.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.WindowsAPICodePack-Shell.1.1.0.0\lib\Microsoft.WindowsAPICodePack.Shell.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.WindowsAPICodePack.ShellExtensions, Version=1.1.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.WindowsAPICodePack-Shell.1.1.0.0\lib\Microsoft.WindowsAPICodePack.ShellExtensions.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.Xaml.Behaviors, Version=1.1.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.Xaml.Behaviors.Wpf.1.1.39\lib\net45\Microsoft.Xaml.Behaviors.dll</HintPath>
-    </Reference>
-    <Reference Include="Neo.Markdig.Xaml, Version=1.0.10.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Neo.Markdig.Xaml.1.0.10\lib\net47\Neo.Markdig.Xaml.dll</HintPath>
-    </Reference>
-    <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\packages\Newtonsoft.Json.13.0.2-beta1\lib\net45\Newtonsoft.Json.dll</HintPath>
-    </Reference>
-    <Reference Include="Ookii.Dialogs.Wpf">
-      <HintPath>..\..\_Libraries\Ookii.Dialogs\Ookii.Dialogs.Wpf.dll</HintPath>
-    </Reference>
-    <Reference Include="Pharmacist.Common, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Pharmacist.Common.2.0.8\lib\net472\Pharmacist.Common.dll</HintPath>
-    </Reference>
-    <Reference Include="PresentationFramework.Aero" />
-    <Reference Include="PresentationFramework.AeroLite" />
-    <Reference Include="PresentationFramework.Classic" />
-    <Reference Include="PresentationFramework.Luna" />
-    <Reference Include="PresentationFramework.Royale" />
-    <Reference Include="ReactiveHistory, Version=0.10.7.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\ReactiveHistory.0.10.7\lib\net461\ReactiveHistory.dll</HintPath>
-    </Reference>
-    <Reference Include="ReactiveProperty, Version=8.1.2.0, Culture=neutral, PublicKeyToken=910d1732782c71cb, processorArchitecture=MSIL">
-      <HintPath>..\packages\ReactiveProperty.8.1.2\lib\net472\ReactiveProperty.dll</HintPath>
-    </Reference>
-    <Reference Include="ReactiveProperty.Core, Version=8.1.2.0, Culture=neutral, PublicKeyToken=910d1732782c71cb, processorArchitecture=MSIL">
-      <HintPath>..\packages\ReactiveProperty.Core.8.1.2\lib\net472\ReactiveProperty.Core.dll</HintPath>
-    </Reference>
-    <Reference Include="ReactiveUI, Version=18.3.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\ReactiveUI.18.3.1\lib\net472\ReactiveUI.dll</HintPath>
-    </Reference>
-    <Reference Include="ReactiveUI.Events.WPF, Version=15.1.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\ReactiveUI.Events.WPF.15.1.1\lib\net48\ReactiveUI.Events.WPF.dll</HintPath>
-    </Reference>
-    <Reference Include="ReactiveUI.Fody.Helpers, Version=18.3.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\ReactiveUI.Fody.18.3.1\lib\net472\ReactiveUI.Fody.Helpers.dll</HintPath>
-    </Reference>
-    <Reference Include="ReactiveUI.Wpf, Version=18.3.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\ReactiveUI.WPF.18.3.1\lib\net48\ReactiveUI.Wpf.dll</HintPath>
-    </Reference>
-    <Reference Include="SharpCompress, Version=0.32.2.0, Culture=neutral, PublicKeyToken=afb0a02973931d96, processorArchitecture=MSIL">
-      <HintPath>..\packages\SharpCompress.0.32.2\lib\net461\SharpCompress.dll</HintPath>
-    </Reference>
-    <Reference Include="Splat, Version=14.4.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Splat.14.4.1\lib\netstandard2.0\Splat.dll</HintPath>
-    </Reference>
-    <Reference Include="Splat.Drawing, Version=14.4.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Splat.Drawing.14.4.1\lib\net472\Splat.Drawing.dll</HintPath>
-    </Reference>
-    <Reference Include="System" />
-    <Reference Include="System.Buffers, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Buffers.4.5.1\lib\net461\System.Buffers.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Collections.Immutable, Version=7.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Collections.Immutable.7.0.0-preview.4.22229.4\lib\net462\System.Collections.Immutable.dll</HintPath>
-    </Reference>
-    <Reference Include="System.ComponentModel.Annotations, Version=4.2.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.ComponentModel.Annotations.6.0.0-preview.4.21253.7\lib\net461\System.ComponentModel.Annotations.dll</HintPath>
-    </Reference>
-    <Reference Include="System.ComponentModel.DataAnnotations" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Drawing" />
-    <Reference Include="System.Drawing.Primitives" />
-    <Reference Include="System.IO.Compression.FileSystem" />
-    <Reference Include="System.Memory, Version=4.0.1.2, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Memory.4.5.5\lib\net461\System.Memory.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Numerics" />
-    <Reference Include="System.Numerics.Vectors, Version=4.1.4.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Numerics.Vectors.4.5.0\lib\net46\System.Numerics.Vectors.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Reactive, Version=5.0.0.0, Culture=neutral, PublicKeyToken=94bc3704cddfc263, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Reactive.5.0.0\lib\net472\System.Reactive.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Reactive.Core, Version=3.0.6000.0, Culture=neutral, PublicKeyToken=94bc3704cddfc263, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Reactive.Core.5.0.0\lib\net472\System.Reactive.Core.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Reactive.Interfaces, Version=3.0.6000.0, Culture=neutral, PublicKeyToken=94bc3704cddfc263, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Reactive.Interfaces.5.0.0\lib\net472\System.Reactive.Interfaces.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Reactive.Linq, Version=3.0.6000.0, Culture=neutral, PublicKeyToken=94bc3704cddfc263, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Reactive.Linq.5.0.0\lib\net472\System.Reactive.Linq.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Reactive.PlatformServices, Version=3.0.6000.0, Culture=neutral, PublicKeyToken=94bc3704cddfc263, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Reactive.PlatformServices.5.0.0\lib\net472\System.Reactive.PlatformServices.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Reactive.Windows.Threading, Version=3.0.6000.0, Culture=neutral, PublicKeyToken=94bc3704cddfc263, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Reactive.Windows.Threading.5.0.0\lib\net472\System.Reactive.Windows.Threading.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Runtime.CompilerServices.Unsafe, Version=7.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Runtime.CompilerServices.Unsafe.7.0.0-preview.2.22152.2\lib\net462\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Runtime.Serialization" />
-    <Reference Include="System.Text.Encoding.CodePages, Version=7.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Text.Encoding.CodePages.7.0.0-preview.4.22229.4\lib\net462\System.Text.Encoding.CodePages.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Threading.Tasks.Extensions, Version=4.2.0.1, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Threading.Tasks.Extensions.4.5.4\lib\net461\System.Threading.Tasks.Extensions.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Transactions" />
-    <Reference Include="System.ValueTuple, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.ValueTuple.4.5.0\lib\net47\System.ValueTuple.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Web" />
-    <Reference Include="System.Web.Extensions" />
-    <Reference Include="System.Windows" />
-    <Reference Include="System.Windows.Forms" />
-    <Reference Include="System.Xml" />
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="System.Net.Http" />
-    <Reference Include="System.Xaml">
-      <RequiredTargetFramework>4.0</RequiredTargetFramework>
-    </Reference>
-    <Reference Include="UIAutomationProvider" />
-    <Reference Include="UIAutomationTypes" />
-    <Reference Include="WindowsBase" />
-    <Reference Include="PresentationCore" />
-    <Reference Include="PresentationFramework" />
-    <Reference Include="WriteableBitmapEx.Wpf, Version=1.6.8.0, Culture=neutral, PublicKeyToken=50375ca6144f1c69, processorArchitecture=MSIL">
-      <HintPath>..\packages\WriteableBitmapEx.1.6.8\lib\net40\WriteableBitmapEx.Wpf.dll</HintPath>
-    </Reference>
-    <Reference Include="Xceed.Wpf.AvalonDock, Version=4.4.0.0, Culture=neutral, PublicKeyToken=3e4669d2f30244f4, processorArchitecture=MSIL">
-      <HintPath>..\packages\Extended.Wpf.Toolkit.4.4.0\lib\net40\Xceed.Wpf.AvalonDock.dll</HintPath>
-    </Reference>
-    <Reference Include="Xceed.Wpf.AvalonDock.Themes.Aero, Version=4.4.0.0, Culture=neutral, PublicKeyToken=3e4669d2f30244f4, processorArchitecture=MSIL">
-      <HintPath>..\packages\Extended.Wpf.Toolkit.4.4.0\lib\net40\Xceed.Wpf.AvalonDock.Themes.Aero.dll</HintPath>
-    </Reference>
-    <Reference Include="Xceed.Wpf.AvalonDock.Themes.Metro, Version=4.4.0.0, Culture=neutral, PublicKeyToken=3e4669d2f30244f4, processorArchitecture=MSIL">
-      <HintPath>..\packages\Extended.Wpf.Toolkit.4.4.0\lib\net40\Xceed.Wpf.AvalonDock.Themes.Metro.dll</HintPath>
-    </Reference>
-    <Reference Include="Xceed.Wpf.AvalonDock.Themes.VS2010, Version=4.4.0.0, Culture=neutral, PublicKeyToken=3e4669d2f30244f4, processorArchitecture=MSIL">
-      <HintPath>..\packages\Extended.Wpf.Toolkit.4.4.0\lib\net40\Xceed.Wpf.AvalonDock.Themes.VS2010.dll</HintPath>
-    </Reference>
-    <Reference Include="Xceed.Wpf.Toolkit, Version=4.4.0.0, Culture=neutral, PublicKeyToken=3e4669d2f30244f4, processorArchitecture=MSIL">
-      <HintPath>..\packages\Extended.Wpf.Toolkit.4.4.0\lib\net40\Xceed.Wpf.Toolkit.dll</HintPath>
-    </Reference>
-  </ItemGroup>
-  <ItemGroup>
-    <ApplicationDefinition Include="App.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </ApplicationDefinition>
-    <Compile Include="Collections\ObservableCollectionObject.cs" />
-    <Compile Include="Collections\ObservableImmutableDictionary.cs" />
-    <Compile Include="Collections\ObservableImmutableList.cs" />
-    <Compile Include="Collections\ObservableRangeCollection.cs" />
-    <Compile Include="Commands\BaseCommand.cs" />
-    <Compile Include="Commands\TaskCommand.cs" />
-    <Compile Include="Controls\AddTemplateControl.xaml.cs">
-      <DependentUpon>AddTemplateControl.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Controls\AutoScrollingTextbox.cs" />
-    <Compile Include="Controls\Behavior\ComboBoxWidthFromItemsBehavior.cs" />
-    <Compile Include="Controls\Behavior\DataGridCustomSortBehaviour.cs" />
-    <Compile Include="Controls\Behavior\DataGridDefaultSortDirection.cs" />
-    <Compile Include="Controls\Behavior\ImageButtonDisabledHoverBehavior.cs" />
-    <Compile Include="Controls\Behavior\InputBindingsBehavior.cs" />
-    <Compile Include="Controls\Behavior\ListBoxSelectionBehavior.cs" />
-    <Compile Include="Controls\Behavior\MarginSetter.cs" />
-    <Compile Include="Controls\Behavior\ProgressBarAnimationBehavior.cs" />
-    <Compile Include="Controls\Behavior\RichTextBoxSelectionBehavior.cs" />
-    <Compile Include="Controls\Behavior\TabContent.cs" />
-    <Compile Include="Controls\Behavior\TextBoxEnterKeyBehavior.cs" />
-    <Compile Include="Controls\FileGridBox.xaml.cs">
-      <DependentUpon>FileGridBox.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Controls\ImageButton.cs" />
-    <Compile Include="Controls\LoadingSpinner.xaml.cs">
-      <DependentUpon>LoadingSpinner.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Controls\MessageBoxEx.cs" />
-    <Compile Include="Controls\MonitoredContentPresenter.cs" />
-    <Compile Include="Controls\SortableDataGrid.cs" />
-    <Compile Include="Controls\UnfocusableTextBox.cs" />
-    <Compile Include="Converters\BindingFallbackConverter.cs" />
-    <Compile Include="Converters\BoolToTextWrappingConverter.cs" />
-    <Compile Include="Converters\ColorToBrushConverter.cs" />
-    <Compile Include="Converters\GrayscaleTintImageConverter.cs" />
-    <Compile Include="Converters\HtmlToFlowDocumentConverter.cs" />
-    <Compile Include="Converters\MarkdownToFlowDocumentConverter.cs" />
-    <Compile Include="Converters\MultiValueToArrayConverter.cs" />
-    <Compile Include="Converters\ParamsToOpenFileBrowserParamsConverter.cs" />
-    <Compile Include="Converters\StringToCachedImageConverter.cs" />
-    <Compile Include="Data\App\CachedImageSource.cs" />
-    <Compile Include="Controls\CrossButton.cs" />
-    <Compile Include="Controls\MenuItemContainerTemplateSelector.cs" />
-    <Compile Include="Controls\NumericUpDown.cs" />
-    <Compile Include="Controls\Spinner.xaml.cs">
-      <DependentUpon>Spinner.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Converters\DateTimeToStringConverter.cs" />
-    <Compile Include="Converters\EmptyListVisibilityConverter.cs" />
-    <Compile Include="Controls\FileBrowseControl.xaml.cs">
-      <DependentUpon>FileBrowseControl.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Converters\EmptyStringVisibilityConverter.cs" />
-    <Compile Include="Converters\EnumDescriptionConverter.cs" />
-    <Compile Include="Converters\EnumToCollectionConverter.cs" />
-    <Compile Include="Converters\FileValidationColorConverter.cs" />
-    <Compile Include="Converters\FooterOutputColorConverter.cs" />
-    <Compile Include="Converters\FormatterToFormatterDataConverter.cs" />
-    <Compile Include="Converters\IntToGridLengthConverter.cs" />
-    <Compile Include="Converters\IntToVisibilityConverter.cs" />
-    <Compile Include="Converters\Json\TextGeneratorJsonKeywordConverter.cs" />
-    <Compile Include="Converters\ListViewStarWidthConverter.cs" />
-    <Compile Include="Converters\LogTypeColorConverter.cs" />
-    <Compile Include="Controls\TemplateEditorControl.xaml.cs">
-      <DependentUpon>TemplateEditorControl.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Controls\TemplateKeywordControl.xaml.cs">
-      <DependentUpon>TemplateKeywordControl.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Converters\NewlineStringConverter.cs" />
-    <Compile Include="Converters\ObjectColorConverter.cs" />
-    <Compile Include="Converters\SettingsAttributeConverter.cs" />
-    <Compile Include="Converters\SettingsAttributeValueControlConverter.cs" />
-    <Compile Include="Converters\EmptyValueVisibilityConverter.cs" />
-    <Compile Include="Converters\StringToBoolConverter.cs" />
-    <Compile Include="Converters\StringToFilterConverter.cs" />
-    <Compile Include="Converters\TextWrapToScrollBarVisibilityConverter.cs" />
-    <Compile Include="Converters\VisibleLogsConverter.cs" />
-    <Compile Include="Core\CommonFileFilters.cs" />
-    <Compile Include="Core\MenuID.cs" />
-    <Compile Include="Data\App\FileCreationTaskData.cs" />
-    <Compile Include="Data\Savable\AppSettingsData.cs" />
-    <Compile Include="Data\App\JunctionData.cs" />
-    <Compile Include="Data\App\ManagedProjectsData.cs" />
-    <Compile Include="Data\HistoryBaseData.cs" />
-    <Compile Include="Data\HistoryBaseViewModel.cs" />
-    <Compile Include="Data\PropertyChangedHistoryBase.cs" />
-    <Compile Include="Data\Proxy\AppControllerProxy.cs" />
-    <Compile Include="Data\Proxy\BindingProxy.cs" />
-    <Compile Include="Data\Proxy\IconProxy.cs" />
-    <Compile Include="Data\View\IconPathData.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>IconPathData.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Data\View\LogData.cs" />
-    <Compile Include="Data\View\LogWindowViewData.cs" />
-    <Compile Include="Data\View\MarkdownConverterViewData.cs" />
-    <Compile Include="Data\View\MarkdownFormatterData.cs" />
-    <Compile Include="Data\View\MenuBarData.cs" />
-    <Compile Include="Data\View\MenuData.cs" />
-    <Compile Include="Data\View\ModuleData.cs" />
-    <Compile Include="Data\View\ModuleSelectionData.cs" />
-    <Compile Include="Data\View\SettingsEntryData.cs" />
-    <Compile Include="Data\View\TextGeneratorData.cs" />
-    <Compile Include="Extensions\ArrayExtensions.cs" />
-    <Compile Include="Extensions\ColorExtensions.cs" />
-    <Compile Include="Extensions\ControlExtensions.cs" />
-    <Compile Include="Extensions\ListExtensions.cs" />
-    <Compile Include="Extensions\StringExtensions.cs" />
-    <Compile Include="Interfaces\IIndexable.cs" />
-    <Compile Include="SCGEnum\BackupMode.cs" />
-    <Compile Include="SCGEnum\FileValidation.cs" />
-    <Compile Include="Extensions\AttributeExtensions.cs" />
-    <Compile Include="Extensions\ComboBoxExtensionMethods.cs" />
-    <Compile Include="Extensions\ObservableCollectionExtensions.cs" />
-    <Compile Include="FileGen\JsonInterface.cs" />
-    <Compile Include="Interfaces\IModuleData.cs" />
-    <Compile Include="Interfaces\IModuleMain.cs" />
-    <Compile Include="Interfaces\IProjectData.cs" />
-    <Compile Include="Data\App\TemplateFileData.cs" />
-    <Compile Include="Core\TooltipText.cs" />
-    <Compile Include="Commands\ParameterCommand.cs" />
-    <Compile Include="Commands\ActionCommand.cs" />
-    <Compile Include="Core\CommandHandlers\LoadCommands.cs" />
-    <Compile Include="Commands\OpenFileBrowserCommand.cs" />
-    <Compile Include="Commands\OpenFileCommand.cs" />
-    <Compile Include="Commands\SaveFileAsCommand.cs" />
-    <Compile Include="Core\CommandHandlers\SaveCommands.cs" />
-    <Compile Include="Commands\SaveFileCommand.cs" />
-    <Compile Include="Core\FileCommands.cs" />
-    <Compile Include="Data\App\KeywordData.cs" />
-    <Compile Include="Data\App\UserKeywordData.cs" />
-    <Compile Include="Data\View\TemplateEditorData.cs" />
-    <Compile Include="SCGEnum\EditorTextPropertyType.cs" />
-    <Compile Include="SCGEnum\FileBrowseType.cs" />
-    <Compile Include="Extensions\EnumBindingSourceExtension.cs" />
-    <Compile Include="FileGen\BackupGenerator.cs" />
-    <Compile Include="FileGen\GitGenerator.cs" />
-    <Compile Include="Core\DefaultPaths.cs" />
-    <Compile Include="Data\View\MainAppData.cs" />
-    <Compile Include="Data\Savable\ModuleSettingsData.cs" />
-    <Compile Include="Interfaces\IProjectController.cs" />
-    <Compile Include="Controls\ListViewLayoutManager\ConverterGridViewColumn.cs" />
-    <Compile Include="Controls\ListViewLayoutManager\FixedColumn.cs" />
-    <Compile Include="Controls\ListViewLayoutManager\ImageGridViewColumn.cs" />
-    <Compile Include="Controls\ListViewLayoutManager\LayoutColumn.cs" />
-    <Compile Include="Controls\ListViewLayoutManager\ListViewLayoutManager.cs" />
-    <Compile Include="Controls\ListViewLayoutManager\ProportionalColumn.cs" />
-    <Compile Include="Controls\ListViewLayoutManager\RangeColumn.cs" />
-    <Compile Include="Interfaces\ISaveCommandData.cs" />
-    <Compile Include="Modules\DefaultModule.cs" />
-    <Compile Include="Core\AssemblyLoader.cs" />
-    <Compile Include="Data\View\BaseProjectData.cs" />
-    <Compile Include="Properties\Resources.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Resources.resx</DependentUpon>
-    </Compile>
-    <Compile Include="ThemeSystem\ThemeController.cs" />
-    <Compile Include="Core\AppController.cs" />
-    <Compile Include="Utilities\ReactionObservableExceptionHandler.cs" />
-    <Compile Include="Utilities\UpperCaseUTF8Encoding.cs" />
-    <Compile Include="Windows\AboutWindow.xaml.cs">
-      <DependentUpon>AboutWindow.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Windows\TextGenerator.xaml.cs">
-      <DependentUpon>TextGenerator.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Windows\ClipboardMonitorWindow.cs" />
-    <Compile Include="Windows\DebugWindow.xaml.cs">
-      <DependentUpon>DebugWindow.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Windows\MarkdownConverterWindow.xaml.cs">
-      <DependentUpon>MarkdownConverterWindow.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Windows\UnclosableWindow.cs" />
-    <Compile Include="Windows\EditTextWindow.xaml.cs">
-      <DependentUpon>EditTextWindow.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Windows\GitGenerationWindow.xaml.cs">
-      <DependentUpon>GitGenerationWindow.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Windows\HideWindowBase.cs" />
-    <Compile Include="Windows\LogWindow.xaml.cs">
-      <DependentUpon>LogWindow.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Controls\Behavior\DataContextSpy.cs" />
-    <Page Include="Controls\AddTemplateControl.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Controls\FileBrowseControl.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Controls\FileGridBox.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Controls\LoadingSpinner.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Controls\Spinner.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Controls\TemplateEditorControl.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Controls\TemplateKeywordControl.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="ThemeSystem\ResourceDictionary\ButtonStyles.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="ThemeSystem\ResourceDictionary\ExpanderDictionary.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="ThemeSystem\ResourceDictionary\MainAppDictionary.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="ThemeSystem\ResourceDictionary\MetroOverrides.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="ThemeSystem\ResourceDictionary\NumericUpDownTheme.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="ThemeSystem\ResourceDictionary\ScrollbarStyles.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Windows\AboutWindow.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Windows\TextGenerator.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Windows\DebugWindow.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Windows\EditTextWindow.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Windows\GitGenerationWindow.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Windows\MainWindow.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Compile Include="App.xaml.cs">
-      <DependentUpon>App.xaml</DependentUpon>
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Data\App\SourceControlData.cs" />
-    <Compile Include="Data\View\AvailableProjectViewData.cs" />
-    <Compile Include="Data\App\GitGenerationSettings.cs" />
-    <Compile Include="Data\Xml\XmlDataHelper.cs" />
-    <Compile Include="Windows\MainWindow.xaml.cs">
-      <DependentUpon>MainWindow.xaml</DependentUpon>
-      <SubType>Code</SubType>
-    </Compile>
-    <Page Include="Windows\LogWindow.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Windows\MarkdownConverterWindow.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="Properties\AssemblyInfo.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Properties\Settings.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Settings.settings</DependentUpon>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-    </Compile>
-    <EmbeddedResource Include="Properties\Resources.resx">
-      <Generator>PublicResXFileCodeGenerator</Generator>
-      <SubType>Designer</SubType>
-      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-    <None Include="App.config" />
-    <None Include="packages.config" />
-    <None Include="Properties\Settings.settings">
-      <Generator>SettingsSingleFileGenerator</Generator>
-      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
-    </None>
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\Icons\CopyLongTextToClipboard_16x.png" />
-    <Resource Include="Resources\Icons\CopyToClipboard_16x.png" />
-    <Resource Include="Resources\Icons\Archive.png" />
-    <Resource Include="Resources\Icons\Activity_16x.png" />
-    <Resource Include="Resources\Icons\AddGrey_16x.png" />
-    <Resource Include="Resources\Icons\Add_16x.png" />
-    <Resource Include="Resources\Icons\Convert_16x.png" />
-    <Resource Include="Resources\Icons\ExpandChevronRight_16x.png" />
-    <Resource Include="Resources\Icons\ExportFile_16x.png" />
-    <Resource Include="Resources\Icons\FileError_16x.png" />
-    <Resource Include="Resources\Icons\GitLogo.png" />
-    <Resource Include="Resources\Icons\RunChecked_16x.png" />
-    <Resource Include="Resources\Icons\SaveAll_16x.png" />
-    <Resource Include="Resources\Icons\SaveAs_16x.png" />
-    <Resource Include="Resources\Icons\SaveClose_16x.png" />
-    <Resource Include="Resources\Icons\SaveFileDialogControl_16x.png" />
-    <Resource Include="Resources\Icons\SaveGrey_16x.png" />
-    <Resource Include="Resources\Icons\SaveStatusBar1_16x.png" />
-    <Resource Include="Resources\Icons\SaveTable_16x.png" />
-    <Resource Include="Resources\Icons\Save_16x.png" />
-    <Resource Include="Resources\Icons\WriteToDatabase_16x.png" />
-    <Resource Include="Resources\Icons\XMLFile_16x.png" />
-    <Resource Include="Resources\Icons\XMLTransformation_16x.png" />
-    <Resource Include="Resources\Icons\XSLTTemplate_16x.png" />
-    <Content Include="Data\View\IconPathData.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>IconPathData.cs</LastGenOutput>
-    </Content>
-    <Resource Include="Resources\Icons\AddBinaryFile_16x.png" />
-    <Resource Include="Resources\Icons\AddDataItem_16x.png" />
-    <Resource Include="Resources\Icons\AddFile_16x.png" />
-    <Resource Include="Resources\Icons\AddFolder_16x.png" />
-    <Resource Include="Resources\Icons\AddItem_16x.png" />
-    <Resource Include="Resources\Icons\AddRow_16x.png" />
-    <Resource Include="Resources\Icons\AddTextFile_16x.png" />
-    <Resource Include="Resources\Icons\DeleteDatabase_16x.png" />
-    <Resource Include="Resources\Icons\DeleteTableRow_16x.png" />
-    <Resource Include="Resources\Icons\RemoveRow_16x.png" />
-    <Resource Include="Resources\Icons\Rename_16x.png" />
-    <Resource Include="Resources\Icons\RowUpdating_16x.png" />
-    <Resource Include="Resources\Icons\ImportFile_16x.png" />
-    <Resource Include="Resources\Icons\Import_16x.png" />
-    <Resource Include="Resources\Icons\OpenFile_16x.png" />
-    <Resource Include="Resources\Icons\OpenFolder_16x.png" />
-    <Resource Include="Resources\Icons\WarningRule_16x.png" />
-    <Resource Include="Resources\Icons\ColorPicker_16x.png" />
-    <Resource Include="Resources\Images\ColorPicker1.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="Resources\Images\ColorPicker2.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="Resources\Icons\Ellipsis_16x.png" />
-    <Resource Include="Resources\Icons\StringData_16x.png" />
-    <Resource Include="Resources\Icons\OpenLocalizationEditor_16x.png" />
-    <Resource Include="Resources\Icons\Close1_16x.png" />
-    <Resource Include="Resources\Icons\Close2_Red_16x.png" />
-    <Resource Include="Resources\Icons\ASX_Link_blue_16x.png" />
-    <Resource Include="Resources\Icons\LinkFile_16x.png" />
-    <Resource Include="Resources\Icons\LinkRemoved_16x.png" />
-    <Resource Include="Resources\Icons\LinkVertical_16x.png" />
-    <Resource Include="Resources\Icons\CreateListItem_16x.png" />
-    <Resource Include="Resources\Icons\CustomActionEditor_16x.png" />
-    <Resource Include="Resources\Icons\ExportScript_16x.png" />
-    <Resource Include="Resources\Icons\ExportTableToFile_16x.png" />
-    <Resource Include="Resources\Icons\FileExclude_16x.png" />
-    <Resource Include="Resources\Icons\FileSource_16x.png" />
-    <Resource Include="Resources\Icons\WriteToHistory_16x.png" />
-    <Resource Include="Resources\Icons\XMLDocumentTypeDefinitionFile_16x.png" />
-    <Resource Include="Resources\Icons\CacheRefresh_16x.png" />
-    <Resource Include="Resources\Icons\QuickRefresh_16x.png" />
-    <Resource Include="Resources\Icons\RefreshScript_16x.png" />
-    <Resource Include="Resources\Icons\Refresh_grey_16xMD.png" />
-    <Resource Include="Resources\Logos\DivinityOriginalSin2DE.png" />
-    <Resource Include="SourceControlGenerator_Icon.ico" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\Icons\Log_MouseOver.png" />
-    <Resource Include="Resources\Icons\Log_Normal.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\Icons\GitLogo_Disabled.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\Icons\Folder.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\License_Apache.txt" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\License_GPL.txt" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\License_MIT.txt" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\Templates.xml" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\Icons\Refresh_16x.png" />
-    <Resource Include="Resources\Icons\Star_16x.png" />
-    <Resource Include="Resources\Logos\Blank.png" />
-    <Resource Include="Resources\Logos\Default.png" />
-    <Resource Include="Resources\Logos\DivinityOriginalSin2.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\SCG.MarkdownConverter\SCG.MarkdownConverter.csproj">
-      <Project>{139a1053-e54e-4fd7-b64a-a3f0a2cae350}</Project>
-      <Name>SCG.MarkdownConverter</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\SCG.Utilities\SCG.Utilities.csproj">
-      <Project>{2709c5c0-66ae-49dc-a65b-391163a39602}</Project>
-      <Name>SCG.Utilities</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
-  </ItemGroup>
-  <PropertyGroup>
-    <PreBuildEvent>rd /s /q $(TargetDir)_Lib</PreBuildEvent>
-  </PropertyGroup>
-  <Target Name="AfterBuild">
-    <ItemGroup>
-      <MoveToLibFolder Include="$(OutputPath)*.dll ; $(OutputPath)*.pdb ; $(OutputPath)*.xml" />
-    </ItemGroup>
-    <Move SourceFiles="@(MoveToLibFolder)" DestinationFolder="$(OutputPath)_Lib" OverwriteReadOnlyFiles="true" />
-  </Target>
+﻿<Project Sdk="Microsoft.NET.Sdk">
+	<PropertyGroup>
+		<TargetFramework>net48</TargetFramework>
+		<LangVersion>latest</LangVersion>
+		<UseWPF>true</UseWPF>
+
+		<OutputType>WinExe</OutputType>
+
+		<Nullable>enable</Nullable>
+		<ImplicitUsings>enable</ImplicitUsings>
+
+		<Platforms>x64</Platforms>
+		<PlatformTarget>x64</PlatformTarget>
+
+		<RootNamespace>SCG</RootNamespace>
+		<AssemblyName>SourceControlGenerator</AssemblyName>
+
+		<AssemblyTitle>Source Control Generator</AssemblyTitle>
+		<AssemblyProduct>Source Control Generator</AssemblyProduct>
+		<AssemblyDescription>Generate git repositories for mod projects with a centralized interface.</AssemblyDescription>
+		<AssemblyCompany>LaughingLeader</AssemblyCompany>
+		<AssemblyCopyright>Copyright © LaughingLeader 2018</AssemblyCopyright>
+		<AssemblyVersion>1.7.10.1</AssemblyVersion>
+		<AssemblyFileVersion>1.7.10.1</AssemblyFileVersion>
+
+		<ApplicationIcon>SourceControlGenerator_Icon.ico</ApplicationIcon>
+		<StartupObject>SCG.App</StartupObject>
+	</PropertyGroup>
+
+	<ItemGroup Label="Global Usings">
+		<Using Include="ReactiveUI" />
+		<Using Include="ReactiveUI.Fody.Helpers" />
+		<Using Include="System.Reactive" />
+		<Using Include="System.Reactive.Concurrency" />
+		<Using Include="System.Reactive.Concurrency" />
+		<Using Include="System.Reactive.Disposables" />
+		<Using Include="System.Reactive.Linq" />
+		<Using Include="System.Threading" />
+		<Using Include="System.Threading.Tasks" />
+		<Using Include="ReactiveUI.ReactiveCommand&lt;System.Reactive.Unit, System.Reactive.Unit&gt;" Alias="RxCommandUnit" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\SCG.Utilities\SCG.Utilities.csproj" />
+		<ProjectReference Include="..\SCG.MarkdownConverter\SCG.MarkdownConverter.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="AlphaFS" Version="2.2.6" />
+		<PackageReference Include="ControlzEx" Version="6.0.0" />
+		<PackageReference Include="ReactiveUI" Version="20.1.63" />
+		<PackageReference Include="ReactiveUI.Fody" Version="19.5.41" />
+		<PackageReference Include="ReactiveHistory" Version="0.10.7" />
+		<PackageReference Include="ReactiveUI.Events.WPF" Version="15.1.1" />
+		<PackageReference Include="ReactiveUI.WPF" Version="20.1.63" />
+		<PackageReference Include="SharpCompress" Version="0.38.0" />
+		<PackageReference Include="WriteableBitmapEx" Version="1.6.8" />
+		<PackageReference Include="Markdig" Version="0.37.0" />
+		<PackageReference Include="Extended.Wpf.Toolkit" Version="4.6.1" />
+		<PackageReference Include="ConfigureAwait.Fody" Version="3.3.2" PrivateAssets="all" />
+		<PackageReference Include="DynamicData" Version="9.0.4" />
+		<PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+		<PackageReference Include="Splat" Version="15.2.22" />
+		<PackageReference Include="Autoupdater.NET.Official" Version="1.9.2" />
+		<PackageReference Include="HtmlRenderer.Core" Version="1.5.1-beta1" />
+		<PackageReference Include="HtmlRenderer.WPF" Version="1.5.1-beta1" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<Resource Include="Resources" />
+	</ItemGroup>
+
+	<Target Name="AfterBuild">
+		<ItemGroup>
+			<MoveToLibFolder Include="$(OutputPath)*.dll ; $(OutputPath)*.pdb ; $(OutputPath)*.xml" />
+		</ItemGroup>
+		<Move SourceFiles="@(MoveToLibFolder)" DestinationFolder="$(OutputPath)_Lib" OverwriteReadOnlyFiles="true" />
+	</Target>
 </Project>

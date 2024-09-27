@@ -36,8 +36,8 @@
 		<OutputPath>bin\Publish\</OutputPath>
 	</PropertyGroup>
 	<ItemGroup>
-		<PackageReference Include="AngleSharp" Version="0.17.1" />
-		<PackageReference Include="Markdig" Version="0.30.3" />
+		<PackageReference Include="AngleSharp" Version="1.1.2" />
+		<PackageReference Include="Markdig" Version="0.37.0" />
 	</ItemGroup>
 	<ItemGroup>
 		<ProjectReference Include="..\SCG.Utilities\SCG.Utilities.csproj" />
