@@ -1,7 +1,7 @@
 ﻿using SCG.Data.View;
 using SCG.Interfaces;
-using SCG.Modules.BG3.ViewModels;
-using SCG.Modules.BG3.Views;
+using SCG.BG3.ViewModels;
+using SCG.BG3.Views;
 using SCG.Windows;
 
 using System;
@@ -11,7 +11,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Controls;
 
-namespace SCG.Modules.BG3.Core;
+namespace SCG.BG3.Core;
 public class BG3ProjectController : IProjectController
 {
 	public BG3ModuleData Data { get; }

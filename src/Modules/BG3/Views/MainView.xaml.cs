@@ -1,8 +1,8 @@
-﻿using SCG.Modules.BG3.ViewModels;
+﻿using SCG.BG3.ViewModels;
 
 using System.Windows.Controls;
 
-namespace SCG.Modules.BG3.Views;
+namespace SCG.BG3.Views;
 
 public partial class MainView : ReactiveUserControl<MainViewViewModel>
 {

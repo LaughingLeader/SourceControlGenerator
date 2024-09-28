@@ -6,6 +6,10 @@
 		<OutputType>Library</OutputType>
 	</PropertyGroup>
 
+	<ItemGroup Label="Mod Global Usings">
+		<Using Include="SCG.Services" />
+	</ItemGroup>
+
 	<ItemGroup>
 		<ProjectReference Include="..\..\Utilities\Utilities.csproj" />
 		<ProjectReference Include="..\..\GUI\GUI.csproj" />

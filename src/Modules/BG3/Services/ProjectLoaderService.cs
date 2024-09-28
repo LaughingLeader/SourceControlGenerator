@@ -4,10 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SCG.BG3.ViewModels;
-public class MainViewViewModel : ReactiveObject
+namespace SCG.BG3.Services;
+public class ProjectLoaderService
 {
-	public MainViewViewModel()
+	public async Task LoadProjectsAsync()
 	{
 
 	}

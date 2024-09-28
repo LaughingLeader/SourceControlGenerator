@@ -10,7 +10,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 
-namespace SCG.Modules.BG3.Core;
+namespace SCG.BG3.Core;
 public class BG3ModuleData : ModuleData<BG3SettingsData>
 {
 	private static string DisplayName => "Baldur's Gate 3";

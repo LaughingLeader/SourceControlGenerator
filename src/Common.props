@@ -1,13 +1,13 @@
 <Project>
-  <!-- See https://aka.ms/dotnet/msbuild/customize for more details on customizing your build -->
-  <PropertyGroup>
-	  <LangVersion>latest</LangVersion>
+	<!-- See https://aka.ms/dotnet/msbuild/customize for more details on customizing your build -->
+	<PropertyGroup>
+		<LangVersion>latest</LangVersion>
 
-	  <Nullable>enable</Nullable>
+		<Nullable>enable</Nullable>
 
-	  <Platforms>x64</Platforms>
-	  <PlatformTarget>x64</PlatformTarget>
-  </PropertyGroup>
+		<Platforms>x64</Platforms>
+		<PlatformTarget>x64</PlatformTarget>
+	</PropertyGroup>
 
 	<ItemGroup Label="Global Usings">
 		<Using Include="System" />

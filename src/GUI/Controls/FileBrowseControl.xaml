@@ -1,24 +1,26 @@
 ﻿<UserControl x:Class="SCG.Controls.FileBrowseControl"
-			 xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-			 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-			 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-			 xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-			 xmlns:c="clr-namespace:SCG.Controls"
-			 xmlns:behavior="clr-namespace:SCG.Controls.Behavior"
-			 xmlns:conv="clr-namespace:SCG.Converters"
-			 xmlns:core="clr-namespace:SCG.Core"
-			 xmlns:vdata="clr-namespace:SCG.Data.View"
-			 xmlns:enum="clr-namespace:SCG.SCGEnum"
-			 mc:Ignorable="d" 
-			 d:DesignHeight="22" d:DesignWidth="300"
-			 x:Name="FileBrowser"
-			 BorderBrush="#FFABADB3"
-			 BorderThickness="1"
-			 Margin="0" Padding="0" 
-			 Width="Auto" Height="Auto"
-			 VerticalAlignment="Stretch"
-			 HorizontalAlignment="Stretch"
-			 >
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:behavior="clr-namespace:SCG.Controls.Behavior"
+    xmlns:c="clr-namespace:SCG.Controls"
+    xmlns:conv="clr-namespace:SCG.Converters"
+    xmlns:core="clr-namespace:SCG.Core"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:enum="clr-namespace:SCG.SCGEnum"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:vdata="clr-namespace:SCG.Data.View"
+    x:Name="FileBrowser"
+    Width="Auto"
+    Height="Auto"
+    Margin="0"
+    Padding="0"
+    HorizontalAlignment="Stretch"
+    VerticalAlignment="Stretch"
+    d:DesignHeight="22"
+    d:DesignWidth="300"
+    BorderBrush="#FFABADB3"
+    BorderThickness="1"
+    mc:Ignorable="d">
 	<UserControl.Resources>
 		<ResourceDictionary>
 			<ResourceDictionary.MergedDictionaries>
@@ -30,35 +32,48 @@
 		<Grid.ColumnDefinitions>
 			<ColumnDefinition Width="*" />
 			<ColumnDefinition Width="1" />
-			<ColumnDefinition Width="Auto"/>
+			<ColumnDefinition Width="Auto" />
 		</Grid.ColumnDefinitions>
-		<Rectangle Fill="{Binding Path=FileValidation, ElementName=FileBrowser, Converter={StaticResource FileValidationColorConverter}, FallbackValue=Wheat}" Grid.Row="0" IsHitTestVisible="False" />
-		<Rectangle Style="{StaticResource VerticalSeparator}" Grid.Column="1" Margin="0" Stroke="{Binding Path=BorderBrush, ElementName=FileBrowser}" IsHitTestVisible="False" />
-		<TextBox x:Name="FilePathDisplay" Grid.Column="0" behavior:TextBoxEnterKeyBehavior.EnterLosesFocus="True" BorderThickness="0" IsReadOnly="False" 
-			VerticalAlignment="Center" TextAlignment="Right" Background="Transparent"
-			Text="{Binding Path=FileLocationText, ElementName=FileBrowser, Mode=TwoWay, FallbackValue='Test'}" 
-			ToolTip="{Binding Path=FileLocationText, ElementName=FileBrowser}"
-			Tag="{Binding RelativeSource={RelativeSource Mode=Self}}"
-		>
+		<Rectangle Grid.Row="0" Fill="{Binding Path=FileValidation, ElementName=FileBrowser, Converter={StaticResource FileValidationColorConverter}, FallbackValue=Wheat}" IsHitTestVisible="False" />
+		<Rectangle Grid.Column="1"
+		    Margin="0"
+		    IsHitTestVisible="False"
+		    Stroke="{Binding Path=BorderBrush, ElementName=FileBrowser}"
+		    Style="{StaticResource VerticalSeparator}" />
+		<TextBox x:Name="FilePathDisplay"
+		    Grid.Column="0"
+		    VerticalAlignment="Center"
+		    behavior:TextBoxEnterKeyBehavior.EnterLosesFocus="True"
+		    Background="Transparent"
+		    BorderThickness="0"
+		    IsReadOnly="False"
+		    Tag="{Binding RelativeSource={RelativeSource Mode=Self}}"
+		    Text="{Binding Path=FileLocationText, ElementName=FileBrowser, Mode=TwoWay, FallbackValue='Test'}"
+		    TextAlignment="Right"
+		    ToolTip="{Binding Path=FileLocationText, ElementName=FileBrowser}">
 			<TextBox.ContextMenu>
-				<ContextMenu DataContext="{Binding Path=PlacementTarget.Tag, RelativeSource={RelativeSource Self}}" >
-					<MenuItem Header="Cut" IsEnabled="{Binding SelectedText, Converter={StaticResource StringToBoolConverter}}" Click="CutSelectedToClipboard" />
-					<MenuItem Header="Copy Selected" IsEnabled="{Binding SelectedText, Converter={StaticResource StringToBoolConverter}}" Click="CopySelectedToClipboard" />
-					<MenuItem Header="Copy All" IsEnabled="{Binding Text, Converter={StaticResource StringToBoolConverter}}" Click="CopyAllToClipboard" />
-					<MenuItem Header="Paste" IsEnabled="{Binding Source={x:Static core:AppController.Main}, Path=Data.ClipboardPopulated}" Click="PasteFromClipboard" />
-					<MenuItem Header="Paste (Replace)" IsEnabled="{Binding Source={x:Static core:AppController.Main}, Path=Data.ClipboardPopulated}" Click="ReplaceFromClipboard" />
-					<MenuItem Header="Clear" IsEnabled="{Binding Text, Converter={StaticResource StringToBoolConverter}}" Click="ClearFileLocationText" />
+				<ContextMenu DataContext="{Binding Path=PlacementTarget.Tag, RelativeSource={RelativeSource Self}}">
+					<MenuItem Click="CutSelectedToClipboard" Header="Cut" IsEnabled="{Binding SelectedText, Converter={StaticResource StringToBoolConverter}}" />
+					<MenuItem Click="CopySelectedToClipboard" Header="Copy Selected" IsEnabled="{Binding SelectedText, Converter={StaticResource StringToBoolConverter}}" />
+					<MenuItem Click="CopyAllToClipboard" Header="Copy All" IsEnabled="{Binding Text, Converter={StaticResource StringToBoolConverter}}" />
+					<MenuItem Click="PasteFromClipboard" Header="Paste" IsEnabled="{Binding Source={x:Static core:AppController.Main}, Path=Data.ClipboardPopulated}" />
+					<MenuItem Click="ReplaceFromClipboard" Header="Paste (Replace)" IsEnabled="{Binding Source={x:Static core:AppController.Main}, Path=Data.ClipboardPopulated}" />
+					<MenuItem Click="ClearFileLocationText" Header="Clear" IsEnabled="{Binding Text, Converter={StaticResource StringToBoolConverter}}" />
 				</ContextMenu>
 			</TextBox.ContextMenu>
 		</TextBox>
-		<Button x:Name="FileBrowseButton" Grid.Column="2"
-			Width="Auto" Height="Auto" MinWidth="38"
-			BorderBrush="{x:Null}" BorderThickness="0"
-			ToolTip="{Binding Path=BrowseToolTip, ElementName=FileBrowser}"
-			Click="FileBrowseButton_Click"
-			VerticalContentAlignment="Center" HorizontalContentAlignment="Center"
-			Background="LightGray"
-		>
+		<Button x:Name="FileBrowseButton"
+		    Grid.Column="2"
+		    Width="Auto"
+		    Height="Auto"
+		    MinWidth="38"
+		    HorizontalContentAlignment="Center"
+		    VerticalContentAlignment="Center"
+		    Background="LightGray"
+		    BorderBrush="{x:Null}"
+		    BorderThickness="0"
+		    Click="FileBrowseButton_Click"
+		    ToolTip="{Binding Path=BrowseToolTip, ElementName=FileBrowser}">
 			<Button.Resources>
 				<Style TargetType="Ellipse">
 					<Setter Property="Width" Value="{Binding CircleSize, ElementName=FileBrowser, FallbackValue=4}" />
@@ -69,16 +84,16 @@
 			</Button.Resources>
 			<Viewbox Stretch="UniformToFill" StretchDirection="DownOnly">
 				<StackPanel Orientation="Horizontal">
-					<Ellipse/>
-					<Ellipse/>
-					<Ellipse/>
+					<Ellipse />
+					<Ellipse />
+					<Ellipse />
 				</StackPanel>
 			</Viewbox>
 		</Button>
-		<!--<c:ImageButton 
+		<!--<c:ImageButton
 			x:Name="FileBrowseButton" Grid.Column="2"
 			InitialSize="16" Margin="2"
-			ToolTip="{Binding Path=BrowseToolTip, ElementName=FileBrowser}" 
+			ToolTip="{Binding Path=BrowseToolTip, ElementName=FileBrowser}"
 			Source="{x:Static vdata:IconPathData.OpenFile}"
 			Click="FileBrowseButton_Click"
 		>
@@ -87,9 +102,9 @@
 					<Style.Triggers>
 						<MultiDataTrigger>
 							<MultiDataTrigger.Conditions>
-								<Condition Binding="{Binding Path=BrowseType, RelativeSource={RelativeSource AncestorType={x:Type c:FileBrowseControl}}}" 
+								<Condition Binding="{Binding Path=BrowseType, RelativeSource={RelativeSource AncestorType={x:Type c:FileBrowseControl}}}"
 									Value="{x:Static enum:FileBrowseType.Directory}"/>
-								<Condition Binding="{Binding Path=BrowseMode, RelativeSource={RelativeSource AncestorType={x:Type c:FileBrowseControl}}}" 
+								<Condition Binding="{Binding Path=BrowseMode, RelativeSource={RelativeSource AncestorType={x:Type c:FileBrowseControl}}}"
 									Value="{x:Static c:FileBrowserMode.Open}"/>
 							</MultiDataTrigger.Conditions>
 							<Setter Property="Source" Value="{x:Static vdata:IconPathData.OpenFolder}" />
@@ -112,7 +127,7 @@
 				</Style>
 			</c:ImageButton.Style>
 		</c:ImageButton>-->
-		
+
 		<!--<Image Source="pack://application:,,,/SourceControlGenerator;component/Resources/Icons/Folder.png" Grid.Column="2" Width="16" Height="16" Panel.ZIndex="1" />-->
 	</Grid>
 </UserControl>

@@ -4,7 +4,7 @@ using SCG.SCGEnum;
 
 using System.Runtime.Serialization;
 
-namespace SCG.Modules.BG3.Core;
+namespace SCG.BG3.Core;
 
 [DataContract]
 public class BG3SettingsData : ModuleSettingsData

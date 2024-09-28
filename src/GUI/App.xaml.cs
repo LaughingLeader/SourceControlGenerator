@@ -1,4 +1,5 @@
-﻿using SCG.ThemeSystem;
+﻿using SCG.Services;
+using SCG.ThemeSystem;
 using SCG.Utilities;
 
 using System.Windows;
@@ -31,6 +32,8 @@ public partial class App : Application
 
 	public App()
 	{
+		SplatRegistrations.RegisterLazySingleton<FileCacheService>();
+
 		RxApp.DefaultExceptionHandler = new ReactionObservableExceptionHandler();
 		ThemeController.Init(this);
 		SCG.Helpers.Init();

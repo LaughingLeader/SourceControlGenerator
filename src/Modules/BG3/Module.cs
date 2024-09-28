@@ -1,6 +1,6 @@
 ﻿using SCG.Core;
 using SCG.Interfaces;
-using SCG.Modules.BG3.Core;
+using SCG.BG3.Core;
 
 namespace SCG;
 

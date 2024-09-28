@@ -4,11 +4,11 @@
 	<PropertyGroup>
 		<UseWPF>true</UseWPF>
 
-		<RootNamespace>SCG.Modules.BG3</RootNamespace>
+		<RootNamespace>SCG.BG3</RootNamespace>
 
-		<AssemblyName>SCG.Modules.BG3</AssemblyName>
-		<AssemblyTitle>SCG-BG3</AssemblyTitle>
-		<AssemblyProduct>SCG-BG3</AssemblyProduct>
+		<AssemblyName>SCG.BG3</AssemblyName>
+		<AssemblyTitle>Baldur's Gate 3 Support</AssemblyTitle>
+		<AssemblyProduct>Baldur's Gate 3 Support</AssemblyProduct>
 		<AssemblyDescription>Baldur's Gate 3 support for Source Control Generator.</AssemblyDescription>
 		<AssemblyCompany>LaughingLeader</AssemblyCompany>
 		<AssemblyCopyright>Copyright © LaughingLeader 2024</AssemblyCopyright>
