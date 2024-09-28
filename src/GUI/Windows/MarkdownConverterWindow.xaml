@@ -8,6 +8,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:local="clr-namespace:SCG.Windows"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:mdxam="clr-namespace:MdXaml;assembly=MdXaml"
     xmlns:scg="clr-namespace:SCG"
     xmlns:vdata="clr-namespace:SCG.Data.View"
     Title="Markdown Converter"
@@ -102,13 +103,8 @@
 							<ColumnDefinition Width="*" />
 							<ColumnDefinition Width="Auto" />
 						</Grid.ColumnDefinitions>
-						<ComboBox Width="Auto"
-						    Height="{Binding Path=Height, ElementName=SingleModeFileBrowser}"
-						    DisplayMemberPath="Name"
-						    ItemsSource="{Binding Formatters}"
-						    SelectedValue="{Binding SelectedFormatter, Mode=TwoWay}" />
+						<ComboBox DisplayMemberPath="Name" ItemsSource="{Binding Formatters}" SelectedValue="{Binding SelectedFormatter, Mode=TwoWay}" />
 						<Button Grid.Column="1"
-						    Height="{Binding Path=Height, ElementName=SingleModeFileBrowser}"
 						    Margin="4,0,0,0"
 						    Command="{Binding PreviewSingleCommand}"
 						    Content="Preview"
@@ -138,7 +134,6 @@
 						    OpenFileText="Save output to..." />
 						<Button x:Name="SingleModeSaveButton"
 						    Grid.Column="1"
-						    MaxHeight="{Binding Path=Height, ElementName=SingleModeFileBrowser}"
 						    Margin="4,0,0,0"
 						    Command="{Binding ExportSingleCommand}"
 						    Content="Export"
@@ -149,6 +144,7 @@
 					<Button Command="{Binding BatchExportCommand}" Content="Export All Selected" IsEnabled="{Binding CanBatchExport}" />
 				</Grid>
 			</Grid>
+
 
 			<Grid Grid.Row="1" Grid.ColumnSpan="2">
 				<Grid.ColumnDefinitions>
@@ -241,11 +237,7 @@
 							<TabItem.Header>
 								<Label x:Name="InputPreviewLabel" Content="Preview" MouseLeftButtonDown="InputPreviewLabel_MouseLeftButtonDown" />
 							</TabItem.Header>
-							<FlowDocumentScrollViewer x:Name="MarkdownViewer"
-							    BorderThickness="0"
-							    Document="{Binding Input, Converter={StaticResource MarkdownToFlowDocumentConverter}}"
-							    HorizontalScrollBarVisibility="Disabled"
-							    VerticalScrollBarVisibility="Disabled" />
+							<mdxam:MarkdownScrollViewer x:Name="MarkdownViewer" xml:space="preserve" Markdown="{Binding Input}" />
 						</TabItem>
 					</TabControl>
 				</Grid>
