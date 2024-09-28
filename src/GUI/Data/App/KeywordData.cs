@@ -1,69 +1,62 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Newtonsoft.Json;
+
 using SCG.Interfaces;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Serialization;
-using ReactiveUI;
 
-namespace SCG.Data
+namespace SCG.Data;
+
+public class KeywordData : ReactiveObject
 {
-	public class KeywordData : ReactiveObject
+	private string keywordName = "";
+
+	public string KeywordName
 	{
-		private string keywordName = "";
-
-		public string KeywordName
+		get { return keywordName; }
+		set
 		{
-			get { return keywordName; }
-			set
-			{
-				this.RaiseAndSetIfChanged(ref keywordName, value);
-			}
+			this.RaiseAndSetIfChanged(ref keywordName, value);
 		}
+	}
 
-		private string keywordValue = "";
+	private string keywordValue = "";
 
-		public string KeywordValue
+	public string KeywordValue
+	{
+		get { return keywordValue; }
+		set
 		{
-			get { return keywordValue; }
-			set
-			{
-				this.RaiseAndSetIfChanged(ref keywordValue, value);
-			}
+			this.RaiseAndSetIfChanged(ref keywordValue, value);
 		}
+	}
 
-		public delegate string SetKeywordText(IProjectData projectData);
+	public delegate string SetKeywordText(IProjectData projectData);
 
-		private SetKeywordText replaceAction;
+	private SetKeywordText replaceAction;
 
-		[JsonIgnore]
-		public SetKeywordText Replace
+	[JsonIgnore]
+	public SetKeywordText Replace
+	{
+		get { return replaceAction; }
+		set
 		{
-			get { return replaceAction; }
-			set
-			{
-				this.RaiseAndSetIfChanged(ref replaceAction, value);
-			}
+			this.RaiseAndSetIfChanged(ref replaceAction, value);
 		}
+	}
 
-		public string ReplaceText(string inputText, IProjectData projectData = null)
+	public string ReplaceText(string inputText, IProjectData projectData = null)
+	{
+		if (Replace != null)
 		{
-			if (Replace != null)
-			{
-				return inputText.Replace(KeywordName, Replace(projectData));
-			}
-			else
-			{
-				return inputText.Replace(KeywordName, KeywordValue);
-			}
+			return inputText.Replace(KeywordName, Replace(projectData));
 		}
+		else
+		{
+			return inputText.Replace(KeywordName, KeywordValue);
+		}
+	}
 
-		public KeywordData()
-		{
-			keywordName = "";
-			KeywordValue = "";
-		}
+	public KeywordData()
+	{
+		keywordName = "";
+		KeywordValue = "";
 	}
 }

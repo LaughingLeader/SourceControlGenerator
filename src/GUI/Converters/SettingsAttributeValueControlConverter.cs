@@ -1,49 +1,43 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Controls;
-using System.Windows.Data;
-using SCG.Controls;
+﻿using SCG.Controls;
 using SCG.Data;
 using SCG.Data.View;
 
-namespace SCG.Converters
+using System.Globalization;
+using System.Windows.Controls;
+using System.Windows.Data;
+
+namespace SCG.Converters;
+
+class SettingsAttributeValueControlConverter : IValueConverter
 {
-	class SettingsAttributeValueControlConverter : IValueConverter
+	public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
 	{
-		public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+		if (value != null && value is SettingsEntryData entry)
 		{
-			if (value != null && value is SettingsEntryData entry)
+			//Log.Here().Activity($"entry.ViewType {entry.ViewType} | entry.FileBrowseType {entry.FileBrowseType}");
+
+			if (entry.ViewType == SettingsViewPropertyType.Browser)
 			{
-				//Log.Here().Activity($"entry.ViewType {entry.ViewType} | entry.FileBrowseType {entry.FileBrowseType}");
+				//var browser = new FileBrowseControl();
+				////browser.FileLocationText
 
-				if (entry.ViewType == SettingsViewPropertyType.Browser)
-				{
-					//var browser = new FileBrowseControl();
-					////browser.FileLocationText
+				//Binding binding = new Binding("FileLocationText");
+				//binding.Source = entry.Value;
+				//binding.Mode = BindingMode.TwoWay;
+				//binding.UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged;
+				//browser.SetBinding(FileBrowseControl.FileLocationTextProperty, binding);
 
-					//Binding binding = new Binding("FileLocationText");
-					//binding.Source = entry.Value;
-					//binding.Mode = BindingMode.TwoWay;
-					//binding.UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged;
-					//browser.SetBinding(FileBrowseControl.FileLocationTextProperty, binding);
+				//return browser;
 
-					//return browser;
-
-					return typeof(FileBrowseControl);
-				}
+				return typeof(FileBrowseControl);
 			}
-
-			return typeof(TextBox);
 		}
 
-		public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
-		{
-			throw new NotImplementedException();
-		}
+		return typeof(TextBox);
+	}
+
+	public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+	{
+		throw new NotImplementedException();
 	}
 }

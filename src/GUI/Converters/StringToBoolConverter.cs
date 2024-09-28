@@ -1,28 +1,20 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Data;
-using System.Windows.Media;
+﻿using System.Windows.Data;
 
-namespace SCG.Converters
+namespace SCG.Converters;
+
+public class StringToBoolConverter : IValueConverter
 {
-	public class StringToBoolConverter : IValueConverter
+	public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
 	{
-		public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+		if (value is string str)
 		{
-			if(value is string str)
-			{
-				return !String.IsNullOrEmpty(str);
-			}
-			return false;
+			return !String.IsNullOrEmpty(str);
 		}
+		return false;
+	}
 
-		public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
-		{
-			return null;
-		}
+	public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+	{
+		return null;
 	}
 }

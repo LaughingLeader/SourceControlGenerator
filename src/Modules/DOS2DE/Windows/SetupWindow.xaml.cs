@@ -1,77 +1,62 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reactive;
-using System.Reactive.Concurrency;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
-using ReactiveUI;
-using SCG.Core;
+﻿using SCG.Core;
 using SCG.Windows;
 
-namespace SCG.Modules.DOS2DE.Windows
+using System.Windows;
+
+namespace SCG.Modules.DOS2DE.Windows;
+
+/// <summary>
+/// Interaction logic for SetupWindow.xaml
+/// </summary>
+public partial class SetupWindow : UnclosableWindow
 {
-	/// <summary>
-	/// Interaction logic for SetupWindow.xaml
-	/// </summary>
-	public partial class SetupWindow : UnclosableWindow
+	private readonly DOS2DEProjectController controller;
+	private readonly Action onConfirmed;
+
+	public SetupWindow(DOS2DEProjectController projectController, Action OnConfirmed)
 	{
-		private DOS2DEProjectController controller;
-		private Action onConfirmed;
+		InitializeComponent();
 
-		public SetupWindow(DOS2DEProjectController projectController, Action OnConfirmed)
+		controller = projectController;
+		onConfirmed = OnConfirmed;
+
+		DataContext = controller.Data;
+
+		Loaded += SetupWindow_Loaded;
+	}
+
+	private void SetupWindow_Loaded(object sender, RoutedEventArgs e)
+	{
+		if (Owner != null && Owner is MainWindow mainWindow)
 		{
-			InitializeComponent();
+			mainWindow.LocationChanged += UpdatePositionWithMainWindow;
+			mainWindow.SizeChanged += UpdatePositionWithMainWindow;
+		}
+	}
 
-			controller = projectController;
-			onConfirmed = OnConfirmed;
+	private void UpdatePositionWithMainWindow(object sender, EventArgs e)
+	{
+		if (sender is MainWindow mainWindow)
+		{
+			var top = mainWindow.Top + ((mainWindow.Height - this.ActualHeight) / 2);
+			var left = mainWindow.Left + ((mainWindow.Width - this.ActualWidth) / 2);
 
-			DataContext = controller.Data;
+			this.Top = top < 0 ? 0 : top;
+			this.Left = left < 0 ? 0 : left;
+		}
+	}
 
-			Loaded += SetupWindow_Loaded;
+	private void ConfirmButton_Click(object sender, RoutedEventArgs e)
+	{
+		if (Owner != null && Owner is MainWindow mainWindow)
+		{
+			mainWindow.LocationChanged -= UpdatePositionWithMainWindow;
+			mainWindow.SizeChanged -= UpdatePositionWithMainWindow;
 		}
 
-		private void SetupWindow_Loaded(object sender, RoutedEventArgs e)
-		{
-			if(Owner != null && Owner is MainWindow mainWindow)
-			{
-				mainWindow.LocationChanged += UpdatePositionWithMainWindow;
-				mainWindow.SizeChanged += UpdatePositionWithMainWindow;
-			}
-		}
+		onConfirmed?.Invoke();
+		Close();
 
-		private void UpdatePositionWithMainWindow(object sender, EventArgs e)
-		{
-			if(sender is MainWindow mainWindow)
-			{
-				double top = mainWindow.Top + ((mainWindow.Height - this.ActualHeight) / 2);
-				double left = mainWindow.Left + ((mainWindow.Width - this.ActualWidth) / 2);
-
-				this.Top = top < 0 ? 0 : top;
-				this.Left = left < 0 ? 0 : left;
-			}
-		}
-
-		private void ConfirmButton_Click(object sender, RoutedEventArgs e)
-		{
-			if (Owner != null && Owner is MainWindow mainWindow)
-			{
-				mainWindow.LocationChanged -= UpdatePositionWithMainWindow;
-				mainWindow.SizeChanged -= UpdatePositionWithMainWindow;
-			}
-
-			onConfirmed?.Invoke();
-			Close();
-
-			controller.RefreshAllProjects_Start();
-		}
+		controller.RefreshAllProjects_Start();
 	}
 }

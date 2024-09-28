@@ -1,65 +1,57 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using SCG.Core;
+
 using System.Globalization;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
 using System.Windows.Data;
-using System.Windows.Media;
-using SCG.Controls;
-using SCG.Core;
 
-namespace SCG.Converters
+namespace SCG.Converters;
+
+public class StringToFilterConverter : IValueConverter
 {
-	public class StringToFilterConverter : IValueConverter
+	public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
 	{
-		public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+		if (value is string filterName)
 		{
-			if (value is string filterName)
+			var filter = CommonFileFilters.DefaultFilters.Where(f => f.Name.ToLower() == filterName.ToLower()).FirstOrDefault();
+			if (filter != null)
 			{
-				FileBrowserFilter filter = CommonFileFilters.DefaultFilters.Where(f => f.Name.ToLower() == filterName.ToLower()).FirstOrDefault();
-				if (filter != null)
-				{
-					return filter;
-				}
+				return filter;
 			}
-
-			return CommonFileFilters.All;
 		}
 
-		public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
-		{
-			return null;
-		}
+		return CommonFileFilters.All;
 	}
 
-	public class StringToFilterListConverter : IValueConverter
+	public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
 	{
-		public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+		return null;
+	}
+}
+
+public class StringToFilterListConverter : IValueConverter
+{
+	public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+	{
+		if (value is string filterCollection)
 		{
-			if (value is string filterCollection)
+			var filterNames = filterCollection.Split(';');
+
+			if (filterNames.Length > 0)
 			{
-				var filterNames = filterCollection.Split(';');
+				List<FileBrowserFilter> filters = [];
 
-				if(filterNames.Length > 0)
+				foreach (var filterName in filterNames)
 				{
-					List<FileBrowserFilter> filters = new List<FileBrowserFilter>();
-
-					foreach (var filterName in filterNames)
-					{
-						FileBrowserFilter filter = CommonFileFilters.DefaultFilters.Where(f => f.Name.ToLower() == filterName.ToLower()).FirstOrDefault();
-						filters.Add(filter);
-					}
+					var filter = CommonFileFilters.DefaultFilters.Where(f => f.Name.ToLower() == filterName.ToLower()).FirstOrDefault();
+					filters.Add(filter);
 				}
 			}
-
-			return CommonFileFilters.DefaultFilters;
 		}
 
-		public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
-		{
-			return null;
-		}
+		return CommonFileFilters.DefaultFilters;
+	}
+
+	public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+	{
+		return null;
 	}
 }

@@ -5,63 +5,68 @@
 // environment: .NET 3.0
 // copyright  : (c) 2008-2012 by Itenso GmbH, Switzerland
 // --------------------------------------------------------------------------
-using System;
 using System.Globalization;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Media;
-using System.Windows.Controls;
 
-namespace Itenso.Windows.Controls.ListViewLayout
+namespace Itenso.Windows.Controls.ListViewLayout;
+
+
+// ------------------------------------------------------------------------
+public abstract class ImageGridViewColumn : GridViewColumn, IValueConverter
 {
 
-	// ------------------------------------------------------------------------
-	public abstract class ImageGridViewColumn : GridViewColumn, IValueConverter
+	// ----------------------------------------------------------------------
+	protected ImageGridViewColumn() :
+		this(Stretch.None)
 	{
+	} // ImageGridViewColumn
 
-		// ----------------------------------------------------------------------
-		protected ImageGridViewColumn() :
-			this( Stretch.None )
+	// ----------------------------------------------------------------------
+	protected ImageGridViewColumn(Stretch imageStretch)
+	{
+		var imageElement = new FrameworkElementFactory(typeof(Image));
+
+		// image source
+		var imageSourceBinding = new Binding
 		{
-		} // ImageGridViewColumn
+			Converter = this,
+			Mode = BindingMode.OneWay
+		};
+		imageElement.SetBinding(Image.SourceProperty, imageSourceBinding);
 
-		// ----------------------------------------------------------------------
-		protected ImageGridViewColumn( Stretch imageStretch )
+		// image stretching
+		var imageStretchBinding = new Binding
 		{
-			FrameworkElementFactory imageElement = new FrameworkElementFactory( typeof( Image ) );
+			Source = imageStretch
+		};
+		imageElement.SetBinding(Image.StretchProperty, imageStretchBinding);
 
-			// image source
-			Binding imageSourceBinding = new Binding();
-			imageSourceBinding.Converter = this;
-			imageSourceBinding.Mode = BindingMode.OneWay;
-			imageElement.SetBinding( Image.SourceProperty, imageSourceBinding );
-
-			// image stretching
-			Binding imageStretchBinding = new Binding();
-			imageStretchBinding.Source = imageStretch;
-			imageElement.SetBinding( Image.StretchProperty, imageStretchBinding );
-
-			DataTemplate template = new DataTemplate();
-			template.VisualTree = imageElement;
-			CellTemplate = template;
-		} // ImageGridViewColumn
-
-		// ----------------------------------------------------------------------
-		protected abstract ImageSource GetImageSource( object value );
-
-		// ----------------------------------------------------------------------
-		object IValueConverter.Convert( object value, Type targetType, object parameter, CultureInfo culture )
+		var template = new DataTemplate
 		{
-			return GetImageSource( value );
-		} // Convert
+			VisualTree = imageElement
+		};
+		CellTemplate = template;
+	} // ImageGridViewColumn
 
-		// ----------------------------------------------------------------------
-		object IValueConverter.ConvertBack( object value, Type targetType, object parameter, CultureInfo culture )
-		{
-			throw new NotImplementedException();
-		} // ConvertBack
+	// ----------------------------------------------------------------------
+	protected abstract ImageSource GetImageSource(object value);
 
-	} // class ImageGridViewColumn
+	// ----------------------------------------------------------------------
+	object IValueConverter.Convert(object value, Type targetType, object parameter, CultureInfo culture)
+	{
+		return GetImageSource(value);
+	} // Convert
 
-} // namespace Itenso.Windows.Controls.ListViewLayout
+	// ----------------------------------------------------------------------
+	object IValueConverter.ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+	{
+		throw new NotImplementedException();
+	} // ConvertBack
+
+} // class ImageGridViewColumn
+
+// namespace Itenso.Windows.Controls.ListViewLayout
 // -- EOF -------------------------------------------------------------------

@@ -1,9 +1,8 @@
-﻿namespace SCG.SCGEnum
+﻿namespace SCG.SCGEnum;
+
+public enum FileValidation
 {
-	public enum FileValidation
-	{
-		None,
-		Warning,
-		Error
-	}
+	None,
+	Warning,
+	Error
 }

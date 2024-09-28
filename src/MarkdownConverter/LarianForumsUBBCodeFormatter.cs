@@ -2,100 +2,96 @@
 using AngleSharp.Html.Dom;
 using AngleSharp.Html.Parser;
 
-using System;
-using System.Linq;
+namespace SCG.Markdown;
 
-namespace SCG.Markdown
+public class LarianForumsUBBCodeFormatter : BBCodeFormatter
 {
-	public class LarianForumsUBBCodeFormatter : BBCodeFormatter
+	public bool DisableListTag { get; set; } = false;
+
+	public LarianForumsUBBCodeFormatter() : base()
 	{
-		public bool DisableListTag { get; set; } = false;
+		Name = "Larian Forums";
 
-		public LarianForumsUBBCodeFormatter() : base()
+		AddTagToIgnoreList(TagNames.Strike, TagNames.Header);
+		AddElementToIgnoreList(typeof(IHtmlOrderedListElement));
+	}
+
+	private string HeaderTag(int size)
+	{
+		return $"[size: {size}pt][b]";
+	}
+
+	public override string ConvertHTML(string input)
+	{
+		try
 		{
-			Name = "Larian Forums";
+			var parser = new HtmlParser(new HtmlParserOptions() { IsStrictMode = false });
+			var doc = parser.ParseDocument(input);
 
-			AddTagToIgnoreList(TagNames.Strike, TagNames.Header);
-			AddElementToIgnoreList(typeof(IHtmlOrderedListElement));
-		}
+			doc = BBCodeConversion(doc);
 
-		private string HeaderTag(int size)
-		{
-			return $"[size: {size}pt][b]";
-		}
+			//foreach (var element in doc.All.OfType<IHtmlHeadingElement>())
+			//{
+			//	element.OuterHtml = $"[b][u]{element.InnerHtml}[/u][/b]";
+			//}
 
-		public override string ConvertHTML(string input)
-		{
-			try
+			foreach (var element in doc.All.OfType<IHtmlHeadingElement>())
 			{
-				var parser = new HtmlParser(new HtmlParserOptions() { IsStrictMode = false });
-				var doc = parser.ParseDocument(input);
+				var comparer = StringComparison.OrdinalIgnoreCase;
+				var text = element.OuterHtml;
 
-				doc = BBCodeConversion(doc);
+				var headerEndTag = "[/b][/size]";
 
-				//foreach (var element in doc.All.OfType<IHtmlHeadingElement>())
-				//{
-				//	element.OuterHtml = $"[b][u]{element.InnerHtml}[/u][/b]";
-				//}
-
-				foreach (var element in doc.All.OfType<IHtmlHeadingElement>())
-				{
-					var comparer = StringComparison.OrdinalIgnoreCase;
-					var text = element.OuterHtml;
-
-					var headerEndTag = "[/b][/size]";
-
-					text = text.Replace("<h1>", HeaderTag(23), comparer).Replace("<h2>", HeaderTag(20), comparer).Replace("<h3>", HeaderTag(17), comparer).Replace("<h4>", HeaderTag(14), comparer).Replace("<h5>", HeaderTag(11), comparer).Replace("<h6>", HeaderTag(8), comparer);
-					text = text.Replace("</h1>", headerEndTag, comparer).Replace("</h2>", headerEndTag, comparer).Replace("</h3>", headerEndTag, comparer).Replace("</h4>", headerEndTag, comparer).Replace("</h5>", headerEndTag, comparer).Replace("</h6>", headerEndTag, comparer);
-					element.OuterHtml = text;
-				}
-
-				foreach (var element in doc.GetElementsByTagName(TagNames.Strike))
-				{
-					element.OuterHtml = $"[s]{element.InnerHtml}[/s]";
-				}
-
-				foreach (var element in doc.All.OfType<IHtmlOrderedListElement>())
-				{
-					if (!DisableListTag)
-						element.OuterHtml = $"[list=1]{element.InnerHtml}[/list]";
-					else
-						element.OuterHtml = element.InnerHtml;
-				}
-
-				foreach (var element in doc.All.OfType<IHtmlUnorderedListElement>())
-				{
-					if (!DisableListTag)
-						element.OuterHtml = $"[list]{element.InnerHtml}[/list]";
-					else
-						element.OuterHtml = element.InnerHtml;
-				}
-
-				foreach (var element in doc.All.OfType<IHtmlListItemElement>())
-				{
-					if (!DisableListTag)
-						element.OuterHtml = $"[*] {element.InnerHtml}";
-					else
-						element.OuterHtml = $"• {element.InnerHtml}";
-				}
-
-				foreach (var element in doc.All.OfType<IHtmlHrElement>())
-				{
-					element.OuterHtml = $"___________________________{element.InnerHtml}";
-				}
-
-				//AngleSharp adds html, head, and body tags.
-				var output = doc.Body.InnerHtml;
-
-				output.Replace("\t", "&nbsp;&nbsp;");
-
-				return output;
+				text = text.Replace("<h1>", HeaderTag(23), comparer).Replace("<h2>", HeaderTag(20), comparer).Replace("<h3>", HeaderTag(17), comparer).Replace("<h4>", HeaderTag(14), comparer).Replace("<h5>", HeaderTag(11), comparer).Replace("<h6>", HeaderTag(8), comparer);
+				text = text.Replace("</h1>", headerEndTag, comparer).Replace("</h2>", headerEndTag, comparer).Replace("</h3>", headerEndTag, comparer).Replace("</h4>", headerEndTag, comparer).Replace("</h5>", headerEndTag, comparer).Replace("</h6>", headerEndTag, comparer);
+				element.OuterHtml = text;
 			}
-			catch (Exception ex)
+
+			foreach (var element in doc.GetElementsByTagName(TagNames.Strike))
 			{
-				Log.Here().Error($"Error converting markdown to {Name}: {ex.ToString()}");
+				element.OuterHtml = $"[s]{element.InnerHtml}[/s]";
 			}
-			return "";
+
+			foreach (var element in doc.All.OfType<IHtmlOrderedListElement>())
+			{
+				if (!DisableListTag)
+					element.OuterHtml = $"[list=1]{element.InnerHtml}[/list]";
+				else
+					element.OuterHtml = element.InnerHtml;
+			}
+
+			foreach (var element in doc.All.OfType<IHtmlUnorderedListElement>())
+			{
+				if (!DisableListTag)
+					element.OuterHtml = $"[list]{element.InnerHtml}[/list]";
+				else
+					element.OuterHtml = element.InnerHtml;
+			}
+
+			foreach (var element in doc.All.OfType<IHtmlListItemElement>())
+			{
+				if (!DisableListTag)
+					element.OuterHtml = $"[*] {element.InnerHtml}";
+				else
+					element.OuterHtml = $"• {element.InnerHtml}";
+			}
+
+			foreach (var element in doc.All.OfType<IHtmlHrElement>())
+			{
+				element.OuterHtml = $"___________________________{element.InnerHtml}";
+			}
+
+			//AngleSharp adds html, head, and body tags.
+			var output = doc.Body.InnerHtml;
+
+			output.Replace("\t", "&nbsp;&nbsp;");
+
+			return output;
 		}
+		catch (Exception ex)
+		{
+			Log.Here().Error($"Error converting markdown to {Name}: {ex.ToString()}");
+		}
+		return "";
 	}
 }

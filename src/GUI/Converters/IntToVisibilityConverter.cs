@@ -1,47 +1,40 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Data;
-using System.Windows.Media;
 
-namespace SCG.Converters
+namespace SCG.Converters;
+
+public class IntToVisibilityConverter : IValueConverter
 {
-	public class IntToVisibilityConverter : IValueConverter
+	public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
 	{
-		public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+		if (value is int count)
 		{
-			if(value is int count)
+			var paramval = 1;
+
+			if (parameter is string param)
 			{
-				int paramval = 1;
-
-				if (parameter is string param)
-				{
-					int.TryParse(param, out paramval);
-				}
-				else if (parameter is int paramint)
-				{
-					paramval = paramint;
-				}
-
-				if (count >= paramval)
-				{
-					return Visibility.Visible;
-				}
-				else
-				{
-					return Visibility.Collapsed;
-				}
+				int.TryParse(param, out paramval);
+			}
+			else if (parameter is int paramint)
+			{
+				paramval = paramint;
 			}
 
-			return Visibility.Visible;
+			if (count >= paramval)
+			{
+				return Visibility.Visible;
+			}
+			else
+			{
+				return Visibility.Collapsed;
+			}
 		}
 
-		public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
-		{
-			return null;
-		}
+		return Visibility.Visible;
+	}
+
+	public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+	{
+		return null;
 	}
 }

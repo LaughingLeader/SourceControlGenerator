@@ -1,70 +1,57 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
+﻿using System.Windows;
 
-namespace SCG.Windows
+namespace SCG.Windows;
+
+/// <summary>
+/// Interaction logic for EditTextWindow.xaml
+/// </summary>
+public partial class EditTextWindow : Window
 {
-	/// <summary>
-	/// Interaction logic for EditTextWindow.xaml
-	/// </summary>
-	public partial class EditTextWindow : Window
+	private Action<string> OnConfirm;
+	private Action OnCancel;
+
+	public string Text
 	{
-		private Action<string> OnConfirm;
-		private Action OnCancel;
+		get { return (string)GetValue(TextProperty); }
+		set { SetValue(TextProperty, value); }
+	}
 
-		public string Text
-		{
-			get { return (string)GetValue(TextProperty); }
-			set { SetValue(TextProperty, value); }
-		}
-
-		// Using a DependencyProperty as the backing store for Text.  This enables animation, styling, binding, etc...
-		public static readonly DependencyProperty TextProperty =
-			DependencyProperty.Register("Text", typeof(string), typeof(EditTextWindow), new PropertyMetadata(""));
+	// Using a DependencyProperty as the backing store for Text.  This enables animation, styling, binding, etc...
+	public static readonly DependencyProperty TextProperty =
+		DependencyProperty.Register("Text", typeof(string), typeof(EditTextWindow), new PropertyMetadata(""));
 
 
-		public EditTextWindow(Action<string> onConfirm, Action onCancel, string windowTitle = "")
-		{
-			InitializeComponent();
+	public EditTextWindow(Action<string> onConfirm, Action onCancel, string windowTitle = "")
+	{
+		InitializeComponent();
 
-			Title = windowTitle;
-			DataContext = this;
+		Title = windowTitle;
+		DataContext = this;
 
-			OnConfirm = onConfirm;
-			OnCancel = onCancel;
-		}
+		OnConfirm = onConfirm;
+		OnCancel = onCancel;
+	}
 
-		public void Configure(Action<string> onConfirm, Action onCancel)
-		{
-			OnConfirm = onConfirm;
-			OnCancel = onCancel;
-		}
+	public void Configure(Action<string> onConfirm, Action onCancel)
+	{
+		OnConfirm = onConfirm;
+		OnCancel = onCancel;
+	}
 
-		private void ConfirmButton_Click(object sender, RoutedEventArgs e)
-		{
-			OnConfirm?.Invoke(Text);
-			this.Hide();
-		}
+	private void ConfirmButton_Click(object sender, RoutedEventArgs e)
+	{
+		OnConfirm?.Invoke(Text);
+		this.Hide();
+	}
 
-		private void CancelButton_Click(object sender, RoutedEventArgs e)
-		{
-			OnCancel?.Invoke();
-			this.Hide();
-		}
+	private void CancelButton_Click(object sender, RoutedEventArgs e)
+	{
+		OnCancel?.Invoke();
+		this.Hide();
+	}
 
-		private void EditWindow_Closed(object sender, EventArgs e)
-		{
-			OnCancel?.Invoke();
-		}
+	private void EditWindow_Closed(object sender, EventArgs e)
+	{
+		OnCancel?.Invoke();
 	}
 }

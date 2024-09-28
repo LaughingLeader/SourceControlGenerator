@@ -1,40 +1,32 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Input;
+﻿namespace SCG.Commands;
 
-namespace SCG.Commands
+/// <summary>
+/// Executes an action, ignoring the parameter.
+/// </summary>
+public class ActionCommand : BaseCommand
 {
-	/// <summary>
-	/// Executes an action, ignoring the parameter.
-	/// </summary>
-	public class ActionCommand : BaseCommand
+	private Action callback;
+
+	public ActionCommand(Action callback)
 	{
-		private Action callback;
+		this.callback = callback;
+	}
 
-		public ActionCommand(Action callback)
-		{
-			this.callback = callback;
-		}
+	public ActionCommand() { }
 
-		public ActionCommand() { }
+	public void SetCallback(Action newCallback)
+	{
+		callback = newCallback;
+		RaiseCanExecuteChanged();
+	}
 
-		public void SetCallback(Action newCallback)
-		{
-			callback = newCallback;
-			RaiseCanExecuteChanged();
-		}
+	public override bool CanExecute(object parameter)
+	{
+		return callback != null && base.CanExecute(parameter);
+	}
 
-		public override bool CanExecute(object parameter)
-		{
-			return callback != null && base.CanExecute(parameter);
-		}
-
-		public override void Execute(object parameter)
-		{
-			this.callback?.Invoke();
-		}
+	public override void Execute(object parameter)
+	{
+		this.callback?.Invoke();
 	}
 }

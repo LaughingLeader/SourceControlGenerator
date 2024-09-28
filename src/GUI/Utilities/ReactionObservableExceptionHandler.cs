@@ -1,38 +1,31 @@
-﻿using ReactiveUI;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Reactive.Concurrency;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Diagnostics;
+
 using Xceed.Wpf.Toolkit;
 
-namespace SCG.Utilities
+namespace SCG.Utilities;
+
+public class ReactionObservableExceptionHandler : IObserver<Exception>
 {
-	public class ReactionObservableExceptionHandler : IObserver<Exception>
+	public void OnNext(Exception value)
 	{
-		public void OnNext(Exception value)
-		{
-			//if (Debugger.IsAttached) Debugger.Break();
+		//if (Debugger.IsAttached) Debugger.Break();
 
-			var message = $"Exception encountered:\nType: {value.GetType().ToString()}\tMessage: {value.Message}\nSource: {value.Source}\nStackTrace: {value.StackTrace}";
-			Trace.WriteLine(message);
-			//MessageBox.Show(message);
-			//RxApp.MainThreadScheduler.Schedule(() => { throw value; });
-		}
+		var message = $"Exception encountered:\nType: {value.GetType().ToString()}\tMessage: {value.Message}\nSource: {value.Source}\nStackTrace: {value.StackTrace}";
+		Trace.WriteLine(message);
+		//MessageBox.Show(message);
+		//RxApp.MainThreadScheduler.Schedule(() => { throw value; });
+	}
 
-		public void OnError(Exception value)
-		{
-			var message = $"Exception encountered:\nType: {value.GetType().ToString()}\tMessage: {value.Message}\nSource: {value.Source}\nStackTrace: {value.StackTrace}";
-			Trace.WriteLine(message);
-			MessageBox.Show(message);
-		}
+	public void OnError(Exception value)
+	{
+		var message = $"Exception encountered:\nType: {value.GetType().ToString()}\tMessage: {value.Message}\nSource: {value.Source}\nStackTrace: {value.StackTrace}";
+		Trace.WriteLine(message);
+		MessageBox.Show(message);
+	}
 
-		public void OnCompleted()
-		{
-			//if (Debugger.IsAttached) Debugger.Break();
-			//RxApp.MainThreadScheduler.Schedule(() => { throw new NotImplementedException(); });
-		}
+	public void OnCompleted()
+	{
+		//if (Debugger.IsAttached) Debugger.Break();
+		//RxApp.MainThreadScheduler.Schedule(() => { throw new NotImplementedException(); });
 	}
 }

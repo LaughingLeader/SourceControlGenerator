@@ -1,65 +1,59 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Threading;
 
-namespace SCG.Controls
+namespace SCG.Controls;
+
+public class AutoScrollingTextbox : TextBox
 {
-	public class AutoScrollingTextbox : TextBox
+	public bool AutoScrollDisable { get; set; } = false;
+
+	private DispatcherTimer resetTimer;
+
+	public AutoScrollingTextbox() : base()
 	{
-		public bool AutoScrollDisable { get; set; } = false;
+		PreviewMouseWheel += AutoScrollingTextbox_PreviewMouseWheel;
+	}
 
-		private DispatcherTimer resetTimer;
+	private void AutoScrollingTextbox_PreviewMouseWheel(object sender, System.Windows.Input.MouseWheelEventArgs e)
+	{
+		AutoScrollDisable = true;
 
-		public AutoScrollingTextbox() : base()
+		if (resetTimer == null)
 		{
-			PreviewMouseWheel += AutoScrollingTextbox_PreviewMouseWheel;
-		}
-
-		private void AutoScrollingTextbox_PreviewMouseWheel(object sender, System.Windows.Input.MouseWheelEventArgs e)
-		{
-			AutoScrollDisable = true;
-
-			if (resetTimer == null)
+			resetTimer = new DispatcherTimer(new TimeSpan(0, 0, 20), DispatcherPriority.Normal, delegate
 			{
-				resetTimer = new DispatcherTimer(new TimeSpan(0, 0, 20), DispatcherPriority.Normal, delegate
-				{
-					AutoScrollDisable = false;
-					AutoScroll();
-				}, Application.Current.Dispatcher);
-			}
-			else
-			{
-				resetTimer.Stop();
-			}
-
-			resetTimer.Start();
+				AutoScrollDisable = false;
+				AutoScroll();
+			}, Application.Current.Dispatcher);
+		}
+		else
+		{
+			resetTimer.Stop();
 		}
 
-		protected override void OnInitialized(EventArgs e)
-		{
-			base.OnInitialized(e);
-			VerticalScrollBarVisibility = ScrollBarVisibility.Auto;
-			HorizontalScrollBarVisibility = ScrollBarVisibility.Auto;
-		}
+		resetTimer.Start();
+	}
 
-		protected override void OnTextChanged(TextChangedEventArgs e)
-		{
-			base.OnTextChanged(e);
-			AutoScroll();
-		}
+	protected override void OnInitialized(EventArgs e)
+	{
+		base.OnInitialized(e);
+		VerticalScrollBarVisibility = ScrollBarVisibility.Auto;
+		HorizontalScrollBarVisibility = ScrollBarVisibility.Auto;
+	}
 
-		public void AutoScroll()
+	protected override void OnTextChanged(TextChangedEventArgs e)
+	{
+		base.OnTextChanged(e);
+		AutoScroll();
+	}
+
+	public void AutoScroll()
+	{
+		if (!AutoScrollDisable)
 		{
-			if (!AutoScrollDisable)
-			{
-				CaretIndex = Text.Length;
-				ScrollToEnd();
-			}
+			CaretIndex = Text.Length;
+			ScrollToEnd();
 		}
 	}
 }

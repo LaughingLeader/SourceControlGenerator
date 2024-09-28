@@ -1,49 +1,39 @@
-﻿using System;
-using System.Collections.Generic;
-using Alphaleonis.Win32.Filesystem;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Input;
+﻿namespace SCG.Commands;
 
-namespace SCG.Commands
+public class OpenFileCommand : BaseCommand
 {
-	public class OpenFileCommand : BaseCommand
+	private readonly Action<string> onLoad;
+
+	public override bool CanExecute(object parameter)
 	{
-		private Action<string> onLoad;
-
-		public override bool CanExecute(object parameter)
+		if (base.CanExecute(parameter) && parameter != null && FileCommands.Load != null && parameter is string filePath)
 		{
-			if (base.CanExecute(parameter) && parameter != null && FileCommands.Load != null)
-			{
-				string filePath = (String)parameter;
-				return FileCommands.IsValidPath(filePath);
-			}
-
-			return false;
+			return FileCommands.IsValidPath(filePath);
 		}
 
-		public override void Execute(object parameter)
-		{
-			string filePath = (String)parameter;
+		return false;
+	}
 
-			if (!String.IsNullOrEmpty(filePath) && File.Exists(filePath))
+	public override void Execute(object parameter)
+	{
+		var filePath = (String)parameter;
+
+		if (!String.IsNullOrEmpty(filePath) && File.Exists(filePath))
+		{
+			Log.Here().Important("Attempting to open file: {0}", filePath);
+			try
 			{
-				Log.Here().Important("Attempting to open file: {0}", filePath);
-				try
-				{
-					onLoad?.Invoke(File.ReadAllText(filePath));
-				}
-				catch(Exception ex)
-				{
-					Log.Here().Error("Error opening file {0}: {1}", filePath, ex.ToString());
-				}
+				onLoad?.Invoke(File.ReadAllText(filePath));
+			}
+			catch (Exception ex)
+			{
+				Log.Here().Error("Error opening file {0}: {1}", filePath, ex.ToString());
 			}
 		}
+	}
 
-		public OpenFileCommand(Action<string> OnLoad)
-		{
-			onLoad = OnLoad;
-		}
+	public OpenFileCommand(Action<string> OnLoad)
+	{
+		onLoad = OnLoad;
 	}
 }

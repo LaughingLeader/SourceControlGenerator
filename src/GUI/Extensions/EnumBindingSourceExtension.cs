@@ -1,52 +1,50 @@
-﻿using System;
-using System.Windows.Markup;
+﻿using System.Windows.Markup;
 
-namespace SCG
+namespace SCG;
+
+public class EnumBindingSourceExtension : MarkupExtension
 {
-	public class EnumBindingSourceExtension : MarkupExtension
+	private Type _enumType;
+	public Type EnumType
 	{
-		private Type _enumType;
-		public Type EnumType
+		get { return this._enumType; }
+		set
 		{
-			get { return this._enumType; }
-			set
+			if (value != this._enumType)
 			{
-				if (value != this._enumType)
+				if (null != value)
 				{
-					if (null != value)
-					{
-						Type enumType = Nullable.GetUnderlyingType(value) ?? value;
+					var enumType = Nullable.GetUnderlyingType(value) ?? value;
 
-						if (!enumType.IsEnum)
-							throw new ArgumentException("Type must be for an Enum.");
-					}
-
-					this._enumType = value;
+					if (!enumType.IsEnum)
+						throw new ArgumentException("Type must be for an Enum.");
 				}
+
+				this._enumType = value;
 			}
 		}
+	}
 
-		public EnumBindingSourceExtension() { }
+	public EnumBindingSourceExtension() { }
 
-		public EnumBindingSourceExtension(Type enumType)
-		{
-			this.EnumType = enumType;
-		}
+	public EnumBindingSourceExtension(Type enumType)
+	{
+		this.EnumType = enumType;
+	}
 
-		public override object ProvideValue(IServiceProvider serviceProvider)
-		{
-			if (null == this._enumType)
-				throw new InvalidOperationException("The EnumType must be specified.");
+	public override object ProvideValue(IServiceProvider serviceProvider)
+	{
+		if (null == this._enumType)
+			throw new InvalidOperationException("The EnumType must be specified.");
 
-			Type actualEnumType = Nullable.GetUnderlyingType(this._enumType) ?? this._enumType;
-			Array enumValues = System.Enum.GetValues(actualEnumType);
+		var actualEnumType = Nullable.GetUnderlyingType(this._enumType) ?? this._enumType;
+		var enumValues = System.Enum.GetValues(actualEnumType);
 
-			if (actualEnumType == this._enumType)
-				return enumValues;
+		if (actualEnumType == this._enumType)
+			return enumValues;
 
-			Array tempArray = Array.CreateInstance(actualEnumType, enumValues.Length + 1);
-			enumValues.CopyTo(tempArray, 1);
-			return tempArray;
-		}
+		var tempArray = Array.CreateInstance(actualEnumType, enumValues.Length + 1);
+		enumValues.CopyTo(tempArray, 1);
+		return tempArray;
 	}
 }

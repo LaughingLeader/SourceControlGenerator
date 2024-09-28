@@ -1,44 +1,37 @@
 ﻿using SCG.Modules.DOS2DE.Data.View.Locale;
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+namespace SCG.Modules.DOS2DE.LocalizationEditor.Models;
 
-namespace SCG.Modules.DOS2DE.LocalizationEditor.Models
+public enum LocaleChangedField
 {
-	public enum LocaleChangedField
+	None,
+	Key,
+	Content,
+	Handle
+}
+public class LocaleUnsavedChangesData
+{
+	public LocaleChangedField ChangeType { get; set; }
+	public string LastValue { get; set; }
+	public string NewValue { get; set; }
+
+	public ILocaleKeyEntry KeyEntry { get; set; }
+
+	/*
+	public bool Equals(LocaleUnsavedChangesData other)
 	{
-		None,
-		Key,
-		Content,
-		Handle
+		return other.KeyEntry == this.KeyEntry && other.ChangeType == this.ChangeType && other.NewValue == this.LastValue;
 	}
-	public class LocaleUnsavedChangesData
+	*/
+
+	public static LocaleUnsavedChangesData Create(ILocaleKeyEntry entry, LocaleChangedField changedField, string lastValue, string newValue)
 	{
-		public LocaleChangedField ChangeType { get; set; }
-		public string LastValue { get; set; }
-		public string NewValue { get; set; }
-
-		public ILocaleKeyEntry KeyEntry { get; set; }
-
-		/*
-		public bool Equals(LocaleUnsavedChangesData other)
+		return new LocaleUnsavedChangesData
 		{
-			return other.KeyEntry == this.KeyEntry && other.ChangeType == this.ChangeType && other.NewValue == this.LastValue;
-		}
-		*/
-
-		public static LocaleUnsavedChangesData Create(ILocaleKeyEntry entry, LocaleChangedField changedField, string lastValue, string newValue)
-		{
-			return new LocaleUnsavedChangesData
-			{
-				KeyEntry = entry,
-				ChangeType = changedField,
-				LastValue = lastValue,
-				NewValue = newValue
-			};
-		}
+			KeyEntry = entry,
+			ChangeType = changedField,
+			LastValue = lastValue,
+			NewValue = newValue
+		};
 	}
 }

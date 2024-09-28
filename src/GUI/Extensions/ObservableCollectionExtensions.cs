@@ -1,22 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.ObjectModel;
 
-namespace SCG
+namespace SCG;
+
+public static class ObservableCollectionExtensions
 {
-	public static class ObservableCollectionExtensions
+	public static void RemoveAll<T>(this ObservableCollection<T> collection, Func<T, bool> condition)
 	{
-		public static void RemoveAll<T>(this ObservableCollection<T> collection, Func<T, bool> condition)
+		for (var i = collection.Count - 1; i >= 0; i--)
 		{
-			for (int i = collection.Count - 1; i >= 0; i--)
+			if (condition(collection[i]))
 			{
-				if (condition(collection[i]))
-				{
-					collection.RemoveAt(i);
-				}
+				collection.RemoveAt(i);
 			}
 		}
 	}

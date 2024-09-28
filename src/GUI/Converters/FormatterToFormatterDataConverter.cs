@@ -1,33 +1,26 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Data;
-using System.Windows.Media;
-using SCG.Data.View;
+﻿using SCG.Data.View;
 using SCG.Markdown;
 
-namespace SCG.Converters
-{
-	public class FormatterToFormatterDataConverter : IValueConverter
-	{
-		public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
-		{
-			if(value is IMarkdownFormatter formatter)
-			{
-				return new MarkdownFormatterData()
-				{
-					Formatter = formatter
-				};
-			}
-			return null;
-		}
+using System.Windows.Data;
 
-		public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+namespace SCG.Converters;
+
+public class FormatterToFormatterDataConverter : IValueConverter
+{
+	public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+	{
+		if (value is IMarkdownFormatter formatter)
 		{
-			return null;
+			return new MarkdownFormatterData()
+			{
+				Formatter = formatter
+			};
 		}
+		return null;
+	}
+
+	public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+	{
+		return null;
 	}
 }

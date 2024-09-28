@@ -1,151 +1,145 @@
-﻿using Alphaleonis.Win32.Filesystem;
+﻿using System.Diagnostics;
 
-using System;
-using System.Diagnostics;
-using System.Threading;
-using System.Threading.Tasks;
+namespace SCG.Util;
 
-namespace SCG.Util
+public static class ProcessHelper
 {
-	public static class ProcessHelper
+	/// <summary>
+	/// Waits asynchronously for the process to exit.
+	/// </summary>
+	/// <param name="process">The process to wait for cancellation.</param>
+	/// <param name="cancellationToken">A cancellation token. If invoked, the task will return 
+	/// immediately as canceled.</param>
+	/// <returns>A Task representing waiting for the process to end.</returns>
+	public static Task WaitForExitAsync(this Process process,
+		CancellationToken cancellationToken = default)
 	{
-		/// <summary>
-		/// Waits asynchronously for the process to exit.
-		/// </summary>
-		/// <param name="process">The process to wait for cancellation.</param>
-		/// <param name="cancellationToken">A cancellation token. If invoked, the task will return 
-		/// immediately as canceled.</param>
-		/// <returns>A Task representing waiting for the process to end.</returns>
-		public static Task WaitForExitAsync(this Process process,
-			CancellationToken cancellationToken = default(CancellationToken))
-		{
-			var tcs = new TaskCompletionSource<object>();
-			process.EnableRaisingEvents = true;
-			process.Exited += (sender, args) => tcs.TrySetResult(null);
-			if (cancellationToken != default(CancellationToken))
-				cancellationToken.Register(tcs.SetCanceled);
+		var tcs = new TaskCompletionSource<object>();
+		process.EnableRaisingEvents = true;
+		process.Exited += (sender, args) => tcs.TrySetResult(null);
+		if (cancellationToken != default)
+			cancellationToken.Register(tcs.SetCanceled);
 
-			return tcs.Task;
+		return tcs.Task;
+	}
+
+	private async static Task<int> RunProcessAsync(Process process, params string[] commands)
+	{
+		var result = -1;
+		//process.OutputDataReceived += (s, ea) => Console.WriteLine(ea.Data);
+		//process.ErrorDataReceived += (s, ea) => Console.WriteLine("ERR: " + ea.Data);
+
+
+
+		var started = process.Start();
+		if (!started)
+		{
+			//you may allow for the process to be re-used (started = false) 
+			//but I'm not sure about the guarantees of the Exited event in such a case
+			throw new InvalidOperationException("Could not start process: " + process);
 		}
-
-		private async static Task<int> RunProcessAsync(Process process, params string[] commands)
+		else
 		{
-			var result = -1;
-			//process.OutputDataReceived += (s, ea) => Console.WriteLine(ea.Data);
-			//process.ErrorDataReceived += (s, ea) => Console.WriteLine("ERR: " + ea.Data);
-
-			
-
-			bool started = process.Start();
-			if (!started)
+			if (commands != null && commands.Length > 0)
 			{
-				//you may allow for the process to be re-used (started = false) 
-				//but I'm not sure about the guarantees of the Exited event in such a case
-				throw new InvalidOperationException("Could not start process: " + process);
-			}
-			else
-			{
-				if(commands != null && commands.Length > 0)
+				var stream = process.StandardInput;
+
+				for (var i = 0; i < commands.Length; i++)
 				{
-					System.IO.StreamWriter stream = process.StandardInput;
-
-					for(var i = 0; i < commands.Length; i++)
-					{
-						stream.WriteLine(commands[i]);
-						await Task.Delay(10).ConfigureAwait(false);
-					}
-
-					stream.Close();
+					stream.WriteLine(commands[i]);
+					await Task.Delay(10).ConfigureAwait(false);
 				}
 
-				process.WaitForExit();
-				result = process.ExitCode;
-				Log.Here().Important($"Process exited with code {result}");
-				//await process.WaitForExitAsync();
+				stream.Close();
 			}
 
-			//process.BeginOutputReadLine();
-			//process.BeginErrorReadLine();
-
-			return result;
+			process.WaitForExit();
+			result = process.ExitCode;
+			Log.Here().Important($"Process exited with code {result}");
+			//await process.WaitForExitAsync();
 		}
 
-		public static async Task<int> RunProcessAsync(string filePath, string workingDirectory = "", params string[] commands)
+		//process.BeginOutputReadLine();
+		//process.BeginErrorReadLine();
+
+		return result;
+	}
+
+	public static async Task<int> RunProcessAsync(string filePath, string workingDirectory = "", params string[] commands)
+	{
+		using (var process = new Process
 		{
-			using (var process = new Process
+			EnableRaisingEvents = true,
+			StartInfo =
 			{
-				EnableRaisingEvents = true,
-				StartInfo =
+				FileName = filePath,
+				UseShellExecute = false,
+				RedirectStandardInput = true,
+				CreateNoWindow = true,
+				WindowStyle = ProcessWindowStyle.Hidden,
+				WorkingDirectory = workingDirectory
+			}
+		})
+		{
+			return await RunProcessAsync(process, commands).ConfigureAwait(false);
+		}
+	}
+
+	public static async Task<int> RunCommandLineAsync(string workingDirectory = "", params string[] commands)
+	{
+		return await RunProcessAsync(Path.Combine(Environment.SystemDirectory, "cmd.exe"), workingDirectory, commands).ConfigureAwait(false);
+	}
+
+	private static int RunProcess(Process process, params string[] commands)
+	{
+		var started = process.Start();
+		if (!started)
+		{
+			//you may allow for the process to be re-used (started = false) 
+			//but I'm not sure about the guarantees of the Exited event in such a case
+			throw new InvalidOperationException("Could not start process: " + process);
+		}
+		else
+		{
+			if (commands != null && commands.Length > 0)
+			{
+				var stream = process.StandardInput;
+
+				for (var i = 0; i < commands.Length; i++)
 				{
-					FileName = filePath,
-					UseShellExecute = false,
-					RedirectStandardInput = true,
-					CreateNoWindow = true,
-					WindowStyle = ProcessWindowStyle.Hidden,
-					WorkingDirectory = workingDirectory
-				}
-			})
-			{
-				return await RunProcessAsync(process, commands).ConfigureAwait(false);
-			}
-		}
-
-		public static async Task<int> RunCommandLineAsync(string workingDirectory = "", params string[] commands)
-		{
-			return await RunProcessAsync(Path.Combine(Environment.SystemDirectory, "cmd.exe"), workingDirectory, commands).ConfigureAwait(false);
-		}
-
-		private static int RunProcess(Process process, params string[] commands)
-		{
-			bool started = process.Start();
-			if (!started)
-			{
-				//you may allow for the process to be re-used (started = false) 
-				//but I'm not sure about the guarantees of the Exited event in such a case
-				throw new InvalidOperationException("Could not start process: " + process);
-			}
-			else
-			{
-				if (commands != null && commands.Length > 0)
-				{
-					System.IO.StreamWriter stream = process.StandardInput;
-
-					for (var i = 0; i < commands.Length; i++)
-					{
-						stream.WriteLine(commands[i]);
-					}
-
-					stream.Close();
+					stream.WriteLine(commands[i]);
 				}
 
-				process.WaitForExit(1000 * 60 * 5);
-				return process.ExitCode;
+				stream.Close();
 			}
-		}
 
-		public static int RunProcess(string filePath, string workingDirectory = "", params string[] commands)
+			process.WaitForExit(1000 * 60 * 5);
+			return process.ExitCode;
+		}
+	}
+
+	public static int RunProcess(string filePath, string workingDirectory = "", params string[] commands)
+	{
+		using (var process = new Process
 		{
-			using (var process = new Process
+			EnableRaisingEvents = true,
+			StartInfo =
 			{
-				EnableRaisingEvents = true,
-				StartInfo =
-				{
-					FileName = filePath,
-					UseShellExecute = false,
-					RedirectStandardInput = true,
-					CreateNoWindow = true,
-					WindowStyle = ProcessWindowStyle.Hidden,
-					WorkingDirectory = workingDirectory
-				}
-			})
-			{
-				return RunProcess(process, commands);
+				FileName = filePath,
+				UseShellExecute = false,
+				RedirectStandardInput = true,
+				CreateNoWindow = true,
+				WindowStyle = ProcessWindowStyle.Hidden,
+				WorkingDirectory = workingDirectory
 			}
-		}
-
-		public static int RunCommandLine(string workingDirectory = "", params string[] commands)
+		})
 		{
-			return RunProcess(Path.Combine(Environment.SystemDirectory, "cmd.exe"), workingDirectory, commands);
+			return RunProcess(process, commands);
 		}
+	}
+
+	public static int RunCommandLine(string workingDirectory = "", params string[] commands)
+	{
+		return RunProcess(Path.Combine(Environment.SystemDirectory, "cmd.exe"), workingDirectory, commands);
 	}
 }

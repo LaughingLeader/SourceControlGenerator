@@ -5,50 +5,49 @@
 // environment: .NET 3.0
 // copyright  : (c) 2008-2012 by Itenso GmbH, Switzerland
 // --------------------------------------------------------------------------
-using System;
 using System.Windows;
 using System.Windows.Controls;
 
-namespace Itenso.Windows.Controls.ListViewLayout
+namespace Itenso.Windows.Controls.ListViewLayout;
+
+
+// ------------------------------------------------------------------------
+public abstract class LayoutColumn
 {
 
-	// ------------------------------------------------------------------------
-	public abstract class LayoutColumn
+	// ----------------------------------------------------------------------
+	protected static bool HasPropertyValue(GridViewColumn column, DependencyProperty dp)
 	{
-
-		// ----------------------------------------------------------------------
-		protected static bool HasPropertyValue( GridViewColumn column, DependencyProperty dp )
+		if (column == null)
 		{
-			if ( column == null )
-			{
-				throw new ArgumentNullException( "column" );
-			}
-			object value = column.ReadLocalValue( dp );
-			if ( value != null && value.GetType() == dp.PropertyType )
-			{
-				return true;
-			}
-
-			return false;
-		} // HasPropertyValue
-
-		// ----------------------------------------------------------------------
-		protected static double? GetColumnWidth( GridViewColumn column, DependencyProperty dp )
+			throw new ArgumentNullException("column");
+		}
+		var value = column.ReadLocalValue(dp);
+		if (value != null && value.GetType() == dp.PropertyType)
 		{
-			if ( column == null )
-			{
-				throw new ArgumentNullException( "column" );
-			}
-			object value = column.ReadLocalValue( dp );
-			if ( value != null && value.GetType() == dp.PropertyType )
-			{
-				return (double)value;
-			}
+			return true;
+		}
 
-			return null;
-		} // GetColumnWidth
+		return false;
+	} // HasPropertyValue
 
-	} // class LayoutColumn
+	// ----------------------------------------------------------------------
+	protected static double? GetColumnWidth(GridViewColumn column, DependencyProperty dp)
+	{
+		if (column == null)
+		{
+			throw new ArgumentNullException("column");
+		}
+		var value = column.ReadLocalValue(dp);
+		if (value != null && value.GetType() == dp.PropertyType)
+		{
+			return (double)value;
+		}
 
-} // namespace Itenso.Windows.Controls.ListViewLayout
+		return null;
+	} // GetColumnWidth
+
+} // class LayoutColumn
+
+// namespace Itenso.Windows.Controls.ListViewLayout
 // -- EOF -------------------------------------------------------------------

@@ -1,26 +1,20 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
+﻿using System.Windows;
 
-namespace SCG.Data.Proxy
+namespace SCG.Data.Proxy;
+
+public class BindingProxy<T> : Freezable
 {
-	public class BindingProxy<T> : Freezable
+	protected override Freezable CreateInstanceCore()
 	{
-		protected override Freezable CreateInstanceCore()
-		{
-			return new BindingProxy<T>();
-		}
-
-		public object Data
-		{
-			get { return (object)GetValue(DataProperty); }
-			set { SetValue(DataProperty, value); }
-		}
-
-		public static readonly DependencyProperty DataProperty =
-			DependencyProperty.Register("Data", typeof(T), typeof(BindingProxy<T>), new UIPropertyMetadata(null));
+		return new BindingProxy<T>();
 	}
+
+	public object Data
+	{
+		get { return (object)GetValue(DataProperty); }
+		set { SetValue(DataProperty, value); }
+	}
+
+	public static readonly DependencyProperty DataProperty =
+		DependencyProperty.Register("Data", typeof(T), typeof(BindingProxy<T>), new UIPropertyMetadata(null));
 }

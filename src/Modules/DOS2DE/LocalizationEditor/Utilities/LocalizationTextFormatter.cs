@@ -1,110 +1,105 @@
-﻿
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Text;
-using System.Text.RegularExpressions;
-using System.Windows;
+﻿using System.Text.RegularExpressions;
 using System.Windows.Documents;
 using System.Windows.Media;
 
 using Xceed.Wpf.Toolkit;
 
-namespace SCG.Modules.DOS2DE.LocalizationEditor.Utilities
+namespace SCG.Modules.DOS2DE.LocalizationEditor.Utilities;
+
+public struct LocaleLocalizationFontTextRange
 {
-	public struct LocaleLocalizationFontTextRange
+	public TextRange Range;
+	public Color Color;
+	public double Size;
+}
+
+public class LocalizationTextFormatter : ITextFormatter
+{
+	public string GetText(FlowDocument document)
 	{
-		public TextRange Range;
-		public Color Color;
-		public double Size;
+		return new TextRange(document.ContentStart, document.ContentEnd).Text;
 	}
 
-	public class LocalizationTextFormatter : ITextFormatter
+	private TextRange GetRange(TextPointer pointer, int startIndex, int length)
 	{
-		public string GetText(FlowDocument document)
+		var start = pointer.GetPositionAtOffset(startIndex);
+		var end = start.GetPositionAtOffset(length);
+		return new TextRange(start, end);
+	}
+
+	private const string pattern = @"<font\s*color='#([0-9A-Fa-f]{6})'.*?>(.*?)<\/font>";
+
+	private IEnumerable<LocaleLocalizationFontTextRange> GetAllFontRanges(FlowDocument document)
+	{
+		var ranges = new List<LocaleLocalizationFontTextRange>();
+
+		var pointer = document.ContentStart;
+		while (pointer != null)
 		{
-			return new TextRange(document.ContentStart, document.ContentEnd).Text;
-		}
-
-		private TextRange GetRange(TextPointer pointer, int startIndex, int length)
-		{
-			TextPointer start = pointer.GetPositionAtOffset(startIndex);
-			TextPointer end = start.GetPositionAtOffset(length);
-			return new TextRange(start, end);
-		}
-
-		private const string pattern = @"<font\s*color='#([0-9A-Fa-f]{6})'.*?>(.*?)<\/font>";
-
-		private IEnumerable<LocaleLocalizationFontTextRange> GetAllFontRanges(FlowDocument document)
-		{
-			var ranges = new List<LocaleLocalizationFontTextRange>();
-
-			TextPointer pointer = document.ContentStart;
-			while (pointer != null)
+			if (pointer.GetPointerContext(LogicalDirection.Forward) == TextPointerContext.Text)
 			{
-				if (pointer.GetPointerContext(LogicalDirection.Forward) == TextPointerContext.Text)
+				var textRun = pointer.GetTextInRun(LogicalDirection.Forward);
+				var matches = Regex.Matches(textRun, pattern, RegexOptions.IgnoreCase);
+				foreach (Match match in matches)
 				{
-					string textRun = pointer.GetTextInRun(LogicalDirection.Forward);
-					MatchCollection matches = Regex.Matches(textRun, pattern, RegexOptions.IgnoreCase);
-					foreach (Match match in matches)
+					var hexColor = match.Groups[1];
+					var content = match.Groups[2];
+
+					//var startHex = hexColor.Index;
+					//var endHex = hexColor.Length;
+					var startContent = content.Index;
+					var endContent = content.Length;
+
+					var color = (Color)ColorConverter.ConvertFromString("#FF" + hexColor.Value);
+
+					//ranges.Add(new LocaleLocalizationFontTextRange()
+					//{
+					//	Range = GetRange(pointer, startHex, endHex),
+					//	Color = color
+					//});
+
+					ranges.Add(new LocaleLocalizationFontTextRange()
 					{
-						var hexColor = match.Groups[1];
-						var content = match.Groups[2];
-
-						//var startHex = hexColor.Index;
-						//var endHex = hexColor.Length;
-						var startContent = content.Index;
-						var endContent = content.Length;
-
-						var color = (Color)ColorConverter.ConvertFromString("#FF" + hexColor.Value);
-
-						//ranges.Add(new LocaleLocalizationFontTextRange()
-						//{
-						//	Range = GetRange(pointer, startHex, endHex),
-						//	Color = color
-						//});
-
-						ranges.Add(new LocaleLocalizationFontTextRange()
-						{
-							Range = GetRange(pointer, startContent, endContent),
-							Color = color
-						});
-					}
+						Range = GetRange(pointer, startContent, endContent),
+						Color = color
+					});
 				}
-
-				pointer = pointer.GetNextContextPosition(LogicalDirection.Forward);
 			}
 
-			return ranges;
+			pointer = pointer.GetNextContextPosition(LogicalDirection.Forward);
 		}
 
-		public void SetText(FlowDocument document, string text)
+		return ranges;
+	}
+
+	public void SetText(FlowDocument document, string text)
+	{
+		try
 		{
-			try
+			//if the text is null/empty clear the contents of the RTB. If you were to pass a null/empty string
+			//to the TextRange.Load method an exception would occur.
+
+			if (string.IsNullOrEmpty(text))
 			{
-				//if the text is null/empty clear the contents of the RTB. If you were to pass a null/empty string
-				//to the TextRange.Load method an exception would occur.
-
-				if (string.IsNullOrEmpty(text))
+				document.Blocks.Clear();
+			}
+			else
+			{
+				var tr = new TextRange(document.ContentStart, document.ContentEnd)
 				{
-					document.Blocks.Clear();
-				}
-				else
-				{
-					TextRange tr = new TextRange(document.ContentStart, document.ContentEnd);
-					tr.Text = text;
+					Text = text
+				};
 
-					var ranges = GetAllFontRanges(document);
-					foreach (var range in ranges)
-					{
-						range.Range.ApplyPropertyValue(TextElement.ForegroundProperty, new SolidColorBrush(range.Color));
-					}
+				var ranges = GetAllFontRanges(document);
+				foreach (var range in ranges)
+				{
+					range.Range.ApplyPropertyValue(TextElement.ForegroundProperty, new SolidColorBrush(range.Color));
 				}
 			}
-			catch (NullReferenceException ex)
-			{
-				Log.Here().Error($"Error formatting text: {ex.ToString()}");
-			}
+		}
+		catch (NullReferenceException ex)
+		{
+			Log.Here().Error($"Error formatting text: {ex.ToString()}");
 		}
 	}
 }

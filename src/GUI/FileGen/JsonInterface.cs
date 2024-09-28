@@ -1,53 +1,46 @@
-﻿using System;
-using System.Collections.Generic;
-using Alphaleonis.Win32.Filesystem;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 
-namespace SCG.FileGen
+namespace SCG.FileGen;
+
+public static class JsonInterface
 {
-	public static class JsonInterface
+	public static T DeserializeObject<T>(string path)
 	{
-		public static T DeserializeObject<T>(string path)
+		try
 		{
-			try
-			{
-				return JsonConvert.DeserializeObject<T>(File.ReadAllText(path));
-			}
-			catch(Exception ex)
-			{
-				Log.Here().Error($"Error deserializing json ({path}):\n{ex.ToString()}");
-			}
-			return default(T);
+			return JsonConvert.DeserializeObject<T>(File.ReadAllText(path));
 		}
+		catch (Exception ex)
+		{
+			Log.Here().Error($"Error deserializing json ({path}):\n{ex.ToString()}");
+		}
+		return default;
+	}
 
-		public static async Task<T> DeserializeObjectAsync<T>(string path)
+	public static async Task<T> DeserializeObjectAsync<T>(string path)
+	{
+		try
 		{
-			try
-			{
-				string contents = await FileCommands.ReadFileAsync(path);
-				return JsonConvert.DeserializeObject<T>(contents);
-			}
-			catch (Exception ex)
-			{
-				Log.Here().Error($"Error deserializing json ({path}):\n{ex.ToString()}");
-			}
-			return default(T);
+			var contents = await FileCommands.ReadFileAsync(path);
+			return JsonConvert.DeserializeObject<T>(contents);
 		}
+		catch (Exception ex)
+		{
+			Log.Here().Error($"Error deserializing json ({path}):\n{ex.ToString()}");
+		}
+		return default;
+	}
 
-		public static string SerializeObject(object o, bool indented = true)
+	public static string SerializeObject(object o, bool indented = true)
+	{
+		try
 		{
-			try
-			{
-				return JsonConvert.SerializeObject(o, indented ? Formatting.Indented : Formatting.None);
-			}
-			catch (Exception ex)
-			{
-				Log.Here().Error($"Error serializing json:\n{ex.ToString()}");
-			}
-			return "";
+			return JsonConvert.SerializeObject(o, indented ? Formatting.Indented : Formatting.None);
 		}
+		catch (Exception ex)
+		{
+			Log.Here().Error($"Error serializing json:\n{ex.ToString()}");
+		}
+		return "";
 	}
 }

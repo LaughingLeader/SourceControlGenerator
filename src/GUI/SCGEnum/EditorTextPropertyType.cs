@@ -1,16 +1,16 @@
-﻿using System.ComponentModel;
-using SCG.Converters;
+﻿using SCG.Converters;
 
-namespace SCG.SCGEnum
+using System.ComponentModel;
+
+namespace SCG.SCGEnum;
+
+[TypeConverter(typeof(EnumDescriptionConverter))]
+public enum EditorTextPropertyType
 {
-	[TypeConverter(typeof(EnumDescriptionConverter))]
-	public enum EditorTextPropertyType
-	{
-		[Description("String")]
-		String,
-		[Description("File")]
-		File,
-		[Description("Resource")]
-		Resource
-	}
+	[Description("String")]
+	String,
+	[Description("File")]
+	File,
+	[Description("Resource")]
+	Resource
 }

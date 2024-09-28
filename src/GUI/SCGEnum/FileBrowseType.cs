@@ -1,9 +1,8 @@
-﻿namespace SCG.SCGEnum
+﻿namespace SCG.SCGEnum;
+
+public enum FileBrowseType
 {
-	public enum FileBrowseType
-	{
-		File,
-		Directory,
-		Disabled
-	}
+	File,
+	Directory,
+	Disabled
 }

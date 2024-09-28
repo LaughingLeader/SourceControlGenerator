@@ -1,80 +1,72 @@
-﻿using System;
-using System.Collections.Generic;
-using Alphaleonis.Win32.Filesystem;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using SCG.Core;
-using SCG.SCGEnum;
-using ReactiveUI;
+﻿using SCG.SCGEnum;
+
 using System.Runtime.Serialization;
 
-namespace SCG.Data
+namespace SCG.Data;
+
+[DataContract]
+public class AppSettingsData : ReactiveObject
 {
-	[DataContract]
-	public class AppSettingsData : ReactiveObject
+	private string lastModule;
+
+	[DataMember]
+	public string LastModule
 	{
-		private string lastModule;
-
-		[DataMember]
-		public string LastModule
+		get { return lastModule; }
+		set
 		{
-			get { return lastModule; }
-			set
-			{
-				this.RaiseAndSetIfChanged(ref lastModule, value);
-			}
+			this.RaiseAndSetIfChanged(ref lastModule, value);
 		}
+	}
 
-		private string lastLogPath;
+	private string lastLogPath;
 
-		[DataMember]
-		public string LastLogPath
+	[DataMember]
+	public string LastLogPath
+	{
+		get { return lastLogPath; }
+		set
 		{
-			get { return lastLogPath; }
-			set
-			{
-				this.RaiseAndSetIfChanged(ref lastLogPath, value);
-			}
+			this.RaiseAndSetIfChanged(ref lastLogPath, value);
 		}
+	}
 
-		private string gitInstallPath;
+	private string gitInstallPath;
 
-		[VisibleToView("Git Install Directory", FileBrowseType.Directory)]
-		[DataMember]
-		public string GitInstallPath
+	[VisibleToView("Git Install Directory", FileBrowseType.Directory)]
+	[DataMember]
+	public string GitInstallPath
+	{
+		get { return gitInstallPath; }
+		set
 		{
-			get { return gitInstallPath; }
-			set
-			{
-				this.RaiseAndSetIfChanged(ref gitInstallPath, value);
-			}
+			this.RaiseAndSetIfChanged(ref gitInstallPath, value);
 		}
+	}
 #if Debug
-		private bool logDisabled = true;
+	private bool logDisabled = true;
 #else
-		private bool logDisabled = false;
+	private bool logDisabled = false;
 #endif
 
-		[VisibleToView("Log Enabled")]
-		[DataMember]
-		public bool LogDisabled
+	[VisibleToView("Log Enabled")]
+	[DataMember]
+	public bool LogDisabled
+	{
+		get => logDisabled;
+		set
 		{
-			get => logDisabled;
-			set
-			{
-				this.RaiseAndSetIfChanged(ref logDisabled, value);
-				Log.Enabled = !LogDisabled;
-			}
+			this.RaiseAndSetIfChanged(ref logDisabled, value);
+			Log.Enabled = !LogDisabled;
 		}
+	}
 
-		private long lastUpdateCheck = -1;
+	private long lastUpdateCheck = -1;
 
-		[DataMember]
-		public long LastUpdateCheck
-		{
-			get => lastUpdateCheck;
-			set { this.RaiseAndSetIfChanged(ref lastUpdateCheck, value); }
-		}
+	[DataMember]
+	public long LastUpdateCheck
+	{
+		get => lastUpdateCheck;
+		set { this.RaiseAndSetIfChanged(ref lastUpdateCheck, value); }
 	}
 }

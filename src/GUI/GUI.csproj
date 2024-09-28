@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
-		<TargetFramework>net48</TargetFramework>
+		<TargetFramework>net8.0-windows10.0.19041.0</TargetFramework>
 		<LangVersion>latest</LangVersion>
 		<UseWPF>true</UseWPF>
 
@@ -23,7 +23,7 @@
 		<AssemblyVersion>1.7.10.1</AssemblyVersion>
 		<AssemblyFileVersion>1.7.10.1</AssemblyFileVersion>
 
-		<ApplicationIcon>SourceControlGenerator_Icon.ico</ApplicationIcon>
+		<ApplicationIcon>AppIcon.ico</ApplicationIcon>
 		<StartupObject>SCG.App</StartupObject>
 	</PropertyGroup>
 
@@ -37,22 +37,23 @@
 		<Using Include="System.Reactive.Linq" />
 		<Using Include="System.Threading" />
 		<Using Include="System.Threading.Tasks" />
+		<Using Include="System.IO" />
 		<Using Include="ReactiveUI.ReactiveCommand&lt;System.Reactive.Unit, System.Reactive.Unit&gt;" Alias="RxCommandUnit" />
 	</ItemGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="..\SCG.Utilities\SCG.Utilities.csproj" />
-		<ProjectReference Include="..\SCG.MarkdownConverter\SCG.MarkdownConverter.csproj" />
+		<ProjectReference Include="..\Utilities\Utilities.csproj" />
+		<ProjectReference Include="..\MarkdownConverter\MarkdownConverter.csproj" />
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="AlphaFS" Version="2.2.6" />
 		<PackageReference Include="ControlzEx" Version="6.0.0" />
 		<PackageReference Include="ReactiveUI" Version="20.1.63" />
 		<PackageReference Include="ReactiveUI.Fody" Version="19.5.41" />
 		<PackageReference Include="ReactiveHistory" Version="0.10.7" />
 		<PackageReference Include="ReactiveUI.Events.WPF" Version="15.1.1" />
 		<PackageReference Include="ReactiveUI.WPF" Version="20.1.63" />
+		<PackageReference Include="Ookii.Dialogs.Wpf" Version="5.0.1" />
 		<PackageReference Include="SharpCompress" Version="0.38.0" />
 		<PackageReference Include="WriteableBitmapEx" Version="1.6.8" />
 		<PackageReference Include="Markdig" Version="0.37.0" />
@@ -64,10 +65,11 @@
 		<PackageReference Include="Autoupdater.NET.Official" Version="1.9.2" />
 		<PackageReference Include="HtmlRenderer.Core" Version="1.5.1-beta1" />
 		<PackageReference Include="HtmlRenderer.WPF" Version="1.5.1-beta1" />
+		<PackageReference Include="MdXaml" Version="1.27.0" />
 	</ItemGroup>
 
 	<ItemGroup>
-		<Resource Include="Resources" />
+		<Resource Include="Resources\**" />
 	</ItemGroup>
 
 	<Target Name="AfterBuild">

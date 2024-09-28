@@ -1,177 +1,159 @@
-﻿using SCG.Core;
-using SCG.Data;
+﻿using SCG.Data.App;
 using SCG.Data.View;
 using SCG.FileGen;
-using System;
-using System.Collections.Generic;
+
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Globalization;
-using Alphaleonis.Win32.Filesystem;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
-using System.Windows.Threading;
-using ReactiveUI;
-using System.Reactive.Concurrency;
-using SCG.Data.App;
 
-namespace SCG.Windows
+namespace SCG.Windows;
+
+public class DebugWindowData : ReactiveObject
 {
-	public class DebugWindowData : ReactiveObject
+	private string backupFolderPath;
+
+	public string BackupFolderPath
 	{
-		private string backupFolderPath;
-
-		public string BackupFolderPath
+		get { return backupFolderPath; }
+		set
 		{
-			get { return backupFolderPath; }
-			set
-			{
-				this.RaiseAndSetIfChanged(ref backupFolderPath, value);
-				CanBackupFolder = FileCommands.IsValidDirectoryPath(backupFolderPath);
-			}
+			this.RaiseAndSetIfChanged(ref backupFolderPath, value);
+			CanBackupFolder = FileCommands.IsValidDirectoryPath(backupFolderPath);
 		}
-
-		private string totalBackupTimeText = "Total Backup Time: 00.00";
-
-		public string TotalBackupTimeText
-		{
-			get { return totalBackupTimeText; }
-			set
-			{
-				this.RaiseAndSetIfChanged(ref totalBackupTimeText, value);
-			}
-		}
-
-		private bool canBackupFolder = false;
-
-		public bool CanBackupFolder
-		{
-			get { return canBackupFolder; }
-			set
-			{
-				this.RaiseAndSetIfChanged(ref canBackupFolder, value);
-			}
-		}
-
-		private bool isBackingUp = false;
-
-		public bool IsBackingUp
-		{
-			get { return isBackingUp; }
-			set
-			{
-				this.RaiseAndSetIfChanged(ref isBackingUp, value);
-
-				if (IsBackingUp)
-				{
-					CanBackupFolder = false;
-				}
-			}
-		}
-
 	}
-	/// <summary>
-	/// Interaction logic for DebugWindow.xaml
-	/// </summary>
-	public partial class DebugWindow : Window
+
+	private string totalBackupTimeText = "Total Backup Time: 00.00";
+
+	public string TotalBackupTimeText
 	{
-		private DebugWindowData debugWindowData;
-
-		public string BackupOutputPath { get; set; }
-
-		public Action OnClose { get; set; }
-
-		public CancellationTokenSource Token { get; set; }
-
-		public DebugWindow()
+		get { return totalBackupTimeText; }
+		set
 		{
-			InitializeComponent();
-
-			debugWindowData = new DebugWindowData();
-			DataContext = debugWindowData;
-
-			Token = new CancellationTokenSource();
-
-			Closing += DebugWindow_Closing;
+			this.RaiseAndSetIfChanged(ref totalBackupTimeText, value);
 		}
+	}
 
-		private void DebugWindow_Closing(object sender, CancelEventArgs e)
+	private bool canBackupFolder = false;
+
+	public bool CanBackupFolder
+	{
+		get { return canBackupFolder; }
+		set
 		{
-			OnClose?.Invoke();
+			this.RaiseAndSetIfChanged(ref canBackupFolder, value);
 		}
+	}
 
-		public void Init(MenuData menuData, Action onClose)
-		{
-			//InputBindings.AddRange(menuData.Shortcuts.Where(s => s.InputBinding != null).Select(s => s.InputBinding).ToList());
-			menuData.RegisterInputBinding(this.InputBindings);
-			OnClose = onClose;
-		}
+	private bool isBackingUp = false;
 
-		private void BackupButton_Click(object sender, RoutedEventArgs e)
+	public bool IsBackingUp
+	{
+		get { return isBackingUp; }
+		set
 		{
-			if (!debugWindowData.IsBackingUp)
+			this.RaiseAndSetIfChanged(ref isBackingUp, value);
+
+			if (IsBackingUp)
 			{
-				debugWindowData.IsBackingUp = true;
-
-				if (Token == null || (Token != null && Token.IsCancellationRequested)) Token = new CancellationTokenSource();
-
-				RxApp.MainThreadScheduler.Schedule(() => {
-					StartBackup();
-				});
+				CanBackupFolder = false;
 			}
 		}
+	}
 
-		private void CancelButton_Click(object sender, RoutedEventArgs e)
+}
+/// <summary>
+/// Interaction logic for DebugWindow.xaml
+/// </summary>
+public partial class DebugWindow : Window
+{
+	private readonly DebugWindowData debugWindowData;
+
+	public string BackupOutputPath { get; set; }
+
+	public Action OnClose { get; set; }
+
+	public CancellationTokenSource Token { get; set; }
+
+	public DebugWindow()
+	{
+		InitializeComponent();
+
+		debugWindowData = new DebugWindowData();
+		DataContext = debugWindowData;
+
+		Token = new CancellationTokenSource();
+
+		Closing += DebugWindow_Closing;
+	}
+
+	private void DebugWindow_Closing(object sender, CancelEventArgs e)
+	{
+		OnClose?.Invoke();
+	}
+
+	public void Init(MenuData menuData, Action onClose)
+	{
+		//InputBindings.AddRange(menuData.Shortcuts.Where(s => s.InputBinding != null).Select(s => s.InputBinding).ToList());
+		menuData.RegisterInputBinding(this.InputBindings);
+		OnClose = onClose;
+	}
+
+	private void BackupButton_Click(object sender, RoutedEventArgs e)
+	{
+		if (!debugWindowData.IsBackingUp)
 		{
-			if(debugWindowData.IsBackingUp)
+			debugWindowData.IsBackingUp = true;
+
+			if (Token == null || (Token != null && Token.IsCancellationRequested)) Token = new CancellationTokenSource();
+
+			RxApp.MainThreadScheduler.Schedule(() =>
 			{
-				Token.Cancel();
-			}
+				StartBackup();
+			});
 		}
+	}
 
-		private async void StartBackup()
+	private void CancelButton_Click(object sender, RoutedEventArgs e)
+	{
+		if (debugWindowData.IsBackingUp)
 		{
-			Log.Here().Important("Starting backup test...");
-
-			debugWindowData.TotalBackupTimeText = $"Total Backup Time:";
-
-			Stopwatch timer = new Stopwatch();
-			timer.Start();
-
-			var result = await BackupTest();
-
-			timer.Stop();
-
-			string elapsedTime = String.Format("{0:hh\\:mm\\:ss}", timer.Elapsed);
-
-			debugWindowData.TotalBackupTimeText = $"Total Backup Time: {elapsedTime} | {result.ToString()}";
-
-			debugWindowData.IsBackingUp = false;
-			debugWindowData.CanBackupFolder = FileCommands.IsValidDirectoryPath(debugWindowData.BackupFolderPath);
+			Token.Cancel();
 		}
+	}
 
-		private async Task<FileCreationTaskResult> BackupTest()
+	private async void StartBackup()
+	{
+		Log.Here().Important("Starting backup test...");
+
+		debugWindowData.TotalBackupTimeText = $"Total Backup Time:";
+
+		var timer = new Stopwatch();
+		timer.Start();
+
+		var result = await BackupTest();
+
+		timer.Stop();
+
+		var elapsedTime = String.Format("{0:hh\\:mm\\:ss}", timer.Elapsed);
+
+		debugWindowData.TotalBackupTimeText = $"Total Backup Time: {elapsedTime} | {result.ToString()}";
+
+		debugWindowData.IsBackingUp = false;
+		debugWindowData.CanBackupFolder = FileCommands.IsValidDirectoryPath(debugWindowData.BackupFolderPath);
+	}
+
+	private async Task<FileCreationTaskResult> BackupTest()
+	{
+		if (Directory.Exists(debugWindowData.BackupFolderPath))
 		{
-			if(Directory.Exists(debugWindowData.BackupFolderPath))
-			{
-				string sysFormat = CultureInfo.CurrentCulture.DateTimeFormat.ShortDatePattern.Replace("/", "-");
-				string archiveName = "DebugBackupTest_" + DateTime.Now.ToString(sysFormat + "_HH-mm-ss") + ".zip";
-				Directory.CreateDirectory("Debug");
-				string outputFilePath = @"Debug\" + archiveName;
-				return await BackupGenerator.CreateArchiveFromDirectory(debugWindowData.BackupFolderPath.Replace("/", "\\\\"), outputFilePath, true, Token.Token);
-			}
-
-			return FileCreationTaskResult.Error;
+			var sysFormat = CultureInfo.CurrentCulture.DateTimeFormat.ShortDatePattern.Replace("/", "-");
+			var archiveName = "DebugBackupTest_" + DateTime.Now.ToString(sysFormat + "_HH-mm-ss") + ".zip";
+			Directory.CreateDirectory("Debug");
+			var outputFilePath = @"Debug\" + archiveName;
+			return await BackupGenerator.CreateArchiveFromDirectory(debugWindowData.BackupFolderPath.Replace("/", "\\\\"), outputFilePath, true, Token.Token);
 		}
+
+		return FileCreationTaskResult.Error;
 	}
 }

@@ -1,95 +1,88 @@
-﻿using ReactiveUI;
-using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.ObjectModel;
 
-namespace SCG.Data.View
+namespace SCG.Data.View;
+
+public class MenuBarData : ReactiveObject
 {
-	public class MenuBarData : ReactiveObject
+	private MenuData fileMenu;
+
+	public MenuData File
 	{
-		private MenuData fileMenu;
-
-		public MenuData File
+		get { return fileMenu; }
+		set
 		{
-			get { return fileMenu; }
-			set
-			{
-				this.RaiseAndSetIfChanged(ref fileMenu, value);
-			}
+			this.RaiseAndSetIfChanged(ref fileMenu, value);
 		}
+	}
 
-		private MenuData optionsMenu;
+	private MenuData optionsMenu;
 
-		public MenuData Options
+	public MenuData Options
+	{
+		get { return optionsMenu; }
+		set
 		{
-			get { return optionsMenu; }
-			set
-			{
-				this.RaiseAndSetIfChanged(ref optionsMenu, value);
-			}
+			this.RaiseAndSetIfChanged(ref optionsMenu, value);
 		}
+	}
 
-		private MenuData toolsMenu;
+	private MenuData toolsMenu;
 
-		public MenuData Tools
+	public MenuData Tools
+	{
+		get { return toolsMenu; }
+		set
 		{
-			get { return toolsMenu; }
-			set
-			{
-				this.RaiseAndSetIfChanged(ref toolsMenu, value);
-			}
+			this.RaiseAndSetIfChanged(ref toolsMenu, value);
 		}
+	}
 
 
-		private MenuData helpMenu;
+	private MenuData helpMenu;
 
-		public MenuData Help
+	public MenuData Help
+	{
+		get { return helpMenu; }
+		set
 		{
-			get { return helpMenu; }
-			set
-			{
-				this.RaiseAndSetIfChanged(ref helpMenu, value);
-			}
+			this.RaiseAndSetIfChanged(ref helpMenu, value);
 		}
+	}
 
-		public ObservableCollection<MenuData> Menus { get; set; }
+	public ObservableCollection<MenuData> Menus { get; set; }
 
-		public void RemoveAllModuleMenus(string ModuleName)
+	public void RemoveAllModuleMenus(string ModuleName)
+	{
+		foreach (var menu in Menus)
 		{
-			foreach(var menu in Menus)
-			{
-				menu.MenuItems.RemoveAll(m => m.Module == ModuleName);
-			}
-			Log.Here().Activity($"Removed menus for module {ModuleName}.");
+			menu.MenuItems.RemoveAll(m => m.Module == ModuleName);
 		}
+		Log.Here().Activity($"Removed menus for module {ModuleName}.");
+	}
 
-		public MenuData FindByID(string ID)
+	public MenuData FindByID(string ID)
+	{
+		foreach (var menu in Menus)
 		{
-			foreach(var menu in Menus)
-			{
-				var match = menu.FindByID(ID);
-				if (match != null) return match;
-			}
-			return null;
+			var match = menu.FindByID(ID);
+			if (match != null) return match;
 		}
+		return null;
+	}
 
-		public MenuBarData()
-		{
-			File = new MenuData("Base.File", "File");
-			Options = new MenuData("Base.Options", "Options");
-			Tools = new MenuData("Base.Tools", "Tools");
-			Help = new MenuData("Base.Help", "Help");
+	public MenuBarData()
+	{
+		File = new MenuData("Base.File", "File");
+		Options = new MenuData("Base.Options", "Options");
+		Tools = new MenuData("Base.Tools", "Tools");
+		Help = new MenuData("Base.Help", "Help");
 
-			Menus = new ObservableCollection<MenuData>()
-			{
-				File,
-				Options,
-				Tools,
-				Help
-			};
-		}
+		Menus =
+		[
+			File,
+			Options,
+			Tools,
+			Help
+		];
 	}
 }

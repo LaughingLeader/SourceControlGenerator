@@ -1,75 +1,73 @@
-﻿using System;
-using System.Collections.Generic;
+﻿namespace SCG.Util.HelperUtil;
 
-namespace SCG.Util.HelperUtil
+public enum ImageType
 {
-	public enum ImageType
+	None = 0,
+	BMP = 0x4D42,
+	JPG = 0xD8FF,
+	GIF = 0x4947,
+	PCX = 0x050A,
+	PNG = 0x5089,
+	PSD = 0x4238,
+	RAS = 0xA659,
+	SGI = 0xDA01,
+	TIFF = 0x4949
+}
+
+public class ImageHelper
+{
+	private readonly Dictionary<int, ImageType> _imageTag;
+	public ImageHelper()
 	{
-		None = 0,
-		BMP = 0x4D42,
-		JPG = 0xD8FF,
-		GIF = 0x4947,
-		PCX = 0x050A,
-		PNG = 0x5089,
-		PSD = 0x4238,
-		RAS = 0xA659,
-		SGI = 0xDA01,
-		TIFF = 0x4949
+		_imageTag = new Dictionary<int, ImageType>
+		{
+			[(int)ImageType.BMP] = ImageType.BMP,
+			[(int)ImageType.JPG] = ImageType.JPG,
+			[(int)ImageType.GIF] = ImageType.GIF,
+			[(int)ImageType.PCX] = ImageType.PCX,
+			[(int)ImageType.PNG] = ImageType.PNG,
+			[(int)ImageType.PSD] = ImageType.PSD,
+			[(int)ImageType.RAS] = ImageType.RAS,
+			[(int)ImageType.SGI] = ImageType.SGI,
+			[(int)ImageType.TIFF] = ImageType.TIFF
+		};
 	}
 
-	public class ImageHelper
+	public ImageType CheckImageType(string path)
 	{
-		private Dictionary<int, ImageType> _imageTag;
-		public ImageHelper()
+		var buf = new byte[2];
+		try
 		{
-			_imageTag = new Dictionary<int, ImageType>();
-			_imageTag[(int)ImageType.BMP] = ImageType.BMP;
-			_imageTag[(int)ImageType.JPG] = ImageType.JPG;
-			_imageTag[(int)ImageType.GIF] = ImageType.GIF;
-			_imageTag[(int)ImageType.PCX] = ImageType.PCX;
-			_imageTag[(int)ImageType.PNG] = ImageType.PNG;
-			_imageTag[(int)ImageType.PSD] = ImageType.PSD;
-			_imageTag[(int)ImageType.RAS] = ImageType.RAS;
-			_imageTag[(int)ImageType.SGI] = ImageType.SGI;
-			_imageTag[(int)ImageType.TIFF] = ImageType.TIFF;
-		}
-
-		public ImageType CheckImageType(string path)
-		{
-			byte[] buf = new byte[2];
-			try
+			using (var sr = new System.IO.StreamReader(path))
 			{
-				using (System.IO.StreamReader sr = new System.IO.StreamReader(path))
+				var i = sr.BaseStream.Read(buf, 0, buf.Length);
+				if (i != buf.Length)
 				{
-					int i = sr.BaseStream.Read(buf, 0, buf.Length);
-					if (i != buf.Length)
-					{
-						return ImageType.None;
-					}
+					return ImageType.None;
 				}
 			}
-			catch (Exception ex)
-			{
-				Log.Here().Error($"Error reading image: {ex.ToString()}");
-				return ImageType.None;
-			}
-			return CheckImageType(buf);
 		}
-
-		public ImageType CheckImageType(byte[] buf)
+		catch (Exception ex)
 		{
-			if (buf == null || buf.Length < 2)
-			{
-				return ImageType.None;
-			}
-
-			int key = (buf[1] << 8) + buf[0];
-			ImageType s;
-			if (_imageTag.TryGetValue(key, out s))
-			{
-				return s;
-			}
+			Log.Here().Error($"Error reading image: {ex.ToString()}");
 			return ImageType.None;
 		}
+		return CheckImageType(buf);
+	}
+
+	public ImageType CheckImageType(byte[] buf)
+	{
+		if (buf == null || buf.Length < 2)
+		{
+			return ImageType.None;
+		}
+
+		var key = (buf[1] << 8) + buf[0];
+		ImageType s;
+		if (_imageTag.TryGetValue(key, out s))
+		{
+			return s;
+		}
+		return ImageType.None;
 	}
 }

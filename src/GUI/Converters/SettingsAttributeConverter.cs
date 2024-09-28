@@ -1,95 +1,88 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Data;
-using SCG.Data;
+﻿using SCG.Data;
 using SCG.Data.View;
 using SCG.SCGEnum;
 
-namespace SCG.Converters
+using System.Globalization;
+using System.Windows.Data;
+
+namespace SCG.Converters;
+
+public class SettingsAttributeConverter : IValueConverter
 {
-	public class SettingsAttributeConverter : IValueConverter
+	public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
 	{
-		public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+		List<SettingsEntryData> settingsList = [];
+
+		if (value != null)
 		{
-			List<SettingsEntryData> settingsList = new List<SettingsEntryData>();
-
-			if (value != null)
+			try
 			{
-				try
+				var valType = value.GetType();
+				var propInfo = valType.GetProperties();
+
+				foreach (var prop in propInfo)
 				{
-					Type valType = value.GetType();
-					var propInfo = valType.GetProperties();
+					var attributes = Attribute.GetCustomAttributes(prop, typeof(VisibleToViewAttribute), false);
 
-					foreach(PropertyInfo prop in propInfo)
+					if (attributes != null)
 					{
-						var attributes = Attribute.GetCustomAttributes(prop, typeof(VisibleToViewAttribute), false);
-
-						if (attributes != null)
+						foreach (var attribute in attributes)
 						{
-							foreach (var attribute in attributes)
+							if (attribute != null && attribute is VisibleToViewAttribute viewAttribute)
 							{
-								if (attribute != null && attribute is VisibleToViewAttribute viewAttribute)
+								if (viewAttribute.Visible)
 								{
-									if(viewAttribute.Visible)
+									settingsList.Add(new SettingsEntryData()
 									{
-										settingsList.Add(new SettingsEntryData()
-										{
-											Name = viewAttribute.Name,
-											BrowseType = viewAttribute.FileBrowseType,
-											ViewType = viewAttribute.ViewType,
-											Source = value,
-											SourceProperty = prop
-										});
-										//Log.Here().Important("Adding attribute: {0} {1} {2}", viewAttribute.Name, viewAttribute.FileBrowseType, viewAttribute.ViewType);
-									}
+										Name = viewAttribute.Name,
+										BrowseType = viewAttribute.FileBrowseType,
+										ViewType = viewAttribute.ViewType,
+										Source = value,
+										SourceProperty = prop
+									});
+									//Log.Here().Important("Adding attribute: {0} {1} {2}", viewAttribute.Name, viewAttribute.FileBrowseType, viewAttribute.ViewType);
 								}
-								else
-								{
-									Log.Here().Error("Problem adding attribute: Casting to VisibleToViewAttribute failed.");
-								}
-
 							}
-						}
-						else
-						{
-							Log.Here().Error($"Problem reading attributes from settings class: {value.GetType()} | {attributes.Count()}");
+							else
+							{
+								Log.Here().Error("Problem adding attribute: Casting to VisibleToViewAttribute failed.");
+							}
+
 						}
 					}
+					else
+					{
+						Log.Here().Error($"Problem reading attributes from settings class: {value.GetType()} | {attributes.Count()}");
+					}
 				}
-				catch(Exception ex)
-				{
-					Log.Here().Error($"Error parsing attributes by reflection: {ex.ToString()}");
-				}
 			}
-			else
+			catch (Exception ex)
 			{
-				Log.Here().Error("Converter value is null!");
+				Log.Here().Error($"Error parsing attributes by reflection: {ex.ToString()}");
 			}
-
-			if(settingsList.Count <= 0)
-			{
-				settingsList.Add(new SettingsEntryData()
-				{
-					Name = "Test",
-					BrowseType = FileBrowseType.Disabled,
-					ViewType = SettingsViewPropertyType.Text,
-					Source = null,
-					SourceProperty = null
-				});
-			}
-
-			return settingsList;
 		}
-
-		public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+		else
 		{
-			throw new NotImplementedException();
+			Log.Here().Error("Converter value is null!");
 		}
+
+		if (settingsList.Count <= 0)
+		{
+			settingsList.Add(new SettingsEntryData()
+			{
+				Name = "Test",
+				BrowseType = FileBrowseType.Disabled,
+				ViewType = SettingsViewPropertyType.Text,
+				Source = null,
+				SourceProperty = null
+			});
+		}
+
+		return settingsList;
+	}
+
+	public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+	{
+		throw new NotImplementedException();
 	}
 }

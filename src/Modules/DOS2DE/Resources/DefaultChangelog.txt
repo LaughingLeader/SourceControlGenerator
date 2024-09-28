@@ -1,4 +1,0 @@
-$ProjectName Changelog
-=======
-# $Version
-* Initial Release

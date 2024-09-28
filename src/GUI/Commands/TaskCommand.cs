@@ -1,62 +1,55 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Input;
+﻿using System.Windows;
 
-namespace SCG.Commands
+namespace SCG.Commands;
+
+public class TaskCommand : BaseCommand
 {
-	public class TaskCommand : BaseCommand
+	public Action<bool> TaskAction { get; set; }
+
+	public Window ParentWindow { get; set; }
+
+	public string TaskTitle { get; set; }
+
+	public string TaskInstructions { get; set; }
+
+	public string TaskContent { get; set; }
+
+	public bool TaskOpen { get; private set; } = false;
+
+	public override bool CanExecute(object parameter)
 	{
-		public Action<bool> TaskAction { get; set; }
+		return !TaskOpen && base.CanExecute(parameter);
+	}
 
-		public Window ParentWindow { get; set; }
+	public override void Execute(object parameter)
+	{
+		TaskOpen = true;
+		FileCommands.OpenConfirmationDialog(ParentWindow, TaskTitle, TaskInstructions, TaskContent, OnTaskDone);
+		RaiseCanExecuteChanged();
+	}
 
-		public string TaskTitle { get; set; }
+	private void OnTaskDone(bool param)
+	{
+		TaskOpen = false;
+		TaskAction?.Invoke(param);
+		RaiseCanExecuteChanged();
+	}
 
-		public string TaskInstructions { get; set; }
+	public TaskCommand(Action<bool> taskAction, Window parentWindow = null, string taskTitle = "", string taskInstructions = "", string taskContent = "")
+	{
+		TaskAction = taskAction;
 
-		public string TaskContent { get; set; }
+		TaskTitle = taskTitle;
+		TaskInstructions = taskInstructions;
+		TaskContent = taskContent;
 
-		public bool TaskOpen { get; private set; } = false;
-
-		public override bool CanExecute(object parameter)
+		if (parentWindow == null)
 		{
-			return !TaskOpen && base.CanExecute(parameter);
+			ParentWindow = App.Current.MainWindow;
 		}
-
-		public override void Execute(object parameter)
+		else
 		{
-			TaskOpen = true;
-			FileCommands.OpenConfirmationDialog(ParentWindow, TaskTitle, TaskInstructions, TaskContent, OnTaskDone);
-			RaiseCanExecuteChanged();
-		}
-
-		private void OnTaskDone(bool param)
-		{
-			TaskOpen = false;
-			TaskAction?.Invoke(param);
-			RaiseCanExecuteChanged();
-		}
-
-		public TaskCommand(Action<bool> taskAction, Window parentWindow = null, string taskTitle = "", string taskInstructions = "", string taskContent = "")
-		{
-			TaskAction = taskAction;
-
-			TaskTitle = taskTitle;
-			TaskInstructions = taskInstructions;
-			TaskContent = taskContent;
-
-			if(parentWindow == null)
-			{
-				ParentWindow = App.Current.MainWindow;
-			}
-			else
-			{
-				ParentWindow = parentWindow;
-			}
+			ParentWindow = parentWindow;
 		}
 	}
 }
