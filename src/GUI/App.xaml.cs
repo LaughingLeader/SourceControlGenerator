@@ -11,9 +11,19 @@ namespace SCG;
 /// </summary>
 public partial class App : Application
 {
+	public SplashScreen? Splash { get; set; }
+
 	protected override void OnStartup(StartupEventArgs e)
 	{
 		base.OnStartup(e);
+
+		if (Splash != null)
+		{
+			var splashFade = new Thread(() =>
+			{
+				Splash.Close(TimeSpan.FromSeconds(1));
+			});
+		}
 	}
 
 	public static KeyConverter KeyConverter { get; private set; } = new KeyConverter();
@@ -25,11 +35,6 @@ public partial class App : Application
 		ThemeController.Init(this);
 		SCG.Helpers.Init();
 		FileCommands.Init();
-	}
-
-	private void Application_Startup(object sender, StartupEventArgs e)
-	{
-
 	}
 
 	/*
