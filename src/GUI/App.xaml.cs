@@ -33,6 +33,8 @@ public partial class App : Application
 	public App()
 	{
 		SplatRegistrations.RegisterLazySingleton<FileCacheService>();
+		SplatRegistrations.RegisterLazySingleton<IEnvironmentService, EnvironmentService>();
+		SplatRegistrations.SetupIOC();
 
 		RxApp.DefaultExceptionHandler = new ReactionObservableExceptionHandler();
 		ThemeController.Init(this);

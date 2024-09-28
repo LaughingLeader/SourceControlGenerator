@@ -473,9 +473,9 @@ public class ModProjectData : ReactiveObject, IProjectData, IDisposable
 				{
 					Log.Here().Error($"Project directory not found for {ModuleInfo.Name} at {Path.Combine(projectsFolderPath, ProjectName)} and {projectDirectory}.");
 					Log.Here().Important($"Checking for meta.lsx files in '{projectsFolderPath}'.");
-					var projectMetaFiles = Directory.EnumerateFiles(projectsFolderPath, "meta.lsx", DefaultResources.RecursiveOptions);
+					var projectMetaFiles = Directory.EnumerateFiles(projectsFolderPath, "meta.lsx", DefaultResources.RecursiveOptions).ToList();
 
-					if (projectMetaFiles.Count() > 0)
+					if (projectMetaFiles.Count > 0)
 					{
 						var regex = new Regex("^.*Module.*value=\"([^\"]+)\".* $", RegexOptions.IgnoreCase | RegexOptions.Multiline);
 

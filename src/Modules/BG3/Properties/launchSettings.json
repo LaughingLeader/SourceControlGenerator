@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "SCG": {
+      "commandName": "Executable",
+      "executablePath": "$(SolutionDir)\\bin\\$(Configuration)\\SourceControlGenerator.exe",
+      "workingDirectory": "$(SolutionDir)\\bin\\$(Configuration)\\",
+      "nativeDebugging": false
+    }
+  }
+}

@@ -1,22 +1,20 @@
 ﻿using LSLib.LS;
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Media.Imaging;
 
 namespace SCG.BG3.Models;
-public class ModProject : ReactiveObject
+public class ProjectData : ReactiveObject
 {
+	[Reactive] public string? UUID { get; set; }
+	[Reactive] public string? Module { get; set; }
+	[Reactive] public string? Name { get; set; }
+	[Reactive] public string? GameProject { get; set; }
+
 	[Reactive] public string? ProjectMetaFilePath { get; set; }
 	[Reactive] public string? ThumbnailFilePath { get; set; }
 	[Reactive] public string? ModMetaFilePath { get; set; }
+	[Reactive] public ModuleData? Mod { get; set; }
 
-	[Reactive] public string? ProjectGUID { get; set; }
-	[Reactive] public string? ModuleGUID { get; set; }
-	[Reactive] public string? ProjectName { get; set; }
 
 	[Reactive] public BitmapImage? Thumbnail { get; private set; }
 
@@ -29,16 +27,19 @@ public class ModProject : ReactiveObject
 		using var fs = new FileStream(ProjectMetaFilePath, FileMode.Open, FileAccess.Read, FileShare.Read, 4096, true);
 		if(fs != null)
 		{
-			await fs.ReadAsync(new byte[fs.Length], 0, (int)fs.Length, token);
+			var result = new byte[fs.Length];
+			await fs.ReadAsync(result.AsMemory(0, (int)fs.Length), token);
 			fs.Position = 0;
 			using var reader = new LSXReader(fs);
 			reader.SerializationSettings.DefaultByteSwapGuids = true;
 			var resource = reader.Read();
-			if(resource != null && resource.TryGetNodeById("root", out var rootNode))
+
+			if(resource != null && resource.Regions.TryGetValue("MetaData", out var rootNode))
 			{
-				ProjectGUID = rootNode.GetNodeValueById("UUID");
-				ProjectName = rootNode.GetNodeValueById("Name");
-				ModuleGUID = rootNode.GetNodeValueById("Module");
+				UUID = rootNode.GetAttributeValue(nameof(UUID));
+				Name = rootNode.GetAttributeValue(nameof(Name));
+				Module = rootNode.GetAttributeValue(nameof(Module));
+				GameProject = rootNode.GetAttributeValue(nameof(GameProject));
 
 				var projectFolder = Path.GetDirectoryName(ProjectMetaFilePath)!;
 
@@ -52,9 +53,9 @@ public class ModProject : ReactiveObject
 		}
 	}
 
-	public static async Task<ModProject> FromProjectMetaAsync(string path, CancellationToken token)
+	public static async Task<ProjectData> FromMetaAsync(string path, CancellationToken token)
 	{
-		var modProject = new ModProject()
+		var modProject = new ProjectData()
 		{
 			ProjectMetaFilePath = path
 		};
@@ -94,7 +95,7 @@ public class ModProject : ReactiveObject
 		}
 	}
 
-	public ModProject()
+	public ProjectData()
 	{
 		this.WhenAnyValue(x => x.ThumbnailFilePath).Subscribe(path =>
 		{

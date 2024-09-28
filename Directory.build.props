@@ -1,0 +1,8 @@
+<Project>
+	<PropertyGroup>
+		<Platforms>x64</Platforms>
+		<PlatformTarget>x64</PlatformTarget>
+		<SkipInvalidConfigurations>true</SkipInvalidConfigurations>
+		<Configurations>Debug;Release;Publish</Configurations>
+	</PropertyGroup>
+</Project>
