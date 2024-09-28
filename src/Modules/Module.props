@@ -11,13 +11,15 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="..\..\Utilities\Utilities.csproj" />
-		<ProjectReference Include="..\..\GUI\GUI.csproj" />
+		<ProjectReference Include="..\..\Utilities\Utilities.csproj" Private="False" />
+		<ProjectReference Include="..\..\GUI\GUI.csproj" Private="False" />
 	</ItemGroup>
 
 	<ItemGroup>
 		<PackageReference Include="Splat" Version="15.2.22" PrivateAssets="all" ExcludeAssets="runtime" />
 		<PackageReference Include="Splat.DependencyInjection.SourceGenerator" PrivateAssets="all" ExcludeAssets="runtime" IncludeAssets="runtime; build; native; contentfiles; analyzers; buildtransitive" Version="1.2.3" />
+		<PackageReference Include="ReactiveUI.Fody" Version="19.5.41" />
+		<PackageReference Include="ConfigureAwait.Fody" Version="3.3.2" PrivateAssets="all" />
 	</ItemGroup>
 
 	<Target Name="PostBuildCopyModule" AfterTargets="PostBuildEvent">
