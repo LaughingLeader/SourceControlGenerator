@@ -1,23 +1,20 @@
-﻿<local:HideWindowBase
-	x:Class="SCG.Windows.LogWindow"
-	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-	xmlns:behavior="clr-namespace:SCG.Controls.Behavior"
-	xmlns:c="clr-namespace:SCG.Controls"
-	xmlns:core="clr-namespace:SCG.Core"
-	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-	xmlns:data="clr-namespace:SCG.Data.View"
-	xmlns:local="clr-namespace:SCG.Windows"
-	xmlns:log="clr-namespace:SCG;assembly=SCG.Utilities"
-	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-	x:Name="LogWindowMain"
-	Title="Logs (Source Control Generator)"
-	Width="800"
-	Height="400"
-	d:DataContext="{d:DesignInstance Type=local:LogWindowDebugViewData,
-	                                 IsDesignTimeCreatable=True}"
-	WindowStartupLocation="CenterOwner"
-	mc:Ignorable="d">
+﻿<local:HideWindowBase x:Class="SCG.Windows.LogWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:behavior="clr-namespace:SCG.Controls.Behavior"
+    xmlns:c="clr-namespace:SCG.Controls"
+    xmlns:core="clr-namespace:SCG.Core"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:data="clr-namespace:SCG.Data.View"
+    xmlns:local="clr-namespace:SCG.Windows"
+    xmlns:log="clr-namespace:SCG;assembly=SCG.Utilities"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    Title="Logs (Source Control Generator)"
+    Width="800"
+    Height="400"
+    d:DataContext="{d:DesignInstance Type=local:LogWindowDebugViewData, IsDesignTimeCreatable=True}"
+    WindowStartupLocation="CenterOwner"
+    mc:Ignorable="d">
 	<local:HideWindowBase.Resources>
 		<Style x:Key="LogViewerStyle" TargetType="ItemsControl">
 			<Setter Property="Template">
@@ -52,68 +49,56 @@
 					<EventSetter Event="MouseRightButtonDown" Handler="FilterCheck_MouseRightButtonDown" />
 				</Style>
 			</Grid.Resources>
-			<StackPanel
-				Grid.Column="1"
-				HorizontalAlignment="Center"
-				Orientation="Horizontal">
+			<StackPanel Grid.Column="1" HorizontalAlignment="Center" Orientation="Horizontal">
 				<StackPanel Margin="2,0,45,0" Orientation="Horizontal">
-					<TextBlock
-						Margin="4,0"
-						VerticalAlignment="Center"
-						Text="Search:"
-						TextAlignment="Center" />
-					<TextBox
-						x:Name="SearchTextBox"
-						Width="150"
-						behavior:TextBoxEnterKeyBehavior.EnterLosesFocus="True"
-						BorderThickness="1,1,0,1"
-						Text="{Binding SearchText, Mode=TwoWay}" />
-					<Button
-						x:Name="SearchClearButton"
-						BorderThickness="1"
-						Click="SearchClearButton_Click"
-						Content="x"
-						ToolTip="{x:Static core:TooltipText.Log_Button_SearchClear}" />
+					<TextBlock Margin="4,0"
+					    VerticalAlignment="Center"
+					    Text="Search:"
+					    TextAlignment="Center" />
+					<TextBox x:Name="SearchTextBox"
+					    Width="150"
+					    behavior:TextBoxEnterKeyBehavior.EnterLosesFocus="True"
+					    BorderThickness="1,1,0,1"
+					    Text="{Binding SearchText, Mode=TwoWay}" />
+					<Button x:Name="SearchClearButton"
+					    BorderThickness="1"
+					    Click="SearchClearButton_Click"
+					    Content="x"
+					    ToolTip="{x:Static core:TooltipText.Log_Button_SearchClear}" />
 				</StackPanel>
-				<TextBlock
-					Margin="4,0"
-					VerticalAlignment="Center"
-					Text="Filter:"
-					TextAlignment="Center" />
+				<TextBlock Margin="4,0"
+				    VerticalAlignment="Center"
+				    Text="Filter:"
+				    TextAlignment="Center" />
 				<StackPanel behavior:MarginSetter.Margin="4,0" Orientation="Horizontal">
-					<CheckBox
-						x:Name="ActivityCheck"
-						Background="{Binding Source={x:Static log:LogType.Activity}, Converter={StaticResource LogTypeColorConverter}}"
-						Content="Activity"
-						IsChecked="{Binding FilterActivity}"
-						ToolTip="{x:Static core:TooltipText.Log_Checkbox_Activity}" />
-					<CheckBox
-						x:Name="ImportantCheck"
-						Background="{Binding Source={x:Static log:LogType.Important}, Converter={StaticResource LogTypeColorConverter}}"
-						Content="Important"
-						IsChecked="{Binding FilterImportant}"
-						ToolTip="{x:Static core:TooltipText.Log_Checkbox_Important}" />
-					<CheckBox
-						x:Name="WarningCheck"
-						Background="{Binding Source={x:Static log:LogType.Warning}, Converter={StaticResource LogTypeColorConverter}}"
-						Content="Warning"
-						IsChecked="{Binding FilterWarnings}"
-						ToolTip="{x:Static core:TooltipText.Log_Checkbox_Warning}" />
-					<CheckBox
-						x:Name="ErrorCheck"
-						Background="{Binding Source={x:Static log:LogType.Error}, Converter={StaticResource LogTypeColorConverter}}"
-						Content="Error"
-						IsChecked="{Binding FilterErrors}"
-						ToolTip="{x:Static core:TooltipText.Log_Checkbox_Error}" />
+					<CheckBox x:Name="ActivityCheck"
+					    Background="{Binding Source={x:Static log:LogType.Activity}, Converter={StaticResource LogTypeColorConverter}}"
+					    Content="Activity"
+					    IsChecked="{Binding FilterActivity}"
+					    ToolTip="{x:Static core:TooltipText.Log_Checkbox_Activity}" />
+					<CheckBox x:Name="ImportantCheck"
+					    Background="{Binding Source={x:Static log:LogType.Important}, Converter={StaticResource LogTypeColorConverter}}"
+					    Content="Important"
+					    IsChecked="{Binding FilterImportant}"
+					    ToolTip="{x:Static core:TooltipText.Log_Checkbox_Important}" />
+					<CheckBox x:Name="WarningCheck"
+					    Background="{Binding Source={x:Static log:LogType.Warning}, Converter={StaticResource LogTypeColorConverter}}"
+					    Content="Warning"
+					    IsChecked="{Binding FilterWarnings}"
+					    ToolTip="{x:Static core:TooltipText.Log_Checkbox_Warning}" />
+					<CheckBox x:Name="ErrorCheck"
+					    Background="{Binding Source={x:Static log:LogType.Error}, Converter={StaticResource LogTypeColorConverter}}"
+					    Content="Error"
+					    IsChecked="{Binding FilterErrors}"
+					    ToolTip="{x:Static core:TooltipText.Log_Checkbox_Error}" />
 				</StackPanel>
 
 			</StackPanel>
 		</Grid>
-		<ItemsControl
-			x:Name="LogsItemsControl"
-			Grid.Row="1"
-			ItemsSource="{Binding VisibleLogs, Mode=OneWay, IsAsync=True}"
-			Style="{StaticResource LogViewerStyle}">
+		<ItemsControl x:Name="LogsItemsControl"
+		    Grid.Row="1"
+		    ItemsSource="{Binding VisibleLogs, Mode=OneWay, IsAsync=True}"
+		    Style="{StaticResource LogViewerStyle}">
 			<ItemsControl.Template>
 				<ControlTemplate>
 					<ScrollViewer CanContentScroll="True" HorizontalScrollBarVisibility="Auto">
@@ -129,10 +114,7 @@
 			<ItemsControl.ItemTemplate>
 				<DataTemplate>
 					<Grid IsSharedSizeScope="True">
-						<Border
-							Background="{Binding BackgroundColor}"
-							BorderBrush="LightGray"
-							BorderThickness="1">
+						<Border Background="{Binding BackgroundColor}" BorderBrush="LightGray" BorderThickness="1">
 							<TextBlock Text="{Binding Output}">
 								<TextBlock.ContextMenu>
 									<ContextMenu>
@@ -146,33 +128,28 @@
 			</ItemsControl.ItemTemplate>
 		</ItemsControl>
 		<Grid Grid.Row="2" Margin="0,2">
-			<StackPanel
-				Grid.Column="1"
-				HorizontalAlignment="Center"
-				behavior:MarginSetter.Margin="2,0"
-				Orientation="Horizontal">
-				<Button
-					x:Name="CopyButton"
-					Click="CopyButton_Click"
-					Content="Copy"
-					ToolTip="{Binding Source={x:Static core:TooltipText.Log_Button_Copy}}" />
-				<Button
-					x:Name="SaveButton"
-					Click="SaveButton_Click"
-					Content="Save As..."
-					ToolTip="{Binding Source={x:Static core:TooltipText.Log_Button_SaveAs}}" />
-				<Button
-					x:Name="ClearButton"
-					Click="ClearButton_Click"
-					Content="Clear"
-					IsEnabled="{Binding CanClear}"
-					ToolTip="{Binding Source={x:Static core:TooltipText.Log_Button_Clear}}" />
-				<Button
-					x:Name="RestoreButton"
-					Click="RestoreButton_Click"
-					Content="Restore"
-					IsEnabled="{Binding CanRestore}"
-					ToolTip="{Binding Source={x:Static core:TooltipText.Log_Button_Restore}}" />
+			<StackPanel Grid.Column="1"
+			    HorizontalAlignment="Center"
+			    behavior:MarginSetter.Margin="2,0"
+			    Orientation="Horizontal">
+				<Button x:Name="CopyButton"
+				    Click="CopyButton_Click"
+				    Content="Copy"
+				    ToolTip="{Binding Source={x:Static core:TooltipText.Log_Button_Copy}}" />
+				<Button x:Name="SaveButton"
+				    Click="SaveButton_Click"
+				    Content="Save As..."
+				    ToolTip="{Binding Source={x:Static core:TooltipText.Log_Button_SaveAs}}" />
+				<Button x:Name="ClearButton"
+				    Click="ClearButton_Click"
+				    Content="Clear"
+				    IsEnabled="{Binding CanClear}"
+				    ToolTip="{Binding Source={x:Static core:TooltipText.Log_Button_Clear}}" />
+				<Button x:Name="RestoreButton"
+				    Click="RestoreButton_Click"
+				    Content="Restore"
+				    IsEnabled="{Binding CanRestore}"
+				    ToolTip="{Binding Source={x:Static core:TooltipText.Log_Button_Restore}}" />
 			</StackPanel>
 		</Grid>
 	</Grid>

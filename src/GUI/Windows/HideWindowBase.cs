@@ -4,7 +4,7 @@ using System.Windows;
 
 namespace SCG.Windows;
 
-public class HideWindowBase : Window
+public abstract class HideWindowBase : Window
 {
 	[DllImport("user32.dll")]
 	static extern IntPtr GetSystemMenu(IntPtr hWnd, bool bRevert);
