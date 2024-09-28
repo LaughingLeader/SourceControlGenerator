@@ -23,5 +23,6 @@
 		<Using Include="ReactiveUI" />
 		<Using Include="ReactiveUI.Fody.Helpers" />
 		<Using Include="ReactiveUI.ReactiveCommand&lt;System.Reactive.Unit, System.Reactive.Unit&gt;" Alias="RxCommandUnit" />
+		<Using Include="Splat" />
 	</ItemGroup>
 </Project>

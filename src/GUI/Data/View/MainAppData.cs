@@ -80,50 +80,14 @@ public class MainAppData : ReactiveObject
 		}
 	}
 
-	//public static ThemeColorData ThemeColorData { get; set; }
-
-	private IModuleData selectedModuleData = null;
-
 	/// <summary>
 	/// The selected module (on the selection screen)
 	/// </summary>
-	public IModuleData SelectedModuleData
-	{
-		get { return selectedModuleData; }
-		set
-		{
-			this.RaiseAndSetIfChanged(ref selectedModuleData, value);
-			this.RaisePropertyChanged("CanLoadModule");
-		}
-	}
+	[Reactive] public IModuleData? SelectedModuleData { get; set; }
+	[Reactive] public IModuleData? CurrentModuleData { get; set; }
 
-	public bool CanLoadModule
-	{
-		get
-		{
-			return selectedModuleData != null;
-		}
-	}
-
-	private IModuleData currentModuleData;
-
-	public IModuleData CurrentModuleData
-	{
-		get { return currentModuleData; }
-		set
-		{
-			this.RaiseAndSetIfChanged(ref currentModuleData, value);
-			this.RaisePropertyChanged("CurrentModuleName");
-		}
-	}
-
-	public string CurrentModuleName
-	{
-		get
-		{
-			return CurrentModuleData != null ? CurrentModuleData.ModuleName : "";
-		}
-	}
+	[ObservableAsProperty] public bool CanLoadModule { get; }
+	[ObservableAsProperty] public string CurrentModuleName { get; }
 
 	private bool moduleIsLoaded;
 
@@ -399,6 +363,13 @@ public class MainAppData : ReactiveObject
 		DateKeyList = [];
 		AppKeyList = [];
 
+		this.WhenAnyValue(x => x.SelectedModuleData).Select(x => x != null).ObserveOn(RxApp.MainThreadScheduler)
+			.ToPropertyEx(this, x => x.CanLoadModule, true, RxApp.MainThreadScheduler);
+
+		this.WhenAnyValue(x => x.CurrentModuleData).Select(x => x != null ? x.ModuleName : string.Empty)
+			.ObserveOn(RxApp.MainThreadScheduler)
+			.ToPropertyEx(this, x => x.CurrentModuleName, true, RxApp.MainThreadScheduler);
+
 		//BindingOperations.EnableCollectionSynchronization(GlobalKeyList, GlobalKeyList);
 		//BindingOperations.EnableCollectionSynchronization(DateKeyList, DateKeyListLock);
 		//BindingOperations.EnableCollectionSynchronization(AppKeyList, AppKeyListLock);
@@ -406,7 +377,8 @@ public class MainAppData : ReactiveObject
 		ModuleNameKeyword = new KeywordData()
 		{
 			KeywordName = "$ModuleName",
-			KeywordValue = CurrentModuleName
+			KeywordValue = string.Empty,
+			Replace = x => CurrentModuleName ?? string.Empty
 		};
 
 		GlobalKeyList.Add(ModuleNameKeyword);

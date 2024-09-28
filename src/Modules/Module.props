@@ -11,6 +11,11 @@
 		<ProjectReference Include="..\..\GUI\GUI.csproj" />
 	</ItemGroup>
 
+	<ItemGroup>
+		<PackageReference Include="Splat" Version="15.2.22" PrivateAssets="all" ExcludeAssets="runtime" />
+		<PackageReference Include="Splat.DependencyInjection.SourceGenerator" PrivateAssets="all" ExcludeAssets="runtime" IncludeAssets="runtime; build; native; contentfiles; analyzers; buildtransitive" Version="1.2.3" />
+	</ItemGroup>
+
 	<Target Name="PostBuildCopyModule" AfterTargets="PostBuildEvent">
 		<ItemGroup>
 			<FilesToMove Include="$(OutputPath)$(AssemblyName).dll" />

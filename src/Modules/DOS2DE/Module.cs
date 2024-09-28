@@ -7,8 +7,6 @@ public class Module : IModuleMain
 {
 	public DOS2DEProjectController Controller { get; private set; }
 
-
-
 	public void Init()
 	{
 		Controller = new DOS2DEProjectController();

@@ -1,18 +1,19 @@
 ﻿<win:HideWindowBase x:Class="SCG.Modules.DOS2DE.LocalizationEditor.Views.LocaleContentWindow"
-		xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-		xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-		xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-		xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-		xmlns:local="clr-namespace:SCG.Modules.DOS2DE.LocalizationEditor.Views"
-		xmlns:core="clr-namespace:SCG.Modules.DOS2DE.Core"
-		xmlns:win="clr-namespace:SCG.Windows;assembly=SourceControlGenerator"
-		xmlns:util="clr-namespace:SCG.Modules.DOS2DE.LocalizationEditor.Utilities"
-		xmlns:baseview="clr-namespace:SCG.Modules.DOS2DE.Data.View"
-		xmlns:view="clr-namespace:SCG.Modules.DOS2DE.LocalizationEditor.Views"
-		xmlns:xctk="clr-namespace:Xceed.Wpf.Toolkit;assembly=Xceed.Wpf.Toolkit"
-		mc:Ignorable="d"
-		x:Name="ContentWindow"
-		Title="Localization Content" Height="300" Width="500">
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:baseview="clr-namespace:SCG.Modules.DOS2DE.Data.View"
+    xmlns:core="clr-namespace:SCG.Modules.DOS2DE.Core"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="clr-namespace:SCG.Modules.DOS2DE.LocalizationEditor.Views"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:util="clr-namespace:SCG.Modules.DOS2DE.LocalizationEditor.Utilities"
+    xmlns:view="clr-namespace:SCG.Modules.DOS2DE.LocalizationEditor.Views"
+    xmlns:win="clr-namespace:SCG.Windows;assembly=SourceControlGenerator"
+    xmlns:xctk="clr-namespace:Xceed.Wpf.Toolkit;assembly=Xceed.Wpf.Toolkit"
+    Title="Localization Content"
+    Width="500"
+    Height="300"
+    mc:Ignorable="d">
 	<win:HideWindowBase.Resources>
 		<util:LocalizationTextFormatter x:Key="LocalizationTextFormatter" />
 		<x:Static x:Key="ContestTestString" Member="baseview:DOS2DEDebugData.LongString" />
@@ -23,28 +24,34 @@
 			<RowDefinition Height="*" />
 		</Grid.RowDefinitions>
 		<StackPanel Orientation="Horizontal">
-			<Button Padding="0" Margin="2"
-				ToolTip="{x:Static core:DOS2DETooltips.Button_Locale_InsertFontText}"
-				Command="{Binding AddFontTagCommand}">
+			<Button Margin="2"
+			    Padding="0"
+			    Command="{Binding AddFontTagCommand}"
+			    ToolTip="{x:Static core:DOS2DETooltips.Button_Locale_InsertFontText}">
 				<Button.Content>
-					<Label Content="&lt;font&gt;" FontSize="8" Margin="0" />
+					<Label Margin="0" Content="&lt;font&gt;" FontSize="8" />
 				</Button.Content>
 			</Button>
-			<xctk:ColorPicker x:Name="FontColorPicker" Margin="2" Width="75" SelectedColor="{Binding SelectedColor}"/>
+			<xctk:ColorPicker x:Name="FontColorPicker"
+			    Width="75"
+			    Margin="2"
+			    SelectedColor="{Binding SelectedColor}" />
 		</StackPanel>
 		<Border Grid.Row="2" BorderThickness="1,0,1,1">
-			<xctk:RichTextBox Grid.Row="1"
-				x:Name="EntryContentRichTextBox"
-				Text="{Binding Path=Entry, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
-				TextFormatter="{StaticResource LocalizationTextFormatter}"
-				SelectionChanged="EntryContent_SelectionChanged"
-				BorderThickness="0" BorderBrush="{x:Null}"
-				Margin="1" Block.LineHeight="2"
-				Background="Transparent"
-				Tag="{Binding ViewModel}"
-				FontSize="{Binding ContentFontSize, FallbackValue=12, TargetNullValue=12}"
-				AcceptsReturn="True" AcceptsTab="True"
-								>
+			<xctk:RichTextBox x:Name="EntryContentRichTextBox"
+			    Grid.Row="1"
+			    Margin="1"
+			    AcceptsReturn="True"
+			    AcceptsTab="True"
+			    Background="Transparent"
+			    Block.LineHeight="2"
+			    BorderBrush="{x:Null}"
+			    BorderThickness="0"
+			    FontSize="{Binding ContentFontSize, FallbackValue=12, TargetNullValue=12}"
+			    SelectionChanged="EntryContent_SelectionChanged"
+			    Tag="{Binding ViewModel}"
+			    Text="{Binding Path=Entry, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+			    TextFormatter="{StaticResource LocalizationTextFormatter}">
 				<xctk:RichTextBox.Resources>
 					<!--<Style TargetType="ScrollViewer">
 										<Setter Property="MinWidth" Value="2000" />
@@ -56,12 +63,12 @@
 						<MenuItem Command="ApplicationCommands.Copy" />
 						<MenuItem Command="ApplicationCommands.Paste" />
 						<MenuItem Command="ApplicationCommands.SelectAll" />
-						<MenuItem Header="Toggle Light/Dark Mode" Command="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.Tag.ToggleContentLightModeCommand}" />
+						<MenuItem Command="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.Tag.ToggleContentLightModeCommand}" Header="Toggle Light/Dark Mode" />
 						<MenuItem Header="Font Size">
-							<MenuItem Header="12" CommandParameter="12" Command="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.Tag.ChangeContentFontSizeCommand}" />
-							<MenuItem Header="16" CommandParameter="16" Command="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.Tag.ChangeContentFontSizeCommand}" />
-							<MenuItem Header="24" CommandParameter="24" Command="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.Tag.ChangeContentFontSizeCommand}" />
-							<MenuItem Header="32" CommandParameter="32" Command="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.Tag.ChangeContentFontSizeCommand}" />
+							<MenuItem Command="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.Tag.ChangeContentFontSizeCommand}" CommandParameter="12" Header="12" />
+							<MenuItem Command="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.Tag.ChangeContentFontSizeCommand}" CommandParameter="16" Header="16" />
+							<MenuItem Command="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.Tag.ChangeContentFontSizeCommand}" CommandParameter="24" Header="24" />
+							<MenuItem Command="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.Tag.ChangeContentFontSizeCommand}" CommandParameter="32" Header="32" />
 						</MenuItem>
 					</ContextMenu>
 				</xctk:RichTextBox.ContextMenu>

@@ -1,0 +1,31 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+	<Import Project="..\Module.props" />
+
+	<PropertyGroup>
+		<UseWPF>true</UseWPF>
+
+		<RootNamespace>SCG.Modules.BG3</RootNamespace>
+
+		<AssemblyName>SCG.Modules.BG3</AssemblyName>
+		<AssemblyTitle>SCG-BG3</AssemblyTitle>
+		<AssemblyProduct>SCG-BG3</AssemblyProduct>
+		<AssemblyDescription>Baldur's Gate 3 support for Source Control Generator.</AssemblyDescription>
+		<AssemblyCompany>LaughingLeader</AssemblyCompany>
+		<AssemblyCopyright>Copyright © LaughingLeader 2024</AssemblyCopyright>
+
+		<AssemblyVersion>1.0.0.0</AssemblyVersion>
+		<AssemblyFileVersion>1.0.0.0</AssemblyFileVersion>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\..\..\External\lslib\LSLib\LSLib.csproj" />
+		<ProjectReference Include="..\..\..\External\lslib\LSLibNative\LSLibNative.vcxproj" />
+	</ItemGroup>
+
+	<Target Name="PostBuild" AfterTargets="PostBuildEvent">
+		<ItemGroup>
+			<LSLib Include="$(OutputPath)LSLib.dll;$(OutputPath)LSLibNative.dll" />
+		</ItemGroup>
+		<Copy SourceFiles="@(LSLib)" DestinationFolder="$(SolutionDir)bin\$(Configuration)\_Lib\" OverwriteReadOnlyFiles="true" />
+	</Target>
+</Project>
