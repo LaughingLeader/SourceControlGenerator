@@ -1,4 +1,6 @@
-﻿using SCG.Controls;
+﻿using Microsoft.Web.WebView2.Wpf;
+
+using SCG.Controls;
 using SCG.Extensions;
 using SCG.Modules.DOS2DE.Data.View;
 using SCG.Modules.DOS2DE.Data.View.Locale;
@@ -12,8 +14,6 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
-
-using TheArtOfDev.HtmlRenderer.WPF;
 
 namespace SCG.Modules.DOS2DE.LocalizationEditor.Views;
 
@@ -106,13 +106,16 @@ public partial class LocaleEditorWindow : ClipboardMonitorWindow, IViewFor<Local
 			CreateButtonBinding("AddFileCommand", AddFileButton);
 			CreateButtonBinding("ImportFileCommand", ImportFileButton);
 
-			var res = this.TryFindResource("EntryContentPreview");
-			if (res != null && res is HtmlPanel entryContentPreviewHtmlPanel)
+			if (TryFindResource("EntryContentPreview") is Border entryContentPreview && entryContentPreview.FindName("EntryContentPreviewHtmlPanel") is WebView2 webView)
 			{
-				CreateBinding("SelectedEntryHtmlContent", entryContentPreviewHtmlPanel, HtmlPanel.TextProperty);
+				ViewModel.WhenAnyValue(x => x.SelectedEntryHtmlContent).Subscribe(x =>
+				{
+					if(!string.IsNullOrEmpty(x))
+					{
+						webView.NavigateToString(x);
+					}
+				}).DisposeWith(disposables);
 			}
-
-			Log.Here().Important("Activated LocaleEditorWindow");
 
 			LoadData();
 		});
