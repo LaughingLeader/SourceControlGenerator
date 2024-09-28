@@ -1,65 +1,31 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
+	<Import Project="..\Module.props" />
+	
 	<PropertyGroup>
-		<OutputType>Library</OutputType>
-		<TargetFramework>net8.0-windows10.0.19041.0</TargetFramework>
-		<LangVersion>latest</LangVersion>
 		<UseWPF>true</UseWPF>
-		<Nullable>enable</Nullable>
-		<ImplicitUsings>enable</ImplicitUsings>
-		<Platforms>x64</Platforms>
-		<PlatformTarget>x64</PlatformTarget>
+		
 		<RootNamespace>SCG.Modules.DOS2DE</RootNamespace>
+		
 		<AssemblyName>SCG.Modules.DOS2DE</AssemblyName>
 		<AssemblyTitle>SCG-DOS2</AssemblyTitle>
 		<AssemblyProduct>SCG-DOS2</AssemblyProduct>
 		<AssemblyDescription>Divinity: Original Sin 2 - Definitive Edition support for Source Control Generator.</AssemblyDescription>
 		<AssemblyCompany>LaughingLeader</AssemblyCompany>
 		<AssemblyCopyright>Copyright © LaughingLeader 2018</AssemblyCopyright>
-		<AssemblyVersion>1.1.5.0</AssemblyVersion>
-		<AssemblyFileVersion>1.1.5.0</AssemblyFileVersion>
+		
+		<AssemblyVersion>1.2.0.0</AssemblyVersion>
+		<AssemblyFileVersion>1.2.0.0</AssemblyFileVersion>
 	</PropertyGroup>
-	<ItemGroup Label="Global Usings">
-		<Using Include="ReactiveUI" />
-		<Using Include="ReactiveUI.Fody.Helpers" />
-		<Using Include="System.Reactive" />
-		<Using Include="System.Reactive.Concurrency" />
-		<Using Include="System.Reactive.Concurrency" />
-		<Using Include="System.Reactive.Disposables" />
-		<Using Include="System.Reactive.Linq" />
-		<Using Include="System.Threading" />
-		<Using Include="System.Threading.Tasks" />
-		<Using Include="System.IO" />
-		<Using Include="ReactiveUI.ReactiveCommand&lt;System.Reactive.Unit, System.Reactive.Unit&gt;" Alias="RxCommandUnit" />
-	</ItemGroup>
 	
 	<ItemGroup>
 		<ProjectReference Include="..\..\..\External\lslib\LSLib\LSLib.csproj" />
 		<ProjectReference Include="..\..\..\External\lslib\LSLibNative\LSLibNative.vcxproj" />
-		<ProjectReference Include="..\..\Utilities\Utilities.csproj" />
-		<ProjectReference Include="..\..\GUI\GUI.csproj" />
-	</ItemGroup>
-	
-	<ItemGroup>
-		<PackageReference Include="ControlzEx" Version="6.0.0" />
-		<PackageReference Include="ReactiveUI" Version="20.1.63" />
-		<PackageReference Include="ReactiveUI.Fody" Version="19.5.41" />
-		<PackageReference Include="ReactiveHistory" Version="0.10.7" />
-		<PackageReference Include="ReactiveUI.Events.WPF" Version="15.1.1" />
-		<PackageReference Include="ReactiveUI.WPF" Version="20.1.63" />
-		<PackageReference Include="SharpCompress" Version="0.38.0" />
-		<PackageReference Include="Markdig" Version="0.37.0" />
-		<PackageReference Include="Extended.Wpf.Toolkit" Version="4.6.1" />
-		<PackageReference Include="ConfigureAwait.Fody" Version="3.3.2" PrivateAssets="all" />
-		<PackageReference Include="DynamicData" Version="9.0.4" />
-		<PackageReference Include="Splat" Version="15.2.22" />
 	</ItemGroup>
 	
 	<Target Name="PostBuild" AfterTargets="PostBuildEvent">
 		<ItemGroup>
-			<FilesToMove Include="$(OutputPath)$(AssemblyName).dll" />
 			<LSLib Include="$(OutputPath)LSLib.dll;$(OutputPath)LSLibNative.dll" />
 		</ItemGroup>
-		<Copy SourceFiles="@(FilesToMove)" DestinationFolder="$(SolutionDir)bin\$(Configuration)\Modules\" OverwriteReadOnlyFiles="true" />
 		<Copy SourceFiles="@(LSLib)" DestinationFolder="$(SolutionDir)bin\$(Configuration)\_Lib\" OverwriteReadOnlyFiles="true" />
 	</Target>
 </Project>

@@ -23,6 +23,12 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "LSLibNative", "External\lsl
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "lslib", "lslib", "{B1DCFC9F-78DC-4DBB-817A-7C22C9B44E8D}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Config", "Config", "{58B8850B-AF4C-4320-92A3-87BECA7CE7C7}"
+	ProjectSection(SolutionItems) = preProject
+		src\Common.props = src\Common.props
+		src\Modules\Module.props = src\Modules\Module.props
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

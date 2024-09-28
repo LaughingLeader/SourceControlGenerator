@@ -1,0 +1,20 @@
+<Project>
+	<Import Project="..\Common.props" />
+
+	<PropertyGroup>
+		<TargetFramework>net8.0-windows10.0.19041.0</TargetFramework>
+		<OutputType>Library</OutputType>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\..\Utilities\Utilities.csproj" />
+		<ProjectReference Include="..\..\GUI\GUI.csproj" />
+	</ItemGroup>
+
+	<Target Name="PostBuildCopyModule" AfterTargets="PostBuildEvent">
+		<ItemGroup>
+			<FilesToMove Include="$(OutputPath)$(AssemblyName).dll" />
+		</ItemGroup>
+		<Copy SourceFiles="@(FilesToMove)" DestinationFolder="$(SolutionDir)bin\$(Configuration)\Modules\" OverwriteReadOnlyFiles="true" />
+	</Target>
+</Project>

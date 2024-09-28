@@ -1,0 +1,27 @@
+<Project>
+  <!-- See https://aka.ms/dotnet/msbuild/customize for more details on customizing your build -->
+  <PropertyGroup>
+	  <LangVersion>latest</LangVersion>
+
+	  <Nullable>enable</Nullable>
+
+	  <Platforms>x64</Platforms>
+	  <PlatformTarget>x64</PlatformTarget>
+  </PropertyGroup>
+
+	<ItemGroup Label="Global Usings">
+		<Using Include="System" />
+		<Using Include="System.Collections.Generic" />
+		<Using Include="System.Linq" />
+		<Using Include="System.Threading" />
+		<Using Include="System.Threading.Tasks" />
+		<Using Include="System.IO" />
+		<Using Include="System.Reactive" />
+		<Using Include="System.Reactive.Concurrency" />
+		<Using Include="System.Reactive.Disposables" />
+		<Using Include="System.Reactive.Linq" />
+		<Using Include="ReactiveUI" />
+		<Using Include="ReactiveUI.Fody.Helpers" />
+		<Using Include="ReactiveUI.ReactiveCommand&lt;System.Reactive.Unit, System.Reactive.Unit&gt;" Alias="RxCommandUnit" />
+	</ItemGroup>
+</Project>

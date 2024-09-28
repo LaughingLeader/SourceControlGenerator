@@ -1,16 +1,12 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
+	<Import Project="..\Common.props" />
+	
 	<PropertyGroup>
 		<TargetFramework>net8.0-windows10.0.19041.0</TargetFramework>
-		<LangVersion>latest</LangVersion>
+		
 		<UseWPF>true</UseWPF>
 
 		<OutputType>WinExe</OutputType>
-
-		<Nullable>enable</Nullable>
-		<ImplicitUsings>enable</ImplicitUsings>
-
-		<Platforms>x64</Platforms>
-		<PlatformTarget>x64</PlatformTarget>
 
 		<RootNamespace>SCG</RootNamespace>
 		<AssemblyName>SourceControlGenerator</AssemblyName>
@@ -24,23 +20,12 @@
 		<AssemblyFileVersion>1.7.10.1</AssemblyFileVersion>
 
 		<ApplicationIcon>AppIcon.ico</ApplicationIcon>
-		<StartupObject>SCG.App</StartupObject>
+		<StartupObject>SCG.Program</StartupObject>
+
+		<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+		<OutputPath>$(SolutionDir)\bin\$(Configuration)\</OutputPath>
 	</PropertyGroup>
-
-	<ItemGroup Label="Global Usings">
-		<Using Include="ReactiveUI" />
-		<Using Include="ReactiveUI.Fody.Helpers" />
-		<Using Include="System.Reactive" />
-		<Using Include="System.Reactive.Concurrency" />
-		<Using Include="System.Reactive.Concurrency" />
-		<Using Include="System.Reactive.Disposables" />
-		<Using Include="System.Reactive.Linq" />
-		<Using Include="System.Threading" />
-		<Using Include="System.Threading.Tasks" />
-		<Using Include="System.IO" />
-		<Using Include="ReactiveUI.ReactiveCommand&lt;System.Reactive.Unit, System.Reactive.Unit&gt;" Alias="RxCommandUnit" />
-	</ItemGroup>
-
+	
 	<ItemGroup>
 		<ProjectReference Include="..\Utilities\Utilities.csproj" />
 		<ProjectReference Include="..\MarkdownConverter\MarkdownConverter.csproj" />
@@ -71,10 +56,30 @@
 		<Resource Include="Resources\**" />
 	</ItemGroup>
 
-	<Target Name="AfterBuild">
+	<PropertyGroup Condition="'$(Configuration)' == 'Publish' or '$(Configuration)' == 'PublishTest'">
+		<TidyRelease>True</TidyRelease>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(TidyRelease)' == True">
+		<PreBuildEvent>rd /s /q $(TargetDir)_Lib</PreBuildEvent>
+	</PropertyGroup>
+
+	<!--<Target Name="PostBuild" AfterTargets="PostBuildEvent">
 		<ItemGroup>
-			<MoveToLibFolder Include="$(OutputPath)*.dll ; $(OutputPath)*.pdb ; $(OutputPath)*.xml" />
+			<LSLib Include="$(SolutionDir)External\lslib\Ijwhost.dll; $(SolutionDir)External\lslib\LSLib.dll; $(SolutionDir)External\lslib\LSLibNative.dll; $(SolutionDir)External\lslib\LZ4.dll; $(SolutionDir)External\lslib\LZ4pn.dll; $(SolutionDir)External\lslib\OpenTK.Mathematics.dll; $(SolutionDir)External\lslib\System.IO.Hashing.dll; $(SolutionDir)External\lslib\ZstdSharp.dll;" />
 		</ItemGroup>
-		<Move SourceFiles="@(MoveToLibFolder)" DestinationFolder="$(OutputPath)_Lib" OverwriteReadOnlyFiles="true" />
+		<Copy SourceFiles="@(LSLib)" DestinationFolder="$(SolutionDir)bin\$(Configuration)\_Lib\" OverwriteReadOnlyFiles="true" />
+	</Target>-->
+
+	<Target Name="SetupLibFolder" AfterTargets="AfterBuild" Condition="'$(TidyRelease)' == True">
+		<ItemGroup>
+			<DeleteDebug Include="$(OutputPath)*.pdb" />
+			<MoveToLibFolder Include="$(OutputPath)*.dll;$(OutputPath)*.xml" />
+		</ItemGroup>
+		<Delete Files="@(DeleteDebug)">
+			<Output TaskParameter="DeletedFiles" ItemName="DeletedList" />
+		</Delete>
+		<RemoveDir Directories="$(OutputPath)de;$(OutputPath)en;$(OutputPath)es;$(OutputPath)fr;$(OutputPath)it;$(OutputPath)ja;$(OutputPath)ko;$(OutputPath)ru;$(OutputPath)zh-Hans;$(OutputPath)zh-Hant;$(OutputPath)cs-CZ;$(OutputPath)hu;$(OutputPath)ja-JP;$(OutputPath)pt-BR;$(OutputPath)ro;$(OutputPath)runtimes;$(OutputPath)sv" />
+		<Move SourceFiles="@(MoveToLibFolder)" DestinationFolder="$(OutputPath)_Lib" OverwriteReadOnlyFiles="true" ContinueOnError="true" />
 	</Target>
 </Project>
