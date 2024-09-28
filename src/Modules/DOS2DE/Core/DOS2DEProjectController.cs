@@ -1224,7 +1224,7 @@ public class DOS2DEProjectController : IProjectController
 		});
 	}
 
-	public void OpenSetup(Action OnSetupFinished)
+	public bool OpenSetup(Action OnSetupFinished)
 	{
 		if (Data.Settings.FirstTimeSetup)
 		{
@@ -1233,7 +1233,9 @@ public class DOS2DEProjectController : IProjectController
 				Owner = App.Current.MainWindow
 			};
 			setupWindow.Show();
+			return true;
 		}
+		return false;
 	}
 
 	private readonly IObservable<bool> canRefresh;
@@ -1632,6 +1634,6 @@ public class DOS2DEProjectController : IProjectController
 	{
 		MainAppData.MenuBarData.RemoveAllModuleMenus(Data.ModuleName);
 
-		pakExtractionSelectionWindow.Dispose();
+		pakExtractionSelectionWindow?.Dispose();
 	}
 }

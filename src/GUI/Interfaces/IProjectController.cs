@@ -11,7 +11,7 @@ public interface IProjectController
 
 	//void AddProjects(List<AvailableProjectViewData> selectedItems);
 
-	void OpenSetup(Action OnSetupFinished);
+	bool OpenSetup(Action OnSetupFinished);
 
 	void Initialize(MainAppData mainAppData);
 	void Start();

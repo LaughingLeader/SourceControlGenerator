@@ -117,9 +117,9 @@ public class AppController
 	{
 		if (!String.IsNullOrWhiteSpace(moduleName))
 		{
-			if (ProjectControllers.ContainsKey(moduleName))
+			if (ProjectControllers.TryGetValue(moduleName, out var module))
 			{
-				Data.SelectedModuleData = ProjectControllers[moduleName].ModuleData;
+				Data.SelectedModuleData = module.ModuleData;
 			}
 		}
 		else
@@ -911,18 +911,31 @@ public class AppController
 
 	public void OnAppLoaded()
 	{
+		var skippedSetup = false;
+
 		if (CurrentModule != null && CurrentModule.ModuleData != null)
 		{
 			if (CurrentModule.ModuleData.ModuleSettings.FirstTimeSetup)
 			{
-				Data.LockScreenVisibility = Visibility.Visible;
-				CurrentModule.OpenSetup(OnSetupComplete);
+				if(CurrentModule.OpenSetup(OnSetupComplete))
+				{
+					Data.LockScreenVisibility = Visibility.Visible;
+				}
+				else
+				{
+					skippedSetup = true;
+				}
 			}
 
 			mainWindow.MarkdownConverterWindow.SetData(FileCommands.Load.LoadModuleMarkdownConverterSettings(CurrentModule.ModuleData));
 		}
 
 		LoadTextGeneratorData();
+
+		if(skippedSetup)
+		{
+			OnSetupComplete();
+		}
 	}
 
 	private void AutoUpdater_CheckForUpdateEvent(UpdateInfoEventArgs args)
