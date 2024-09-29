@@ -1,6 +1,8 @@
 ﻿<local:HideWindowBase x:Class="SCG.Windows.LogWindow"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:adonisExtensions="clr-namespace:AdonisUI.Extensions;assembly=AdonisUI"
+    xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI"
     xmlns:behavior="clr-namespace:SCG.Controls.Behavior"
     xmlns:c="clr-namespace:SCG.Controls"
     xmlns:core="clr-namespace:SCG.Core"
@@ -13,6 +15,7 @@
     Width="800"
     Height="400"
     d:DataContext="{d:DesignInstance Type=local:LogWindowDebugViewData, IsDesignTimeCreatable=True}"
+    Style="{StaticResource BaseWindowStyle}"
     WindowStartupLocation="CenterOwner"
     mc:Ignorable="d">
 	<local:HideWindowBase.Resources>
@@ -36,7 +39,7 @@
 		</Style>
 	</local:HideWindowBase.Resources>
 
-	<Grid Margin="2,0,0,0">
+	<Grid Margin="2,0,0,0" adonisExtensions:LayerExtension.IncreaseLayer="True">
 		<Grid.RowDefinitions>
 			<RowDefinition Height="Auto" />
 			<RowDefinition Height="*" />
@@ -44,7 +47,7 @@
 		</Grid.RowDefinitions>
 		<Grid Margin="4">
 			<Grid.Resources>
-				<Style TargetType="CheckBox">
+				<Style BasedOn="{StaticResource {x:Type CheckBox}}" TargetType="CheckBox">
 					<Setter Property="VerticalAlignment" Value="Center" />
 					<EventSetter Event="MouseRightButtonDown" Handler="FilterCheck_MouseRightButtonDown" />
 				</Style>
@@ -114,8 +117,8 @@
 			<ItemsControl.ItemTemplate>
 				<DataTemplate>
 					<Grid IsSharedSizeScope="True">
-						<Border Background="{Binding BackgroundColor}" BorderBrush="LightGray" BorderThickness="1">
-							<TextBlock Text="{Binding Output}">
+						<Border Background="{Binding BackgroundColor}" BorderBrush="{DynamicResource {x:Static adonisUi:Brushes.Layer4BorderBrush}}" BorderThickness="1">
+							<TextBlock Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Text="{Binding Output}">
 								<TextBlock.ContextMenu>
 									<ContextMenu>
 										<MenuItem Command="ApplicationCommands.Copy" />

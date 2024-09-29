@@ -1,4 +1,6 @@
-﻿using DynamicData;
+﻿using AdonisUI;
+
+using DynamicData;
 
 using SCG.Core;
 using SCG.Data.View;
@@ -46,6 +48,7 @@ public partial class LogWindow : HideWindowBase, IToolWindow, IViewFor<LogWindow
 
 		this.WhenActivated((disposables) =>
 		{
+			
 			//Console.WriteLine($"Logs: {String.Join(",", ViewModel.VisibleLogs.Select(x => x.Message))}");
 		});
 	}

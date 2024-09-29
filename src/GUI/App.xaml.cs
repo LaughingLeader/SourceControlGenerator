@@ -1,7 +1,6 @@
 ﻿using LazyCache.Splat;
 
 using SCG.Services;
-using SCG.ThemeSystem;
 using SCG.Utilities;
 
 using System.Windows;
@@ -48,7 +47,6 @@ public partial class App : Application
 		Locator.CurrentMutable.InitializeReactiveUI();
 
 		RxApp.DefaultExceptionHandler = new ReactionObservableExceptionHandler();
-		ThemeController.Init(this);
 		SCG.Helpers.Init();
 		FileCommands.Init();
 	}

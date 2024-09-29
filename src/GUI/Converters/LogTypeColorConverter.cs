@@ -12,16 +12,15 @@ public class LogTypeColorConverter : IValueConverter
 		Log.Here().Important($"Converting log type {logType.ToString()} to color.");
 		switch (logType)
 		{
-			case LogType.Activity:
-				return SystemColors.WindowBrush;
 			case LogType.Important:
 				return new SolidColorBrush(Colors.Azure);
 			case LogType.Error:
 				return new SolidColorBrush(Colors.Salmon);
 			case LogType.Warning:
 				return new SolidColorBrush(Colors.Khaki);
+			case LogType.Activity:
 			default:
-				return SystemColors.WindowBrush;
+				return Brushes.Transparent;
 		}
 	}
 

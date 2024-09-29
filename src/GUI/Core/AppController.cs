@@ -584,12 +584,16 @@ public class AppController
 			{
 				Topmost = false
 			};
+			mainWindow.SubWindows.Add(mainWindow.DebugWindow);
+			mainWindow.SetTheme(true);
+
 			DebugWindowMenuData.Header = "Close Debug Window";
 			mainWindow.DebugWindow.Init(DebugWindowMenuData, () => { DebugWindowMenuData.Header = "Open Debug Window"; });
 			mainWindow.DebugWindow.Show();
 		}
 		else
 		{
+			mainWindow.SubWindows.Remove(mainWindow.DebugWindow);
 			mainWindow.DebugWindow.Close();
 			mainWindow.DebugWindow = null;
 			DebugWindowMenuData.Header = "Open Debug Window";
@@ -687,12 +691,10 @@ public class AppController
 			var log = new LogData()
 			{
 				Index = logIndex++,
-				DateTime = DateTime.Now,
+				DateTime = DateTimeOffset.Now,
 				Message = LogMessage,
 				MessageType = logType
 			};
-			log.FormatOutput();
-
 			mainWindow.LogWindow.ViewModel.Add(log);
 		});
 	}

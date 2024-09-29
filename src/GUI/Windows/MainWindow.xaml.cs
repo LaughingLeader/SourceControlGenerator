@@ -1,4 +1,6 @@
-﻿using AutoUpdaterDotNET;
+﻿using AdonisUI;
+
+using AutoUpdaterDotNET;
 
 using SCG.Core;
 using SCG.Data;
@@ -66,7 +68,7 @@ public partial class MainWindow : ClipboardMonitorWindow, IViewFor<MainAppData>
 		set { gitGenerationWindow = value; }
 	}
 
-	public DebugWindow DebugWindow { get; set; }
+	public DebugWindow? DebugWindow { get; set; }
 
 	public List<Window> SubWindows { get; set; }
 
@@ -143,6 +145,18 @@ public partial class MainWindow : ClipboardMonitorWindow, IViewFor<MainAppData>
 		this.Loaded += MainWindow_Loaded;
 	}
 
+	public static readonly Uri LightTheme = new("pack://application:,,,/AdonisUI;component/ColorSchemes/Light.xaml");
+	public static readonly Uri DarkTheme = new("pack://application:,,,/AdonisUI;component/ColorSchemes/Dark.xaml");
+
+	public void SetTheme(bool darkMode)
+	{
+		ResourceLocator.SetColorScheme(Resources, darkMode ? DarkTheme : LightTheme);
+		foreach(var window in SubWindows)
+		{
+			ResourceLocator.SetColorScheme(window.Resources, darkMode ? DarkTheme : LightTheme);
+		}
+	}
+
 	private void MainWindow_Loaded(object sender, RoutedEventArgs e)
 	{
 		if (!String.IsNullOrWhiteSpace(Controller.Data.AppSettings.LastModule) && Controller.SetModule(Controller.Data.AppSettings.LastModule))
@@ -153,6 +167,7 @@ public partial class MainWindow : ClipboardMonitorWindow, IViewFor<MainAppData>
 		{
 			Controller.Data.ModuleSelectionVisibility = Visibility.Visible;
 		}
+		SetTheme(true);
 	}
 
 	private void AutoUpdater_ApplicationExitEvent()
