@@ -4,52 +4,15 @@ namespace SCG.Data.View;
 
 public class MenuBarData : ReactiveObject
 {
-	private MenuData fileMenu;
+	[Reactive] public MenuData File { get; private set; }
 
-	public MenuData File
-	{
-		get { return fileMenu; }
-		set
-		{
-			this.RaiseAndSetIfChanged(ref fileMenu, value);
-		}
-	}
+	[Reactive] public MenuData Options { get; private set; }
 
-	private MenuData optionsMenu;
+	[Reactive] public MenuData Tools { get; private set; }
 
-	public MenuData Options
-	{
-		get { return optionsMenu; }
-		set
-		{
-			this.RaiseAndSetIfChanged(ref optionsMenu, value);
-		}
-	}
+	[Reactive] public MenuData Help { get; private set; }
 
-	private MenuData toolsMenu;
-
-	public MenuData Tools
-	{
-		get { return toolsMenu; }
-		set
-		{
-			this.RaiseAndSetIfChanged(ref toolsMenu, value);
-		}
-	}
-
-
-	private MenuData helpMenu;
-
-	public MenuData Help
-	{
-		get { return helpMenu; }
-		set
-		{
-			this.RaiseAndSetIfChanged(ref helpMenu, value);
-		}
-	}
-
-	public ObservableCollection<MenuData> Menus { get; set; }
+	public ObservableCollection<MenuData> Menus { get; private set; }
 
 	public void RemoveAllModuleMenus(string ModuleName)
 	{
@@ -60,7 +23,7 @@ public class MenuBarData : ReactiveObject
 		Log.Here().Activity($"Removed menus for module {ModuleName}.");
 	}
 
-	public MenuData FindByID(string ID)
+	public MenuData? FindByID(string ID)
 	{
 		foreach (var menu in Menus)
 		{

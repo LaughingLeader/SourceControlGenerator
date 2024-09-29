@@ -1,4 +1,6 @@
-﻿using System.Windows;
+﻿using SCG.Data.View;
+
+using System.Windows;
 using System.Windows.Controls;
 
 namespace SCG.Controls;

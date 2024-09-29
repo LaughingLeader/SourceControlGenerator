@@ -9,7 +9,7 @@ namespace SCG.Data.View;
 
 public interface IMenuData
 {
-	string Module { get; set; }
+	string? Module { get; set; }
 }
 
 public class MenuShortcutInputBinding
@@ -36,52 +36,26 @@ public class MenuShortcutInputBinding
 [DebuggerDisplay("{Header}, Children={MenuItems.Count}")]
 public class MenuData : ReactiveObject, IMenuData
 {
-	public string ID { get; set; } = "";
+	[Reactive] public string ID { get; set; }
+	[Reactive] public string Header { get; set; }
+	[Reactive] public bool IsEnabled { get; set; }
+	[Reactive] public bool IsChecked { get; set; }
+	[Reactive] public string ShortcutText { get; set; }
+	[Reactive] public ICommand? ClickCommand { get; set; }
+	[Reactive] public string? Module { get; set; }
+	[Reactive] public Binding? HeaderBinding { get; set; }
 
-	private string header = "";
+	public List<MenuShortcutInputBinding> Shortcuts { get; } = [];
 
-	public string Header
+	private readonly ObservableCollectionExtended<IMenuData> _menuItems = [];
+	public ObservableCollectionExtended<IMenuData> MenuItems
 	{
-		get
-		{
-			return header;
-		}
+		get => _menuItems;
 		set
 		{
-			this.RaiseAndSetIfChanged(ref header, value);
+			if(value != null) _menuItems.AddRange(value);
 		}
 	}
-
-	private bool isEnabled = true;
-
-	public bool IsEnabled
-	{
-		get
-		{
-			return isEnabled;
-		}
-
-		set
-		{
-			if (ClickCommand != null && isEnabled != value)
-			{
-				ClickCommand.CanExecute(value);
-			}
-			this.RaiseAndSetIfChanged(ref isEnabled, value);
-		}
-	}
-
-	private bool isChecked = false;
-
-	public bool IsChecked
-	{
-		get => isChecked;
-		set { this.RaiseAndSetIfChanged(ref isChecked, value); }
-	}
-
-
-	public List<MenuShortcutInputBinding> Shortcuts { get; set; } = [];
-	public ObservableCollectionExtended<IMenuData> MenuItems { get; set; } = [];
 
 	private readonly List<InputBindingCollection> registeredInputCollections = [];
 
@@ -102,20 +76,6 @@ public class MenuData : ReactiveObject, IMenuData
 		}
 
 		return shortcut;
-	}
-
-	private string shortcutText = "";
-
-	public string ShortcutText
-	{
-		get
-		{
-			return shortcutText;
-		}
-		set
-		{
-			this.RaiseAndSetIfChanged(ref shortcutText, value);
-		}
 	}
 
 	public void UpdateShortcutText()
@@ -141,41 +101,6 @@ public class MenuData : ReactiveObject, IMenuData
 		else
 		{
 			ShortcutText = "";
-		}
-	}
-
-	//public Func<string> GetHeader { get; set; }
-
-	private Binding headerBinding;
-
-	public Binding HeaderBinding
-	{
-		get { return headerBinding; }
-		set
-		{
-			this.RaiseAndSetIfChanged(ref headerBinding, value);
-		}
-	}
-
-	private ICommand clickCommand;
-
-	public ICommand ClickCommand
-	{
-		get { return clickCommand; }
-		set
-		{
-			this.RaiseAndSetIfChanged(ref clickCommand, value);
-		}
-	}
-
-	private string module;
-
-	public string Module
-	{
-		get { return module; }
-		set
-		{
-			this.RaiseAndSetIfChanged(ref module, value);
 		}
 	}
 
@@ -263,7 +188,7 @@ public class MenuData : ReactiveObject, IMenuData
 		}
 	}
 
-	public MenuData FindByID(string ID)
+	public MenuData? FindByID(string ID)
 	{
 		if (this.ID == ID) return this;
 
@@ -299,26 +224,39 @@ public class MenuData : ReactiveObject, IMenuData
 		return this;
 	}
 
-	private void Init(string MenuID, string menuName)
+	public MenuData()
 	{
-		ID = MenuID;
+		ID = "";
+		Header = "";
+		ShortcutText = "";
+		IsEnabled = true;
+		IsChecked = true;
+
+		this.WhenAnyValue(x => x.IsEnabled).Subscribe(b =>
+		{
+			if(ClickCommand != null)
+			{
+				ClickCommand.CanExecute(b);
+			}
+		});
+	}
+
+	public MenuData(string menuID) : this()
+	{
+		ID = menuID;
+	}
+
+	public MenuData(string menuID, string menuName) : this()
+	{
+		ID = menuID;
 		Header = menuName;
 	}
 
-	public MenuData(string menuID)
-	{
-		Init(menuID, "");
-	}
-
-	public MenuData(string menuID, string menuName)
-	{
-		Init(menuID, menuName);
-	}
-
 	public MenuData(string menuID, string menuName, ICommand command = null,
-		Key? shortcutKey = null, ModifierKeys? shortcutModifiers = null)
+		Key? shortcutKey = null, ModifierKeys? shortcutModifiers = null) : this()
 	{
-		Init(menuID, menuName);
+		ID = menuID;
+		Header = menuName;
 
 		if (command != null) ClickCommand = command;
 
@@ -329,9 +267,10 @@ public class MenuData : ReactiveObject, IMenuData
 		}
 	}
 
-	public MenuData(string menuID, string menuName, ICommand command, params MenuShortcutInputBinding[] shortcuts)
+	public MenuData(string menuID, string menuName, ICommand command, params MenuShortcutInputBinding[] shortcuts) : this()
 	{
-		Init(menuID, menuName);
+		ID = menuID;
+		Header = menuName;
 		ClickCommand = command;
 
 		if (shortcuts != null)
@@ -348,5 +287,5 @@ public class MenuData : ReactiveObject, IMenuData
 [DebuggerDisplay("---")]
 public class SeparatorData : IMenuData
 {
-	public string Module { get; set; }
+	public string? Module { get; set; }
 }

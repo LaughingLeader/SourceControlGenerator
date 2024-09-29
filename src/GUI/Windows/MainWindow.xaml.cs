@@ -8,6 +8,7 @@ using SCG.Data.View;
 using SCG.FileGen;
 using SCG.Interfaces;
 
+using System.Collections.Specialized;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -135,14 +136,56 @@ public partial class MainWindow : ClipboardMonitorWindow, IViewFor<MainAppData>
 		AutoUpdater.ApplicationExitEvent += AutoUpdater_ApplicationExitEvent;
 		AutoUpdater.HttpUserAgent = "SourceControlGeneratorUser";
 
-		this.WhenActivated((disposables) =>
+		this.WhenActivated(d =>
 		{
-			this.OneWayBind(ViewModel, vm => vm.ProgressValueTaskBar, v => v.TaskbarItemInfo.ProgressValue).DisposeWith(disposables);
+			this.OneWayBind(ViewModel, vm => vm.ProgressValueTaskBar, v => v.TaskbarItemInfo.ProgressValue);
 
 			Controller.CheckForUpdates();
 		});
 
 		this.Loaded += MainWindow_Loaded;
+	}
+
+	public void BuildMenu()
+	{
+		TopMenu.Items.Clear();
+		foreach (var menuEntry in ViewModel.MenuBarData.Menus)
+		{
+			if(menuEntry.MenuItems.Count > 0)
+			{
+				AddMenuItem(menuEntry, TopMenu.Items);
+			}
+		}
+	}
+
+	private void AddMenuItem(IMenuData entry, ItemCollection target)
+	{
+		if (entry is MenuData menuEntry)
+		{
+			var menuItem = new MenuItem()
+			{
+				Command = menuEntry.ClickCommand,
+				Tag = menuEntry,
+				DataContext = menuEntry
+			};
+			if (menuEntry.Header.StartsWith("_"))
+			{
+				menuItem.Header = new AccessText() { Text = menuEntry.Header };
+			}
+			else
+			{
+				menuItem.Header = new TextBlock() { Text = menuEntry.Header };
+			}
+			target.Add(menuItem);
+			foreach (var child in menuEntry.MenuItems)
+			{
+				AddMenuItem(child, menuItem.Items);
+			}
+		}
+		else if (entry is SeparatorData)
+		{
+			target.Add(new Separator() { Tag = entry });
+		}
 	}
 
 	public static readonly Uri LightTheme = new("pack://application:,,,/AdonisUI;component/ColorSchemes/Light.xaml");
@@ -214,6 +257,8 @@ public partial class MainWindow : ClipboardMonitorWindow, IViewFor<MainAppData>
 
 			Controller.Data.ModuleSelectionVisibility = Visibility.Visible;
 		}
+
+		BuildMenu();
 	}
 
 	protected override void OnClipboardUpdate()
