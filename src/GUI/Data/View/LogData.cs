@@ -15,13 +15,17 @@ public class LogData : ReactiveObject
 	[ObservableAsProperty] public Brush? BackgroundColor { get; }
 	[ObservableAsProperty] public string? Output { get; }
 
+	public static readonly Brush ImportantBrush = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#880080FF"));
+	public static readonly Brush ErrorBrush = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#88FA8072"));
+	public static readonly Brush WarningBrush = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#88F0E68C"));
+
 	private static Brush LogTypeToBrush(LogType logType)
 	{
 		return logType switch
 		{
-			LogType.Important => Brushes.Azure,
-			LogType.Error => Brushes.Salmon,
-			LogType.Warning => Brushes.Khaki,
+			LogType.Important => ImportantBrush,
+			LogType.Error => ErrorBrush,
+			LogType.Warning => WarningBrush,
 			_ => Brushes.Transparent,
 		};
 	}
