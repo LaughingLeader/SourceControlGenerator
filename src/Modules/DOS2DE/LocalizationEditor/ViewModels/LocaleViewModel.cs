@@ -3027,7 +3027,7 @@ public class LocaleViewModel : HistoryBaseViewModel
 				view.SaveSettings();
 			}
 		});
-		wordWrapMenuItem.ClickCommand = wordWrapCommand;
+		wordWrapMenuItem.Command = wordWrapCommand;
 		MenuData.View.Add(wordWrapMenuItem);
 
 		MenuData.Tools.Add(new MenuData("Tools.CheckForDuplicates", "Check for Duplicate Keys", CheckForDuplicateKeysCommand));

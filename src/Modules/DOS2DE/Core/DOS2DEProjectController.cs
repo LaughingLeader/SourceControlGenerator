@@ -1496,28 +1496,28 @@ public class DOS2DEProjectController : IProjectController
 		BackupSelectedMenuData = new MenuData("DOS2DE.BackupSelected")
 		{
 			Header = "Backup Selected Projects",
-			ClickCommand = new ActionCommand(() => { BackupSelectedProjects(); }),
+			Command = new ActionCommand(() => { BackupSelectedProjects(); }),
 			IsEnabled = false
 		};
 
 		BackupSelectedToMenuData = new MenuData("DOS2DE.BackupSelectedTo")
 		{
 			Header = "Backup Selected Projects To...",
-			ClickCommand = new ActionCommand(BackupSelectedProjectsTo),
+			Command = new ActionCommand(BackupSelectedProjectsTo),
 			IsEnabled = false
 		};
 
 		StartGitGenerationMenuData = new MenuData("DOS2DE.StartGitGenerator")
 		{
 			Header = "Start Git Generator...",
-			ClickCommand = new ActionCommand(OpenGitGeneratorWindow),
+			Command = new ActionCommand(OpenGitGeneratorWindow),
 			IsEnabled = false
 		};
 
 		OpenLocalModsFolderMenuData = new MenuData("DOS2DE.OpenLocalModsFolder")
 		{
 			Header = "Open Local Mods Folder...",
-			ClickCommand = new ActionCommand(() =>
+			Command = new ActionCommand(() =>
 			{
 				OpenFolder(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), @"Larian Studios\Divinity Original Sin 2 Definitive Edition\Local Mods"));
 			}),
@@ -1529,7 +1529,7 @@ public class DOS2DEProjectController : IProjectController
 			new MenuData("DOS2DE.RefreshProjects")
 			{
 				Header = "Refresh Projects",
-				MenuItems =
+				Children =
 				[
 					new MenuData("DOS2DE.RefreshAll", "Refresh All", Data.RefreshAllCommand, System.Windows.Input.Key.F5),
 					new MenuData("DOS2DE.RefreshManagedData", "Refresh Managed Data", ReactiveCommand.Create(RefreshModProjects_Start, canRefresh)),

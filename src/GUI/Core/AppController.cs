@@ -985,19 +985,17 @@ public class AppController
 		DebugWindowMenuData = new MenuData(MenuID.ToggleDebugWindow, "Open Debug Window",
 			new ActionCommand(MenuAction_ToggleDebugWindow), Key.F8, ModifierKeys.Alt);
 
-		//LogMenuData.SetHeaderBinding(mainWindow.LogWindow.Data, "LogVisibleText");
-
 		Data.MenuBarData.Options.Register("Base",
 			new MenuData(MenuID.SelectModule)
 			{
 				Header = "Select Module...",
-				ClickCommand = new ActionCommand(MenuAction_OpenModuleSelectScreen)
+				Command = new ActionCommand(MenuAction_OpenModuleSelectScreen)
 			},
 			LogMenuData,
 			new MenuData(MenuID.SaveLog)
 			{
 				Header = "Save Log...",
-				ClickCommand = new ActionCommand(MenuAction_SaveLog)
+				Command = new ActionCommand(MenuAction_SaveLog)
 			},
 			DebugWindowMenuData
 		);
@@ -1011,22 +1009,22 @@ public class AppController
 			new MenuData(MenuID.RepoLink)
 			{
 				Header = "Check for Updates",
-				ClickCommand = ReactiveCommand.Create(new Action(() => { CheckForUpdates(true); }))
+				Command = ReactiveCommand.Create(new Action(() => { CheckForUpdates(true); }))
 			},
 			new MenuData(MenuID.RepoLink)
 			{
 				Header = "Releases (Github)...",
-				ClickCommand = ReactiveCommand.Create(new Action(() => { Helpers.Web.OpenUri(DefaultPaths.ReleasesLink); }))
+				Command = ReactiveCommand.Create(new Action(() => { Helpers.Web.OpenUri(DefaultPaths.ReleasesLink); }))
 			},
 			new MenuData(MenuID.SupportLink)
 			{
 				Header = "Donate a Coffee...",
-				ClickCommand = ReactiveCommand.Create(new Action(() => { Helpers.Web.OpenUri(DefaultPaths.SupportLink); }))
+				Command = ReactiveCommand.Create(new Action(() => { Helpers.Web.OpenUri(DefaultPaths.SupportLink); }))
 			},
 			new MenuData(MenuID.IssuesLink)
 			{
 				Header = "Report Bug / Give Feedback (Github)...",
-				ClickCommand = ReactiveCommand.Create(new Action(() => { Helpers.Web.OpenUri(DefaultPaths.IssuesLink); }))
+				Command = ReactiveCommand.Create(new Action(() => { Helpers.Web.OpenUri(DefaultPaths.IssuesLink); }))
 			},
 			new MenuData(MenuID.About, "About Source Control Generator", new ActionCommand(MenuAction_OpenAbout), Key.F1)
 		);

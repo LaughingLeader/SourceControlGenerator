@@ -1,4 +1,5 @@
-﻿using DynamicData.Binding;
+﻿using DynamicData;
+using DynamicData.Binding;
 
 using System.Diagnostics;
 using System.Windows;
@@ -17,7 +18,7 @@ public class MenuShortcutInputBinding
 	public Key Key { get; set; }
 	public ModifierKeys Modifiers { get; set; }
 
-	public KeyBinding InputBinding { get; set; }
+	public KeyBinding? InputBinding { get; set; }
 
 	public MenuShortcutInputBinding(Key key, ModifierKeys? modifiers = null)
 	{
@@ -33,7 +34,6 @@ public class MenuShortcutInputBinding
 	}
 }
 
-[DebuggerDisplay("{Header}, Children={MenuItems.Count}")]
 public class MenuData : ReactiveObject, IMenuData
 {
 	[Reactive] public string ID { get; set; }
@@ -41,19 +41,19 @@ public class MenuData : ReactiveObject, IMenuData
 	[Reactive] public bool IsEnabled { get; set; }
 	[Reactive] public bool IsChecked { get; set; }
 	[Reactive] public string ShortcutText { get; set; }
-	[Reactive] public ICommand? ClickCommand { get; set; }
+	[Reactive] public ICommand? Command { get; set; }
 	[Reactive] public string? Module { get; set; }
 	[Reactive] public Binding? HeaderBinding { get; set; }
 
-	public List<MenuShortcutInputBinding> Shortcuts { get; } = [];
+	public SourceList<MenuShortcutInputBinding> Shortcuts { get; } = new();
 
-	private readonly ObservableCollectionExtended<IMenuData> _menuItems = [];
-	public ObservableCollectionExtended<IMenuData> MenuItems
+	private readonly ObservableCollectionExtended<IMenuData> _children = [];
+	public ObservableCollectionExtended<IMenuData> Children
 	{
-		get => _menuItems;
+		get => _children;
 		set
 		{
-			if(value != null) _menuItems.AddRange(value);
+			if(value != null) _children.AddRange(value);
 		}
 	}
 
@@ -63,11 +63,10 @@ public class MenuData : ReactiveObject, IMenuData
 	{
 		var shortcut = new MenuShortcutInputBinding(shortcutKey, shortcutModifiers);
 		Shortcuts.Add(shortcut);
-		UpdateShortcutText();
 
 		if (registeredInputCollections.Count > 0)
 		{
-			shortcut.InputBinding = new KeyBinding(ClickCommand, shortcut.Key, shortcut.Modifiers);
+			shortcut.InputBinding = new KeyBinding(Command, shortcut.Key, shortcut.Modifiers);
 
 			foreach (var InputBindings in registeredInputCollections)
 			{
@@ -78,14 +77,14 @@ public class MenuData : ReactiveObject, IMenuData
 		return shortcut;
 	}
 
-	public void UpdateShortcutText()
+	private void UpdateShortcutText()
 	{
 		if (Shortcuts.Count > 0)
 		{
 			var text = "";
-			for (var i = 0; i < Shortcuts.Count; i++)
+			var i = 0;
+			foreach(var shortcut in Shortcuts.Items)
 			{
-				var shortcut = Shortcuts[i];
 				if (i > 0) text += " or ";
 				if (shortcut.Modifiers != ModifierKeys.None)
 				{
@@ -95,6 +94,7 @@ public class MenuData : ReactiveObject, IMenuData
 				{
 					text += SCG.App.KeyConverter.ConvertToString(shortcut.Key);
 				}
+				i++;
 			}
 			ShortcutText = text;
 		}
@@ -104,25 +104,13 @@ public class MenuData : ReactiveObject, IMenuData
 		}
 	}
 
-	public void SetHeaderBinding(object Source, string Path, BindingMode bindingMode = BindingMode.Default, UpdateSourceTrigger updateSourceTrigger = UpdateSourceTrigger.PropertyChanged)
-	{
-		var binding = new Binding
-		{
-			Source = Source,
-			Path = new PropertyPath(Path),
-			Mode = bindingMode,
-			UpdateSourceTrigger = updateSourceTrigger
-		};
-		HeaderBinding = binding;
-	}
-
 	public void Register(string ModuleName, params IMenuData[] newMenuItems)
 	{
 		for (var i = 0; i < newMenuItems.Length; i++)
 		{
 			var menuItem = newMenuItems[i];
 			menuItem.Module = ModuleName;
-			MenuItems.Add(menuItem);
+			Children.Add(menuItem);
 		}
 	}
 
@@ -130,20 +118,20 @@ public class MenuData : ReactiveObject, IMenuData
 	{
 		if (Shortcuts.Count > 0)
 		{
-			foreach (var shortcut in Shortcuts)
+			foreach (var shortcut in Shortcuts.Items)
 			{
 				if (shortcut.InputBinding == null)
 				{
-					shortcut.InputBinding = new KeyBinding(ClickCommand, shortcut.Key, shortcut.Modifiers);
+					shortcut.InputBinding = new KeyBinding(Command, shortcut.Key, shortcut.Modifiers);
 				}
 				//Log.Here().Activity($"Registered binding: {shortcut.Key} + {shortcut.Modifiers}");
 				InputBindings.Add(shortcut.InputBinding);
 			}
 		}
 
-		if (MenuItems != null)
+		if (Children != null)
 		{
-			foreach (var menu in MenuItems)
+			foreach (var menu in Children)
 			{
 				if (menu is MenuData menuData)
 				{
@@ -162,7 +150,7 @@ public class MenuData : ReactiveObject, IMenuData
 	{
 		if (Shortcuts.Count > 0)
 		{
-			foreach (var shortcut in Shortcuts)
+			foreach (var shortcut in Shortcuts.Items)
 			{
 				if (shortcut.InputBinding != null)
 				{
@@ -171,9 +159,9 @@ public class MenuData : ReactiveObject, IMenuData
 			}
 		}
 
-		if (MenuItems != null)
+		if (Children != null)
 		{
-			foreach (var menu in MenuItems)
+			foreach (var menu in Children)
 			{
 				if (menu is MenuData menuData)
 				{
@@ -192,16 +180,16 @@ public class MenuData : ReactiveObject, IMenuData
 	{
 		if (this.ID == ID) return this;
 
-		if (MenuItems.Count > 0)
+		if (Children.Count > 0)
 		{
-			var match = MenuItems.Where(d => d is MenuData menu && menu.ID == ID).FirstOrDefault() as MenuData;
+			var match = Children.Where(d => d is MenuData menu && menu.ID == ID).FirstOrDefault() as MenuData;
 			if (match != null)
 			{
 				return match;
 			}
 			else
 			{
-				foreach (var data in this.MenuItems)
+				foreach (var data in this.Children)
 				{
 					if (data is MenuData menu)
 					{
@@ -219,7 +207,7 @@ public class MenuData : ReactiveObject, IMenuData
 	{
 		foreach (var item in menuItems)
 		{
-			MenuItems.Add(item);
+			Children.Add(item);
 		}
 		return this;
 	}
@@ -234,57 +222,53 @@ public class MenuData : ReactiveObject, IMenuData
 
 		this.WhenAnyValue(x => x.IsEnabled).Subscribe(b =>
 		{
-			if(ClickCommand != null)
-			{
-				ClickCommand.CanExecute(b);
-			}
+			Command?.CanExecute(b);
+		});
+
+		Shortcuts.CountChanged.ThrottleFirst(TimeSpan.FromMilliseconds(50)).ObserveOn(RxApp.MainThreadScheduler).Subscribe(x =>
+		{
+			UpdateShortcutText();
 		});
 	}
 
-	public MenuData(string menuID) : this()
+	public MenuData(string id) : this()
 	{
-		ID = menuID;
+		ID = id;
 	}
 
-	public MenuData(string menuID, string menuName) : this()
+	public MenuData(string id, string name) : this()
 	{
-		ID = menuID;
-		Header = menuName;
+		ID = id;
+		Header = name;
 	}
 
-	public MenuData(string menuID, string menuName, ICommand command = null,
+	public MenuData(string id, string name, ICommand? command = null,
 		Key? shortcutKey = null, ModifierKeys? shortcutModifiers = null) : this()
 	{
-		ID = menuID;
-		Header = menuName;
+		ID = id;
+		Header = name;
 
-		if (command != null) ClickCommand = command;
+		if (command != null) Command = command;
 
 		if (shortcutKey != null)
 		{
 			Shortcuts.Add(new MenuShortcutInputBinding(shortcutKey.Value, shortcutModifiers));
-			UpdateShortcutText();
 		}
 	}
 
-	public MenuData(string menuID, string menuName, ICommand command, params MenuShortcutInputBinding[] shortcuts) : this()
+	public MenuData(string id, string name, ICommand command, params MenuShortcutInputBinding[] shortcuts) : this()
 	{
-		ID = menuID;
-		Header = menuName;
-		ClickCommand = command;
+		ID = id;
+		Header = name;
+		Command = command;
 
 		if (shortcuts != null)
 		{
-			foreach (var shortcut in shortcuts)
-			{
-				Shortcuts.Add(shortcut);
-			}
-			UpdateShortcutText();
+			Shortcuts.AddRange(shortcuts);
 		}
 	}
 }
 
-[DebuggerDisplay("---")]
 public class SeparatorData : IMenuData
 {
 	public string? Module { get; set; }

@@ -151,7 +151,7 @@ public partial class MainWindow : ClipboardMonitorWindow, IViewFor<MainAppData>
 		TopMenu.Items.Clear();
 		foreach (var menuEntry in ViewModel.MenuBarData.Menus)
 		{
-			if(menuEntry.MenuItems.Count > 0)
+			if(menuEntry.Children.Count > 0)
 			{
 				AddMenuItem(menuEntry, TopMenu.Items);
 			}
@@ -164,7 +164,7 @@ public partial class MainWindow : ClipboardMonitorWindow, IViewFor<MainAppData>
 		{
 			var menuItem = new MenuItem()
 			{
-				Command = menuEntry.ClickCommand,
+				Command = menuEntry.Command,
 				Tag = menuEntry,
 				DataContext = menuEntry
 			};
@@ -177,7 +177,7 @@ public partial class MainWindow : ClipboardMonitorWindow, IViewFor<MainAppData>
 				menuItem.Header = new TextBlock() { Text = menuEntry.Header };
 			}
 			target.Add(menuItem);
-			foreach (var child in menuEntry.MenuItems)
+			foreach (var child in menuEntry.Children)
 			{
 				AddMenuItem(child, menuItem.Items);
 			}

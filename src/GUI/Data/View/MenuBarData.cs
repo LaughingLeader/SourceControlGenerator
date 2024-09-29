@@ -18,7 +18,7 @@ public class MenuBarData : ReactiveObject
 	{
 		foreach (var menu in Menus)
 		{
-			menu.MenuItems.RemoveAll(m => m.Module == ModuleName);
+			menu.Children.RemoveAll(m => m.Module == ModuleName);
 		}
 		Log.Here().Activity($"Removed menus for module {ModuleName}.");
 	}
