@@ -5,49 +5,39 @@ namespace SCG.Data.View;
 
 public class LogData : ReactiveObject
 {
-	public DateTime DateTime { get; set; }
+	[Reactive] public DateTimeOffset DateTime { get; set; }
+	[Reactive] public int Index { get; set; }
+	[Reactive] public string? Message { get; set; }
 
-	public int Index { get; set; }
+	[Reactive] public bool IsVisible { get; set; }
+	[Reactive] public LogType MessageType { get; set; }
 
-	public string Message { get; set; }
+	[ObservableAsProperty] public Brush? BackgroundColor { get; }
+	[ObservableAsProperty] public string? Output { get; }
 
-	public string Output { get; set; }
-
-	public LogType MessageType { get; set; }
-
-	public Brush BackgroundColor { get; set; }
-
-	private bool isVisible = true;
-
-	public bool IsVisible
+	private static Brush LogTypeToBrush(LogType logType)
 	{
-		get { return isVisible; }
-		set
+		return logType switch
 		{
-			this.RaiseAndSetIfChanged(ref isVisible, value);
-		}
+			LogType.Important => Brushes.Azure,
+			LogType.Error => Brushes.Salmon,
+			LogType.Warning => Brushes.Khaki,
+			_ => Brushes.Transparent,
+		};
 	}
 
-	public void FormatOutput()
+	private static string FormatMessage(ValueTuple<int, string?> x)
 	{
-		//Output = String.Format("[{0}][{1}]: {2}", DateTime.ToLongTimeString(), Index.ToString().PadLeft(4, '0'), Message);
-		Output = String.Format("[{0}]: {1}", Index.ToString().PadLeft(4, '0'), Message);
+		var index = x.Item1;
+		var message = x.Item2;
+		return $"[{index}]: {message ?? string.Empty}";
+	}
 
-		switch (MessageType)
-		{
-			case LogType.Activity:
-				BackgroundColor = SystemColors.WindowBrush;
-				break;
-			case LogType.Important:
-				BackgroundColor = new SolidColorBrush(Colors.Azure);
-				break;
-			case LogType.Error:
-				BackgroundColor = new SolidColorBrush(Colors.Salmon);
-				break;
-			case LogType.Warning:
-				BackgroundColor = new SolidColorBrush(Colors.Khaki);
-				break;
-		}
+	public LogData()
+	{
+		IsVisible = true;
+		this.WhenAnyValue(x => x.MessageType).Select(LogTypeToBrush).ToUIProperty(this, x => x.BackgroundColor);
+		this.WhenAnyValue(x => x.Index, x => x.Message).Select(FormatMessage).ToUIProperty(this, x => x.Output);
 	}
 }
 
