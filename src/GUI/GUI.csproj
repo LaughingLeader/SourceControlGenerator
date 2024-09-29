@@ -29,6 +29,8 @@
 	<ItemGroup>
 		<ProjectReference Include="..\Utilities\Utilities.csproj" />
 		<ProjectReference Include="..\MarkdownConverter\MarkdownConverter.csproj" />
+		<ProjectReference Include="$(SolutionDir)External\adonis-ui\src\AdonisUI.ClassicTheme\AdonisUI.ClassicTheme.csproj" />
+		<ProjectReference Include="$(SolutionDir)External\adonis-ui\src\AdonisUI\AdonisUI.csproj" />
 	</ItemGroup>
 
 	<ItemGroup>

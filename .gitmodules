@@ -1,3 +1,6 @@
 [submodule "lslib"]
 	path = External/lslib
 	url = https://github.com/LaughingLeader/lslib
+[submodule "adonis-ui"]
+	path = External/adonis-ui
+	url = https://github.com/LaughingLeader/adonis-ui
