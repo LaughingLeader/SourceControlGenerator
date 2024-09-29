@@ -1,6 +1,8 @@
 ﻿<rxui:ReactiveUserControl x:Class="SCG.BG3.Views.MainView"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:adonisExtensions="clr-namespace:AdonisUI.Extensions;assembly=AdonisUI"
+    xmlns:adonisUI="clr-namespace:AdonisUI;assembly=AdonisUI"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:local="clr-namespace:SCG.BG3.Views"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -11,10 +13,6 @@
     x:TypeArguments="vm:MainViewViewModel"
     mc:Ignorable="d">
 	<UserControl.Resources>
-		<DataTemplate x:Key="GridViewTextblockHeaderTemplate">
-			<TextBlock Margin="2,0,2,0" Text="{Binding}" />
-		</DataTemplate>
-
 		<ToolTip x:Key="ProjectToolTip">
 			<StackPanel Orientation="Vertical">
 				<TextBlock>
@@ -24,15 +22,48 @@
 				<Image Source="{Binding Thumbnail}" Visibility="{Binding HasThumbnail}" />
 			</StackPanel>
 		</ToolTip>
+		<Style x:Key="GridViewLeftContainerStyle" BasedOn="{StaticResource {x:Type GridViewColumnHeader}}" TargetType="{x:Type GridViewColumnHeader}">
+			<Setter Property="HorizontalContentAlignment" Value="Left" />
+			<Setter Property="Margin" Value="4,0,0,0" />
+		</Style>
+		<Style x:Key="GridViewCenteredContainerStyle" BasedOn="{StaticResource {x:Type GridViewColumnHeader}}" TargetType="{x:Type GridViewColumnHeader}">
+			<Setter Property="HorizontalContentAlignment" Value="Center" />
+			<Setter Property="VerticalContentAlignment" Value="Center" />
+			<Setter Property="Margin" Value="2" />
+		</Style>
+		<DataTemplate x:Key="GridViewTextblockHeaderTemplate">
+			<TextBlock Margin="2,0,2,0" Text="{Binding}" />
+		</DataTemplate>
 
+		<Style x:Key="ProjectListItem" BasedOn="{StaticResource {x:Type ListViewItem}}" TargetType="{x:Type ListViewItem}">
+			<Setter Property="Tag" Value="{Binding}" />
+			<Setter Property="HorizontalContentAlignment" Value="Stretch" />
+			<Setter Property="FocusVisualStyle">
+				<Setter.Value>
+					<Style>
+						<Setter Property="Control.Template">
+							<Setter.Value>
+								<ControlTemplate>
+									<Rectangle SnapsToDevicePixels="true" Stroke="{DynamicResource {x:Static adonisUI:Brushes.AccentIntenseHighlightBorderBrush}}" StrokeThickness="2" />
+								</ControlTemplate>
+							</Setter.Value>
+						</Setter>
+					</Style>
+				</Setter.Value>
+			</Setter>
+		</Style>
+
+		<Style x:Key="CellText" BasedOn="{StaticResource {x:Type TextBlock}}" TargetType="TextBlock">
+			<Setter Property="TextAlignment" Value="Left" />
+			<Setter Property="Margin" Value="-6,0" />
+			<Setter Property="Foreground" Value="{DynamicResource {x:Static adonisUI:Brushes.ForegroundBrush}}" />
+		</Style>
 	</UserControl.Resources>
 	<Grid>
-		<ListView x:Name="ProjectsListView">
-			<ListView.ItemContainerStyle>
-				<Style TargetType="ListViewItem">
-					<Setter Property="HorizontalContentAlignment" Value="Stretch" />
-				</Style>
-			</ListView.ItemContainerStyle>
+		<ListView x:Name="ProjectsListView"
+		    HorizontalAlignment="Stretch"
+		    HorizontalContentAlignment="Stretch"
+		    ItemContainerStyle="{StaticResource ProjectListItem}">
 			<ListView.View>
 				<GridView>
 					<GridView.Columns>
@@ -43,7 +74,7 @@
 									    HorizontalAlignment="Stretch"
 									    ToolTip="{StaticResource ProjectToolTip}"
 									    ToolTipService.InitialShowDelay="250">
-										<TextBlock Text="{Binding DisplayName}" TextAlignment="Left" />
+										<TextBlock Style="{StaticResource CellText}" Text="{Binding DisplayName}" TextAlignment="Left" />
 									</Border>
 								</DataTemplate>
 							</GridViewColumn.CellTemplate>
@@ -52,7 +83,29 @@
 						<GridViewColumn Width="80" Header="Version" HeaderTemplate="{StaticResource GridViewTextblockHeaderTemplate}">
 							<GridViewColumn.CellTemplate>
 								<DataTemplate>
-									<TextBlock Text="{Binding Version}" TextAlignment="Left" ToolTip="{Binding Version}" />
+									<TextBlock Style="{StaticResource CellText}" Text="{Binding Version}" ToolTip="{Binding Version}" />
+								</DataTemplate>
+							</GridViewColumn.CellTemplate>
+						</GridViewColumn>
+
+						<GridViewColumn Width="80" Header="Created" HeaderTemplate="{StaticResource GridViewTextblockHeaderTemplate}">
+							<GridViewColumn.CellTemplate>
+								<DataTemplate>
+									<TextBlock Style="{StaticResource CellText}"
+									    Text="{Binding CreatedDateText}"
+									    TextAlignment="Left"
+									    ToolTip="{Binding CreatedDateFullText}" />
+								</DataTemplate>
+							</GridViewColumn.CellTemplate>
+						</GridViewColumn>
+
+						<GridViewColumn Width="80" Header="Modified" HeaderTemplate="{StaticResource GridViewTextblockHeaderTemplate}">
+							<GridViewColumn.CellTemplate>
+								<DataTemplate>
+									<TextBlock Style="{StaticResource CellText}"
+									    Text="{Binding ModifiedDateText}"
+									    TextAlignment="Left"
+									    ToolTip="{Binding ModifiedDateFullText}" />
 								</DataTemplate>
 							</GridViewColumn.CellTemplate>
 						</GridViewColumn>
