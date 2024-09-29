@@ -1,5 +1,6 @@
 ﻿using LSLib.LS;
 
+using System.Windows;
 using System.Windows.Media.Imaging;
 
 namespace SCG.BG3.Models;
@@ -14,9 +15,12 @@ public class ProjectData : ReactiveObject
 	[Reactive] public string? ThumbnailFilePath { get; set; }
 	[Reactive] public string? ModMetaFilePath { get; set; }
 	[Reactive] public ModuleData? Mod { get; set; }
-
-
 	[Reactive] public BitmapImage? Thumbnail { get; private set; }
+
+	[ObservableAsProperty] public string? DisplayName { get; }
+	[ObservableAsProperty] public string? Version { get; }
+	[ObservableAsProperty] public Visibility HasThumbnail { get; }
+
 
 	private static readonly string[] _thumbnailImageTypes = [".png", ".jpg", ".jpeg"];
 
@@ -105,5 +109,20 @@ public class ProjectData : ReactiveObject
 				_loadThumbnailDisp = RxApp.TaskpoolScheduler.ScheduleAsync(LoadThumbnailAsync);
 			}
 		});
+
+		this.WhenAnyValue(x => x.Name, x => x.Mod.Name).Select(x =>
+		{
+			if(!string.IsNullOrEmpty(x.Item2))
+			{
+				return x.Item2;
+			}
+			return x.Item1;
+		}).ToUIProperty(this, x => x.DisplayName);
+
+		this.WhenAnyValue(x => x.Mod.VersionDisplayValue).Select(x => !string.IsNullOrEmpty(x) ? x : string.Empty)
+			.ToUIProperty(this, x => x.Version);
+
+		this.WhenAnyValue(x => x.Thumbnail).Select(x => x != null ? Visibility.Visible : Visibility.Collapsed)
+			.ToUIProperty(this, x => x.HasThumbnail, Visibility.Collapsed);
 	}
 }

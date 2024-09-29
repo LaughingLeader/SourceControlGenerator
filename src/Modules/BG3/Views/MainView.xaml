@@ -10,7 +10,55 @@
     d:DesignWidth="800"
     x:TypeArguments="vm:MainViewViewModel"
     mc:Ignorable="d">
+	<UserControl.Resources>
+		<DataTemplate x:Key="GridViewTextblockHeaderTemplate">
+			<TextBlock Margin="2,0,2,0" Text="{Binding}" />
+		</DataTemplate>
+
+		<ToolTip x:Key="ProjectToolTip">
+			<StackPanel Orientation="Vertical">
+				<TextBlock>
+					<Run Text="{Binding DisplayName, Mode=OneWay}" />
+					<Run Text="{Binding Version, Mode=OneWay}" />
+				</TextBlock>
+				<Image Source="{Binding Thumbnail}" Visibility="{Binding HasThumbnail}" />
+			</StackPanel>
+		</ToolTip>
+
+	</UserControl.Resources>
 	<Grid>
-		<TextBlock Text="BG3 Stuff goes here!" />
+		<ListView x:Name="ProjectsListView">
+			<ListView.ItemContainerStyle>
+				<Style TargetType="ListViewItem">
+					<Setter Property="HorizontalContentAlignment" Value="Stretch" />
+				</Style>
+			</ListView.ItemContainerStyle>
+			<ListView.View>
+				<GridView>
+					<GridView.Columns>
+						<GridViewColumn Width="400" Header="Name" HeaderTemplate="{StaticResource GridViewTextblockHeaderTemplate}">
+							<GridViewColumn.CellTemplate>
+								<DataTemplate>
+									<Border Padding="0,2"
+									    HorizontalAlignment="Stretch"
+									    ToolTip="{StaticResource ProjectToolTip}"
+									    ToolTipService.InitialShowDelay="250">
+										<TextBlock Text="{Binding DisplayName}" TextAlignment="Left" />
+									</Border>
+								</DataTemplate>
+							</GridViewColumn.CellTemplate>
+						</GridViewColumn>
+
+						<GridViewColumn Width="80" Header="Version" HeaderTemplate="{StaticResource GridViewTextblockHeaderTemplate}">
+							<GridViewColumn.CellTemplate>
+								<DataTemplate>
+									<TextBlock Text="{Binding Version}" TextAlignment="Left" ToolTip="{Binding Version}" />
+								</DataTemplate>
+							</GridViewColumn.CellTemplate>
+						</GridViewColumn>
+					</GridView.Columns>
+				</GridView>
+			</ListView.View>
+		</ListView>
 	</Grid>
 </rxui:ReactiveUserControl>

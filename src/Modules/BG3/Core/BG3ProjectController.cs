@@ -11,6 +11,8 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Controls;
 using SCG.BG3.Services;
+using SCG.BG3.Models;
+using DynamicData;
 
 namespace SCG.BG3.Core;
 public class BG3ProjectController : IProjectController
@@ -24,9 +26,10 @@ public class BG3ProjectController : IProjectController
 	private MainViewViewModel? mainViewVM;
 	private MainView? mainView;
 
+	private readonly SourceCache<ProjectData, string> _projects = new(x => x.UUID);
+
 	static BG3ProjectController()
 	{
-		SplatRegistrations.RegisterLazySingleton<MainViewViewModel>();
 		SplatRegistrations.RegisterLazySingleton<ProjectLoaderService>();
 		SplatRegistrations.SetupIOC();
 	}
@@ -40,7 +43,7 @@ public class BG3ProjectController : IProjectController
 	{
 		if (mainView == null)
 		{
-			mainViewVM ??= Locator.Current.GetService<MainViewViewModel>();
+			mainViewVM ??= new MainViewViewModel(_projects);
 
 			mainView = new MainView()
 			{
@@ -78,6 +81,8 @@ public class BG3ProjectController : IProjectController
 					{
 						project.ModMetaFilePath = mod.FilePath;
 						project.Mod = mod;
+
+						_projects.AddOrUpdate(project);
 					}
 				}
 

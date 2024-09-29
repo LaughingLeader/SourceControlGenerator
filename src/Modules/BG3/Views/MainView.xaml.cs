@@ -9,5 +9,10 @@ public partial class MainView : ReactiveUserControl<MainViewViewModel>
 	public MainView()
 	{
 		InitializeComponent();
+
+		this.WhenActivated(d =>
+		{
+			d(this.OneWayBind(ViewModel, vm => vm.Projects, x => x.ProjectsListView.ItemsSource));
+		});
 	}
 }
