@@ -1,4 +1,6 @@
-﻿using SCG.Services;
+﻿using LazyCache.Splat;
+
+using SCG.Services;
 using SCG.ThemeSystem;
 using SCG.Utilities;
 
@@ -20,9 +22,13 @@ public partial class App : Application
 
 		if (Splash != null)
 		{
-			var splashFade = new Thread(() =>
+			var thread = new Thread(() =>
 			{
-				Splash.Close(TimeSpan.FromSeconds(1));
+				Splash.Close(TimeSpan.FromMilliseconds(750));
+			});
+			RxApp.MainThreadScheduler.Schedule(() =>
+			{
+				thread.Start();
 			});
 		}
 	}
@@ -32,9 +38,14 @@ public partial class App : Application
 
 	public App()
 	{
+		var resolver = Locator.CurrentMutable;
+		resolver.AddLazyCache();
+
 		SplatRegistrations.RegisterLazySingleton<FileCacheService>();
 		SplatRegistrations.RegisterLazySingleton<IEnvironmentService, EnvironmentService>();
 		SplatRegistrations.SetupIOC();
+
+		Locator.CurrentMutable.InitializeReactiveUI();
 
 		RxApp.DefaultExceptionHandler = new ReactionObservableExceptionHandler();
 		ThemeController.Init(this);

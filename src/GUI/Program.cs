@@ -29,7 +29,7 @@ internal class Program
 		AppDomain.CurrentDomain.AssemblyResolve += AssemblyResolve;
 
 		_splash = new SplashScreen("Resources/Images/SplashScreen.png");
-		_splash.Show(false, false);
+		_splash.Show(false, true);
 
 		var app = new App
 		{
